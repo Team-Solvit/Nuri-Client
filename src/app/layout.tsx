@@ -1,6 +1,6 @@
 import type {Metadata} from "next";
-import {Global} from '@emotion/react'
-import {globalStyles} from '@/styles/globalStyle'
+import { GlobalStyles } from '@/components/layout/globalStyle';
+
 
 export const metadata: Metadata = {
   title: "NURI",
@@ -13,7 +13,7 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
     <html lang="ko">
       <head/>
       <body>
-        <Global styles={globalStyles}/>
+        <GlobalStyles />
         {children}
       </body>
     </html>

@@ -1,8 +1,6 @@
 
-export default function App() {
+export default function Home() {
   return (
-    <>
-      ddd
-    </>
+    <div>Home</div>
   )
 }
