@@ -1,5 +1,6 @@
-import type {Metadata} from "next";
+import type { Metadata } from "next";
 import { GlobalStyles } from '@/components/layout/globalStyle';
+import Header from "@/components/ui/header";
 
 
 export const metadata: Metadata = {
@@ -8,12 +9,13 @@ export const metadata: Metadata = {
 };
 
 
-export default function RootLayout({children}: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
-      <head/>
-      <body>
+      <head />
+      <body style={{ display: "flex" }}>
         <GlobalStyles />
+        <Header />
         {children}
       </body>
     </html>
