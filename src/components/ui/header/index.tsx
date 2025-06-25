@@ -4,7 +4,6 @@ import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import * as S from './style'
 
-// public/icons 아래로 옮겼다고 가정
 const MENU_ITEMS = [
   { label: '홈', path: '/', icon: '/icons/home.svg' },
   { label: '탐색', path: '/explore', icon: '/icons/compass.svg' },
