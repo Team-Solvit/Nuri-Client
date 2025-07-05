@@ -1,6 +1,7 @@
+import Alert from "@/components/ui/alert";
 
 export default function Home() {
   return (
-    <div>Home</div>
+    <Alert />
   )
 }
