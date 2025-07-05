@@ -15,14 +15,14 @@ export default function Alert({description = "error", success = false}: Props) {
 	const [visible, setVisible] = useState(true);
 	const [isLeaving, setIsLeaving] = useState(true);
 	useEffect(() => {
-		const leavingTimer = setTimeout(() => {
-			setIsLeaving(false);
-		}, 5_000);
+		// const leavingTimer = setTimeout(() => {
+		// 	setIsLeaving(false);
+		// }, 5_000);
 		const visibleTimer = setTimeout(() => {
 			setVisible(false);
 		}, 5_300);
 		return () => {
-			clearTimeout(leavingTimer);
+			// clearTimeout(leavingTimer);
 			clearTimeout(visibleTimer);
 		};
 	}, []);
@@ -33,7 +33,7 @@ export default function Alert({description = "error", success = false}: Props) {
 			setVisible(false);
 		}, 500)
 	}
-	if (!visible) return null;
+	// if (!visible) return null;
 	
 	return (
 		<S.Alert isLeaving={!isLeaving}>

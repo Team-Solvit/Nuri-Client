@@ -52,6 +52,7 @@ export const Alert = styled.div<{ isLeaving: boolean }>`
 `;
 export const Content = styled.div`
   display: flex;
+  width: 100%;
   padding: 0 1rem;
   gap: 0.5rem;
   position: relative;
@@ -97,18 +98,18 @@ export const GageBox = styled.div`
 export const TextBox = styled.div<Status>`
   padding: 0 1.4rem;
   border-left: 0.05rem solid ${(props) => props.success ? "#71DAAA" : "#FFEDEF"};
+  width: 70%;
 
   & > h3 {
     font-size: ${fontSizes.Body};
     font-weight: 700;
     margin-bottom: 0.5rem;
-    color: ${(props) => props.success ? "#71DAAA" : "#E74B3C"};;
+    color: ${(props) => props.success ? "#71DAAA" : "#E74B3C"};
   }
 
   & > p {
     font-size: ${fontSizes.Caption};
     font-weight: 400;
+    word-break: break-all;
   }
-
 `
-
