@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import {zIndex, radius} from "@/styles/theme";
+import {zIndex, radius, fontSizes} from "@/styles/theme";
 import { keyframes, css } from '@emotion/react';
 
 interface Status {
@@ -96,13 +96,13 @@ export const GageBox = styled.div`
 export const TextBox = styled.div<Status>`
 	padding: 0 0.5rem;
 				& > h3{
-								font-size: 1.2rem;
+								font-size: ${fontSizes.H4};
 								font-weight: 700;
 								margin-bottom: 0.5rem;
 								color: ${(props) => props.success ? "#71DAAA" : "#E74B3C"};;
 				}
 				& > p{
-								font-size: 0.8rem;
+								font-size: ${fontSizes.Body};
 								font-weight: 400;
 				}
 	
