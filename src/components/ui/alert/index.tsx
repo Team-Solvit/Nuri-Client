@@ -15,18 +15,16 @@ export default function Alert({description = "error", success = false}: Props) {
 	const [visible, setVisible] = useState(true);
 	const [isLeaving, setIsLeaving] = useState(true);
 	useEffect(() => {
-		const timer = setTimeout(() => {
+		const leavingTimer = setTimeout(() => {
 			setIsLeaving(false);
 		}, 5_000);
-		
-		return () => clearTimeout(timer);
-	}, []);
-	useEffect(() => {
-		const timer = setTimeout(() => {
+		const visibleTimer = setTimeout(() => {
 			setVisible(false);
-		}, 5_500);
-		
-		return () => clearTimeout(timer);
+		}, 5_300);
+		return () => {
+			clearTimeout(leavingTimer);
+			clearTimeout(visibleTimer);
+		};
 	}, []);
 	
 	const closeAlert = () => {
@@ -43,12 +41,16 @@ export default function Alert({description = "error", success = false}: Props) {
 				<S.Close onClick={closeAlert}>
 					<Image src={X} alt="X"/>
 				</S.Close>
-				<S.Emotion success={success}>
+				<S.Emotion>
 					<Image src={success ? Smile : Lose} alt="emotion"/>
 				</S.Emotion>
 				<S.TextBox success={success}>
 					<h3>{success ? "Success" : "Error"}</h3>
-					<p>{description}</p>
+					<p>
+						{description.length > 60
+							? description.slice(0, 60) + '...'
+							: description}
+					</p>
 				</S.TextBox>
 			</S.Content>
 			<S.GageBox>
