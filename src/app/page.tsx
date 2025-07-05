@@ -1,6 +1,21 @@
+'use client'
+
+import Alert from "@/components/ui/alert";
+import Modal from "@/components/layout/modal";
+import {useModalStore} from "@/store/modal";
 
 export default function Home() {
-  return (
-    <div>Home</div>
-  )
+	const {open} = useModalStore();
+	return (
+		<>
+			<Alert
+				description={"이제 어떤게 와도 가능함."}
+				success={true}/>
+			<button onClick={open}>modal</button>
+			<Modal>
+				<p>dddd</p>
+			</Modal>
+		</>
+	
+	)
 }
