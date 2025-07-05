@@ -3,7 +3,6 @@
 import Alert from "@/components/ui/alert";
 import Modal from "@/components/layout/modal";
 import {useModalStore} from "@/store/modal";
-import Square from "@/components/ui/button/square";
 
 export default function Home() {
 	const {open} = useModalStore();
