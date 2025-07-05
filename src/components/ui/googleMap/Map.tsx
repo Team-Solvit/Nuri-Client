@@ -1,73 +1,111 @@
 'use client'
 
-import { useJsApiLoader, GoogleMap, Marker, OverlayView } from '@react-google-maps/api'
-import { useState } from 'react'
-import Popup from './Popup'
+import React, { Fragment, useState } from 'react'
+import {
+  useJsApiLoader,
+  GoogleMap,
+  Marker,
+  OverlayView,
+} from '@react-google-maps/api'
+import { colors, fontSizes } from '@/styles/theme'
 
 const containerStyle = { width: '84.6%' }
 const MARKER_SIZE = 48
+const OFFSET_X = MARKER_SIZE / 2
+const OFFSET_Y = -MARKER_SIZE / 4
 
-const MARKERS = [
-  {
-    id: 1,
-    position: { lat: 35.16306, lng: 129.05278 },
-    title: '그랜마하우스',
-    address: '부산 부산진구 가야대로',
-    rooms: [
-      { number: '301호', names: '오주현, 윤도훈' },
-      { number: '302호', names: '오주현, 윤도훈' },
-      { number: '303호', names: '오주현, 윤도훈' },
-      { number: '304호', names: '오주현, 윤도훈' },
-    ],
-  },
-  {
-    id: 2,
-    position: { lat: 35.07849, lng: 129.06483 },
-    title: '박동현 집',
-    address: '부산 영도구 와치로',
-    rooms: [
-      { number: '101호', names: '박동현' },
-    ],
-  },
-]
+interface MarkerItem {
+  id: number
+  position: { lat: number; lng: number }
+}
 
-export default function Map() {
+interface MapProps {
+  markers: MarkerItem[]
+  label: (m: MarkerItem) => string
+  renderPopup: (m: MarkerItem) => React.ReactNode
+}
+
+export default function Map({ markers, label, renderPopup }: MapProps) {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
   })
+  const [hoveredId, setHoveredId] = useState<number | null>(null)
   const [selectedId, setSelectedId] = useState<number | null>(null)
 
   if (!isLoaded) return <div>로딩 중…</div>
-
-  const selectedMarker = MARKERS.find((m) => m.id === selectedId)
+  const selected = markers.find((m) => m.id === selectedId) || null
 
   return (
-    <GoogleMap mapContainerStyle={containerStyle} center={MARKERS[0].position} zoom={15}>
-      {MARKERS.map((m) => (
-        <Marker
-          key={m.id}
-          position={m.position}
-          icon={{
-            url: '/markers/common-marker.svg',
-            scaledSize: new window.google.maps.Size(MARKER_SIZE, MARKER_SIZE),
-          }}
-          onClick={() =>
-            setSelectedId((prev) => (prev === m.id ? null : m.id))
-          }
-        />
-      ))}
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={markers[0].position}
+      zoom={15}
+    >
+      {markers.map((m) => {
+        const isHovered = m.id === hoveredId
+        const isSelected = m.id === selectedId
+        const isActive = isHovered || isSelected
 
-      {selectedMarker && (
+        return (
+          <Fragment key={m.id}>
+            <Marker
+              position={m.position}
+              icon={{
+                url: '/markers/common-marker.svg',
+                scaledSize: new window.google.maps.Size(
+                  MARKER_SIZE,
+                  MARKER_SIZE
+                ),
+              }}
+              onClick={() =>
+                setSelectedId((prev) => (prev === m.id ? null : m.id))
+              }
+              onMouseOver={() => setHoveredId(m.id)}
+              onMouseOut={() => setHoveredId(null)}
+            />
+
+            <OverlayView
+              position={m.position}
+              mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+              getPixelPositionOffset={() => ({
+                x: OFFSET_X,
+                y: OFFSET_Y,
+              })}
+            >
+              <div
+                style={{
+                  pointerEvents: 'none',
+                  transform: isActive
+                    ? 'translate(-50%, -100%) scale(1.03)'
+                    : 'translate(-50%, -100%) scale(1)',
+                  transition: 'transform 150ms ease-out, color 150ms',
+                  whiteSpace: 'nowrap',
+                  fontSize: fontSizes.H4,
+                  fontWeight: 700,
+                  color: isActive ? colors.secondary : colors.primary,
+                  textShadow: isActive
+                    ? '0 2px 8px rgba(0,0,0,0.15)'
+                    : '0 1px 2px rgba(0,0,0,0.1)',
+                }}
+              >
+                {label(m)}
+              </div>
+            </OverlayView>
+          </Fragment>
+        )
+      })}
+
+      {selected && (
         <OverlayView
-          position={selectedMarker.position}
+          position={selected.position}
           mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+          getPixelPositionOffset={(_w, h) => ({
+            x: MARKER_SIZE / 2 + 8,
+            y: MARKER_SIZE / 2 + -h,
+          })}
         >
-          <Popup
-            title={selectedMarker.title}
-            address={selectedMarker.address}
-            rooms={selectedMarker.rooms}
-          />
+          {renderPopup(selected)}
         </OverlayView>
       )}
     </GoogleMap>

@@ -2,6 +2,7 @@
 
 import styled from '@emotion/styled'
 import { useCallback } from 'react'
+import { fontSizes } from '@/styles/theme'
 
 interface Room {
   number: string
@@ -54,9 +55,9 @@ const Header = styled.div`
   align-items: center;
 `
 
-const Title = styled.h3`
+const Title = styled.span`
   margin: 0;
-  font-size: 1.25rem;
+  font-size: ${fontSizes.H4};
   font-weight: 800;
 `
 
@@ -72,7 +73,7 @@ const CopyButton = styled.button`
 
 const Subtitle = styled.p`
   margin: 0.25rem 0 0.75rem;
-  font-size: 0.875rem;
+  font-size: ${fontSizes.Small};
   color: #8c8c8c;
 `
 
