@@ -46,6 +46,7 @@ export default function Map({ markers, label, renderPopup }: MapProps) {
         const isHovered = m.id === hoveredId
         const isSelected = m.id === selectedId
         const isActive = isHovered || isSelected
+        const size = isActive ? MARKER_SIZE * 1.03 : MARKER_SIZE
 
         return (
           <Fragment key={m.id}>
@@ -53,10 +54,8 @@ export default function Map({ markers, label, renderPopup }: MapProps) {
               position={m.position}
               icon={{
                 url: '/markers/common-marker.svg',
-                scaledSize: new window.google.maps.Size(
-                  MARKER_SIZE,
-                  MARKER_SIZE
-                ),
+                scaledSize: new window.google.maps.Size(size, size),
+                anchor: new window.google.maps.Point(size / 2, size),
               }}
               onClick={() =>
                 setSelectedId((prev) => (prev === m.id ? null : m.id))
@@ -79,11 +78,11 @@ export default function Map({ markers, label, renderPopup }: MapProps) {
                   transform: isActive
                     ? 'translate(-50%, -100%) scale(1.03)'
                     : 'translate(-50%, -100%) scale(1)',
-                  transition: 'transform 150ms ease-out, color 150ms',
+                  transition: 'transform 50ms ease-out',
                   whiteSpace: 'nowrap',
                   fontSize: fontSizes.H4,
                   fontWeight: 700,
-                  color: isActive ? colors.secondary : colors.primary,
+                  color: colors.primary,
                   textShadow: isActive
                     ? '0 2px 8px rgba(0,0,0,0.15)'
                     : '0 1px 2px rgba(0,0,0,0.1)',
