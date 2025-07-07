@@ -37,15 +37,5 @@ export default function Home() {
 			<Popup title={rooms[marker.id - 1].title} address={rooms[marker.id - 1].address} rooms={rooms[marker.id - 1].rooms ?? []} />
 		)}>
 		</Map>
-		<div style={{ display: "flex"}}>
-			<Alert
-				description={"이제 어떤게 와도 가능함."}
-				success={true}/>	
-			<button onClick={open}>modal</button>
-			<Modal>
-				<p>dddd</p>
-			</Modal>
-		</div>
-	
 	)
 }

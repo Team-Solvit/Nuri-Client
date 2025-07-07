@@ -1,26 +1,29 @@
 import styled from "@emotion/styled";
+import { colors, radius, fontSizes } from '@/styles/theme';
 
-export const Container = styled.div<{ $status?: 1 | 2 | 3;}>`
+export const Container = styled.div<{ $status?: 1 | 2 | 3 }>`
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: ${(props) => (props.$status === 2 ? 'default' : 'pointer')};
+
   background-color: ${(props) =>
-    props.$status === 1 ? '#FFFFFF' :
-    props.$status === 2 ? '#FFF6F7' :
-    '#FF4C61'};
+    props.$status === 1 ? colors.background :
+      props.$status === 2 ? '#FFF6F7' :
+        colors.primary};
 
   color: ${(props) =>
-    props.$status === 1 ? '#FF4C61' :
-    props.$status === 2 ? '#FF4C61' :
-    '#FFFFFF'};
-  border: 1px solid #FF4C61;
-  border-radius: 18px;
-  padding: 8px 0px;
+    props.$status === 1 ? colors.primary :
+      props.$status === 2 ? colors.primary :
+        colors.background};
+
+  border: 1px solid ${colors.primary};
+  border-radius: ${radius.lg2};
+  padding: 8px 0;
   width: 6.6vw;
-`;
+`
 
 export const Name = styled.span`
-  font-size: 1rem;
+  font-size: ${fontSizes.Body};
   font-weight: 600;
-`;
+`
