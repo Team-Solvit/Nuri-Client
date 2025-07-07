@@ -21,6 +21,16 @@ export const Container = styled.div<{ $status?: 1 | 2 | 3 }>`
   border-radius: ${radius.lg2};
   padding: 8px 0;
   width: 6.6vw;
+
+  ${(props) =>
+    props.$status === 1 &&
+    `
+      &:hover {
+        background-color: ${colors.primary};
+        color: ${colors.background};
+      }
+    `
+  }
 `
 
 export const Name = styled.span`
