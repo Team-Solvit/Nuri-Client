@@ -6,5 +6,6 @@ export const Post = styled.div`
 export const PostImg = styled.div`
   width: 24vw;
   height: 40vh;
+  position: relative;
   overflow: hidden;
-`;
+`
