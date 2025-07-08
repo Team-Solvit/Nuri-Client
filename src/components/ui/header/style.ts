@@ -1,4 +1,3 @@
-import { colors } from "@/styles/theme";
 import styled from "@emotion/styled";
 
 export const HeaderContainer = styled.header`
@@ -27,10 +26,10 @@ export const MenuItem = styled.div<{ active?: boolean }>`
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  color: ${({ active }) => (active ? "#FF4C61" : "")};
-  background: ${({ active }) => (active ? "#FF4C611A" : "transparent")};
-  font-weight: ${({ active }) => (active ? "bold" : "normal")};
-  
+  color: ${({active}) => (active ? "#FF4C61" : "")};
+  background: ${({active}) => (active ? "#FF4C611A" : "transparent")};
+  font-weight: ${({active}) => (active ? "bold" : "normal")};
+
   padding: 0.7rem 1rem;
   border-radius: 0.75rem;
   font-size: 1.125rem;
@@ -38,11 +37,11 @@ export const MenuItem = styled.div<{ active?: boolean }>`
   transition: background 0.3s, color 0.3s;
 
   & > img {
-    filter: ${({ active }) => active ? "invert(56%) sepia(50%) saturate(7496%) hue-rotate(328deg) brightness(107%) contrast(101%)" : "none"};
+    filter: ${({active}) => active ? "invert(56%) sepia(50%) saturate(7496%) hue-rotate(328deg) brightness(107%) contrast(101%)" : "none"};
   }
 
   &:hover {
-    background: ${({ active }) => (active ? "rgb(255, 210, 215)" : "rgba(90, 90, 90, 0.03)")};
+    background: ${({active}) => (active ? "rgb(255, 210, 215)" : "rgba(90, 90, 90, 0.03)")};
   }
 `;
 
