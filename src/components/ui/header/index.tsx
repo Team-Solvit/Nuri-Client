@@ -54,22 +54,24 @@ export default function Header() {
       <S.HeaderBottom>
         <S.Profile>
           <Image
-            src="/icons/person.svg"
+            src="https://avatars.githubusercontent.com/u/193513016?s=200&v=4"
             alt="프로필"
-            width={24}
-            height={24}
+            width={36}
+            height={36}
+            style={{ borderRadius: '50%' }}
+            unoptimized={true}
           />
           <span>xx._un8</span>
         </S.Profile>
-        <S.Logout>
+        <S.Report>
           <Image
-            src="/icons/logout.svg"
-            alt="로그아웃"
+            src="/icons/warningBell.svg"
+            alt="신고하기"
             width={24}
             height={24}
           />
-          <span>로그아웃</span>
-        </S.Logout>
+          <span>신고하기</span>
+        </S.Report>
       </S.HeaderBottom>
     </S.HeaderContainer>
   )
