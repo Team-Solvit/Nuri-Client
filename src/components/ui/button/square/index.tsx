@@ -9,9 +9,16 @@ import * as S from './style';
 //     배경: #FFFFFF
 //     text: #FF4C61
 
-export default function Square({text, On, status, width}: {text: string, On: () => void, status: boolean, width: string}){
-    return(
-        <S.Container onClick={On} $status = {status} $width = {width}>
+interface SquareProps {
+    text: string
+    onClick: () => void
+    status: boolean
+    width: string
+}
+
+export default function Square({ text, onClick, status, width }: SquareProps) {
+    return (
+        <S.Container onClick={onClick} $status={status} $width={width}>
             <S.Name>{text}</S.Name>
         </S.Container>
     )

@@ -12,11 +12,18 @@ import * as S from './style';
 //     배경: #FF4C61
 //     text: #FFFFFF
 
-export default function Circle({ text, On, status }: { text: string; On: () => void; status: 1 | 2 | 3 }) {
-    return (
-      <S.Container onClick={On} $status={status}>
-        <S.Name>{text}</S.Name>
-      </S.Container>
-    );
-  }
-  
+type Status = 1 | 2 | 3
+
+interface CircleProps {
+  text: string
+  onClick: () => void
+  status: Status
+}
+
+export default function Circle({ text, onClick, status }: CircleProps) {
+  return (
+    <S.Container onClick={onClick} $status={status}>
+      <S.Name>{text}</S.Name>
+    </S.Container>
+  )
+}

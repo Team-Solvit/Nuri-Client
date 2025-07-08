@@ -26,8 +26,9 @@ export const Container = styled.div<{ $status?: 1 | 2 | 3 }>`
     props.$status === 1 &&
     `
       &:hover {
-        background-color: ${colors.primary};
+        background-color: #ed475b;
         color: ${colors.background};
+        transition: background-color 0.2s ease-in-out;
       }
     `
   }

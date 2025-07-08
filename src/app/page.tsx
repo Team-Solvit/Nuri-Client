@@ -1,5 +1,6 @@
 'use client'
 
+import Circle from "@/components/ui/button/circle"
 import Map from "@/components/ui/googleMap/Map"
 import Popup from "@/components/ui/googleMap/Popup"
 
@@ -33,9 +34,12 @@ export default function Home() {
 		}
 	]
 	return (
-		<Map markers={markers} label={(m) => rooms[m.id - 1].title} renderPopup={(marker: typeof markers[0]) => (
-			<Popup title={rooms[marker.id - 1].title} address={rooms[marker.id - 1].address} rooms={rooms[marker.id - 1].rooms ?? []} />
-		)}>
-		</Map>
+		<>
+			<Circle status={1} text="sdf" onClick={() => {}} />
+		</>
+		// <Map markers={markers} label={(m) => rooms[m.id - 1].title} renderPopup={(marker: typeof markers[0]) => (
+		// 	<Popup title={rooms[marker.id - 1].title} address={rooms[marker.id - 1].address} rooms={rooms[marker.id - 1].rooms ?? []} />
+		// )}>
+		// </Map>
 	)
 }
