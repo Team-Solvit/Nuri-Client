@@ -9,7 +9,7 @@ import {
 } from '@react-google-maps/api'
 import { colors, fontSizes } from '@/styles/theme'
 
-const containerStyle = { width: '84.6%' }
+const containerStyle = { width: '100%', height: '100vh' }
 const MARKER_SIZE = 48
 const OFFSET_X = MARKER_SIZE / 2
 const OFFSET_Y = -MARKER_SIZE / 4

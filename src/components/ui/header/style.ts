@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 export const HeaderContainer = styled.header`
   height: 100vh;
   padding: 2rem 1.3rem;
+  min-width: 15.5vw;
   color: #6C757D;
   display: flex;
   flex-direction: column;
