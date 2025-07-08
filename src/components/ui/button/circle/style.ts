@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { colors, radius, fontSizes } from '@/styles/theme';
+import {colors, radius, fontSizes} from '@/styles/theme';
 
 export const Container = styled.div<{ $status?: 1 | 2 | 3 }>`
   display: flex;
@@ -24,6 +24,16 @@ export const Container = styled.div<{ $status?: 1 | 2 | 3 }>`
 
   ${(props) =>
     props.$status === 1 &&
+    `
+      &:hover {
+        background-color: ${colors.primary};
+        color: ${colors.background};
+        transition: background-color 0.2s ease-in-out;
+      }
+    `
+  }
+  ${(props) =>
+    props.$status === 3 &&
     `
       &:hover {
         background-color: #ed475b;
