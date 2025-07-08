@@ -14,6 +14,7 @@ export const PostImg = styled.div`
     position: absolute;
     inset: 0;
     background-color: rgba(0, 0, 0, 0.3);
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s ease-in-out;
+    cursor: pointer;
   }
 `
