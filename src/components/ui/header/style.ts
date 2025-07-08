@@ -2,7 +2,8 @@ import styled from "@emotion/styled";
 
 export const HeaderContainer = styled.header`
   height: 100vh;
-  padding: 2rem 1.3rem;
+  padding: 2rem 1.3rem 3.5rem 1.3rem;
+  min-width: 15.5vw;
   color: #6C757D;
   display: flex;
   flex-direction: column;
@@ -25,17 +26,22 @@ export const MenuItem = styled.div<{ active?: boolean }>`
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  color: ${({ active }) => (active ? "#FF4C61" : "")};
-  background: ${({ active }) => (active ? "#FF4C611A" : "transparent")};
-  font-weight: ${({ active }) => (active ? "bold" : "normal")};
-  
+  color: ${({active}) => (active ? "#FF4C61" : "")};
+  background: ${({active}) => (active ? "#FF4C611A" : "transparent")};
+  font-weight: ${({active}) => (active ? "bold" : "normal")};
+
   padding: 0.7rem 1rem;
   border-radius: 0.75rem;
   font-size: 1.125rem;
   cursor: pointer;
+  transition: background 0.3s, color 0.3s;
 
   & > img {
-    filter: ${({ active }) => active ? "invert(56%) sepia(50%) saturate(7496%) hue-rotate(328deg) brightness(107%) contrast(101%)" : "none"};
+    filter: ${({active}) => active ? "invert(56%) sepia(50%) saturate(7496%) hue-rotate(328deg) brightness(107%) contrast(101%)" : "none"};
+  }
+
+  &:hover {
+    background: ${({active}) => (active ? "rgb(255, 210, 215)" : "rgba(90, 90, 90, 0.03)")};
   }
 `;
 
@@ -51,16 +57,13 @@ export const Profile = styled.div`
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  margin-top: auto;
-  color: #6C757D;
   cursor: pointer;
 `;
 
-export const Logout = styled.div`
+export const Report = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  color: #6C757D;
   cursor: pointer;
 `;
