@@ -143,12 +143,12 @@ export const User = styled.div`
   flex-direction: column;
   font-weight: 500;
 
-  & > p:nth-child(1) {
+  & > p:nth-of-type(1) {
     font-size: ${fontSizes.H4};
     font-weight: 600;
   }
 
-  & > p:nth-child(2) {
+  & > p:nth-of-type(2) {
     font-size: ${fontSizes.Caption};
     color: ${colors.gray};
   }
