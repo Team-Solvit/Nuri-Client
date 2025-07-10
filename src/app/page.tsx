@@ -16,8 +16,9 @@ export default function Home() {
 const HomeContainer = styled.section`
   display: grid;
   grid-template-columns: 5.5fr 1fr;
-  gap: 1rem;
-  margin: 0 4rem;
-  align-items: center;
-  height: 100vh;
+  gap: 4rem;
+  margin: 10vh 4rem 0 4rem;
+  align-items: flex-start;
+  height: 90vh;
+  max-height: 90vh;
 `

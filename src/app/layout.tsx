@@ -20,6 +20,8 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
 			style={{
 				width: '84.5vw',
 				height: '100vw',
+				maxHeight: '100vh',
+				maxWidth: '84.5vw',
 			}}
 		>
 			{children}
