@@ -1,12 +1,16 @@
 import styled from "@emotion/styled";
+import {zIndex} from "@/styles/theme";
 
 export const HeaderContainer = styled.header`
   height: 100vh;
+  position: relative;
+  background-color: white;
   padding: 2rem 1.3rem 3.5rem 1.3rem;
   min-width: 15.5vw;
   color: #6C757D;
   display: flex;
   flex-direction: column;
+  z-index: ${zIndex.modal};
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 `;
 
