@@ -1,59 +1,82 @@
 'use client'
 
-import { useState } from 'react'
+import { Dispatch, SetStateAction } from 'react'
 import styled from '@emotion/styled'
 import Image from 'next/image'
-import {colors} from "@/styles/theme";
+import { colors } from "@/styles/theme";
 
-export default function Calendar() {
-    const [current, setCurrent] = useState(new Date())
+interface CalendarProps {
+  selectedDate: Date;
+  onDateChange: (date: Date) => void;
+}
 
-    const year = current.getFullYear()
-    const month = current.getMonth()
+export default function Calendar({ selectedDate, onDateChange }: CalendarProps) {
+  const year = selectedDate.getFullYear();
+  const month = selectedDate.getMonth();
+  const today = new Date();
 
-    const startDay = new Date(year, month, 1).getDay()
-    const totalDays = new Date(year, month + 1, 0).getDate()
+  const startDay = new Date(year, month, 1).getDay();
+  const totalDays = new Date(year, month + 1, 0).getDate();
 
-    const cells = [
-        ...Array(startDay).fill(null),
-        ...Array.from({ length: totalDays }, (_, i) => i + 1),
-    ]
+  const cells = [
+    ...Array(startDay).fill(null),
+    ...Array.from({ length: totalDays }, (_, i) => i + 1),
+  ];
 
-    const prevMonth = () => setCurrent(new Date(year, month - 1, 1))
-    const nextMonth = () => setCurrent(new Date(year, month + 1, 1))
+  const prevMonth = () => {
+    onDateChange(new Date(year, month - 1, 1));
+  };
+  const nextMonth = () => {
+    onDateChange(new Date(year, month + 1, 1));
+  };
+  const handleDayClick = (day: number | null) => {
+    if (!day) return;
+    onDateChange(new Date(year, month, day));
+  };
 
-    return (
-        <Wrapper>
-            <Header>
-                <button onClick={prevMonth}>{'<'}</button>
-                <h1>{year}년 {month + 1}월</h1>
-                <button onClick={nextMonth}>{'>'}</button>
-            </Header>
+  return (
+    <Wrapper>
+      <Header>
+        <button onClick={prevMonth}>{'<'}</button>
+        <h1>{year}년 {month + 1}월</h1>
+        <button onClick={nextMonth}>{'>'}</button>
+      </Header>
 
-            <Weekdays>
-                {['일', '월', '화', '수', '목', '금', '토'].map((d) => (
-                    <div key={d}>{d}</div>
-                ))}
-            </Weekdays>
+      <Weekdays>
+        {['일', '월', '화', '수', '목', '금', '토'].map((d) => (
+          <div key={d}>{d}</div>
+        ))}
+      </Weekdays>
 
-            <DatesGrid>
-                {cells.map((day, idx) => (
-                    <DayCell key={idx} isToday={
-                        day === new Date().getDate() &&
-                        month === new Date().getMonth() &&
-                        year === new Date().getFullYear()
-                    }>
-                        {day ?? ''}
-                    </DayCell>
-                ))}
-            </DatesGrid>
-        </Wrapper>
-    )
+      <DatesGrid>
+        {cells.map((day, idx) => {
+          const isToday =
+            day === today.getDate() &&
+            month === today.getMonth() &&
+            year === today.getFullYear();
+          const isSelected =
+            day === selectedDate.getDate() &&
+            month === selectedDate.getMonth() &&
+            year === selectedDate.getFullYear();
+          return (
+            <DayCell
+              key={idx}
+              isToday={isToday}
+              isSelected={isSelected}
+              onClick={() => handleDayClick(day)}
+              style={{ cursor: day ? 'pointer' : 'default', fontWeight: isSelected ? 700 : undefined }}
+            >
+              {day ?? ''}
+            </DayCell>
+          );
+        })}
+      </DatesGrid>
+    </Wrapper>
+  );
 }
 
 const Wrapper = styled.div`
-    width: 350px;
-    border: 1px solid #ddd;
+    width: 30vw;
     border-radius: 8px;
     padding: 16px;
 `
@@ -97,24 +120,32 @@ const DatesGrid = styled.div`
   grid-template-columns: repeat(7, 1fr);
   justify-items: center;
   align-items: center;
-  row-gap: 4px;
+  row-gap: 12px;
 `
 
-const DayCell = styled.div<{ isToday: boolean }>`
+const DayCell = styled.div<{ isToday: boolean; isSelected?: boolean }>`
     width: 36px;
     height: 36px;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 50%;
+    cursor: pointer;
 
   &:nth-of-type(7n + 1) { color: ${colors.primary}; }
   &:nth-of-type(7n)     { color: #7F96FF; }
   ${({ isToday }) =>
-     isToday &&
-     `
+    isToday &&
+    `
     color: white !important;
     background-color: #FFE288;
+    font-weight: bold;
+  `}
+  ${({ isSelected }) =>
+    isSelected &&
+    `
+    background: #ff4c61;
+    color: #fff !important;
     font-weight: bold;
   `}
 `
