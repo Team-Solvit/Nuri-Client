@@ -11,11 +11,10 @@ export const NavigateContainer = styled.section`
   border-radius: ${radius.md};
   border: 1px solid ${colors.line};
 `
-export const NavigateBtn = styled.button`
+export const NavigateBtn = styled.button<{ isActive: boolean }>`
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  background: none;
   transition: all 0.2s ease-in-out;
   border: none;
   font-size: ${fontSizes.Body};
@@ -23,6 +22,7 @@ export const NavigateBtn = styled.button`
   width: 100%;
   padding: 0.6rem 1rem;
   border-radius: ${radius.md};
+  background-color: ${({isActive}) => isActive ? '#efefef' : 'transparent'};
 
   &:hover {
     background-color: #F8F8F8;

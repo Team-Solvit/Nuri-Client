@@ -1,18 +1,19 @@
-'use client'
-import PostScroll from "@/containers/home/post-scroll/ui";
+"use client"
+
+import MyHouseScroll from "@/containers/myHouse/houseScroll/ui";
 import Navigate from "@/components/ui/navigate/ui";
 import styled from "@emotion/styled";
 
-export default function Home() {
+export default function MyHouse() {
 	return (
-		<HomeContainer>
-			<PostScroll/>
+		<HouseContainer>
+			<MyHouseScroll/>
 			<Navigate/>
-		</HomeContainer>
+		</HouseContainer>
 	)
 }
 
-const HomeContainer = styled.section`
+const HouseContainer = styled.section`
   display: grid;
   grid-template-columns: 5.5fr 1fr;
   gap: 4rem;

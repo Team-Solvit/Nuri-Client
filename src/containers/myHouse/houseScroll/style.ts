@@ -1,0 +1,153 @@
+import styled from '@emotion/styled';
+import {colors, fontSizes, radius} from '@/styles/theme';
+
+export const Container = styled.div`
+  background: ${colors.background};
+  border-radius: ${radius.lg2};
+  border: 1px solid ${colors.line};
+  padding: 32px;
+  width: 100%;
+  height: 85vh;
+  overflow-y: auto;
+`;
+
+export const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const RoomInfoContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+`;
+
+export const Title = styled.h1`
+  font-weight: 500;
+
+  font-size: ${fontSizes.H2};
+  color: ${colors.text};
+  text-align: center;
+`;
+
+export const Setting = styled.span`
+  font-weight: 500;
+  font-size: ${fontSizes.Small};
+  color: ${colors.gray};
+`;
+
+export const InfoSection = styled.div`
+  margin-top: 24px;
+`;
+
+export const InfoRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+`;
+
+export const InfoLabel = styled.span`
+  font-weight: 500;
+  font-size: ${fontSizes.Small};
+  color: ${colors.gray};
+`;
+
+export const InfoValue = styled.span`
+  font-weight: 500;
+  font-size: ${fontSizes.Small};
+  color: ${colors.text};
+`;
+
+export const More = styled.span`
+  display: inline-block;
+  font-weight: 500;
+  width: 100%;
+  text-align: center;
+  font-size: ${fontSizes.Small};
+  color: ${colors.gray};
+  cursor: pointer;
+  margin-left: auto;
+`;
+
+export const RoomInfoTitle = styled.h2`
+  font-weight: 500;
+  font-size: ${fontSizes.H3};
+  color: ${colors.text};
+`;
+
+export const RoomList = styled.div`
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 16px;
+`;
+
+export const RoomCard = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  background: ${colors.background};
+  border-radius: ${radius.lg2};
+  border: 1px solid ${colors.line};
+  width: 100%;
+  padding: 16px;
+`;
+
+export const RoomHeader = styled.div`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  margin-bottom: 8px;
+`;
+
+export const RoomInfo = styled.div`
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding: 1rem 2rem;
+  gap: 0.4rem;
+`;
+
+export const RoomName = styled.span`
+  font-weight: 500;
+  font-size: ${fontSizes.H3};
+  color: ${colors.text};
+  margin-right: 16px;
+`;
+
+export const ProfileWrap = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+  gap: 8px;
+`;
+
+export const ProfileImg = styled.div`
+  width: 2rem;
+  height: 2rem;
+  border-radius: ${radius.full};
+  background: #e0e0e0;
+  position: relative;
+  overflow: hidden;
+  margin-right: 4px;
+`;
+
+export const UserId = styled.span<{ color?: string }>`
+  font-weight: 500;
+  font-size: ${fontSizes.Body};
+  color: ${({color}) => color || colors.text};
+  margin-right: 8px;
+`;
+
+export const RoomImage = styled.div`
+  width: 100%;
+  height: 7rem;
+  border-radius: ${radius.lg2};
+  background: ${colors.line};
+  margin-top: 8px;
+  position: relative;
+  overflow: hidden;
+`
