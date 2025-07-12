@@ -1,4 +1,4 @@
-import React, { RefObject } from "react";
+import React from "react";
 import Image from "next/image";
 import * as S from "./style";
 
@@ -6,27 +6,16 @@ const imgChecked = "/icons/todo-checkbox-checked.svg";
 const imgVector = "/icons/todo-checkbox.svg";
 const ClockIcon = "/icons/third-party-clock.svg";
 
-interface Todo {
-  id: number;
-  house: string;
-  section: string;
-  title: string;
-  sub: string;
-  checked: boolean;
-  file: File | null;
-  date: string;
-}
+import { Todo } from "@/types/todo";
 
 interface SectionProps {
   sectionName: string;
   todos: Todo[];
   handleCheck: (id: number) => void;
-  handleUploadClick: (id: number) => void;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>, id: number) => void;
-  fileInputRef: RefObject<HTMLInputElement | null>;
 }
 
-export default function Section({ sectionName, todos, handleCheck, handleUploadClick, handleFileChange, fileInputRef }: SectionProps) {
+export default function Section({ sectionName, todos, handleCheck, handleFileChange }: SectionProps) {
   return (
     <S.Section>
       <S.SectionLabel>{sectionName}</S.SectionLabel>
@@ -59,12 +48,11 @@ export default function Section({ sectionName, todos, handleCheck, handleUploadC
                       {todo.file ? (
                         <>
                           <S.FileName>{todo.file.name}</S.FileName>
-                          <S.ReUploadButton onClick={() => handleUploadClick(todo.id)}>
+                          <S.ReUploadButton as="label">
                             다시 올리기
                             <input
                               type="file"
                               style={{ display: "none" }}
-                              ref={fileInputRef}
                               onChange={(e) => handleFileChange(e, todo.id)}
                             />
                           </S.ReUploadButton>
@@ -72,11 +60,11 @@ export default function Section({ sectionName, todos, handleCheck, handleUploadC
                       ) : (
                         <>
                           파일을 업로드 해주세요.
-                          <S.PlusButton onClick={() => handleUploadClick(todo.id)}>+
+                          <S.PlusButton as="label">
+                            +
                             <input
                               type="file"
                               style={{ display: "none" }}
-                              ref={fileInputRef}
                               onChange={(e) => handleFileChange(e, todo.id)}
                             />
                           </S.PlusButton>

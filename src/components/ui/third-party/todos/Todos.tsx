@@ -1,28 +1,12 @@
-import React, { useState, useRef } from "react";
-import Image from "next/image";
+import React, { useState } from "react";
 import * as S from "./style";
 import Section from "./Section";
+import { Todo } from "@/types/todo";
 
 const imgIcon = "/icons/todo-dropdown.svg";
-const imgVector = "/icons/todo-checkbox.svg";
-const imgChecked = "/icons/todo-checkbox-checked.svg";
-const ClockIcon = "/icons/third-party-clock.svg";
-
-interface Todo {
-  id: number;
-  house: string;
-  section: string;
-  title: string;
-  sub: string;
-  checked: boolean;
-  file: File | null;
-  date: string;
-}
 
 function formatDate(date: Date) {
-  const tzOffset = date.getTimezoneOffset() * 60000;
-  const kst = new Date(date.getTime() - tzOffset + 9 * 60 * 60000);
-  return kst.toISOString().slice(0, 10);
+  return date.toLocaleDateString('sv-SE');
 }
 
 const todosData: Todo[] = [
@@ -43,7 +27,6 @@ export default function Todos({ selectedDate }: TodosProps) {
   const [selected, setSelected] = useState("전체");
   const [todos, setTodos] = useState(todosData);
   const [uploadingId, setUploadingId] = useState<number | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDropdown = () => setDropdownOpen((v) => !v);
   const handleSelect = (option: string) => {
@@ -57,10 +40,6 @@ export default function Todos({ selectedDate }: TodosProps) {
       )
     );
     setUploadingId(id);
-  };
-  const handleUploadClick = (id: number) => {
-    setUploadingId(id);
-    fileInputRef.current?.click();
   };
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
     const file = e.target.files?.[0];
@@ -104,17 +83,13 @@ export default function Todos({ selectedDate }: TodosProps) {
         sectionName="방문"
         todos={visitTodos}
         handleCheck={handleCheck}
-        handleUploadClick={handleUploadClick}
         handleFileChange={handleFileChange}
-        fileInputRef={fileInputRef}
       />
       <Section
         sectionName="전화"
         todos={callTodos}
         handleCheck={handleCheck}
-        handleUploadClick={handleUploadClick}
         handleFileChange={handleFileChange}
-        fileInputRef={fileInputRef}
       />
     </S.Wrapper>
   );

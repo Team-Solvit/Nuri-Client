@@ -174,7 +174,6 @@ export const FileName = styled.span`
   color: #222;
   font-size: 15px;
   margin-left: 8px;
-  font-weight: 500;
 `;
 export const ReUploadButton = styled.button`
   background: #fff;
