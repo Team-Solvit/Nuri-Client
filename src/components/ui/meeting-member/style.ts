@@ -33,7 +33,8 @@ export const NameBox = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  width: 68%;
+  width: 75%;
+  position: relative;
 `
 export const Name = styled.p`
   font-size: ${fontSizes.Body};
@@ -41,4 +42,9 @@ export const Name = styled.p`
 export const Count = styled.p`
   font-size: ${fontSizes.Caption};
   color: ${colors.gray};
+`
+export const Leave = styled.div`
+  position: absolute;
+  right: 0;
+  bottom: 0;
 `
