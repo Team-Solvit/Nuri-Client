@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { colors, fontSizes, radius } from '@/styles/theme';
+import {colors, fontSizes, radius} from '@/styles/theme';
 
 export const Container = styled.div`
   background: ${colors.background};
@@ -86,24 +86,12 @@ export const Textarea = styled.textarea`
   outline: none;
 `;
 
-export const InputWithAddon = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 50%;
-  align-items: flex-start;
-  margin-bottom: 0.5rem;
-
-  & > span {
-    font-size: ${fontSizes.Body};
-    color: ${colors.gray};
-  }
-`;
-
 export const InputWithAddonRow = styled.div`
   width: 50%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+
   .input-row {
     display: flex;
     align-items: center;
@@ -114,6 +102,7 @@ export const InputWithAddonRow = styled.div`
     padding: 0.8rem;
     margin-top: 0.25rem;
   }
+
   input {
     border: none;
     outline: none;
@@ -121,6 +110,7 @@ export const InputWithAddonRow = styled.div`
     flex: 1;
     background: transparent;
   }
+
   .addon {
     color: ${colors.gray};
     font-size: ${fontSizes.Body};
@@ -135,16 +125,6 @@ export const ContractPeriodWrap = styled.div`
   margin-bottom: 0.75rem;
 `;
 
-export const ContractPeriodBtn = styled.button<{active?: boolean}>`
-  padding: 0.5rem 1.5rem;
-  border-radius: 4.375rem;
-  border: 1px solid ${colors.primary};
-  background: ${({active}) => active ? colors.primary : colors.background};
-  color: ${({active}) => active ? colors.background : colors.primary};
-  font-size: ${fontSizes.Caption};
-  font-weight: 500;
-  cursor: pointer;
-`;
 
 export const ContractPeriodRow = styled.div`
   display: flex;
@@ -161,6 +141,7 @@ export const ContractInputWrap = styled.div`
   background: #fff;
   padding: 0.8rem;
   width: 100%;
+
   input {
     border: none;
     outline: none;
@@ -169,24 +150,13 @@ export const ContractInputWrap = styled.div`
     width: 100%;
     flex: 1;
   }
+
   .addon {
     color: ${colors.gray};
     font-size: ${fontSizes.Body};
     margin-left: 0.5rem;
     white-space: nowrap;
   }
-`;
-
-export const AddBtn = styled.button`
-  margin-top: 1rem;
-  padding: 0.5rem 2rem;
-  border-radius: 4.375rem;
-  border: 1px solid ${colors.primary};
-  background: ${colors.background};
-  color: ${colors.primary};
-  font-size: ${fontSizes.Caption};
-  font-weight: 500;
-  cursor: pointer;
 `;
 
 export const FacilityWrap = styled.div`
@@ -211,6 +181,7 @@ export const FacilityCheckbox = styled.label`
   font-size: ${fontSizes.Body};
   color: ${colors.text};
   cursor: pointer;
+
   input[type='checkbox'] {
     accent-color: ${colors.primary};
     border-radius: ${radius.sm};
@@ -232,6 +203,7 @@ export const PhotoThumb = styled.div`
   border-radius: ${radius.lg};
   overflow: hidden;
   background: ${colors.line};
+
   img {
     width: 100%;
     height: 100%;
