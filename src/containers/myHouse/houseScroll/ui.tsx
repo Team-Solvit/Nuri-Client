@@ -1,14 +1,23 @@
-import React from 'react';
+"use client";
+
+import React, {useState} from 'react';
 import * as S from './style';
 import Square from '@/components/ui/button/square';
 import Image from "next/image";
 import Profile from "@/assets/meeting/member-profile.png"
+import {useRouter} from 'next/navigation';
+import {useModalStore} from "@/store/modal";
 
 const fakeData = {
 	roomInfo: {
+		name: '그랜마 하우스',
 		phone: '010-1234-5678',
-		location: '부산광역시 남구',
+		location: '부산광역시 남구 땡땡동',
 		gender: '여성전용',
+		description: "안녕하세요 그랜마 하우스 입니다",
+		nearby_station: "땡땡역",
+		nearby_school: "부산대",
+		meal: true
 		
 	},
 	roomList: [
@@ -29,13 +38,23 @@ const fakeData = {
 };
 
 const HouseScroll = () => {
+	const [isOpen, setIsOpen] = useState(false);
+	const router = useRouter();
+	const handleLocation = (path: string) => {
+		router.push(path);
+	}
+	const {open} = useModalStore();
+	const openModal = (number: string) => {
+		open();
+		router.push(`/myHouse?name=${fakeData.roomInfo.name}&number=${number}`, {scroll: false});
+	}
 	return (
 		<S.Container>
 			<S.Header>
 				<S.Title>그랜마 하우스</S.Title>
-				<S.Setting>하숙집 설정</S.Setting>
+				<S.Setting onClick={() => handleLocation("/user")}>하숙집 설정</S.Setting>
 			</S.Header>
-			<S.InfoSection>
+			<S.InfoSection isOpen={isOpen}>
 				<S.InfoRow>
 					<S.InfoLabel>전화번호</S.InfoLabel>
 					<S.InfoValue>{fakeData.roomInfo.phone}</S.InfoValue>
@@ -48,12 +67,26 @@ const HouseScroll = () => {
 					<S.InfoLabel>성별</S.InfoLabel>
 					<S.InfoValue>{fakeData.roomInfo.gender}</S.InfoValue>
 				</S.InfoRow>
-				<S.More>더보기</S.More>
+				<S.InfoRow>
+					<S.InfoLabel>식사제공여부</S.InfoLabel>
+					<S.InfoValue>{fakeData.roomInfo.gender}</S.InfoValue>
+				</S.InfoRow>
+				<S.InfoRow>
+					<S.InfoLabel>가까운 역</S.InfoLabel>
+					<S.InfoValue>{fakeData.roomInfo.nearby_station}</S.InfoValue>
+				</S.InfoRow>
+				<S.InfoRow>
+					<S.InfoLabel>가까운 학교</S.InfoLabel>
+					<S.InfoValue>{fakeData.roomInfo.nearby_school}</S.InfoValue>
+				</S.InfoRow>
+				<S.InfoRow>
+					<S.InfoValue>{fakeData.roomInfo.description}</S.InfoValue>
+				</S.InfoRow>
 			</S.InfoSection>
+			<S.More onClick={() => setIsOpen(!isOpen)}>{isOpen ? "숨기기" : "더보기"}</S.More>
 			<S.RoomInfoContainer>
 				<S.RoomInfoTitle>방 정보</S.RoomInfoTitle>
-				<Square text='방추가' status={true} width='100px' onClick={() => {
-				}}/>
+				<Square text='방추가' status={true} width='100px' onClick={() => handleLocation("/myHouse/addition")}/>
 			</S.RoomInfoContainer>
 			<S.RoomList>
 				{fakeData.roomList.map((room, idx) => (
@@ -77,8 +110,7 @@ const HouseScroll = () => {
 								)}
 							</S.RoomInfo>
 							{room.status && (
-								<Square text={"계약 종료"} onClick={() => {
-								}} status={true} width={"max-content"}/>
+								<Square text={"계약 종료"} onClick={() => openModal(room.roomName)} status={true} width={"max-content"}/>
 							)}
 						</S.RoomHeader>
 					</S.RoomCard>

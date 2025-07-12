@@ -5,7 +5,7 @@ export const Container = styled.div`
   background: ${colors.background};
   border-radius: ${radius.lg2};
   border: 1px solid ${colors.line};
-  padding: 32px;
+  padding: 3rem;
   width: 100%;
   height: 85vh;
   overflow-y: auto;
@@ -36,10 +36,14 @@ export const Setting = styled.span`
   font-weight: 500;
   font-size: ${fontSizes.Small};
   color: ${colors.gray};
+  cursor: pointer;
 `;
 
-export const InfoSection = styled.div`
+export const InfoSection = styled.div<{ isOpen: boolean }>`
   margin-top: 24px;
+  max-height: ${props => props.isOpen ? '1000px' : '4rem'};
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
 `;
 
 export const InfoRow = styled.div`
@@ -69,6 +73,10 @@ export const More = styled.span`
   color: ${colors.gray};
   cursor: pointer;
   margin-left: auto;
+
+  &:hover {
+    text-decoration: underline
+  }
 `;
 
 export const RoomInfoTitle = styled.h2`
@@ -103,7 +111,7 @@ export const RoomHeader = styled.div`
 `;
 
 export const RoomInfo = styled.div`
-  width: 80%;
+  width: 75%;
   display: flex;
   flex-direction: column;
   align-items: start;
@@ -113,7 +121,7 @@ export const RoomInfo = styled.div`
 
 export const RoomName = styled.span`
   font-weight: 500;
-  font-size: ${fontSizes.H3};
+  font-size: ${fontSizes.H4};
   color: ${colors.text};
   margin-right: 16px;
 `;
