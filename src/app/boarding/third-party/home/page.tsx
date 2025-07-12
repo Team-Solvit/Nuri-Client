@@ -1,10 +1,14 @@
+'use client'
+
 import Calendar from "@/components/ui/third-party/Calendar";
+import Todos from "@/components/ui/third-party/Todos"
 import * as S from "./style";
 
 export default function BoardingHomePage() {
   return (
-    <div>
+    <S.Wrapper>
       <Calendar />
-    </div>
+      <Todos />
+    </S.Wrapper>
   );
 }
