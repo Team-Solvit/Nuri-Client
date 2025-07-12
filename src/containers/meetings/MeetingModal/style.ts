@@ -126,6 +126,7 @@ export const PBox = styled.div`
   text-align: center;
 
   & > p {
+    font-weight: 500;
     cursor: pointer;
   }
 `

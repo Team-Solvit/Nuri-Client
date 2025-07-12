@@ -46,5 +46,13 @@ export const Count = styled.p`
 export const Leave = styled.div`
   position: absolute;
   right: 0;
-  bottom: 0;
+  top: 0;
+
+  & > div {
+    padding: 8px;
+  }
+
+  & > div > span {
+    font-size: ${fontSizes.Caption};
+  }
 `

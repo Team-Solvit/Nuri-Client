@@ -37,7 +37,7 @@ export const Head = styled.article`
 
   & > p {
     font-size: ${fontSizes.H4};
-    font-weight: 600;
+    font-weight: 500;
   }
 `
 
@@ -86,7 +86,7 @@ export const Sub = styled.div`
 
 export const Title = styled.h3`
   font-size: ${fontSizes.Body};
-  font-weight: 600
+  font-weight: 500;
 `
 
 export const Desc = styled.p`

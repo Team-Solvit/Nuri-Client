@@ -46,12 +46,8 @@ export default function MeetingsSidebar({rooms}: MeetingsSidebarProps) {
 								<p>인원 : {meeting.personnel} / {meeting.maxPersonnel}</p>
 								<Image src={Arrow} alt="meeting" width={8} height={8}/>
 							</S.Sub>
-							<S.Title>
-								<h4>{meeting.title}</h4>
-							</S.Title>
-							<S.Desc>
-								<p>{meeting.content}</p>
-							</S.Desc>
+							<S.Title>{meeting.title}</S.Title>
+							<S.Desc>{meeting.content}</S.Desc>
 						</S.Info>
 					</S.Meeting>
 				))}

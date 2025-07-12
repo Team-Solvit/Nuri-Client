@@ -16,6 +16,7 @@ export const CalendarHeader = styled.div`
 
   h2 {
     font-size: ${fontSizes.H3};
+    font-weight: 500;
   }
 `;
 

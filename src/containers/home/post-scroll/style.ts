@@ -86,6 +86,7 @@ export const Thumbnail = styled.div`
 
 export const PostName = styled.h3`
   font-size: ${fontSizes.H4};
+  font-weight: 500;
   padding: 0 1rem;
 `
 
@@ -130,6 +131,7 @@ export const Arrow = styled.div<{ status: boolean, isHover: boolean }>`
 export const PostDesc = styled.p`
   font-size: ${fontSizes.Body};
   padding: 0 1rem;
+  font-weight: 400;
 `
 export const Profile = styled.div`
   display: flex;
@@ -145,7 +147,6 @@ export const User = styled.div`
 
   & > p:nth-of-type(1) {
     font-size: ${fontSizes.H4};
-    font-weight: 600;
   }
 
   & > p:nth-of-type(2) {
@@ -160,6 +161,7 @@ export const Nav = styled.div`
   justify-content: flex-end;
   gap: 0.5rem;
   font-size: ${fontSizes.Body};
+  font-weight: 500;
   color: ${colors.gray};
 `
 export const Interactive = styled.div`
