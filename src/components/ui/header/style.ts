@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import {zIndex} from "@/styles/theme";
+import {fontSizes, zIndex} from "@/styles/theme";
 
 export const HeaderContainer = styled.header`
   height: 100vh;
@@ -32,11 +32,11 @@ export const MenuItem = styled.div<{ active?: boolean }>`
   gap: 0.6rem;
   color: ${({active}) => (active ? "#FF4C61" : "")};
   background: ${({active}) => (active ? "#FF4C611A" : "transparent")};
-  font-weight: ${({active}) => (active ? "bold" : "normal")};
+  font-weight: ${({active}) => (active ? 600 : "normal")};
 
   padding: 0.7rem 1rem;
   border-radius: 0.75rem;
-  font-size: 1.125rem;
+  font-size: ${fontSizes.Body};
   cursor: pointer;
   transition: background 0.3s, color 0.3s;
 
