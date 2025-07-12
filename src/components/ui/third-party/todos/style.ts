@@ -1,3 +1,4 @@
+import { colors, fontSizes } from "@/styles/theme";
 import styled from "@emotion/styled";
 
 export const Wrapper = styled.div`
@@ -28,9 +29,9 @@ export const SectionHeader = styled.div`
   position: relative;
 `;
 export const SectionTitle = styled.div`
-  font-family: 'S-Core-Dream', sans-serif;
-  color: #ff4c61;
-  font-size: 22px;
+  
+  color: ${colors.primary};
+  font-size: ${fontSizes.H4};
   font-weight: 700;
   letter-spacing: -0.5px;
 `;
@@ -56,15 +57,15 @@ export const DropdownList = styled.ul`
 `;
 export const DropdownItem = styled.li<{ selected?: boolean }>`
   padding: 14px 32px;
-  font-family: 'S-Core-Dream', sans-serif;
-  font-size: 18px;
-  color: ${({ selected }) => (selected ? '#ff4c61' : '#222')};
+  
+  font-size: ${fontSizes.Body};
+  color: ${({ selected }) => (selected ? colors.primary : '#222')};
   background: ${({ selected }) => (selected ? 'rgba(255,76,97,0.07)' : 'none')};
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
   &:hover {
     background: rgba(255,76,97,0.12);
-    color: #ff4c61;
+    color: ${colors.primary};
   }
 `;
 export const Section = styled.div`
@@ -74,11 +75,10 @@ export const Section = styled.div`
 `;
 export const SectionLabel = styled.div`
   background: rgba(255,157,157,0.12);
-  border: 1px solid #ff4c61;
+  border: 1px solid ${colors.primary};
   border-radius: 8px;
-  color: #ff4c61;
-  font-size: 18px;
-  font-family: 'S-Core-Dream', sans-serif;
+  color: ${colors.primary};
+  font-size: ${fontSizes.Body};
   width: 90px;
   height: 38px;
   display: flex;
@@ -113,7 +113,7 @@ export const CheckBox = styled.img`
   margin-top: 2px;
   transition: filter 0.15s;
   &:hover {
-    filter: brightness(0.95) drop-shadow(0 0 2px #ff4c61);
+    filter: brightness(0.95) drop-shadow(0 0 2px ${colors.primary});
   }
 `;
 export const TodoInfo = styled.div`
@@ -122,14 +122,12 @@ export const TodoInfo = styled.div`
   gap: 4px;
 `;
 export const TodoTitle = styled.div`
-  font-family: 'S-Core-Dream', sans-serif;
   font-size: 20px;
   color: #222;
   font-weight: 700;
   margin-bottom: 2px;
 `;
 export const TodoSub = styled.div`
-  font-family: 'S-Core-Dream', sans-serif;
   font-size: 15px;
   color: #8c8c8c;
   margin-top: 2px;
@@ -147,9 +145,9 @@ export const PlusButton = styled.button`
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #ff4c61;
+  background: ${colors.primary};
   color: #fff;
-  font-size: 22px;
+  font-size: ${fontSizes.H4};
   border: none;
   display: flex;
   align-items: center;
@@ -158,19 +156,18 @@ export const PlusButton = styled.button`
   box-shadow: 0 2px 8px 0 rgba(255,76,97,0.10);
   transition: background 0.15s;
   &:hover {
-    background: #ff6b7a;
+    background: ${colors.primary};
   }
 `;
 export const UploadWrap = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #ff4c61;
+  color: ${colors.primary};
   font-size: 15px;
   background: #fff0f3;
   border-radius: 6px;
   padding: 8px 14px 8px 12px;
-  font-weight: 600;
   box-shadow: 0 2px 8px 0 rgba(255,76,97,0.07);
 `;
 export const FileName = styled.span`
@@ -181,18 +178,17 @@ export const FileName = styled.span`
 `;
 export const ReUploadButton = styled.button`
   background: #fff;
-  color: #ff4c61;
-  border: 1px solid #ff4c61;
+  color: ${colors.primary};
+  border: 1px solid ${colors.primary};
   border-radius: 5px;
   font-size: 14px;
-  font-family: 'S-Core-Dream', sans-serif;
   font-weight: 600;
   padding: 4px 12px;
   margin-left: 10px;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
   &:hover {
-    background: #ff4c61;
+    background: ${colors.primary};
     color: #fff;
   }
 `;

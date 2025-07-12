@@ -1,8 +1,6 @@
 'use client'
 
-import { Dispatch, SetStateAction } from 'react'
 import styled from '@emotion/styled'
-import Image from 'next/image'
 import { colors } from "@/styles/theme";
 
 interface CalendarProps {
