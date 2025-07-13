@@ -1,9 +1,7 @@
 'use client';
 import * as S from "./style";
-import { useModalStore } from "@/store/modal";
 
-export default function StateModalModal({ children }: { children: React.ReactNode }) {
-	const { close, isOpen } = useModalStore();
+export default function StateModal({ children, close, isOpen }: { children: React.ReactNode, close: () => void, isOpen: boolean }) {
 	if (!isOpen) return null
 	return (
 		<S.Black onClick={close}>
