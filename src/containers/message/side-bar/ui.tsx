@@ -13,14 +13,14 @@ export default function MessageSideBar() {
 		{id: 3, name: "그랜마 하우스", last_message: "감사합니다"},
 	]
 	const fakeData2 = [
-		{id: 1, name: "그랜마 하우스", last_message: "감사합니다"},
-		{id: 2, name: "그랜마 하우스", last_message: "감사합니다"},
-		{id: 3, name: "그랜마 하우스", last_message: "감사합니다"},
+		{id: 4, name: "그랜마 하우스", last_message: "감사합니다"},
+		{id: 5, name: "그랜마 하우스", last_message: "감사합니다"},
+		{id: 6, name: "그랜마 하우스", last_message: "감사합니다"},
 	]
 	const fakeData3 = [
-		{id: 1, name: "그랜마 하우스", last_message: "감사합니다"},
-		{id: 2, name: "그랜마 하우스", last_message: "감사합니다"},
-		{id: 3, name: "그랜마 하우스", last_message: "감사합니다"},
+		{id: 7, name: "그랜마 하우스", last_message: "감사합니다"},
+		{id: 8, name: "그랜마 하우스", last_message: "감사합니다"},
+		{id: 9, name: "그랜마 하우스", last_message: "감사합니다"},
 	]
 	const [isDrop, setIsDrop] = useState([
 		false, false, false
