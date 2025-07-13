@@ -3,7 +3,7 @@
 import styled from "@emotion/styled";
 import MessageHeader from "@/containers/message/message-header/ui";
 import MessageSendBar from "@/containers/message/message-sendBar/ui";
-import MessageContent from "@/containers/message/messag-content/ui";
+import MessageContent from "@/containers/message/message-content/ui";
 
 export default function MessagePage() {
 	return (

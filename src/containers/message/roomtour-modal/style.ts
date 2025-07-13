@@ -1,10 +1,10 @@
 import styled from "@emotion/styled";
-import { colors, fontSizes, radius } from "@/styles/theme";
+import {colors, fontSizes, radius} from "@/styles/theme";
 
 export const ModalContainer = styled.div`
   width: 39.5rem;
   background: ${colors.background};
-  border-radius: ${radius.lg2};
+  border-radius: ${radius.md};
   box-shadow: 0 0.25rem 1.5rem rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;

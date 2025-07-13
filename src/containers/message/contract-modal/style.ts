@@ -1,10 +1,10 @@
 import styled from "@emotion/styled";
-import { colors, fontSizes, radius } from "@/styles/theme";
+import {colors, fontSizes, radius} from "@/styles/theme";
 
 export const ModalContainer = styled.div`
   width: 39.5rem;
   background: ${colors.background};
-  border-radius: ${radius.lg2};
+  border-radius: ${radius.md};
   box-shadow: 0 0.25rem 1.5rem rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
@@ -14,16 +14,17 @@ export const ModalContainer = styled.div`
 
 export const TopImageWrapper = styled.div`
   width: 100%;
-  height: 11.125rem; 
+  height: 11.125rem;
   position: relative;
 `;
 
 export const Section = styled.section`
   width: 90%;
   margin-top: 1.5rem;
-  height: 45vh;
+  min-height: 20vh;
+  max-height: 45vh;
   overflow-y: auto;
-  
+
 `;
 
 export const SectionTitle = styled.h2`
