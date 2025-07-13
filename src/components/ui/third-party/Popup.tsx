@@ -1,8 +1,11 @@
 'use client'
 
 import styled from '@emotion/styled'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { fontSizes } from '@/styles/theme'
+import Modal from '@/components/layout/modal'
+import RoomDetail from '@/components/ui/third-party/RoomDetail'
+import { useModalStore } from '@/store/modal'
 
 interface Room {
   number: string
@@ -10,15 +13,24 @@ interface Room {
 }
 
 interface PopupProps {
+  id: number
   title: string
   address: string
   rooms: Room[]
 }
 
-export default function Popup({ title, address, rooms }: PopupProps) {
+export default function Popup({ id, title, address, rooms }: PopupProps) {
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(address)
   }, [address])
+
+  const { isOpen, open, close } = useModalStore();
+  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+
+  const handleClickRoom = (room: Room) => {
+    setSelectedRoom(room);
+    open();
+  }
 
   return (
     <PopupContainer>
@@ -30,12 +42,17 @@ export default function Popup({ title, address, rooms }: PopupProps) {
 
       <RoomList>
         {rooms.map((r) => (
-          <RoomItem key={r.number}>
+          <RoomItem key={r.number} onClick={() => handleClickRoom(r)}>
             <RoomNumber>{r.number}</RoomNumber>
             <RoomNames>{r.names}</RoomNames>
           </RoomItem>
         ))}
       </RoomList>
+      {isOpen && (
+        <Modal>
+          <RoomDetail id={id} room={selectedRoom} title={title} address={address} close={close} />
+        </Modal>
+      )}
     </PopupContainer>
   )
 }
