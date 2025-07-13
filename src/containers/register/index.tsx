@@ -148,7 +148,7 @@ export default function RegisterContainer() {
       case 4:
         return (
           <div>
-            <S.Title>국적을 선택해주세요</S.Title>
+            <S.Title>국적과 사용할 언어를 선택해주세요.</S.Title>
             <S.FormGroup>
               <S.Label>국적</S.Label>
               <S.Select>
@@ -160,6 +160,19 @@ export default function RegisterContainer() {
                 <option>🇩🇪 독일</option>
                 <option>🇫🇷 프랑스</option>
                 <option>🇬🇧 영국</option>
+                <option>🌍 기타</option>
+              </S.Select>
+            </S.FormGroup>
+            <S.FormGroup>
+              <S.Label>언어</S.Label>
+              <S.Select>
+                <option>언어를 선택해주세요</option>
+                <option>🇰🇷 한국어</option>
+                <option>🇺🇸 영어</option>
+                <option>🇯🇵 일본어</option>
+                <option>🇨🇳 중국어</option>
+                <option>🇩🇪 독일어</option>
+                <option>🇫🇷 프랑스어</option>
                 <option>🌍 기타</option>
               </S.Select>
             </S.FormGroup>
