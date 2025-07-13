@@ -157,67 +157,79 @@ export const fakeData: ChatMessage[] = [
   {
     id: 20,
     type: 'sent',
-    text : "",
+    text: "",
     img: '/post/post-example.png',
     time: '오전 11:34',
+    profile: '@/assets/meeting/profile.png',
+    name: '프로필',
   },
   {
-    id : 21,
+    id: 21,
     type: 'sent',
-    text : "",
-    roomTour :{
-      master : true,
-      name : "그랜마 하우스 302호",
-      date : "5월 15일 (목)",
-      time : "오후 1:00",
-      thumbnail : "/post/post-example.png",
-      tourId : 1
+    text: "",
+    roomTour: {
+      master: true,
+      name: "그랜마 하우스 302호",
+      date: "5월 15일 (목)",
+      time: "오후 1:00",
+      thumbnail: "/post/post-example.png",
+      tourId: 1
     },
     time: '오전 11:34',
+    profile: '@/assets/meeting/profile.png',
+    name: '프로필',
   },
   {
-    id : 22,
+    id: 22,
     type: 'received',
-    text : "",
-    contract :{
-      master : true,
-      name : "그랜마 하우스 302호",
-      thumbnail : "/post/post-example.png",
-      contractId : 1
+    text: "",
+    contract: {
+      master: true,
+      name: "그랜마 하우스 302호",
+      thumbnail: "/post/post-example.png",
+      contractId: 1
     },
     time: '오전 11:34',
+    profile: '@/assets/meeting/profile.png',
+    name: '프로필',
   },
   {
-    id : 23,
+    id: 23,
     type: 'sent',
-    text : "",
-    contract :{
-      master : false,
-      name : "그랜마 하우스 302호",
-      thumbnail : "/post/post-example.png",
-      contractId : 1
+    text: "",
+    contract: {
+      master: false,
+      name: "그랜마 하우스 302호",
+      thumbnail: "/post/post-example.png",
+      contractId: 1
     },
     time: '오전 11:34',
+    profile: '@/assets/meeting/profile.png',
+    name: '프로필',
   },
   {
-    id : 24,
+    id: 24,
     type: 'received',
-    text : "",
+    text: "",
     img: '/post/post-example.png',
     time: '오전 11:34',
+    profile: '@/assets/meeting/profile.png',
+    name: '프로필',
   },
   {
-    id : 25,
+    id: 25,
     type: 'received',
-    text : "",
-    roomTour :{
-      master : false,
-      name : "그랜마 하우스 302호",
-      date : "5월 15일 (목)",
-      time : "오후 1:00",
-      thumbnail : "/post/post-example.png",
-      tourId : 1
+    text: "",
+    roomTour: {
+      master: false,
+      name: "그랜마 하우스 302호",
+      date: "5월 15일 (목)",
+      time: "오후 1:00",
+      thumbnail: "/post/post-example.png",
+      tourId: 1
     },
     time: '오전 11:34',
+    profile: '@/assets/meeting/profile.png',
+    name: '프로필',
   }
 ];

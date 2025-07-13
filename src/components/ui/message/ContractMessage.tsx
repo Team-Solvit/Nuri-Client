@@ -1,0 +1,83 @@
+import styled from "@emotion/styled";
+import { colors, fontSizes } from '@/styles/theme';
+import React from "react";
+
+const ContractBubble = styled.div`
+  background: #fff;
+  border-radius: 1.1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border: 1px solid ${colors.line};
+  max-width: 320px;
+  width: 100%;
+  padding: 0 0 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const ContractContent = styled.div`
+  width: 100%;
+  padding: 0 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`;
+
+const ContractTitle = styled.div`
+  font-size: 1.25rem;
+  color: ${colors.text};
+  font-weight: 400;
+  margin: 1.2rem 0 0.2rem 0;
+`;
+
+const ContractHouse = styled.div`
+  font-size: ${fontSizes.Small};
+  color: ${colors.text};
+  font-weight: 300;
+  margin-bottom: 0.8rem;
+`;
+
+const ContractButtonWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+`;
+
+const MsgTime = styled.div<{ isSent?: boolean }>`
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: 300;
+  margin-top: 2px;
+  text-align: right;
+  position: absolute;
+  bottom: 0;
+  ${({isSent}) => isSent ? "left: -4rem;" : "right: -4rem;"};
+`;
+
+interface ContractMessageProps {
+  thumbnail: string;
+  name: string;
+  time?: string;
+  isSent?: boolean;
+  onDetail?: () => void;
+  button?: React.ReactNode;
+}
+
+const ContractMessage: React.FC<ContractMessageProps> = ({ thumbnail, name, time, isSent, onDetail, button }) => (
+  <div style={{ position: 'relative', display: 'inline-block' }}>
+    <ContractBubble>
+      <img src={thumbnail} alt="contract-img" style={{ width: '100%', objectFit: 'cover', borderRadius: '1.1rem 1.1rem 0 0', height: 180 }} />
+      <ContractContent>
+        <ContractTitle>계약이 완료되었어요</ContractTitle>
+        <ContractHouse>{name}</ContractHouse>
+        <ContractButtonWrapper>
+          {button ? button : onDetail && <button onClick={onDetail}>자세히보기</button>}
+        </ContractButtonWrapper>
+      </ContractContent>
+    </ContractBubble>
+    {time && <MsgTime isSent={isSent}>{time}</MsgTime>}
+  </div>
+);
+
+export default ContractMessage; 
