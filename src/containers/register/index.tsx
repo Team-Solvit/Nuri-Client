@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import * as S from './style';
 import Square from '@/components/ui/button/square';
+import { useRouter } from 'next/navigation';
 
 const check = "icons/check.svg";
 
@@ -32,11 +33,14 @@ const steps = [
 export default function RegisterContainer() {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const router = useRouter();
 
   const handleNext = (): void => {
     if (currentStep < steps.length - 1) {
       setCompletedSteps([...completedSteps, currentStep]);
       setCurrentStep(currentStep + 1);
+    } else {
+      router.push('/register/success');
     }
   };
 
