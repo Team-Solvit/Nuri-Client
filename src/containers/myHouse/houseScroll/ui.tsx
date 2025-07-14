@@ -69,7 +69,7 @@ const HouseScroll = () => {
 				</S.InfoRow>
 				<S.InfoRow>
 					<S.InfoLabel>식사제공여부</S.InfoLabel>
-					<S.InfoValue>{fakeData.roomInfo.gender}</S.InfoValue>
+					<S.InfoValue>{fakeData.roomInfo.meal ? "제공" : "미제공"}</S.InfoValue>
 				</S.InfoRow>
 				<S.InfoRow>
 					<S.InfoLabel>가까운 역</S.InfoLabel>

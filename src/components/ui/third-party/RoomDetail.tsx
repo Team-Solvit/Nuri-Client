@@ -5,64 +5,64 @@ import { fontSizes, colors } from '@/styles/theme';
 import Square from '../button/square';
 
 interface Room {
-  number: string;
-  names: string;
+	number: string;
+	names: string;
 }
 
 interface RoomDetailProps {
-  id: number;
-  room: Room | null;
-  title: string;
-  address: string;
-  close: () => void;
+	id: number;
+	room: Room | null;
+	title: string;
+	address: string;
+	close: () => void;
 }
 
 const RoomDetailData = {
-  host: {
-    name: "김경숙",
-    phone: "010-1234-4567",
-  },
-  members: [
-    { name: "오주현", phone: "010-1234-4567", contractPeriod: "2025.01.05 ~ 2025.05.05" },
-    { name: "윤도훈", phone: "010-8765-4321", contractPeriod: "2024.12.21 ~ 2025.05.21" },
-    { name: "박동현", phone: "010-4949-4321", contractPeriod: "2025.01.21 ~ 2025.05.21" },
-    { name: "박동현", phone: "010-4949-4321", contractPeriod: "2025.01.21 ~ 2025.05.21" },
-    { name: "박동현", phone: "010-4949-4321", contractPeriod: "2025.01.21 ~ 2025.05.21" },
-    { name: "박동현", phone: "010-4949-4321", contractPeriod: "2025.01.21 ~ 2025.05.21" },
-  ]
+	host: {
+		name: "김경숙",
+		phone: "010-1234-4567",
+	},
+	members: [
+		{ name: "오주현", phone: "010-1234-4567", contractPeriod: "2025.01.05 ~ 2025.05.05" },
+		{ name: "윤도훈", phone: "010-8765-4321", contractPeriod: "2024.12.21 ~ 2025.05.21" },
+		{ name: "박동현", phone: "010-4949-4321", contractPeriod: "2025.01.21 ~ 2025.05.21" },
+		{ name: "박동현", phone: "010-4949-4321", contractPeriod: "2025.01.21 ~ 2025.05.21" },
+		{ name: "박동현", phone: "010-4949-4321", contractPeriod: "2025.01.21 ~ 2025.05.21" },
+		{ name: "박동현", phone: "010-4949-4321", contractPeriod: "2025.01.21 ~ 2025.05.21" },
+	]
 }
 
 export default function RoomDetail({ id, room, title, address, close }: RoomDetailProps) {
-  if (!room) return null;
-
-  return (
-    <Wrapper>
-      <Header>
-        <Title>{title} ({room.number})</Title>
-        <Address>{address}</Address>
-      </Header>
-
-      <Host>
-        <Label>호스트</Label>
-        <HostName>{RoomDetailData.host.name}</HostName>
-        <PhoneNumber>{RoomDetailData.host.phone}</PhoneNumber>
-      </Host>
-
-      <Members>
-        <Label>유학생</Label>
-        <MemberGrid>
-          {RoomDetailData.members.map((member, index) => (
-            <MemberItem key={index}>
-              <MemberName>{member.name}</MemberName>
-              <PhoneNumber>{member.phone}</PhoneNumber>
-              <ContractPeriod>계약 기간 : {member.contractPeriod}</ContractPeriod>
-            </MemberItem>
-          ))}
-        </MemberGrid>
-      </Members>
-      <Square text='완료' onClick={() => { close() }} status={true} width='fix-content' />
-    </Wrapper>
-  );
+	if (!room) return null;
+	
+	return (
+		<Wrapper>
+			<Header>
+				<Title>{title} ({room.number})</Title>
+				<Address>{address}</Address>
+			</Header>
+			
+			<Host>
+				<Label>호스트</Label>
+				<HostName>{RoomDetailData.host.name}</HostName>
+				<PhoneNumber>{RoomDetailData.host.phone}</PhoneNumber>
+			</Host>
+			
+			<Members>
+				<Label>유학생</Label>
+				<MemberGrid>
+					{RoomDetailData.members.map((member, index) => (
+						<MemberItem key={index}>
+							<MemberName>{member.name}</MemberName>
+							<PhoneNumber>{member.phone}</PhoneNumber>
+							<ContractPeriod>계약 기간 : {member.contractPeriod}</ContractPeriod>
+						</MemberItem>
+					))}
+				</MemberGrid>
+			</Members>
+			<Square text='완료' onClick={() => { close() }} status={true} width='fix-content' />
+		</Wrapper>
+	);
 }
 
 const Wrapper = styled.div``;

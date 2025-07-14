@@ -6,7 +6,6 @@ import PostItem from '@/components/ui/postItem';
 import { useRouter } from 'next/navigation'
 import Square from '@/components/ui/button/square';
 import { useState } from 'react';
-import Post from '@/components/ui/post/indext';
 
 export default function ProfilePage() {
     const router = useRouter()
@@ -188,13 +187,13 @@ export default function ProfilePage() {
                         ))}
                     </S.List1>
                 )}
-                {selected === 2 && (
-                    <S.List2>
-                        {postList.map(post => (
-                            <Post key={post.id} post={post} />
-                        ))}
-                    </S.List2>
-                )}
+                {/* {selected === 2 && (
+                    // <S.List2>
+                    //     {postList.map(post => (
+                    //         <Post key={post.id} post={post} />
+                    //     ))}
+                    // </S.List2>
+                )} */}
             </S.PostList>
 
         </S.ProfileWrapper>

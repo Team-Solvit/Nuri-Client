@@ -1,7 +1,8 @@
-import * as S from './style'
+import * as S from '@/styles/confirm'
 import Square from "@/components/ui/button/square";
 import {useModalStore} from "@/store/modal";
 import {useRouter, useSearchParams} from "next/navigation";
+import Modal from "@/components/layout/modal";
 
 export default function LeaveModal() {
 	const {close} = useModalStore();
@@ -13,17 +14,19 @@ export default function LeaveModal() {
 		close();
 		router.push('/myHouse', {scroll: false});
 	}
-	return (
-		<S.Container>
-			<S.Title>계약 <span>종료</span></S.Title>
-			<S.Text>{name}님이 계 {number} 계약을 종료할까요?</S.Text>
-			<S.ButtonContainer>
-				<S.CancelBtn onClick={modalClose} $width={"100%"}>
-					<S.Name>취소</S.Name>
-				</S.CancelBtn>
-				<Square text={"계약 종료"} onClick={() => {
-				}} status={true} width={"100%"}/>
-			</S.ButtonContainer>
-		</S.Container>
+	return name && number && (
+		<Modal>
+			<S.Container>
+				<S.Title>계약 <span>종료</span></S.Title>
+				<S.Text>{name}님이 계 {number} 계약을 종료할까요?</S.Text>
+				<S.ButtonContainer>
+					<S.CancelBtn onClick={modalClose} $width={"100%"}>
+						<S.Name>취소</S.Name>
+					</S.CancelBtn>
+					<Square text={"계약 종료"} onClick={() => {
+					}} status={true} width={"100%"}/>
+				</S.ButtonContainer>
+			</S.Container>
+		</Modal>
 	)
 }

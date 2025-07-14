@@ -57,16 +57,22 @@ const rooms = [
 export default function BoardingThirdPartyPage() {
   const router = useRouter();
   const handleSquareClick = () => {
-    router.push("/boarding/third-party/home");
+    router.push("/boarding/home");
   };
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
       <Map markers={markers} label={(m) => rooms[m.id - 1].title} renderPopup={(marker: typeof markers[0]) => (
-        <Popup id={marker.id} title={rooms[marker.id - 1].title} address={rooms[marker.id - 1].address} rooms={rooms[marker.id - 1].rooms ?? []} />
+	      <Popup id={marker.id} title={rooms[marker.id - 1].title} address={rooms[marker.id - 1].address} rooms={rooms[marker.id - 1].rooms ?? []} />
       )}>
       </Map>
-      <div style={{ position: "absolute", top: 16, right: 16 }}>
+      <div
+        style={{
+          position: "absolute",
+          top: 16,
+          right: 16,
+        }}
+      >
         <Square text="하숙관리" onClick={handleSquareClick} status={true} width="max-content" />
       </div>
     </div>

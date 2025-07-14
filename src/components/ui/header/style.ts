@@ -30,9 +30,9 @@ export const MenuItem = styled.div<{ active?: boolean }>`
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  color: ${({ active }) => (active ? "#FF4C61" : "")};
-  background: ${({ active }) => (active ? "#FF4C611A" : "transparent")};
-  font-weight: ${({ active }) => (active ? "bold" : "normal")};
+  color: ${({active}) => (active ? "#FF4C61" : "")};
+  background: ${({active}) => (active ? "#FF4C611A" : "transparent")};
+  font-weight: ${({active}) => (active ? 600 : "normal")};
 
   padding: 0.7rem 1rem;
   border-radius: 0.75rem;

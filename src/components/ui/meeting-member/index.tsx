@@ -6,7 +6,7 @@ import Square from "@/components/ui/button/square";
 import React from "react";
 import {useModalStore} from "@/store/modal";
 
-export const MeetingMember = () => {
+export const MeetingMember = ({isMember}: { isMember: boolean }) => {
 	const fakeData = [
 		{id: 1, name: "test1", "게시물": 0, "팔로워": 0, "팔로우": 0},
 		{id: 2, name: "test2", "게시물": 0, "팔로워": 0, "팔로우": 0},
@@ -32,10 +32,11 @@ export const MeetingMember = () => {
 					<S.NameBox>
 						<S.Name>{member.name}</S.Name>
 						<S.Count>게시물 {member["게시물"]} 팔로워 {member["팔로워"]} 팔로우 {member["팔로우"]}</S.Count>
-						<S.Leave onClick={(e) => leaveCheck(e)}>
-							<Square text={"탈퇴"} onClick={() => {
-							}} status={true} width={"max-content"}/>
-						</S.Leave>
+						{isMember &&
+              <S.Leave onClick={(e) => leaveCheck(e)}>
+                <Square text={"탈퇴"} onClick={() => {
+								}} status={true} width={"max-content"}/>
+              </S.Leave>}
 					</S.NameBox>
 				</S.Member>
 			))}

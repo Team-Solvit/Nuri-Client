@@ -10,18 +10,16 @@ import {useRouter} from "next/navigation";
 
 interface MeetingsSidebarProps {
 	rooms: string;
+	meetings: {
+		id: number;
+		title: string;
+		content: string;
+		personnel: number;
+		maxPersonnel: number;
+	}[]
 }
 
-export default function MeetingsSidebar({rooms}: MeetingsSidebarProps) {
-	const fakeData = [
-		{id: 1, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3},
-		{id: 2, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3},
-		{id: 3, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3},
-		{id: 4, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3},
-		{id: 5, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3},
-		{id: 6, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3},
-	]
-	
+export default function MeetingsSidebar({rooms, meetings}: MeetingsSidebarProps) {
 	const {open} = useModalStore();
 	const router = useRouter();
 	const openModal = (id: number) => {
@@ -36,7 +34,7 @@ export default function MeetingsSidebar({rooms}: MeetingsSidebarProps) {
 				<p>부산광역시 {rooms}</p>
 			</S.Head>
 			<S.Content>
-				{fakeData.map(meeting => (
+				{meetings.map(meeting => (
 					<S.Meeting key={meeting.id} onClick={() => openModal(meeting.id)}>
 						<S.ImgBox>
 							<Image src={Meeting} alt="meeting" fill/>

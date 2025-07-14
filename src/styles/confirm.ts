@@ -51,3 +51,20 @@ export const Name = styled.span`
   font-size: ${fontSizes.Body};
   font-weight: 600;
 `;
+export const Black = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(116, 116, 116, 0.5);
+  z-index: 10000;
+`
+export const Content = styled.div`
+  background-color: white;
+  position: relative;
+  border-radius: ${radius.md};
+`

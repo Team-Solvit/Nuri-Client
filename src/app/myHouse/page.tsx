@@ -3,7 +3,6 @@
 import MyHouseScroll from "@/containers/myHouse/houseScroll/ui";
 import Navigate from "@/components/ui/navigate/ui";
 import styled from "@emotion/styled";
-import Modal from "@/components/layout/modal";
 import LeaveModal from "@/containers/myHouse/leave-modal/ui";
 
 export default function MyHouse() {
@@ -11,9 +10,7 @@ export default function MyHouse() {
 		<HouseContainer>
 			<MyHouseScroll/>
 			<Navigate/>
-			<Modal>
-				<LeaveModal/>
-			</Modal>
+			<LeaveModal/>
 		</HouseContainer>
 	)
 }

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import {colors, fontSizes, radius} from '@/styles/theme';
+import {colors, fontSizes, radius, zIndex} from '@/styles/theme';
 
 export const Container = styled.div`
   background: ${colors.background};
@@ -217,7 +217,7 @@ export const FixedFooter = styled.div`
   bottom: -3rem;
   width: 100%;
   background: #fff;
-  z-index: 100;
+  z-index: ${zIndex.overlay};
   padding: 1rem 0;
   display: grid;
   gap: 1rem;
