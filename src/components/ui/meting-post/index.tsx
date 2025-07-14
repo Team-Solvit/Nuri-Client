@@ -1,5 +1,5 @@
 import * as S from "./style"
-import Post from "@/components/ui/post/indext";
+import Post from "@/components/ui/post";
 
 export default function MeetingPost() {
 	const fakeData = [

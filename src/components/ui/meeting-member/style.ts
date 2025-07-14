@@ -11,12 +11,13 @@ export const MeetingMemberContainer = styled.div`
   align-items: center;
 `
 
-export const Member = styled.div`
+export const Member = styled.button`
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1rem 2rem;
   border: 1px solid ${colors.line};
+  background-color: #fff;
   border-radius: ${radius.md};
   gap: 1rem;
   cursor: pointer;
@@ -32,6 +33,7 @@ export const ImgBox = styled.div`
 export const NameBox = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 0.5rem;
   width: 75%;
   position: relative;
@@ -43,7 +45,9 @@ export const Count = styled.p`
   font-size: ${fontSizes.Caption};
   color: ${colors.gray};
 `
-export const Leave = styled.div`
+export const Leave = styled.button`
+  all: unset;
+  box-sizing: border-box;
   position: absolute;
   right: 0;
   top: 0;

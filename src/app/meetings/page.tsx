@@ -1,10 +1,12 @@
 "use client";
 
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
-import Map from "@/components/ui/googleMap/Map";
+import GoogleMap from "@/components/ui/googleMap/Map";
 import MeetingsSidebar from "@/containers/meetings/sidebar/ui";
 import MeetingModal from "@/containers/meetings/MeetingModal/ui";
+import MeetingAccession from "@/containers/meetings/accession/ui";
+import {Accession} from "@/containers/meetings/accession/type";
 
 export default function Meetings() {
 	const navigate = useRouter();
@@ -34,13 +36,24 @@ export default function Meetings() {
 			title: "북구",
 		},
 	]
+	const fakeData = [
+		{id: 1, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3},
+		{id: 2, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3},
+		{id: 3, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3},
+		{id: 4, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3},
+		{id: 5, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3},
+		{id: 6, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3},
+	]
+	const [isAccession, setIsAccession] = useState(false);
+	const AccessionData: Accession = {id: 1, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3}
 	return (
 		<>
-			<Map markers={markers} label={(m) => rooms[m.id - 1].title} renderPopup={(marker: typeof markers[0]) => (
-				<MeetingsSidebar rooms={rooms[marker.id - 1].title}/>
+			<GoogleMap markers={markers} label={(m) => rooms[m.id - 1].title} renderPopup={(marker: typeof markers[0]) => (
+				<MeetingsSidebar rooms={rooms[marker.id - 1].title} meetings={fakeData}/>
 			)}>
-			</Map>
-			<MeetingModal/>
+			</GoogleMap>
+			<MeetingAccession accessions={AccessionData} isAccession={isAccession} setIsAccession={setIsAccession}/>
+			<MeetingModal {...{...fakeData, setIsAccessionAction: setIsAccession}} />
 		</>
 	)
 }

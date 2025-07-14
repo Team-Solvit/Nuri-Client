@@ -12,33 +12,52 @@ export default function Navigate() {
 	const navigateClick = (path: string) => {
 		router.push(path);
 	}
+	const NAVIGATE_ITEMS = [
+		{
+			label: "알림",
+			path: "/alert",
+			icon: Alert,
+			count: 1,
+			active: pathname === "/alert" ? "page" : undefined,
+			aria_label: "알림 페이지로 이동"
+		},
+		{
+			label: "메세지",
+			path: "/message",
+			icon: Message,
+			count: 1,
+			active: pathname === "/message" ? "page" : undefined,
+			aria_label: "메세지 페이지로 이동"
+		},
+		{
+			label: "하숙집",
+			path: "/myHouse",
+			icon: Home,
+			count: 1,
+			active: pathname === "/myHouse" ? "page" : undefined,
+			aria_label: "하숙집 페이지로 이동"
+		},
+	] as const
 	return (
 		<S.NavigateContainer>
-			<S.NavigateBtn
-				isActive={pathname === "/alert"}
-				onClick={() => navigateClick("/alert")}>
-				<S.IconBox>
-					<Image src={Alert} alt="alert" width={32} height={32}/>
-					{/*<S.Count>1</S.Count>*/}
-				</S.IconBox>
-				<p>알림</p>
-			</S.NavigateBtn>
-			<S.NavigateBtn
-				isActive={pathname === "/message"}
-				onClick={() => navigateClick("/message")}>
-				<S.IconBox>
-					<Image src={Message} alt="message" width={32} height={32}/>
-				</S.IconBox>
-				<p>메세지</p>
-			</S.NavigateBtn>
-			<S.NavigateBtn
-				isActive={pathname === "/myHouse"}
-				onClick={() => navigateClick("/myHouse")}>
-				<S.IconBox>
-					<Image src={Home} alt="home" width={32} height={32}/>
-				</S.IconBox>
-				<p>하숙집</p>
-			</S.NavigateBtn>
+			{NAVIGATE_ITEMS.map(item => {
+				return (
+					<S.NavigateBtn
+						key={item.path}
+						isActive={pathname === item.path}
+						onClick={() => navigateClick(item.path)}
+						role="button"
+						aria-label={item.aria_label}
+						aria-current={item.active}
+					>
+						<S.IconBox>
+							<Image src={item.icon} alt={item.label} width={32} height={32}/>
+							{/*<S.Count>1</S.Count>*/}
+						</S.IconBox>
+						<p>{item.label}</p>
+					</S.NavigateBtn>
+				)
+			})}
 		</S.NavigateContainer>
 	)
 }

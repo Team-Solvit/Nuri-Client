@@ -10,8 +10,9 @@ import MeetingPost from "@/components/ui/meting-post";
 import MeetingCalender from "@/components/ui/meeting-calender";
 import {MeetingMember} from "@/components/ui/meeting-member";
 import {useRouter} from "next/navigation";
+import {MeetingProps} from "./type";
 
-export default function Meeting() {
+export default function Meeting(meeting: MeetingProps) {
 	const [selected, setSelected] = useState(1);
 	const router = useRouter();
 	const handleBack = () => {
@@ -33,13 +34,13 @@ export default function Meeting() {
 							<Image src={MeetingProfile} alt="meeting" fill/>
 						</S.ImgBox>
 						<S.Name>
-							<h3>Meeting title</h3>
-							<p>부산광역시 사하구</p>
+							<h3>{meeting.title}</h3>
+							<p>{meeting.location}</p>
 						</S.Name>
 					</S.Info>
 				</S.TitleBox>
 				<S.Description>
-					설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명
+					{meeting.description || "모임 설명이 없습니다."}
 				</S.Description>
 			</S.Content>
 			<S.Nav isSelected={selected}>
@@ -59,7 +60,7 @@ export default function Meeting() {
 				}}/>
       </S.BtnBox>}
 			{selected === 2 && <MeetingCalender/>}
-			{selected === 3 && <MeetingMember/>}
+			{selected === 3 && <MeetingMember isMember={true}/>}
 		</S.ModalContainer>
 	)
 }

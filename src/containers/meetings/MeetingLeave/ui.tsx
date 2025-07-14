@@ -1,4 +1,4 @@
-import * as S from "./style"
+import * as S from "@/styles/confirm"
 import Modal from "@/components/layout/modal";
 import Square from "@/components/ui/button/square";
 import {useModalStore} from "@/store/modal";
@@ -7,7 +7,7 @@ export default function MeetingLeave() {
 	const {close} = useModalStore();
 	return (
 		<Modal>
-			<S.MeetingLeaveContainer>
+			<S.Container>
 				<S.Title>모임 <span>탈퇴</span></S.Title>
 				<S.Text>모임에서 탈퇴하시겠습니까?</S.Text>
 				<S.ButtonContainer>
@@ -17,7 +17,7 @@ export default function MeetingLeave() {
 					<Square text={"탈퇴"} onClick={() => {
 					}} status={true} width={"100%"}/>
 				</S.ButtonContainer>
-			</S.MeetingLeaveContainer>
+			</S.Container>
 		</Modal>
 	)
 }

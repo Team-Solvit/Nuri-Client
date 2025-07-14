@@ -4,7 +4,7 @@ import {colors, fontSizes, radius} from "@/styles/theme";
 export const ModalContainer = styled.div`
   width: 60vw;
   height: 80vh;
-  border-radius: ${radius.lg};
+  border-radius: ${radius.md};
   position: relative;
   display: flex;
   flex-direction: column;
@@ -108,14 +108,14 @@ export const Nav = styled.div<{ isSelected: number }>`
     left: 0;
   }
 
+  & > div:nth-of-type(3) {
+    right: 0;
+  }
+
   & > div:nth-of-type(${(props) => props.isSelected}) {
     border-top: 2px solid ${colors.primary};
     transition: all 0.1s ease-in-out;
     color: ${colors.primary};
-  }
-
-  & > div:nth-of-type(3) {
-    right: 0;
   }
 `
 export const PBox = styled.div`

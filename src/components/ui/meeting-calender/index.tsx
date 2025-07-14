@@ -4,6 +4,7 @@ import * as S from "./style";
 import Image from "next/image";
 import Arrow from "@/assets/meeting/arrow.svg";
 import ArrowBottom from "@/assets/meeting/arrow-bottom.svg";
+import {meetings} from "./data"
 
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -20,14 +21,11 @@ export default function MeetingCalender() {
 	// 팝업 외부 클릭 감지
 	useEffect(() => {
 		const handleClickOutside = () => {
-			// 팝업 열린 상태일 때만 닫기
-			if (selectedIndex !== null) {
-				setSelectedIndex(null);
-			}
+			setSelectedIndex(null);
 		};
 		document.addEventListener("mousedown", handleClickOutside);
 		return () => document.removeEventListener("mousedown", handleClickOutside);
-	}, [selectedIndex]);
+	}, []);
 	
 	const handleClick = (i: number, e: React.MouseEvent) => {
 		e.stopPropagation(); // 외부 클릭 방지
@@ -74,24 +72,24 @@ export default function MeetingCalender() {
 				{day}
 				{selectedIndex === currentIndex && (
 					<S.Popup onClick={(e) => e.stopPropagation()}>
-						<h3>모임이름</h3>
+						<h3>{meetings.title}</h3>
 						<S.PopupContentBox>
 							<p>날짜</p>
-							<p>2025-05-15 (목)</p>
+							<p>{meetings.date}</p>
 						</S.PopupContentBox>
 						<S.PopupContentBox>
 							<p>비용</p>
-							<p>₩ 3,000원</p>
+							<p>₩ {meetings.cost}원</p>
 						</S.PopupContentBox>
 						<S.PopupContentBox>
 							<p>시작시간</p>
-							<p>10:00</p>
+							<p>{meetings.startTime}</p>
 						</S.PopupContentBox>
 						<S.PopupContentBox>
 							<p>종료시간</p>
-							<p>16:00</p>
+							<p>{meetings.endTime}</p>
 						</S.PopupContentBox>
-						<p>내용내용내용내용내용내용내용내용내용내용내용내용내용내용내용내용</p>
+						<p>{meetings.description}</p>
 						<S.ImgBox>
 							<Image src={ArrowBottom} alt="arrow" fill/>
 						</S.ImgBox>

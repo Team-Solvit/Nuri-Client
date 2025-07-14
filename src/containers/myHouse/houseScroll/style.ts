@@ -32,7 +32,9 @@ export const Title = styled.h1`
   text-align: center;
 `;
 
-export const Setting = styled.span`
+export const Setting = styled.button`
+  all: unset;
+  box-sizing: border-box;
   font-weight: 500;
   font-size: ${fontSizes.Small};
   color: ${colors.gray};
@@ -64,7 +66,9 @@ export const InfoValue = styled.span`
   color: ${colors.text};
 `;
 
-export const More = styled.span`
+export const More = styled.button`
+  all: unset;
+  box-sizing: border-box;
   display: inline-block;
   font-weight: 500;
   width: 100%;
