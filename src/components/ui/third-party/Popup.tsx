@@ -13,17 +13,18 @@ interface Room {
 }
 
 interface PopupProps {
+  id: number
   title: string
   address: string
   rooms: Room[]
 }
 
-export default function Popup({ title, address, rooms }: PopupProps) {
+export default function Popup({ id, title, address, rooms }: PopupProps) {
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(address)
   }, [address])
 
-  const { isOpen, open } = useModalStore();
+  const { isOpen, open, close } = useModalStore();
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
 
   const handleClickRoom = (room: Room) => {
@@ -49,7 +50,7 @@ export default function Popup({ title, address, rooms }: PopupProps) {
       </RoomList>
       {isOpen && (
         <Modal>
-          <RoomDetail room={selectedRoom} />
+          <RoomDetail id={id} room={selectedRoom} title={title} address={address} close={close} />
         </Modal>
       )}
     </PopupContainer>
