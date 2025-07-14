@@ -74,9 +74,22 @@ export const List1 = styled.div`
 
 export const PostList = styled.div`
   display: flex;
+  flex-direction: column;  // ✅ 이렇게 바꾸기
   min-height: 53.5vh;
+  min-width: 73vw;
   overflow-y: auto;
+  width: 100%; // ✅ 이것도 명시적으로 줘
 `
+
+export const List2 = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); // ✅ 더 유연하게
+  gap: 8px;
+  width: 100%;
+  margin-top: 2rem;
+`
+
+
 
 export const PostItem = styled.div`
   display: flex;
@@ -90,6 +103,8 @@ export const PostItem = styled.div`
   transition: background-color 0.3s ease;
   flex-shrink: 0;
 `
+
+
 
 export const Stats = styled.div`
   display: flex;
