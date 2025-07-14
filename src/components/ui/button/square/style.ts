@@ -26,5 +26,5 @@ export const Container = styled.div<{ $status?: boolean; $width?: string }>`
 
 export const Name = styled.span`
   font-size: ${fontSizes.Body};
-  font-weight: 600;
+  font-weight: 500;
 `;

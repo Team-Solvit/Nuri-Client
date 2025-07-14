@@ -1,12 +1,16 @@
 import styled from "@emotion/styled";
+import {fontSizes, zIndex} from "@/styles/theme";
 
 export const HeaderContainer = styled.header`
   height: 100vh;
+  position: relative;
+  background-color: white;
   padding: 2rem 1.3rem 3.5rem 1.3rem;
   min-width: 17%;
   color: #6C757D;
   display: flex;
   flex-direction: column;
+  z-index: ${zIndex.modal};
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 `;
 
@@ -26,13 +30,13 @@ export const MenuItem = styled.div<{ active?: boolean }>`
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  color: ${({ active }) => (active ? "#FF4C61" : "")};
-  background: ${({ active }) => (active ? "#FF4C611A" : "transparent")};
-  font-weight: ${({ active }) => (active ? "bold" : "normal")};
+  color: ${({active}) => (active ? "#FF4C61" : "")};
+  background: ${({active}) => (active ? "#FF4C611A" : "transparent")};
+  font-weight: ${({active}) => (active ? 600 : "normal")};
 
   padding: 0.7rem 1rem;
   border-radius: 0.75rem;
-  font-size: 1.125rem;
+  font-size: ${fontSizes.Body};
   cursor: pointer;
   transition: background 0.3s, color 0.3s;
 
