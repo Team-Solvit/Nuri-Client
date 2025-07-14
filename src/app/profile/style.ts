@@ -9,7 +9,7 @@ export const ProfileWrapper = styled.div`
   border-radius: ${radius.lg};
   width: 100%;
   height: 100%;
-  padding: 5rem 13rem;
+  padding: 4rem 12rem;
 `
 
 export const ProfileImage = styled.div`
@@ -74,16 +74,16 @@ export const List1 = styled.div`
 
 export const PostList = styled.div`
   display: flex;
-  flex-direction: column;  // ✅ 이렇게 바꾸기
+  flex-direction: column;
   min-height: 53.5vh;
   min-width: 73vw;
   overflow-y: auto;
-  width: 100%; // ✅ 이것도 명시적으로 줘
+  width: 100%;
 `
 
 export const List2 = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); // ✅ 더 유연하게
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 8px;
   width: 100%;
   margin-top: 2rem;
@@ -134,7 +134,6 @@ export const StatValue = styled.div`
 export const ButtonRow = styled.div`
   display: flex;
   gap: 3rem;
-  margin-top: 1rem;
 `
 
 export const Button = styled.div`
@@ -152,7 +151,7 @@ export const Side = styled.div<{ isSelected: number }>`
   color: ${colors.gray};
   border-top: 2px solid ${colors.line};
   font-weight: 500;
-  margin-top: 3.5rem;
+  margin-top: 4rem;
   position: relative;
 
   & > div:nth-of-type(1) {

@@ -5,7 +5,7 @@ import * as S from './style';
 import PostItem from '@/components/ui/postItem';
 import { useRouter } from 'next/navigation'
 import Square from '@/components/ui/button/square';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Post from '@/components/ui/post';
 
 export default function ProfilePage() {
@@ -78,29 +78,48 @@ export default function ProfilePage() {
         }
     ];
 
+    const [imageUrl, setImageUrl] = useState(profile.userProfile);
+    const inputRef = useRef<HTMLInputElement | null>(null);
+
     const handleClick = (id: number) => {
         router.push(`/post/${id}`)
     }
 
+    const imageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const imageUrl = URL.createObjectURL(file);
+            setImageUrl(imageUrl);
+        }
+    };
+
+    const fileInput = () => {
+        inputRef.current?.click();
+    };
+
+
     return (
         <S.ProfileWrapper>
             <S.Profile>
-                <S.ProfileImage>
+                <S.ProfileImage onClick={fileInput}>
                     <Image
-                        src={profile.userProfile}
+                        src={imageUrl}
                         alt="프로필"
                         fill
                         style={{ objectFit: 'cover', zIndex: 0 }}
                     />
                     <S.PlusIcon>
-                        <Image
-                            src="/icons/plus.svg"
-                            alt="추가 아이콘"
-                            width={65}
-                            height={57}
-                        />
+                        <Image src="/icons/plus.svg" alt="추가 아이콘" width={65} height={57} />
                     </S.PlusIcon>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={imageChange}
+                        ref={inputRef}
+                        hidden
+                    />
                 </S.ProfileImage>
+
                 <S.ProfileMain>
                     <S.ButtonRow>
                         <S.Nickname>{profile.userid}</S.Nickname>
