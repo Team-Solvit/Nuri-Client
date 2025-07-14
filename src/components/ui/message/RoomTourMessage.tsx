@@ -1,11 +1,11 @@
 import styled from "@emotion/styled";
-import { colors, fontSizes } from '@/styles/theme';
+import {colors, fontSizes} from '@/styles/theme';
 import React from "react";
 
 const RoomTourBubble = styled.div`
   background: #fff;
   border-radius: 1.1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   border: 1px solid ${colors.line};
   max-width: 320px;
   width: 100%;
@@ -75,31 +75,41 @@ const MsgTime = styled.div<{ isSent?: boolean }>`
 `;
 
 interface RoomTourMessageProps {
-  thumbnail: string;
-  name: string;
-  date: string;
-  time?: string;
-  isSent?: boolean;
-  onDetail?: () => void;
-  button?: React.ReactNode;
+	thumbnail: string;
+	name: string;
+	date: string;
+	tourTime?: string;
+	messageTime?: string;
+	isSent?: boolean;
+	onDetail?: () => void;
+	button?: React.ReactNode;
 }
 
-const RoomTourMessage: React.FC<RoomTourMessageProps> = ({ thumbnail, name, date, time, isSent, onDetail, button }) => (
-  <div style={{ position: 'relative', display: 'inline-block' }}>
-    <RoomTourBubble>
-      <RoomTourImage src={thumbnail} alt="roomtour-img" />
-      <RoomTourContent>
-        <RoomTourTitle>룸투어를 예약했어요</RoomTourTitle>
-        <RoomTourHouse>{name}</RoomTourHouse>
-        <RoomTourDate>날짜 : {date}</RoomTourDate>
-        <RoomTourTime>시간 : {time}</RoomTourTime>
-        <RoomTourButtonWrapper>
-          {button ? button : onDetail && <button onClick={onDetail}>자세히보기</button>}
-        </RoomTourButtonWrapper>
-      </RoomTourContent>
-    </RoomTourBubble>
-    {time && <MsgTime isSent={isSent}>{time}</MsgTime>}
-  </div>
+const RoomTourMessage: React.FC<RoomTourMessageProps> = ({
+	                                                         thumbnail,
+	                                                         name,
+	                                                         date,
+	                                                         tourTime,
+	                                                         messageTime,
+	                                                         isSent,
+	                                                         onDetail,
+	                                                         button
+                                                         }) => (
+	<div style={{position: 'relative', display: 'inline-block'}}>
+		<RoomTourBubble>
+			<RoomTourImage src={thumbnail} alt="roomtour-img"/>
+			<RoomTourContent>
+				<RoomTourTitle>룸투어를 예약했어요</RoomTourTitle>
+				<RoomTourHouse>{name}</RoomTourHouse>
+				<RoomTourDate>날짜 : {date}</RoomTourDate>
+				<RoomTourTime>시간 : {tourTime}</RoomTourTime>
+				<RoomTourButtonWrapper>
+					{button ? button : onDetail && <button onClick={onDetail}>자세히보기</button>}
+				</RoomTourButtonWrapper>
+			</RoomTourContent>
+		</RoomTourBubble>
+		{messageTime && <MsgTime isSent={isSent}>{messageTime}</MsgTime>}
+	</div>
 );
 
 export default RoomTourMessage; 

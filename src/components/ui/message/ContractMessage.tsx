@@ -1,11 +1,11 @@
 import styled from "@emotion/styled";
-import { colors, fontSizes } from '@/styles/theme';
+import {colors, fontSizes} from '@/styles/theme';
 import React from "react";
 
 const ContractBubble = styled.div`
   background: #fff;
   border-radius: 1.1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   border: 1px solid ${colors.line};
   max-width: 320px;
   width: 100%;
@@ -14,7 +14,12 @@ const ContractBubble = styled.div`
   flex-direction: column;
   align-items: center;
 `;
-
+const ContractThumbnail = styled.img`
+  width: 100%;
+  object-fit: cover;
+  border-radius: 1.1rem 1.1rem 0 0;
+  height: 180px;
+`;
 const ContractContent = styled.div`
   width: 100%;
   padding: 0 1.2rem;
@@ -24,7 +29,7 @@ const ContractContent = styled.div`
 `;
 
 const ContractTitle = styled.div`
-  font-size: 1.25rem;
+  font-size: ${fontSizes.H4};
   color: ${colors.text};
   font-weight: 400;
   margin: 1.2rem 0 0.2rem 0;
@@ -45,8 +50,8 @@ const ContractButtonWrapper = styled.div`
 `;
 
 const MsgTime = styled.div<{ isSent?: boolean }>`
-  font-size: 0.75rem;
-  color: #888;
+  font-size: ${fontSizes.Small};
+  color: ${colors.gray};
   font-weight: 300;
   margin-top: 2px;
   text-align: right;
@@ -54,30 +59,43 @@ const MsgTime = styled.div<{ isSent?: boolean }>`
   bottom: 0;
   ${({isSent}) => isSent ? "left: -4rem;" : "right: -4rem;"};
 `;
+const DetailButton = styled.button`
+  background-color: ${colors.primary};
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: ${fontSizes.Small};
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
 
 interface ContractMessageProps {
-  thumbnail: string;
-  name: string;
-  time?: string;
-  isSent?: boolean;
-  onDetail?: () => void;
-  button?: React.ReactNode;
+	thumbnail: string;
+	name: string;
+	time?: string;
+	isSent?: boolean;
+	onDetail?: () => void;
+	button?: React.ReactNode;
 }
 
-const ContractMessage: React.FC<ContractMessageProps> = ({ thumbnail, name, time, isSent, onDetail, button }) => (
-  <div style={{ position: 'relative', display: 'inline-block' }}>
-    <ContractBubble>
-      <img src={thumbnail} alt="contract-img" style={{ width: '100%', objectFit: 'cover', borderRadius: '1.1rem 1.1rem 0 0', height: 180 }} />
-      <ContractContent>
-        <ContractTitle>계약이 완료되었어요</ContractTitle>
-        <ContractHouse>{name}</ContractHouse>
-        <ContractButtonWrapper>
-          {button ? button : onDetail && <button onClick={onDetail}>자세히보기</button>}
-        </ContractButtonWrapper>
-      </ContractContent>
-    </ContractBubble>
-    {time && <MsgTime isSent={isSent}>{time}</MsgTime>}
-  </div>
+const ContractMessage: React.FC<ContractMessageProps> = ({thumbnail, name, time, isSent, onDetail, button}) => (
+	<div style={{position: 'relative', display: 'inline-block'}}>
+		<ContractBubble>
+			<ContractThumbnail src={thumbnail} alt="contract-img"/>
+			<ContractContent>
+				<ContractTitle>계약이 완료되었어요</ContractTitle>
+				<ContractHouse>{name}</ContractHouse>
+				<ContractButtonWrapper>
+					{button ? button : onDetail && <DetailButton onClick={onDetail}>자세히보기</DetailButton>}
+				</ContractButtonWrapper>
+			</ContractContent>
+		</ContractBubble>
+		{time && <MsgTime isSent={isSent}>{time}</MsgTime>}
+	</div>
 );
 
 export default ContractMessage; 

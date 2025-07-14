@@ -1,10 +1,10 @@
 import styled from "@emotion/styled";
-import { colors, fontSizes, radius, zIndex } from '@/styles/theme';
+import {colors, fontSizes, radius, zIndex} from '@/styles/theme';
 import React from "react";
 
 const ReplyBubbleWrapper = styled.div<{ type: 'sent' | 'received' }>`
   display: flex;
-  flex-direction:column;
+  flex-direction: column;
   align-items: center;
   min-width: max-content;
   max-width: 20rem;
@@ -14,7 +14,7 @@ const ReplyBubbleWrapper = styled.div<{ type: 'sent' | 'received' }>`
   position: absolute;
   top: -6.5rem;
   z-index: ${zIndex.base};
-  ${({type})=> type === "sent" ? "right:0.5rem;" : "left: 0.5rem;"};
+  ${({type}) => type === "sent" ? "right:0.5rem;" : "left: 0.5rem;"};
 `;
 
 const ReplyBox = styled.div`
@@ -48,14 +48,6 @@ const ReplyBubbleText = styled.div<{ type: 'sent' | 'received' }>`
   word-break: break-all;
 `;
 
-const ReplyBubbleIcon = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.25rem;
-  height: 1.25rem;
-`;
-
 const MsgTime = styled.div<{ isSent?: boolean }>`
   font-size: ${fontSizes.Caption};
   color: ${colors.gray};
@@ -68,28 +60,27 @@ const MsgTime = styled.div<{ isSent?: boolean }>`
 `;
 
 interface ReplyMessageProps {
-  type: 'sent' | 'received';
-  name: string;
-  text: string;
-  icon?: React.ReactNode;
-  time?: string;
-  isSent?: boolean;
+	type: 'sent' | 'received';
+	name: string;
+	text: string;
+	icon?: React.ReactNode;
+	time?: string;
 }
 
-const ReplyMessage: React.FC<ReplyMessageProps> = ({ type, name, text, icon, time, isSent }) => (
-  <div style={{ position: 'relative', display: 'inline-block' }}>
-    <ReplyBubbleWrapper type={type}>
-      <ReplyBox>
-        {type === 'sent' && icon}
-        <ReplyBubbleName>{name}님에게 답장</ReplyBubbleName>
-        {type === 'received' && icon}
-      </ReplyBox>
-      <ReplyBubble type={type}>
-        <ReplyBubbleText type={type}>{text}</ReplyBubbleText>
-      </ReplyBubble>
-    </ReplyBubbleWrapper>
-    {time && <MsgTime isSent={isSent}>{time}</MsgTime>}
-  </div>
+const ReplyMessage: React.FC<ReplyMessageProps> = ({type, name, text, icon, time}) => (
+	<div style={{position: 'relative', display: 'inline-block'}}>
+		<ReplyBubbleWrapper type={type}>
+			<ReplyBox>
+				{type === 'sent' && icon}
+				<ReplyBubbleName>{name}님에게 답장</ReplyBubbleName>
+				{type === 'received' && icon}
+			</ReplyBox>
+			<ReplyBubble type={type}>
+				<ReplyBubbleText type={type}>{text}</ReplyBubbleText>
+			</ReplyBubble>
+		</ReplyBubbleWrapper>
+		{time && <MsgTime isSent={type === 'sent'}>{time}</MsgTime>}
+	</div>
 );
 
 export default ReplyMessage; 

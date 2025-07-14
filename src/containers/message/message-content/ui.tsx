@@ -47,6 +47,7 @@ export default function MessageContent() {
 		unSetMaster
 	} = useMessageModalStore();
 	
+	
 	const openContract = (type: type, messageType: messageType, isMaster: boolean) => {
 		open();
 		messageModalOpen();
@@ -78,14 +79,14 @@ export default function MessageContent() {
 					const showDate = msg.date && msg.date !== lastDate;
 					lastDate = msg.date || lastDate;
 					const isLastOfTime =
-					  idx === fakeData.length - 1 ||
-					  fakeData[idx + 1].time !== msg.time ||
-					  fakeData[idx + 1].type !== msg.type;
-					  
+						idx === fakeData.length - 1 ||
+						fakeData[idx + 1].time !== msg.time ||
+						fakeData[idx + 1].type !== msg.type;
+					
 					const isFirstOfTime =
-					  idx === 0 ||
-					  fakeData[idx - 1].time !== msg.time ||
-					  fakeData[idx - 1].type !== msg.type;
+						idx === 0 ||
+						fakeData[idx - 1].time !== msg.time ||
+						fakeData[idx - 1].type !== msg.type;
 					const renderMessageBody = () => {
 						if (msg.text === "" && msg.contract) {
 							return (
@@ -111,7 +112,8 @@ export default function MessageContent() {
 									thumbnail={msg.roomTour.thumbnail || '/assets/meeting/profile.png'}
 									name={msg.roomTour.name || ""}
 									date={msg.roomTour.date || ""}
-									time={isLastOfTime ? msg.time : undefined}
+									tourTime={msg.roomTour.time || ""}
+									messageTime={isLastOfTime ? msg.time : undefined}
 									isSent={msg.type === 'sent'}
 									button={
 										<Square
@@ -125,7 +127,8 @@ export default function MessageContent() {
 							);
 						}
 						if (msg.text === "" && msg.img) {
-							return <ImageMessage src={msg.img} alt="img-msg" time={isLastOfTime ? msg.time : undefined} isSent={msg.type === 'sent'} />;
+							return <ImageMessage src={msg.img} alt="img-msg" time={isLastOfTime ? msg.time : undefined}
+							                     isSent={msg.type === 'sent'}/>;
 						}
 						return (
 							<>
@@ -136,7 +139,6 @@ export default function MessageContent() {
 										text={msg.replyTo.text || ""}
 										icon={<Image src={Reply} width={20} height={20} alt="reply"/>}
 										time={isLastOfTime ? msg.time : undefined}
-										isSent={msg.type === 'sent'}
 									/>
 								)}
 								<BasicMessage text={msg.text} time={isLastOfTime ? msg.time : undefined} isSent={msg.type === 'sent'}/>
