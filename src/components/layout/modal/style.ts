@@ -15,7 +15,6 @@ export const Black = styled.div`
 `
 export const Content = styled.div`
   background-color: white;
-  padding: 2rem 3rem;
   position: relative;
   border-radius: ${radius.md};
 `
