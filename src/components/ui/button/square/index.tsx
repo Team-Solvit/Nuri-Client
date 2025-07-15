@@ -11,7 +11,7 @@ import * as S from './style';
 
 interface SquareProps {
     text: string
-    onClick: () => void
+    onClick?: () => void 
     status: boolean
     width: string
 }
