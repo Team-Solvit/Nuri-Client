@@ -32,7 +32,7 @@ export default function PostDetail({ id }: PostDetailProps) {
   const [showRoomTour, setShowRoomTour] = useState(false);
   const [commentText, setCommentText] = useState('');
 
-  if (!post) return null;
+  if (!post) return <div>게시물을 불러올수 없습니다.</div>
 
   const comments = mockComments;
   const images = post.thumbnail || [];
@@ -102,7 +102,7 @@ export default function PostDetail({ id }: PostDetailProps) {
                   width="max-content"
                 />
                 {showRoomTour && (
-                  <RoomTourModal onClose={() => setShowRoomTour(false)} />
+                  <RoomTourModal />
                 )}
               </S.RoomTourWrapper>
               <Square text="계약" onClick={() => { }} status={true} width="max-content" />

@@ -453,9 +453,7 @@ export const MenuItem = styled.button<{ red?: boolean }>`
   text-align: left;
   white-space: nowrap;
 
-  ${({ red }) => red && `
-    color: red !important;
-  `}
+  color: ${({ red }) => red ? colors.error : colors.text};
   font-size: 0.875rem;
   color: ${colors.text};
   cursor: pointer;

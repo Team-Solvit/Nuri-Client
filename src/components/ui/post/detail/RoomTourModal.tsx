@@ -12,8 +12,9 @@ import {
   startOfWeek,
   endOfWeek
 } from 'date-fns';
+import Alert from '@/components/ui/alert';
 
-export default function RoomTourModal({ onClose }: { onClose: () => void }) {
+export default function RoomTourModal() {
   const now = new Date();
   const rawHour = now.getHours();
   const initialPeriod = rawHour >= 12 ? 'PM' : 'AM';
@@ -36,8 +37,28 @@ export default function RoomTourModal({ onClose }: { onClose: () => void }) {
   const formatTime = (h: number, m: number) =>
     `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
 
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const handleDateClick = (day: Date, isCurrentMonth: boolean) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (!isCurrentMonth || day < today) {
+      setErrorMsg("과거 날짜는 선택할 수 없습니다.");
+      return;
+    }
+    setSelectedDate(day);
+    setErrorMsg(null);
+  };
+
   return (
     <Popover>
+      {errorMsg && (
+        <Alert
+          description={errorMsg}
+          success={false}
+
+        />
+      )}
       <Title>룸투어 날짜를 선택해주세요</Title>
 
       <Calendar>
@@ -78,7 +99,7 @@ export default function RoomTourModal({ onClose }: { onClose: () => void }) {
                 isToday={isToday}
                 isWeekend={isWeekend}
                 isSaturday={isSaturday}
-                onClick={() => isCurrentMonth && setSelectedDate(day)}
+                onClick={() => handleDateClick(day, isCurrentMonth)}
               >
                 {format(day, 'd')}
               </DateCell>
