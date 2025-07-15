@@ -49,7 +49,6 @@ export default function ProfilePage() {
                 <SettingNav
                     onLogoutClick={() => setShowLogoutModal(true)}
                     onLeaveClick={() => setShowLeaveModal(true)}
-                    onFollowerClick={() => setShowFollowerModal(true)}
                 />
 
             </S.Sidebar>
@@ -71,12 +70,12 @@ export default function ProfilePage() {
                             <S.NameInput
                                 placeholder="이름"
                                 value={userid}
-                                onChange={(e) => setUserid(e.target.value)}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUserid(e.target.value)}
                             />
                             <S.NickInput
                                 placeholder="닉네임"
                                 value={nickname}
-                                onChange={(e) => setNickname(e.target.value)}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNickname(e.target.value)}
                             />
                         </S.Button>
                         <S.Change>
@@ -99,7 +98,7 @@ export default function ProfilePage() {
                     <S.BioInput
                         placeholder="소개 글을 작성해주세요."
                         value={introduction}
-                        onChange={(e) => setIntroduction(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setIntroduction(e.target.value)}
                     />
                 </S.BioSection>
             </S.MainContent>

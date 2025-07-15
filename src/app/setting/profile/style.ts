@@ -92,7 +92,7 @@ export const NickInput = styled.input`
   width: 220px;
 `
 
-export const ChangePhotoBtn = styled.button`
+export const ChangePhotoBtn = styled.label`
   background: ${colors.primary};
   color: #fff;
   border: none;
