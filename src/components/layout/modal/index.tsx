@@ -1,5 +1,6 @@
 'use client';
 import * as S from "./style";
+
 import {useModalStore} from "@/store/modal";
 import {createPortal} from "react-dom";
 import React, {useEffect, useState} from "react";
