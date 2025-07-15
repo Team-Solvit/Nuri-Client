@@ -127,16 +127,17 @@ export default function ProfilePage() {
                             <Square
                                 text="프로필 편집"
                                 status={true}
-                                onClick={() => { }}
-                                width='120px'
+                                onClick={() => router.push('/setting/profile')}
+                                width="120px"
                             />
                             <Square
                                 text="설정"
                                 status={true}
-                                onClick={() => { }}
-                                width='120px'
+                                onClick={() => router.push('/setting')} 
+                                width="120px"
                             />
                         </S.Button>
+
                     </S.ButtonRow>
                     <S.Stats>
                         <S.Stat>
