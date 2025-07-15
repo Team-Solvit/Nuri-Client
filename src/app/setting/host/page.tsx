@@ -3,11 +3,19 @@
 import React from "react";
 import * as S from "./style";
 import SettingNav from "@/components/ui/settingNav";
+import Logout from "@/components/ui/logout";
+import { useState } from "react";
 
 export default function Host() {
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const handleLogout = () => {
+    console.log('로그아웃 처리 완료')
+    setShowLogoutModal(false)
+  }
   return (
     <S.Con>
-      <SettingNav />
+      <SettingNav onLogoutClick={() => setShowLogoutModal(true)} />
       <S.Container>
         <S.Title>호스트 설정</S.Title>
 
@@ -42,11 +50,11 @@ export default function Host() {
               남
             </S.RadioLabel>
             <S.RadioLabel>
-              <S.Radio name="gender" type="radio"/>
+              <S.Radio name="gender" type="radio" />
               여
             </S.RadioLabel>
             <S.RadioLabel>
-              <S.Radio name="gender" type="radio"/>
+              <S.Radio name="gender" type="radio" />
               모두
             </S.RadioLabel>
           </S.RadioRow>
@@ -60,12 +68,16 @@ export default function Host() {
               예
             </S.RadioLabel>
             <S.RadioLabel>
-              <S.Radio name="meal" type="radio"/>
+              <S.Radio name="meal" type="radio" />
               아니요
             </S.RadioLabel>
           </S.RadioRow>
         </S.Section>
       </S.Container>
+      {showLogoutModal && <Logout
+        onLogout={handleLogout}
+        onClose={() => setShowLogoutModal(false)}
+      />}
     </S.Con>
   );
 }

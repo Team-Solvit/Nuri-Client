@@ -5,6 +5,7 @@ import React, { useState } from 'react'
 import * as S from './style'
 import Image from 'next/image'
 import SettingNav from '@/components/ui/settingNav'
+import Logout from '@/components/ui/logout'
 
 const initialUser = {
     userid: 'Happy_y',
@@ -17,6 +18,12 @@ export default function ProfilePage() {
     const [userid, setUserid] = useState(initialUser.userid)
     const [nickname, setNickname] = useState('해피해피')
     const [introduction, setIntroduction] = useState(initialUser.introduction)
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+    const handleLogout = () => {
+        console.log('로그아웃 처리 완료')
+        setShowLogoutModal(false)
+    }
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -34,7 +41,7 @@ export default function ProfilePage() {
     return (
         <S.Container>
             <S.Sidebar>
-                <SettingNav />
+                <SettingNav onLogoutClick={() => setShowLogoutModal(true)} />
             </S.Sidebar>
 
             <S.MainContent>
@@ -87,6 +94,11 @@ export default function ProfilePage() {
                     {/* <S.SaveButton>저장</S.SaveButton> */}
                 </S.BioSection>
             </S.MainContent>
+            {showLogoutModal && <Logout
+                onLogout={handleLogout}
+                onClose={() => setShowLogoutModal(false)}
+            />}
+
         </S.Container>
     )
 }

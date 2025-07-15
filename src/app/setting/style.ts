@@ -40,6 +40,33 @@ export const Title = styled.h1`
   margin-bottom: 16px;
 `;
 
+export const ActionButtons = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+`
+
+export const LogoutButton = styled.button`
+  flex: 1;
+  background: #FBE9EB;
+  color: ${colors.text};
+  border: none;
+  padding: 0.8rem 0;
+  border-radius: 10px;
+  cursor: pointer;
+`
+
+export const WithdrawButton = styled.button`
+  flex: 1;
+  background: #FFEAEA;
+  color: red;
+  border: none;
+  padding: 0.8rem 0;
+  border-radius: 10px;
+  cursor: pointer;
+`
+
 export const Section = styled.section`
   display: flex;
   flex-direction: column;

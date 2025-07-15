@@ -32,14 +32,21 @@ const MENU_SECTIONS = [
         ],
     },
 ]
+interface SettingNavProps {
+    onLogoutClick?: () => void;
+}
 
-export default function SettingNav() {
-    const pathname = usePathname()
-    const router = useRouter()
+export default function SettingNav({ onLogoutClick }: SettingNavProps) {
+    const pathname = usePathname();
+    const router = useRouter();
 
-    const handleMenuClick = (path: string) => {
-        router.push(path)
-    }
+    const handleMenuClick = (path: string, label: string) => {
+        if (label === '로그아웃') {
+            onLogoutClick?.()
+        } else {
+            router.push(path)
+        }
+    };
 
     return (
         <S.Container>
@@ -49,27 +56,21 @@ export default function SettingNav() {
                     <div key={section.title}>
                         <S.SectionTitle>{section.title}</S.SectionTitle>
                         {section.items.map(({ label, path, icon }) => {
-                            const active = pathname === path
+                            const active = pathname === path;
                             return (
                                 <S.MenuItem
                                     key={path}
-                                    active={pathname === path}
-                                    onClick={() => handleMenuClick(path)}
+                                    active={active}
+                                    onClick={() => handleMenuClick(path, label)}
                                 >
-
-                                    <Image
-                                        src={icon}
-                                        alt={label}
-                                        width={20}
-                                        height={20}
-                                    />
+                                    <Image src={icon} alt={label} width={20} height={20} />
                                     <span>{label}</span>
                                 </S.MenuItem>
-                            )
+                            );
                         })}
                     </div>
                 ))}
             </S.Main>
         </S.Container>
-    )
+    );
 }
