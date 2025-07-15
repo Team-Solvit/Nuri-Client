@@ -1,3 +1,11 @@
+import { fontSizes } from '@/styles/theme';
+export const ErrorMessage = styled.div`
+  color: ${colors.error || '#ff4d4f'};
+  font-size: ${fontSizes?.Small || '0.875rem'};
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  text-align: left;
+`;
 import styled from '@emotion/styled';
 import { colors } from '@/styles/theme';
 

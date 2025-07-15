@@ -39,6 +39,8 @@ interface FormData {
   language: string;
 }
 
+
+
 export default function RegisterContainer() {
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
@@ -50,14 +52,58 @@ export default function RegisterContainer() {
     password: '', confirmPassword: '',
     nationality: '', language: '',
   });
+  const [error, setError] = useState<string | null>(null);
+  const [touched, setTouched] = useState(false);
   const router = useRouter();
 
+  const validateCurrentStep = () => {
+    if (currentStep === 0) {
+      if (!formData.terms1 || !formData.terms2 || !formData.terms3 || !formData.terms4 || !formData.terms5 || !formData.terms6 || !formData.terms7) {
+        return '모든 약관에 동의해야 합니다.';
+      }
+    }
+    if (currentStep === 1) {
+      if (!formData.name.trim() || !formData.username.trim()) {
+        return '이름과 아이디를 모두 입력해주세요.';
+      }
+    }
+    if (currentStep === 2) {
+      if (!formData.email.trim() || !formData.verificationCode.trim()) {
+        return '이메일과 인증번호를 모두 입력해주세요.';
+      }
+    }
+    if (currentStep === 3) {
+      if (!formData.password.trim() || !formData.confirmPassword.trim()) {
+        return '비밀번호와 비밀번호 재입력을 모두 입력해주세요.';
+      }
+      if (formData.password.length < 8) {
+        return '비밀번호는 8자 이상이어야 합니다.';
+      }
+      if (formData.password !== formData.confirmPassword) {
+        return '비밀번호가 일치하지 않습니다.';
+      }
+    }
+    if (currentStep === 4) {
+      if (!formData.nationality.trim() || !formData.language.trim()) {
+        return '국적과 언어를 모두 선택해주세요.';
+      }
+    }
+    return null;
+  };
+
   const handleNext = () => {
+    setTouched(true);
+    const validationError = validateCurrentStep();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    setError(null);
     if (currentStep < steps.length - 1) {
       setCompletedSteps([...completedSteps, currentStep]);
       setCurrentStep(currentStep + 1);
+      setTouched(false);
     } else {
-      // 최종 제출: formData를 API에 보낼 수 있습니다.
       console.log('submit', formData);
       router.push('/register/success');
     }
@@ -69,7 +115,14 @@ export default function RegisterContainer() {
   };
 
   const onChangeField = <K extends keyof FormData>(key: K, value: FormData[K]) => {
-    setFormData(prev => ({ ...prev, [key]: value }));
+    setFormData(prev => {
+      const updated = { ...prev, [key]: value };
+      if (touched) {
+        const validationError = validateCurrentStep();
+        if (!validationError) setError(null);
+      }
+      return updated;
+    });
   };
 
   const renderStepContent = () => {
@@ -166,7 +219,7 @@ export default function RegisterContainer() {
                   onChange={e => onChangeField('verificationCode', e.target.value)}
                   placeholder="인증 번호를 입력해주세요."
                 />
-                <Square text="인증" onClick={() => { }} status={true} width='max-content' />
+                <Square text="인증" onClick={() => { }} status={true} width='100%' />
               </S.InputButtonGroup>
             </S.FormGroup>
           </>
@@ -227,6 +280,7 @@ export default function RegisterContainer() {
                 <option value="EN">🇺🇸 영어</option>
                 <option value="JP">🇯🇵 일본어</option>
                 <option value="CN">🇨🇳 중국어</option>
+                <option value="VN">🇻🇳 베트남어</option>
                 <option value="DE">🇩🇪 독일어</option>
                 <option value="FR">🇫🇷 프랑스어</option>
                 <option value="OT">🌍 기타</option>
@@ -270,7 +324,7 @@ export default function RegisterContainer() {
 
       <S.Content>
         {renderStepContent()}
-
+        {touched && error && <S.ErrorMessage>{error}</S.ErrorMessage>}
         <S.ButtonGroup>
           <Square
             text={currentStep === steps.length - 1 ? '가입완료' : '다음'}
