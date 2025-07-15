@@ -5,9 +5,11 @@ import * as S from "./style";
 import SettingNav from "@/components/ui/settingNav";
 import Logout from "@/components/ui/logout";
 import { useState } from "react";
+import Leave from "@/components/ui/leave";
 
 export default function Host() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
 
   const handleLogout = () => {
     console.log('로그아웃 처리 완료')
@@ -15,7 +17,10 @@ export default function Host() {
   }
   return (
     <S.Con>
-      <SettingNav onLogoutClick={() => setShowLogoutModal(true)} />
+      <SettingNav
+        onLogoutClick={() => setShowLogoutModal(true)}
+        onLeaveClick={() => setShowLeaveModal(true)}
+      />
       <S.Container>
         <S.Title>호스트 설정</S.Title>
 
@@ -78,6 +83,15 @@ export default function Host() {
         onLogout={handleLogout}
         onClose={() => setShowLogoutModal(false)}
       />}
+      {showLeaveModal && (
+        <Leave
+          onLeave={() => {
+            console.log('회원탈퇴 처리 완료')
+            setShowLeaveModal(false)
+          }}
+          onClose={() => setShowLeaveModal(false)}
+        />
+      )}
     </S.Con>
   );
 }

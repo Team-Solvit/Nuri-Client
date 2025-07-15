@@ -6,6 +6,7 @@ import * as S from './style'
 import Image from 'next/image'
 import SettingNav from '@/components/ui/settingNav'
 import Logout from '@/components/ui/logout'
+import Leave from '@/components/ui/leave'
 
 const initialUser = {
     userid: 'Happy_y',
@@ -19,6 +20,8 @@ export default function ProfilePage() {
     const [nickname, setNickname] = useState('해피해피')
     const [introduction, setIntroduction] = useState(initialUser.introduction)
     const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [showLeaveModal, setShowLeaveModal] = useState(false);
+
 
     const handleLogout = () => {
         console.log('로그아웃 처리 완료')
@@ -41,7 +44,10 @@ export default function ProfilePage() {
     return (
         <S.Container>
             <S.Sidebar>
-                <SettingNav onLogoutClick={() => setShowLogoutModal(true)} />
+                <SettingNav
+                    onLogoutClick={() => setShowLogoutModal(true)}
+                    onLeaveClick={() => setShowLeaveModal(true)}
+                />
             </S.Sidebar>
 
             <S.MainContent>
@@ -91,13 +97,22 @@ export default function ProfilePage() {
                         value={introduction}
                         onChange={(e) => setIntroduction(e.target.value)}
                     />
-                    {/* <S.SaveButton>저장</S.SaveButton> */}
                 </S.BioSection>
             </S.MainContent>
             {showLogoutModal && <Logout
                 onLogout={handleLogout}
                 onClose={() => setShowLogoutModal(false)}
             />}
+            {showLeaveModal && (
+                <Leave
+                    onLeave={() => {
+                        console.log('회원탈퇴 처리 완료')
+                        setShowLeaveModal(false)
+                    }}
+                    onClose={() => setShowLeaveModal(false)}
+                />
+            )}
+
 
         </S.Container>
     )

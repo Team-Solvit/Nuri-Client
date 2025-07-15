@@ -32,21 +32,25 @@ const MENU_SECTIONS = [
         ],
     },
 ]
+
 interface SettingNavProps {
-    onLogoutClick?: () => void;
+    onLogoutClick?: () => void
+    onLeaveClick?: () => void
 }
 
-export default function SettingNav({ onLogoutClick }: SettingNavProps) {
-    const pathname = usePathname();
-    const router = useRouter();
+export default function SettingNav({ onLogoutClick, onLeaveClick }: SettingNavProps) {
+    const pathname = usePathname()
+    const router = useRouter()
 
     const handleMenuClick = (path: string, label: string) => {
         if (label === '로그아웃') {
             onLogoutClick?.()
+        } else if (label === '회원탈퇴') {
+            onLeaveClick?.()
         } else {
             router.push(path)
         }
-    };
+    }
 
     return (
         <S.Container>
@@ -56,7 +60,7 @@ export default function SettingNav({ onLogoutClick }: SettingNavProps) {
                     <div key={section.title}>
                         <S.SectionTitle>{section.title}</S.SectionTitle>
                         {section.items.map(({ label, path, icon }) => {
-                            const active = pathname === path;
+                            const active = pathname === path
                             return (
                                 <S.MenuItem
                                     key={path}
@@ -66,11 +70,11 @@ export default function SettingNav({ onLogoutClick }: SettingNavProps) {
                                     <Image src={icon} alt={label} width={20} height={20} />
                                     <span>{label}</span>
                                 </S.MenuItem>
-                            );
+                            )
                         })}
                     </div>
                 ))}
             </S.Main>
         </S.Container>
-    );
+    )
 }

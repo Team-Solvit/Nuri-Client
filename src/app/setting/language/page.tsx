@@ -4,10 +4,12 @@ import React, { useState } from 'react'
 import * as S from './style'
 import SettingNav from '@/components/ui/settingNav'
 import Logout from '@/components/ui/logout'
+import Leave from '@/components/ui/leave'
 
 export default function LanguagePage() {
     const [selectedLang, setSelectedLang] = useState<'ko' | 'en'>('ko')
     const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [showLeaveModal, setShowLeaveModal] = useState(false);
 
     const handleLogout = () => {
         console.log('로그아웃 처리 완료')
@@ -17,7 +19,10 @@ export default function LanguagePage() {
     return (
         <S.Layout>
             <S.NavArea>
-                <SettingNav onLogoutClick={() => setShowLogoutModal(true)} />
+                <SettingNav
+                    onLogoutClick={() => setShowLogoutModal(true)}
+                    onLeaveClick={() => setShowLeaveModal(true)}
+                />
             </S.NavArea>
             <S.ContentArea>
                 <S.Title>언어 설정</S.Title>
@@ -56,6 +61,15 @@ export default function LanguagePage() {
                 onLogout={handleLogout}
                 onClose={() => setShowLogoutModal(false)}
             />}
+            {showLeaveModal && (
+                <Leave
+                    onLeave={() => {
+                        console.log('회원탈퇴 처리 완료')
+                        setShowLeaveModal(false)
+                    }}
+                    onClose={() => setShowLeaveModal(false)}
+                />
+            )}
 
         </S.Layout>
     )
