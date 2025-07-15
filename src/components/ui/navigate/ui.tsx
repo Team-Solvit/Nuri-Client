@@ -1,0 +1,63 @@
+"use client";
+import {usePathname, useRouter} from "next/navigation";
+import Image from "next/image";
+import Alert from "@/assets/icon/alert.svg"
+import Home from "@/assets/icon/house.svg"
+import Message from "@/assets/icon/message.svg"
+import * as S from "./style";
+
+export default function Navigate() {
+	const router = useRouter();
+	const pathname = usePathname();
+	const navigateClick = (path: string) => {
+		router.push(path);
+	}
+	const NAVIGATE_ITEMS = [
+		{
+			label: "알림",
+			path: "/alert",
+			icon: Alert,
+			count: 1,
+			active: pathname === "/alert" ? "page" : undefined,
+			aria_label: "알림 페이지로 이동"
+		},
+		{
+			label: "메세지",
+			path: "/message",
+			icon: Message,
+			count: 1,
+			active: pathname === "/message" ? "page" : undefined,
+			aria_label: "메세지 페이지로 이동"
+		},
+		{
+			label: "하숙집",
+			path: "/myHouse",
+			icon: Home,
+			count: 1,
+			active: pathname === "/myHouse" ? "page" : undefined,
+			aria_label: "하숙집 페이지로 이동"
+		},
+	] as const
+	return (
+		<S.NavigateContainer>
+			{NAVIGATE_ITEMS.map(item => {
+				return (
+					<S.NavigateBtn
+						key={item.path}
+						isActive={pathname === item.path}
+						onClick={() => navigateClick(item.path)}
+						role="button"
+						aria-label={item.aria_label}
+						aria-current={item.active}
+					>
+						<S.IconBox>
+							<Image src={item.icon} alt={item.label} width={32} height={32}/>
+							{/*<S.Count>1</S.Count>*/}
+						</S.IconBox>
+						<p>{item.label}</p>
+					</S.NavigateBtn>
+				)
+			})}
+		</S.NavigateContainer>
+	)
+}
