@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import Image from 'next/image';
-import { colors, fontSizes } from '@/styles/theme';
+import { colors, fontSizes, zIndex } from '@/styles/theme';
 import {
   startOfMonth,
   endOfMonth,
@@ -170,7 +170,7 @@ const Popover = styled.div`
   border-radius: 1.25rem;
   box-shadow: 0 0.25rem 1rem rgba(0,0,0,0.10);
   padding: 1.5rem;
-  z-index: 100;
+  z-index: ${zIndex.modal};
 `;
 
 const Title = styled.h2`
