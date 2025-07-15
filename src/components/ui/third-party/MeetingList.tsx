@@ -63,7 +63,7 @@ const Wrapper = styled.div`
 const SectionTitle = styled.h2`
   font-size: ${fontSizes.H4};
   font-weight: 700;
-  color: #222;
+  color: ${colors.text};
   margin-bottom: 18px;
 `;
 const List = styled.ul`
@@ -88,7 +88,7 @@ const Info = styled.div`
 const MeetingTitle = styled.div`
   font-size: 18px;
   font-weight: 700;
-  color: #222;
+  color: ${colors.text};
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -104,7 +104,7 @@ const Meta = styled.div`
   flex-direction: column;
   gap: 10px;
   font-size: 15px;
-  color: #8C8C8C;
+  color: ${colors.gray};
 `;
 const Time = styled.div`
   display: flex;
@@ -119,7 +119,7 @@ const Location = styled.div`
 const Divider = styled.span`
   width: 1px;
   align-self: stretch;
-  background: #E0E0E0;
+  background: ${colors.line};
   display: inline-block;
 `;
 const Empty = styled.div`

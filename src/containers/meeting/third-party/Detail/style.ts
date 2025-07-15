@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { colors } from '@/styles/theme';
+import { colors, fontSizes } from '@/styles/theme';
 
 export const Wrapper = styled.div`
   display: flex;
@@ -32,9 +32,9 @@ export const Field = styled.div`
 `;
 
 export const FieldLabel = styled.label`
-  font-size: 1.08rem;
+  font-size: ${fontSizes.Body};
   font-weight: 500;
-  color: #222;
+  color: ${colors.text};
   margin-bottom: 0.15rem;
 `;
 
@@ -59,8 +59,8 @@ export const FieldInput = styled.input`
   border: none;
   outline: none;
   background: transparent;
-  font-size: 1.08rem;
-  color: #222;
+  font-size: ${fontSizes.Body};
+  color: ${colors.text};
   padding: 0;
   font-weight: 400;
   letter-spacing: 0.01em;
@@ -125,9 +125,9 @@ export const RecordHeader = styled.div`
 `;
 
 export const RecordTitle = styled.h2`
-  font-size: 2.25rem;
+  font-size: ${fontSizes.Display};
   font-weight: 600;
-  color: #000;
+  color: ${colors.text};
 `;
 
 export const RecordBox = styled.div`
@@ -151,7 +151,7 @@ export const RecordMain = styled.div`
 `;
 
 export const RecordTitleText = styled.div`
-  font-size: 1.75rem;
+  font-size: ${fontSizes.H3};
   font-weight: 500;
   color: #000;
   max-width: 40vw;
@@ -176,6 +176,6 @@ export const RecordInfoIcon = styled.img`
 `;
 
 export const RecordInfoText = styled.div`
-  font-size: 1.25rem;
-  color: #8c8c8c;
+  font-size: ${fontSizes.Body};
+  color: ${colors.gray};
 `;

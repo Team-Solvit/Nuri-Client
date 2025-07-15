@@ -5,7 +5,7 @@ import Square from "@/components/ui/button/square";
 export default function CreateModal({ onDone }: { onDone?: () => void }) {
   const [name, setName] = useState("");
   const [place, setPlace] = useState("");
-  const [date, setDate] = useState<Date | null>(new Date("2025-05-30"));
+  const [date, setDate] = useState<Date | null>(new Date());
   const [ampm, setAmpm] = useState<'AM' | 'PM'>('AM');
   const [hour, setHour] = useState(6);
   const [minute, setMinute] = useState(20);
