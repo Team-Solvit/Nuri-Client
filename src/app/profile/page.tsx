@@ -7,10 +7,16 @@ import { useRouter } from 'next/navigation'
 import Square from '@/components/ui/button/square';
 import { useState, useRef } from 'react';
 import Post from '@/components/ui/post';
+import Follow from '@/components/ui/follow';
+import FollowerList from '@/components/ui/follower';
 
 export default function ProfilePage() {
     const router = useRouter()
     const [selected, setSelected] = useState(1);
+    const [showFollowerModal, setShowFollowerModal] = useState(false);
+    const [showFollowModal, setShowFollowModal] = useState(false);
+
+
 
     const profile = {
         userid: 'Happy_y',
@@ -133,7 +139,7 @@ export default function ProfilePage() {
                             <Square
                                 text="설정"
                                 status={true}
-                                onClick={() => router.push('/setting')} 
+                                onClick={() => router.push('/setting')}
                                 width="120px"
                             />
                         </S.Button>
@@ -144,13 +150,13 @@ export default function ProfilePage() {
                             <S.StatLabel>게시물</S.StatLabel>
                             <S.StatValue>{profile.post}</S.StatValue>
                         </S.Stat>
-                        <S.Stat>
-                            <S.StatLabel>팔로워</S.StatLabel>
-                            <S.StatValue>{profile.followers}</S.StatValue>
+                        <S.Stat style={{ cursor: 'pointer' }} onClick={() => setShowFollowerModal(true)}>
+                            <S.StatLabelF>팔로워</S.StatLabelF>
+                            <S.StatValue1>{profile.followers}</S.StatValue1>
                         </S.Stat>
-                        <S.Stat>
-                            <S.StatLabel>팔로잉</S.StatLabel>
-                            <S.StatValue>{profile.follow}</S.StatValue>
+                        <S.Stat style={{ cursor: 'pointer' }} onClick={() => setShowFollowModal(true)}>
+                            <S.StatLabelF2>팔로잉</S.StatLabelF2>
+                            <S.StatValue2>{profile.follow}</S.StatValue2>
                         </S.Stat>
                     </S.Stats>
                     <S.introduction>{profile.introduction}</S.introduction>
@@ -180,6 +186,9 @@ export default function ProfilePage() {
                     </S.List2>
                 )}
             </S.PostList>
+            {showFollowModal && <Follow onClose={() => setShowFollowModal(false)} />}
+            {showFollowerModal && <FollowerList onClose={() => setShowFollowerModal(false)} />}
+
 
         </S.ProfileWrapper>
     );

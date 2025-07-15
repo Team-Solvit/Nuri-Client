@@ -42,8 +42,6 @@ export const SearchInput = styled.input`
   font-size: ${fontSizes.H4};
   color: ${colors.gray};
   background: transparent;
-  display: flex;
-  align-items: center;
 
   &::placeholder {
     color: ${colors.gray};
@@ -79,25 +77,6 @@ export const Item = styled.div`
   width: 25.5vw;
 `;
 
-export const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
-
-export const ModalWrapper = styled.div`
-  position: relative;
-  z-index: 1000;
-`;
-
-
 export const ProfileImg = styled.div`
   width: 55px;
   height: 55px;
@@ -127,7 +106,7 @@ export const Name = styled.div`
 `;
 
 export const DeleteBtn = styled.button`
-  background: ${colors.gray};
+  background: #7F96FF;  
   color: ${colors.background};
   border: none;
   border-radius: ${radius.md};
@@ -137,6 +116,24 @@ export const DeleteBtn = styled.button`
   padding: 0.3rem 1rem;
   transition: background 0.2s;
   &:hover {
-    background: #fbe9eb;
+    background: #9DAFFF;
   }
 `; 
+
+export const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+export const ModalWrapper = styled.div`
+  position: relative;
+  z-index: 1000;
+`;

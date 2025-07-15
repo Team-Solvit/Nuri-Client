@@ -127,9 +127,33 @@ export const StatLabel = styled.div`
   font-weight: 200;
 `
 
+export const StatLabelF = styled.div`
+  font-size: ${fontSizes.H4};
+  color: ${colors.gray};
+  font-weight: 200;
+  cursor: pointer;
+`
+export const StatLabelF2 = styled.div`
+  font-size: ${fontSizes.H4};
+  color: ${colors.gray};
+  font-weight: 200;
+  cursor: pointer;
+`
+
 export const StatValue = styled.div`
   font-size: ${fontSizes.H3};
   font-weight: 500;
+`
+
+export const StatValue1 = styled.div`
+  font-size: ${fontSizes.H3};
+  font-weight: 500;
+  cursor: pointer;
+`
+export const StatValue2 = styled.div`
+  font-size: ${fontSizes.H3};
+  font-weight: 500;
+  cursor: pointer;
 `
 
 export const ButtonRow = styled.div`

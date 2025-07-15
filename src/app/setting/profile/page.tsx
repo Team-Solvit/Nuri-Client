@@ -7,6 +7,7 @@ import Image from 'next/image'
 import SettingNav from '@/components/ui/settingNav'
 import Logout from '@/components/ui/logout'
 import Leave from '@/components/ui/leave'
+import Follow from '@/components/ui/follow'
 
 const initialUser = {
     userid: 'Happy_y',
@@ -21,6 +22,7 @@ export default function ProfilePage() {
     const [introduction, setIntroduction] = useState(initialUser.introduction)
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [showLeaveModal, setShowLeaveModal] = useState(false);
+    const [showFollowerModal, setShowFollowerModal] = useState(false);
 
 
     const handleLogout = () => {
@@ -47,7 +49,9 @@ export default function ProfilePage() {
                 <SettingNav
                     onLogoutClick={() => setShowLogoutModal(true)}
                     onLeaveClick={() => setShowLeaveModal(true)}
+                    onFollowerClick={() => setShowFollowerModal(true)}
                 />
+
             </S.Sidebar>
 
             <S.MainContent>
@@ -112,7 +116,9 @@ export default function ProfilePage() {
                     onClose={() => setShowLeaveModal(false)}
                 />
             )}
-
+            {showFollowerModal && (
+                <Follow onClose={() => setShowFollowerModal(false)} />
+            )}
 
         </S.Container>
     )
