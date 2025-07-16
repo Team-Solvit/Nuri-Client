@@ -72,9 +72,9 @@ export default function MeetingModal({
 	const {isOpen} = useModalStore();
 	const [selected, setSelected] = useState(1);
 	const fakeData: MeetingModalProps = {
-		title: "모임",
-		description: "description asdjklfdajdflsfja",
-		location: "부산광역시 사하구",
+		title: "다함께 놀자 동네",
+		description: "누구보다 재미있게",
+		location: "부산광역시 남구",
 		bannerImage: BannerImg,
 		profileImage: "/meeting/profile.png"
 	}

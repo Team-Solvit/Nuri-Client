@@ -37,12 +37,8 @@ export default function Meetings() {
 		},
 	]
 	const fakeData = [
-		{id: 1, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3},
-		{id: 2, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3},
-		{id: 3, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3},
-		{id: 4, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3},
-		{id: 5, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3},
-		{id: 6, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3},
+		{id: 1, title: "다함께 놀자 동네", content: "누구보다 재미있게", personnel: 2, maxPersonnel: 3},
+		{id: 2, title: "모임2", content: "누구보다 상냥하게", personnel: 1, maxPersonnel: 3},
 	]
 	const [isAccession, setIsAccession] = useState(false);
 	const AccessionData: Accession = {id: 1, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3}
