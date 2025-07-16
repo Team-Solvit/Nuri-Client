@@ -5,11 +5,13 @@ import Alert from "@/assets/icon/alert.svg"
 import Home from "@/assets/icon/house.svg"
 import Message from "@/assets/icon/message.svg"
 import * as S from "./style";
+import NProgress from "nprogress";
 
 export default function Navigate() {
 	const router = useRouter();
 	const pathname = usePathname();
 	const navigateClick = (path: string) => {
+		NProgress.start()
 		router.push(path);
 	}
 	const NAVIGATE_ITEMS = [
