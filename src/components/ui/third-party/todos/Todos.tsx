@@ -10,10 +10,10 @@ function formatDate(date: Date) {
 }
 
 const todosData: Todo[] = [
-  { id: 1, house: "레이쉐어하우스", section: "방문", title: "레이쉐어하우스 방문", sub: "PM 5:00", checked: false, file: null, date: "2025-07-12" },
-  { id: 2, house: "더샵쉐어하우스", section: "방문", title: "더샵쉐어하우스 방문", sub: "PM 5:00", checked: false, file: null, date: "2025-07-12" },
-  { id: 3, house: "레이쉐어하우스", section: "전화", title: "레이쉐어하우스 통화", sub: "PM 3:00", checked: false, file: null, date: "2025-07-13" },
-  { id: 4, house: "더샵쉐어하우스", section: "전화", title: "더샵쉐어하우스 통화", sub: "PM 5:00", checked: false, file: null, date: "2025-07-13" },
+  { id: 1, house: "레이쉐어하우스", section: "방문", title: "레이쉐어하우스 방문", sub: "PM 5:00", checked: false, file: null, date: "2025-07-17" },
+  { id: 2, house: "더샵쉐어하우스", section: "방문", title: "더샵쉐어하우스 방문", sub: "PM 5:00", checked: false, file: null, date: "2025-07-17" },
+  { id: 3, house: "레이쉐어하우스", section: "전화", title: "레이쉐어하우스 통화", sub: "PM 3:00", checked: false, file: null, date: "2025-07-18" },
+  { id: 4, house: "더샵쉐어하우스", section: "전화", title: "더샵쉐어하우스 통화", sub: "PM 5:00", checked: false, file: null, date: "2025-07-18" },
 ];
 
 const houseOptions = ["전체", ...Array.from(new Set(todosData.map(todo => todo.house)))];
