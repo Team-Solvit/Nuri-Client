@@ -24,7 +24,7 @@ export default function Popup({ id, title, address, rooms }: PopupProps) {
     navigator.clipboard.writeText(address)
   }, [address])
 
-  const { isOpen, open } = useModalStore();
+  const { isOpen, open, close } = useModalStore();
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
 
   const handleClickRoom = (room: Room) => {
