@@ -35,7 +35,7 @@ export const Container = styled.div`
     padding: 15px;
     margin-top: 10px;
     overflow-y: auto;
-    z-index: 100;
+    z-index: ${zIndex.dropdown};
     background-color: ${colors.background};
 `
 
