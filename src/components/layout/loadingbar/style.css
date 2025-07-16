@@ -4,7 +4,7 @@
 }
 
 #nprogress .bar {
-  background: #0969da; /* GitHub 파란색 */
+  background: #FF4C61; /* GitHub 파란색 */
   position: fixed;
   z-index: 9999;
   top: 0;
