@@ -43,7 +43,10 @@ export default function RoomTourModal() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (!isCurrentMonth || day < today) {
-      setErrorMsg("과거 날짜는 선택할 수 없습니다.");
+      setErrorMsg(null);
+      setTimeout(() => {
+        setErrorMsg("과거 날짜는 선택할 수 없습니다.");
+      }, 0);
       return;
     }
     setSelectedDate(day);
