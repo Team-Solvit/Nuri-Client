@@ -98,7 +98,7 @@ export default function ProfilePage() {
                     <S.BioInput
                         placeholder="소개 글을 작성해주세요."
                         value={introduction}
-                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setIntroduction(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIntroduction(e.target.value)}
                     />
                 </S.BioSection>
             </S.MainContent>

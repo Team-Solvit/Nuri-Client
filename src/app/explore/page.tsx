@@ -13,6 +13,7 @@ export default function Explore() {
     const schoolList = ['부경대학교', '경성대학교', '동명대학교', '동명대학교', '동명대학교', '동명대학교', '동명대학교', '동명대학교', '동명대학교', '동명대학교',];
     const regionList = ['강서구', '동래구', '북구', '남구'];
     const stationList = ['하단역', '부산역']
+    const [showCreatingModal, setShowCreatingModal] = useState(false);
     const [openedDropdown, setOpenedDropdown] = useState<null | 'school' | 'region' | 'station' | 'money' | 'period' | 'gender'>(null);
     const router = useRouter()
 
