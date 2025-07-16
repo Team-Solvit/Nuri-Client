@@ -33,20 +33,20 @@ const RoomDetailData = {
 
 export default function RoomDetail({ id, room, title, address, close }: RoomDetailProps) {
 	if (!room) return null;
-	
+
 	return (
 		<Wrapper>
 			<Header>
 				<Title>{title} ({room.number})</Title>
 				<Address>{address}</Address>
 			</Header>
-			
+
 			<Host>
 				<Label>호스트</Label>
 				<HostName>{RoomDetailData.host.name}</HostName>
 				<PhoneNumber>{RoomDetailData.host.phone}</PhoneNumber>
 			</Host>
-			
+
 			<Members>
 				<Label>유학생</Label>
 				<MemberGrid>
@@ -64,7 +64,9 @@ export default function RoomDetail({ id, room, title, address, close }: RoomDeta
 	);
 }
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+	padding: 2rem 3rem;
+`;
 
 const Header = styled.div`
   margin-bottom: 24px;
