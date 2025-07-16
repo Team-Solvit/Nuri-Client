@@ -36,6 +36,13 @@ export default function Login() {
             </Hint>
           </FormGroup>
           <Square text='로그인' onClick={() => { }} status={true} width='100%' />
+          <SocialOther>또는</SocialOther>
+          <SocialList>
+            <Image src="/login/kakao.svg" alt="카카오 로그인" width={56} height={56} />
+            <Image src="/login/tiktok.svg" alt="틱톡 로그인" width={56} height={56} />
+            <Image src="/login/facebook.svg" alt="페이스북 로그인" width={56} height={56} />
+            <Image src="/login/google.svg" alt="구글 로그인" width={56} height={56} />
+          </SocialList>
         </>
       )}
 
@@ -163,4 +170,37 @@ const SignUp = styled.span`
 const Right = styled.div`
   color: ${colors.gray};
   cursor: pointer;
+`;
+
+const SocialOther = styled.div`
+  margin-top: 1rem;
+  color: ${colors.gray};
+  font-size: ${fontSizes.Small};
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 1rem;
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: ${colors.gray};
+    display: block;
+  }
+`;
+
+const SocialList = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+
+  img {
+    cursor: pointer;
+    transition: transform 0.2s;
+
+    &:hover {
+      transform: scale(1.03);
+    }
+  }
 `;
