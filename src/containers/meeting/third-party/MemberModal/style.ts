@@ -1,7 +1,9 @@
 import styled from '@emotion/styled';
 import { colors, fontSizes, radius } from '@/styles/theme';
 
-export const MemberModalWrapper = styled.div``;
+export const MemberModalWrapper = styled.div`
+  padding: 2rem 3rem;
+`;
 
 export const ModalTitle = styled.div`
   font-size: ${fontSizes.H2};

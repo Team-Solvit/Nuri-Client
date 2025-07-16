@@ -1,4 +1,5 @@
 'use client'
+
 import PostScroll from "@/containers/home/post-scroll/ui";
 import Navigate from "@/components/ui/navigate/ui";
 import styled from "@emotion/styled";
