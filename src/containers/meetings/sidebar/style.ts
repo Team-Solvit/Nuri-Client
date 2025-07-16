@@ -15,7 +15,7 @@ export const SidebarContainer = styled.section<{ isOpen: boolean }>`
   display: flex;
   z-index: ${zIndex.dropdown};
   position: fixed;
-  left: 15.5vw;
+  left: 17vw;
   top: 0;
   flex-direction: column;
   height: 100vh;

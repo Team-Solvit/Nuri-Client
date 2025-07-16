@@ -2,12 +2,22 @@ import * as S from '@/styles/confirm'
 import Square from "@/components/ui/button/square";
 import {AccessionProps} from "@/containers/meetings/accession/type";
 import React from "react";
+import {useRouter} from "next/navigation";
+import NProgress from "nprogress";
+import {useModalStore} from "@/store/modal";
 
 export default function Accession({isAccession, setIsAccession, accessions}: AccessionProps) {
 	const modalClose = () => {
 		setIsAccession(false)
 	}
-	
+	const router = useRouter();
+	const {close} = useModalStore();
+	const handelRouter = (id: number) => {
+		router.push(`/meetings/${id}`)
+		setIsAccession(false)
+		NProgress.start()
+		close()
+	}
 	if (!isAccession) return null
 	return (
 		<S.Black
@@ -26,6 +36,7 @@ export default function Accession({isAccession, setIsAccession, accessions}: Acc
 							<S.Name>취소</S.Name>
 						</S.CancelBtn>
 						<Square text={"가입"} onClick={() => {
+							handelRouter(accessions.id)
 						}} status={true} width={"100%"}/>
 					</S.ButtonContainer>
 				</S.Container>
