@@ -6,7 +6,6 @@ export const Wrapper = styled.div`
   max-width: 22rem;
   min-width: 16rem;
   box-sizing: border-box;
-  padding: 0;
 `;
 
 export const Title = styled.h2`
