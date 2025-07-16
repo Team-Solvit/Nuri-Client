@@ -1,3 +1,5 @@
+'use client';
+
 import PostDetail from "@/components/ui/post/detail";
 
 interface Props {
@@ -6,5 +8,19 @@ interface Props {
 
 export default async function FullPostPage({ params }: Props) {
   const { id } = params;
-  return <PostDetail id={id} />;
+  return (
+    <Wrapper>
+      <PostDetail id={id} />
+    </Wrapper>
+  );
 }
+
+import styled from '@emotion/styled';
+
+export const Wrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
