@@ -1,11 +1,13 @@
 import styled from "@emotion/styled";
 
 export const Post = styled.div`
-    width: 100%;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1.1;
 `
 export const PostImg = styled.div`
-  width: 24vw;
-  height: 40vh;
+  width: 100%;
+  height: 100%;
   position: relative;
   overflow: hidden;
 

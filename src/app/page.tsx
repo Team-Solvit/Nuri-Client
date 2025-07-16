@@ -1,19 +1,24 @@
 'use client'
 
-import Modal from "@/components/layout/modal"
-import Login from "@/components/ui/login"
-import { useModalStore } from "@/store/modal"
+import PostScroll from "@/containers/home/post-scroll/ui";
+import Navigate from "@/components/ui/navigate/ui";
+import styled from "@emotion/styled";
 
 export default function Home() {
-	const { isOpen, open } = useModalStore();
 	return (
-		<>
-			<button onClick={open}>로그인</button>
-			{isOpen && (
-				<Modal>
-					<Login />
-				</Modal>
-			)}
-		</>
+		<HomeContainer>
+			<PostScroll/>
+			<Navigate/>
+		</HomeContainer>
 	)
 }
+
+const HomeContainer = styled.section`
+  display: grid;
+  grid-template-columns: 5.5fr 1fr;
+  gap: 4rem;
+  margin: 10vh 4rem 0 4rem;
+  align-items: flex-start;
+  height: 90vh;
+  max-height: 90vh;
+`

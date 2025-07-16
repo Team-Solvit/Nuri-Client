@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import {colors, radius, fontSizes} from '@/styles/theme';
+import { colors, radius, fontSizes } from '@/styles/theme';
 
 export const Container = styled.div<{ $status?: boolean; $width?: string }>`
   display: flex;
@@ -12,19 +12,19 @@ export const Container = styled.div<{ $status?: boolean; $width?: string }>`
     props.$status ? colors.background : colors.primary};
   border: 1px solid ${colors.primary};
   border-radius: ${radius.md};
-  padding: 8px 0;
+  padding: 8px 16px;
   width: ${(props) => props.$width || 'auto'};
   transition: background-color 0.2s ease-in-out;
 
   &:hover {
     background-color: ${(props) =>
-      props.$status ? "#ed475b" : colors.primary};
+    props.$status ? "#ed475b" : colors.primary};
     color: ${(props) =>
-      props.$status ? colors.background : colors.background};
+    props.$status ? colors.background : colors.background};
   }
 `;
 
 export const Name = styled.span`
   font-size: ${fontSizes.Body};
-  font-weight: 600;
+  font-weight: 500;
 `;
