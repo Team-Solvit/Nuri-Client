@@ -45,13 +45,17 @@ export const InfoSection = styled.div<{ isOpen: boolean }>`
   margin-top: 24px;
   max-height: ${props => props.isOpen ? '1000px' : '4rem'};
   overflow: hidden;
-  transition: max-height 0.3s ease-in-out;
+  transition: max-height 0.2s ease-in-out;
 `;
 
 export const InfoRow = styled.div`
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
+
+  &:last-child {
+    margin-top: 2rem;
+  }
 `;
 
 export const InfoLabel = styled.span`
