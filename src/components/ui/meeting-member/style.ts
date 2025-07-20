@@ -11,7 +11,7 @@ export const MeetingMemberContainer = styled.div`
   align-items: center;
 `
 
-export const Member = styled.button`
+export const Member = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;

@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import {colors, fontSizes, radius, zIndex} from "@/styles/theme";
+import {keyframes} from "@emotion/react";
 
 export const MeetingCalenderContainer = styled.div`
   width: calc(100% - 10rem);
@@ -58,6 +59,24 @@ export const DateCell = styled.div<{ isOutside?: boolean }>`
     isOutside ? colors.line2 : 'white'};
 `;
 
+export const Schedule = styled.div`
+  width: 100%;
+  padding: 0.2rem;
+  background-color: #FFEDEF;
+  color: ${colors.primary};
+  border-radius: ${radius.sm};
+  border: 1px solid ${colors.primary};
+  font-size: ${fontSizes.Caption};
+  font-weight: 500
+`
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
 export const Popup = styled.div`
   position: absolute;
   top: -10%;

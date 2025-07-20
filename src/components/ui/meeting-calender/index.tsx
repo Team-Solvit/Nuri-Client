@@ -68,28 +68,38 @@ export default function MeetingCalender() {
 	for (let day = 1; day <= daysInMonth; day++) {
 		const currentIndex = cellIndex; // 🔒 고정!
 		cells.push(
-			<S.DateCell key={day} onClick={(e) => handleClick(currentIndex, e)}>
+			<S.DateCell
+				style={{cursor: meetings[currentIndex] ? "pointer" : "default"}}
+				key={day}
+				onClick={(e) => handleClick(currentIndex, e)}
+			>
 				{day}
-				{selectedIndex === currentIndex && (
+				{
+					meetings[currentIndex] &&
+          <S.Schedule>
+						{meetings[currentIndex].title}
+          </S.Schedule>
+				}
+				{selectedIndex === currentIndex && meetings[currentIndex] && (
 					<S.Popup onClick={(e) => e.stopPropagation()}>
-						<h3>{meetings.title}</h3>
+						<h3>{meetings[currentIndex].title}</h3>
 						<S.PopupContentBox>
 							<p>날짜</p>
-							<p>{meetings.date}</p>
+							<p>{meetings[currentIndex].date}</p>
 						</S.PopupContentBox>
 						<S.PopupContentBox>
 							<p>비용</p>
-							<p>₩ {meetings.cost}원</p>
+							<p>₩ {meetings[currentIndex].cost}원</p>
 						</S.PopupContentBox>
 						<S.PopupContentBox>
 							<p>시작시간</p>
-							<p>{meetings.startTime}</p>
+							<p>{meetings[currentIndex].startTime}</p>
 						</S.PopupContentBox>
 						<S.PopupContentBox>
 							<p>종료시간</p>
-							<p>{meetings.endTime}</p>
+							<p>{meetings[currentIndex].endTime}</p>
 						</S.PopupContentBox>
-						<p>{meetings.description}</p>
+						<p>{meetings[currentIndex].description}</p>
 						<S.ImgBox>
 							<Image src={ArrowBottom} alt="arrow" fill/>
 						</S.ImgBox>
