@@ -42,7 +42,6 @@ export default function PostScroll() {
 				return (
 					<S.Post
 						key={post.id}
-						onClick={() => navigateClick(`/post/${post.id}`)}
 					>
 						<S.PostTitle>
 							<S.Profile onClick={(e) => e.stopPropagation()}>
@@ -112,22 +111,23 @@ export default function PostScroll() {
 								</S.Arrow>
 							)}
 						</S.PostImg>
-						
-						<S.PostInfo onClick={(e) => e.stopPropagation()}>
-							<S.Interactive>
-								<S.Inter>
-									<Image src={Heart} alt="like" width={28} height={28}/>
-									<p>0</p>
-								</S.Inter>
-								<S.Inter>
-									<Image src={Comment} alt="comment" width={24} height={24}/>
-									<p>0</p>
-								</S.Inter>
-							</S.Interactive>
-							{post.price && <p>₩ 월 / {post.price}</p>}
-						</S.PostInfo>
-						<S.PostName>{post.title}</S.PostName>
-						<S.PostDesc>{post.desc}</S.PostDesc>
+						<S.Info onClick={() => navigateClick(`/post/${post.id}`)}>
+							<S.PostInfo>
+								<S.Interactive>
+									<S.Inter>
+										<Image src={Heart} alt="like" width={28} height={28}/>
+										<p>0</p>
+									</S.Inter>
+									<S.Inter>
+										<Image src={Comment} alt="comment" width={24} height={24}/>
+										<p>0</p>
+									</S.Inter>
+								</S.Interactive>
+								{post.price && <p>₩ 월 / {post.price}</p>}
+							</S.PostInfo>
+							<S.PostName>{post.title}</S.PostName>
+							<S.PostDesc>{post.desc}</S.PostDesc>
+						</S.Info>
 					</S.Post>
 				)
 			})}
