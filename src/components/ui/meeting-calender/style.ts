@@ -1,6 +1,5 @@
 import styled from "@emotion/styled";
 import {colors, fontSizes, radius, zIndex} from "@/styles/theme";
-import {keyframes} from "@emotion/react";
 
 export const MeetingCalenderContainer = styled.div`
   width: calc(100% - 10rem);
@@ -69,14 +68,6 @@ export const Schedule = styled.div`
   font-size: ${fontSizes.Caption};
   font-weight: 500
 `
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-`;
 export const Popup = styled.div`
   position: absolute;
   top: -10%;

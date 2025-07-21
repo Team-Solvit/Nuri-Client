@@ -8,17 +8,8 @@ export interface MeetingCalenderProps {
 	description: string;
 }
 
-export const meetings: (MeetingCalenderProps | false)[] = [
-	false,
-	false,
-	false,
-	false,
-	false,
-	false,
-	false,
-	false,
-	false,
-	{
+export const meetings: Record<string, MeetingCalenderProps> = {
+	"2025-07-17": {
 		id: 1,
 		title: "다함께 놀자 동네",
 		date: "2025-07-17",
@@ -27,4 +18,4 @@ export const meetings: (MeetingCalenderProps | false)[] = [
 		endTime: "15:00",
 		description: "전공동아리 발표 둘러보기",
 	}
-]
+}
