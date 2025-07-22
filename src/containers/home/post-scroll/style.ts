@@ -78,7 +78,7 @@ export const PostInfo = styled.div`
   padding: 0.5rem 1rem;
 
   & > p {
-    font-size: ${fontSizes.H3};
+    font-size: ${fontSizes.H4};
   }
 `
 export const Thumbnail = styled.div`

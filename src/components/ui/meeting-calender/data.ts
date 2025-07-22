@@ -11,7 +11,7 @@ export interface MeetingCalenderProps {
 export const meetings: Record<string, MeetingCalenderProps> = {
 	"2025. 7. 21.": {
 		id: 1,
-		title: "다함께 놀자 동네",
+		title: "행사1",
 		date: "2025-07-17",
 		cost: 5000,
 		startTime: "12:00",
