@@ -5,7 +5,7 @@ export const MemberModalWrapper = styled.div`
   padding: 2rem 3rem;
 `;
 
-export const ModalTitle = styled.div`
+export const ModalTitle = styled.h2`
   font-size: ${fontSizes.H2};
   color: ${colors.text};
   margin-bottom: 2rem;
