@@ -131,16 +131,3 @@ export const BioInput = styled.textarea`
   resize: none;
   outline: none;
 `
-
-export const SaveButton = styled.button`
-  width: 100%;
-  height: 44px;
-  background: ${colors.primary};
-  color: #fff;
-  font-size: 1.1rem;
-  font-weight: 500;
-  border: none;
-  border-radius: 8px;
-  margin-top: 1rem;
-  cursor: pointer;
-`

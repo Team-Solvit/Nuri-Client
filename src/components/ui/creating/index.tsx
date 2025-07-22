@@ -136,7 +136,6 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                     <S.CharCount>{content.length}/10000</S.CharCount>
 
                     <S.Row>
-                        {/* 드롭다운 토글 영역 */}
                         <S.PublicWrap
                             onClick={e => {
                                 e.stopPropagation();

@@ -8,10 +8,13 @@ export const ProfileWrapper = styled.div`
   background: ${colors.background};
   border-radius: ${radius.lg};
   width: 100%;
-  padding: 4rem 12rem;
+  padding: 4rem;
   overflow-y: auto;
   outline: none;
   max-height: 100vh;
+  &::-webkit-scrollbar {
+        display: none;
+    }
 `
 
 
@@ -53,6 +56,7 @@ export const Profile = styled.div`
   display: flex;
   width: 100%;
   height: 28vh;
+  padding: 0rem 8rem;
 `
 
 export const ProfileMain = styled.div`
@@ -73,13 +77,14 @@ export const List1 = styled.div`
   align-items: center;
   justify-content: flex-start;
   margin-top: 1rem;
-` 
+`
 
 export const PostList = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
   min-width: 73vw;
+  margin-top: 3rem;
 `
 
 export const List2 = styled.div`
@@ -105,7 +110,57 @@ export const PostItem = styled.div`
   flex-shrink: 0;
 `
 
+export const Side = styled.div<{ isSelected: number }>`
+  display: flex;
+  width: 73vw;
+  margin-top: 5rem;
+  align-items: center;
+  font-size: ${fontSizes.Body};
+  color: ${colors.gray};
+  gap: 5rem;
+  border-top: 2px solid ${colors.line};
+  font-weight: 550;
+  justify-content: space-around;
+  position: relative;
 
+  & > div:nth-of-type(1) {
+    left: 0;
+  }
+
+  & > div:nth-of-type(${(props) => props.isSelected}) {
+    border-top: 2px solid ${colors.primary};
+    transition: all 0.1s ease-in-out;
+    color: ${colors.primary};
+  }
+
+  & > div:nth-of-type(3) {
+    right: 0;
+  }
+`
+export const Tab = styled.div`
+  position: absolute;
+  top: -1px;
+  padding: 1rem 3rem;
+  width: 20%;
+  text-align: center;
+  margin-left: 17.2rem;
+
+  & > p {
+    cursor: pointer;
+  }
+`
+export const Tab2 = styled.div`
+  position: absolute;
+  top: -1px;
+  padding: 1rem 3rem;
+  width: 20%;
+  text-align: center;
+  margin-left: 18rem;
+
+  & > p {
+    cursor: pointer;
+  }
+`
 
 export const Stats = styled.div`
   display: flex;
@@ -164,63 +219,4 @@ export const ButtonRow = styled.div`
 export const Button = styled.div`
   display: flex;
   gap: 1rem;
-`
-
-export const Side = styled.div<{ isSelected: number }>`
-  display: flex;
-  width: 73vw;
-  align-items: center;
-  font-size: ${fontSizes.Body};
-  justify-content: center;
-  gap: 6rem;
-  color: ${colors.gray};
-  border-top: 2px solid ${colors.line};
-  font-weight: 500;
-  margin-top: 5rem;
-  position: relative;
-
-  & > div:nth-of-type(1) {
-    left: 0;
-  }
-
-  & > div:nth-of-type(${(props) => props.isSelected}) {
-    border-top: 2px solid ${colors.primary};
-    color: ${colors.primary};
-    margin-top: -1px;
-  }
-
-  & > div:nth-of-type(3) {
-    right: 0;
-  }
-`
-
-export const Tab = styled.div`
-  background-color: ${colors.background};
-  padding: 1rem 3rem;
-  font-size: ${fontSizes.Body};
-  color: ${colors.gray};
-  cursor: pointer;
-  text-align: center;
-`
-
-export const EditButton = styled.button`
-  background: ${colors.primary};
-  color: ${colors.background};
-  border: none;
-  border-radius: ${radius.md};
-  padding: 0.5rem 1.5rem;
-  font-size: ${fontSizes.Body};
-  font-weight: 500;
-  cursor: pointer;
-`
-
-export const SettingButton = styled.button`
-  background: ${colors.background};
-  color: ${colors.primary};
-  border: 1px solid ${colors.primary};
-  border-radius: ${radius.md};
-  padding: 0.5rem 1.5rem;
-  font-size: ${fontSizes.Body};
-  font-weight: 500;
-  cursor: pointer;
 `

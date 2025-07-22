@@ -59,6 +59,9 @@ export const List = styled.div`
   max-height: calc(55vh - 12rem);
   overflow-y: auto;
   width: 100%;
+  &::-webkit-scrollbar {
+        display: none;
+    }
 `
 
 

@@ -57,6 +57,9 @@ export const List = styled.div`
   max-height: calc(55vh - 12rem);
   overflow-y: auto;
   width: 100%;
+  &::-webkit-scrollbar {
+    display: none;
+    }
 `
 
 
@@ -118,7 +121,7 @@ export const DeleteBtn = styled.button`
   &:hover {
     background: #9DAFFF;
   }
-`; 
+`;
 
 export const Overlay = styled.div`
   position: fixed;

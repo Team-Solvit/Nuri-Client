@@ -9,14 +9,13 @@ import { useState, useRef } from 'react';
 import Post from '@/components/ui/post';
 import Follow from '@/components/ui/follow';
 import FollowerList from '@/components/ui/follower';
+import NProgress from "nprogress";
 
 export default function ProfilePage() {
     const router = useRouter()
     const [selected, setSelected] = useState(1);
     const [showFollowerModal, setShowFollowerModal] = useState(false);
     const [showFollowModal, setShowFollowModal] = useState(false);
-
-
 
     const profile = {
         userid: 'Happy_y',
@@ -103,6 +102,10 @@ export default function ProfilePage() {
         inputRef.current?.click();
     };
 
+    const handleBtnClick = (path: string) => {
+        NProgress.start()
+        router.push(path)
+    }
 
     return (
         <S.ProfileWrapper>
@@ -133,17 +136,16 @@ export default function ProfilePage() {
                             <Square
                                 text="프로필 편집"
                                 status={true}
-                                onClick={() => router.push('/setting/profile')}
+                                onClick={() => handleBtnClick('/setting/profile')}
                                 width="120px"
                             />
                             <Square
                                 text="설정"
                                 status={true}
-                                onClick={() => router.push('/setting')}
+                                onClick={() => handleBtnClick('/setting')}
                                 width="120px"
                             />
                         </S.Button>
-
                     </S.ButtonRow>
                     <S.Stats>
                         <S.Stat>
@@ -163,9 +165,13 @@ export default function ProfilePage() {
                 </S.ProfileMain>
             </S.Profile>
             <S.Side isSelected={selected}>
-                <S.Tab onClick={() => setSelected(1)}>하숙집</S.Tab>
-                <S.Tab onClick={() => setSelected(2)}>게시물</S.Tab>
-            </S.Side>
+				<S.Tab>
+					<p onClick={() => setSelected(1)}>하숙집</p>
+				</S.Tab>
+				<S.Tab2>
+					<p onClick={() => setSelected(2)}>게시물</p>
+				</S.Tab2>
+			</S.Side>
             <S.PostList>
                 {selected === 1 && (
                     <S.List1>
