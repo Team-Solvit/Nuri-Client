@@ -165,9 +165,13 @@ export default function ProfilePage() {
                 </S.ProfileMain>
             </S.Profile>
             <S.Side isSelected={selected}>
-                <S.Tab onClick={() => setSelected(1)}>하숙집</S.Tab>
-                <S.Tab onClick={() => setSelected(2)}>게시물</S.Tab>
-            </S.Side>
+				<S.Tab>
+					<p onClick={() => setSelected(1)}>하숙집</p>
+				</S.Tab>
+				<S.Tab2>
+					<p onClick={() => setSelected(2)}>게시물</p>
+				</S.Tab2>
+			</S.Side>
             <S.PostList>
                 {selected === 1 && (
                     <S.List1>

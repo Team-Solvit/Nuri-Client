@@ -84,6 +84,7 @@ export const PostList = styled.div`
   flex-direction: column;
   width: 100%;
   min-width: 73vw;
+  margin-top: 3rem;
 `
 
 export const List2 = styled.div`
@@ -109,7 +110,57 @@ export const PostItem = styled.div`
   flex-shrink: 0;
 `
 
+export const Side = styled.div<{ isSelected: number }>`
+  display: flex;
+  width: 73vw;
+  margin-top: 5rem;
+  align-items: center;
+  font-size: ${fontSizes.Body};
+  color: ${colors.gray};
+  gap: 5rem;
+  border-top: 2px solid ${colors.line};
+  font-weight: 550;
+  justify-content: space-around;
+  position: relative;
 
+  & > div:nth-of-type(1) {
+    left: 0;
+  }
+
+  & > div:nth-of-type(${(props) => props.isSelected}) {
+    border-top: 2px solid ${colors.primary};
+    transition: all 0.1s ease-in-out;
+    color: ${colors.primary};
+  }
+
+  & > div:nth-of-type(3) {
+    right: 0;
+  }
+`
+export const Tab = styled.div`
+  position: absolute;
+  top: -1px;
+  padding: 1rem 3rem;
+  width: 20%;
+  text-align: center;
+  margin-left: 17.2rem;
+
+  & > p {
+    cursor: pointer;
+  }
+`
+export const Tab2 = styled.div`
+  position: absolute;
+  top: -1px;
+  padding: 1rem 3rem;
+  width: 20%;
+  text-align: center;
+  margin-left: 18rem;
+
+  & > p {
+    cursor: pointer;
+  }
+`
 
 export const Stats = styled.div`
   display: flex;
@@ -168,43 +219,6 @@ export const ButtonRow = styled.div`
 export const Button = styled.div`
   display: flex;
   gap: 1rem;
-`
-
-export const Side = styled.div<{ isSelected: number }>`
-  display: flex;
-  width: 73vw;
-  align-items: center;
-  font-size: ${fontSizes.Body};
-  justify-content: center;
-  gap: 6rem;
-  color: ${colors.gray};
-  border-top: 2px solid ${colors.line};
-  font-weight: 500;
-  margin-top: 5rem;
-  position: relative;
-
-  & > div:nth-of-type(1) {
-    left: 0;
-  }
-
-  & > div:nth-of-type(${(props) => props.isSelected}) {
-    border-top: 2px solid ${colors.primary};
-    color: ${colors.primary};
-    margin-top: -1px;
-  }
-
-  & > div:nth-of-type(3) {
-    right: 0;
-  }
-`
-
-export const Tab = styled.div`
-  background-color: ${colors.background};
-  padding: 1rem 3rem;
-  font-size: ${fontSizes.Body};
-  color: ${colors.gray};
-  cursor: pointer;
-  text-align: center;
 `
 
 export const EditButton = styled.button`
