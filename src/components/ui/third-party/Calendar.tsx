@@ -104,9 +104,9 @@ const Weekdays = styled.div`
   text-align: center;
   font-weight: bold;
   margin-bottom: 8px;
-    
-  div:nth-child(1) { color: ${colors.primary}; }
-  div:nth-child(7) { color: #7F96FF; }
+  
+  div:nth-of-type(1) { color: ${colors.primary}; }
+  div:nth-of-type(7) { color: #7F96FF; }
 
   div {
     padding: 4px 0;
