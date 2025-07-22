@@ -93,6 +93,12 @@ export const Title = styled.h2`
   margin: 0;
 `
 
+export const PublicIconWrap = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`
+
 export const ProfileRow = styled.div`
   display: flex;
   gap: 1rem;

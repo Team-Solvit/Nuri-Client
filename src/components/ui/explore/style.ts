@@ -1,16 +1,6 @@
 import styled from "@emotion/styled";
 import {colors, radius, fontSizes} from '@/styles/theme';
 
-export const Container = styled.div`
-    display: flex;
-    width: 100%;
-    height: 100%;
-    z-index: 3;
-    padding: 5% 6% 0% 6%;
-    flex-direction: column;
-    gap: 40px;
-`
-
 export const Search = styled.div`
     display: flex;
     width: 73vw;
