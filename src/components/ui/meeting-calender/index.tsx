@@ -67,7 +67,8 @@ export default function MeetingCalender() {
 	// 이번달 날짜
 	for (let day = 1; day <= daysInMonth; day++) {
 		const currentIndex = cellIndex;
-		const date = new Date(year, month, 1 + (day)).toISOString().split("T")[0];
+		const date = new Date(year, month, day).toLocaleDateString("ko-KR");
+		
 		cells.push(
 			<S.DateCell
 				style={{cursor: meetings[currentIndex] ? "pointer" : "default"}}
