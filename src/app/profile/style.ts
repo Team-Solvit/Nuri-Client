@@ -12,6 +12,9 @@ export const ProfileWrapper = styled.div`
   overflow-y: auto;
   outline: none;
   max-height: 100vh;
+  &::-webkit-scrollbar {
+        display: none;
+    }
 `
 
 
@@ -74,7 +77,7 @@ export const List1 = styled.div`
   align-items: center;
   justify-content: flex-start;
   margin-top: 1rem;
-` 
+`
 
 export const PostList = styled.div`
   display: flex;
