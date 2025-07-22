@@ -8,7 +8,7 @@ export const ProfileWrapper = styled.div`
   background: ${colors.background};
   border-radius: ${radius.lg};
   width: 100%;
-  padding: 4rem 12rem;
+  padding: 4rem;
   overflow-y: auto;
   outline: none;
   max-height: 100vh;
@@ -53,6 +53,7 @@ export const Profile = styled.div`
   display: flex;
   width: 100%;
   height: 28vh;
+  padding: 0rem 8rem;
 `
 
 export const ProfileMain = styled.div`
