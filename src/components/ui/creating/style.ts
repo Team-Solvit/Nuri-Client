@@ -133,6 +133,7 @@ export const Textarea = styled.textarea`
   resize: vertical;
   outline: none;
   margin-top: 1rem;
+  resize: none;
 
   &::placeholder {
     color: ${colors.gray};

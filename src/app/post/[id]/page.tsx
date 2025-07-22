@@ -6,7 +6,7 @@ interface Props {
   params: { id: string };
 }
 
-export default async function FullPostPage({ params }: Props) {
+export default function FullPostPage({ params }: Props) {
   const { id } = params;
   return (
     <Wrapper>
