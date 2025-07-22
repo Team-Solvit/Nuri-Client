@@ -125,7 +125,7 @@ export const RecordHeader = styled.div`
 `;
 
 export const RecordTitle = styled.h2`
-  font-size: ${fontSizes.Display};
+  font-size: ${fontSizes.H2};
   font-weight: 600;
   color: ${colors.text};
 `;

@@ -1,6 +1,9 @@
 'use client'
 
 import styled from '@emotion/styled'
+import Image from 'next/image'
+import ArrowLeft from '@/assets/post/arrow/left.svg'
+import ArrowRight from '@/assets/post/arrow/right.svg'
 import { colors } from "@/styles/theme";
 
 interface CalendarProps {
@@ -35,9 +38,13 @@ export default function Calendar({ selectedDate, onDateChange }: CalendarProps) 
   return (
     <Wrapper>
       <Header>
-        <button onClick={prevMonth}>{'<'}</button>
+        <button onClick={prevMonth}>
+          <Image src={ArrowLeft} alt="이전 달" width={16} height={16} />
+        </button>
         <h1>{year}년 {month + 1}월</h1>
-        <button onClick={nextMonth}>{'>'}</button>
+        <button onClick={nextMonth}>
+          <Image src={ArrowRight} alt="다음 달" width={16} height={16} />
+        </button>
       </Header>
 
       <Weekdays>
@@ -81,13 +88,15 @@ const Wrapper = styled.div`
 
 const Header = styled.div`
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     margin-bottom: 12px;
 
     button {
         background: none;
         border: none;
+        padding: 0.3rem;
+        border-radius: 4px;
         font-size: 1.2rem;
         cursor: pointer;
     }
@@ -95,6 +104,10 @@ const Header = styled.div`
     h1 {
         font-size: 1.25rem;
         margin: 0;
+    }
+
+    button:hover {
+        background: ${colors.line2};
     }
 `
 

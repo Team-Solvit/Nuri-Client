@@ -3,6 +3,7 @@
 import Square from "@/components/ui/button/square"
 import Map from "@/components/ui/googleMap/Map"
 import Popup from "@/components/ui/third-party/Popup"
+import NProgress from "nprogress"
 import { useRouter } from "next/navigation"
 
 const markers = [
@@ -57,6 +58,7 @@ const rooms = [
 export default function BoardingThirdPartyPage() {
   const router = useRouter();
   const handleSquareClick = () => {
+    NProgress.start();
     router.push("/boarding/third-party/home");
   };
 
