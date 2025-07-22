@@ -87,7 +87,7 @@ const Info = styled.div`
 `;
 const MeetingTitle = styled.div`
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 500;
   color: ${colors.text};
   display: flex;
   flex-direction: column;

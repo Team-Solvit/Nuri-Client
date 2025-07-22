@@ -7,16 +7,14 @@ import { useMeetingStore } from "@/store/meeting";
 import * as S from "./style";
 import Square from '@/components/ui/button/square';
 
-
-
-export default function MeetingThirdPartyDetailContainer({ id }: { id: string | undefined }) {
+export default function MeetingThirdPartyDetailContainer() {
   const meeting = useMeetingStore((s) => s.selected);
 
   const parsedTime = useMemo(() => {
     if (!meeting?.time) return { ampm: 'AM', hour: 6, minute: 20 };
     const match = meeting.time.match(/(\d{1,2}):(\d{2})/);
     if (match) {
-      let hour24 = parseInt(match[1], 10);
+      const hour24 = parseInt(match[1], 10);
       const minute = parseInt(match[2], 10);
       let ampm: 'AM' | 'PM' = 'AM';
       let hour = hour24;

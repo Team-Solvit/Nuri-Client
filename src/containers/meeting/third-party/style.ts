@@ -17,11 +17,15 @@ export const Header = styled.header`
 `;
 
 export const HeaderLeft = styled.div`
+
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  
   h1 {
     font-size: 24px;
     margin: 0;
   }
-  
   p {
     font-size: 16px;
     color: #666;

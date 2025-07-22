@@ -6,6 +6,7 @@ import { fontSizes } from '@/styles/theme'
 import Modal from '@/components/layout/modal'
 import RoomDetail from '@/components/ui/third-party/RoomDetail'
 import { useModalStore } from '@/store/modal'
+import Alert from '@/components/ui/alert'
 
 interface Room {
   number: string
@@ -20,9 +21,11 @@ interface PopupProps {
 }
 
 export default function Popup({ id, title, address, rooms }: PopupProps) {
+  const [showAlertKey, setShowAlertKey] = useState<number | null>(null);
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(address)
-  }, [address])
+    navigator.clipboard.writeText(address);
+    setShowAlertKey(Date.now());
+  }, [address]);
 
   const { isOpen, open, close } = useModalStore();
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
@@ -52,6 +55,9 @@ export default function Popup({ id, title, address, rooms }: PopupProps) {
         <Modal>
           <RoomDetail id={id} room={selectedRoom} title={title} address={address} close={close} />
         </Modal>
+      )}
+      {showAlertKey && (
+        <Alert key={showAlertKey} description="주소가 복사되었습니다." success={true} />
       )}
     </PopupContainer>
   )

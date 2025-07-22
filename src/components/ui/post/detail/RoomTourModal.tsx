@@ -13,6 +13,8 @@ import {
   endOfWeek
 } from 'date-fns';
 import Alert from '@/components/ui/alert';
+import ArrowLeft from '@/assets/post/arrow/left.svg';
+import ArrowRight from '@/assets/post/arrow/right.svg';
 
 export default function RoomTourModal() {
   const now = new Date();
@@ -68,8 +70,12 @@ export default function RoomTourModal() {
         <CalendarHeader>
           <MonthTitle>{format(viewMonth, 'yyyy년 M월')}</MonthTitle>
           <NavButtons>
-            <NavButton onClick={() => setViewMonth(addMonths(viewMonth, -1))}>&lt;</NavButton>
-            <NavButton onClick={() => setViewMonth(addMonths(viewMonth, 1))}>&gt;</NavButton>
+            <NavButton onClick={() => setViewMonth(addMonths(viewMonth, -1))}>
+              <Image src={ArrowLeft} alt="이전 달" width={16} height={16} />
+            </NavButton>
+            <NavButton onClick={() => setViewMonth(addMonths(viewMonth, 1))}>
+              <Image src={ArrowRight} alt="다음 달" width={16} height={16} />
+            </NavButton>
           </NavButtons>
         </CalendarHeader>
 
@@ -190,6 +196,7 @@ const Calendar = styled.div`
 const CalendarHeader = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 1rem;
 `;
 const MonthTitle = styled.h3`

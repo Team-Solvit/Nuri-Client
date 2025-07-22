@@ -5,7 +5,7 @@ export const MemberModalWrapper = styled.div`
   padding: 2rem 3rem;
 `;
 
-export const ModalTitle = styled.div`
+export const ModalTitle = styled.h2`
   font-size: ${fontSizes.H2};
   color: ${colors.text};
   margin-bottom: 2rem;
@@ -104,4 +104,21 @@ export const ExpelBtn = styled.button`
   color: ${colors.primary};
   font-size: ${fontSizes.Caption};
   cursor: pointer;
+`;
+
+export const ExpelModalWrapper = styled.div`
+  padding: 2rem 2.5rem;
+  text-align: center;
+`;
+
+export const ExpelModalTitle = styled.div`
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 24px;
+`;
+
+export const ExpelModalBtnRow = styled.div`
+  display: flex;
+  gap: 12px;
+  justify-content: center;
 `;

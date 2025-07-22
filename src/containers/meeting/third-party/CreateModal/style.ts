@@ -22,7 +22,7 @@ export const Section = styled.section`
 `;
 
 export const Label = styled.label`
-  font-size: ${fontSizes.H3};
+  font-size: ${fontSizes.H4};
   color: ${colors.text};
 `;
 
