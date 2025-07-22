@@ -1,9 +1,9 @@
 import styled from "@emotion/styled";
-import {zIndex, radius, fontSizes} from "@/styles/theme";
-import {keyframes, css} from '@emotion/react';
+import { zIndex, radius, fontSizes } from "@/styles/theme";
+import { keyframes, css } from '@emotion/react';
 
 interface Status {
-	success: boolean;
+  success: boolean;
 }
 
 const fadeInUp = keyframes`
@@ -42,10 +42,10 @@ export const Alert = styled.div<{ isLeaving: boolean }>`
   padding: 1.25rem 0;
   top: 3rem;
   right: 3rem;
-  z-index: ${zIndex.overlay};
+  z-index: ${zIndex.modal};
   background-color: white;
   border-radius: ${radius.md};
-  animation: ${({isLeaving}) =>
+  animation: ${({ isLeaving }) =>
     isLeaving
       ? css`${fadeOutDown} 0.5s ease forwards`
       : css`${fadeInUp} 0.5s ease forwards`};

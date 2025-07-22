@@ -39,7 +39,6 @@ export default function PostScroll() {
 		<S.PostScrollContainer>
 			{fakeData.map(post => {
 				const currentIndex = imageIndexMap[post.id] || 0;
-				
 				return (
 					<S.Post
 						key={post.id}

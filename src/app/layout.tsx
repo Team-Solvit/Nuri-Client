@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
-import { GlobalStyles } from '@/components/layout/globalStyle';
+import type {Metadata} from "next";
+import {GlobalStyles} from '@/components/layout/globalStyle';
 import Header from "@/components/ui/header";
+import TopLoadingBar from "@/components/layout/loadingbar";
 
 
 export const metadata: Metadata = {
@@ -9,25 +10,26 @@ export const metadata: Metadata = {
 };
 
 
-export default function RootLayout({ children, modal }: { children: React.ReactNode, modal: React.ReactNode }) {
+export default function RootLayout({children, modal}: { children: React.ReactNode, modal: React.ReactNode }) {
 	return (
 		<html lang="ko">
-			<head />
-			<GlobalStyles />
-			<body style={{ display: 'flex' }}>
-				<Header />
-				<main
-					style={{
-						width: '84.5vw',
-						height: '100vh',
-						maxHeight: '100vh',
-						maxWidth: '84.5vw',
-					}}
-				>
-					{children}
-					{modal}
-				</main>
-			</body>
+		<TopLoadingBar/>
+		<head/>
+		<GlobalStyles/>
+		<body style={{display: 'flex'}}>
+		<Header/>
+		<main
+			style={{
+				width: '84.5vw',
+				height: '100vh',
+				maxHeight: '100vh',
+				maxWidth: '84.5vw',
+			}}
+		>
+			{children}
+			{modal}
+		</main>
+		</body>
 		</html>
 	)
 }
