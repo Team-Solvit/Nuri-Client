@@ -49,6 +49,9 @@ export const PostList = styled.div`
     justify-content: flex-start;
     overflow-y: auto;
     max-height: 70vh;
+    &::-webkit-scrollbar {
+        display: none;
+    }
 ` 
 
 export const PostItem = styled.div`
