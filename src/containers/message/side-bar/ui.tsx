@@ -5,6 +5,7 @@ import UnderArrow from "@/assets/icon/arrow-under.svg"
 import Search from "@/assets/icon/search.svg"
 import Profile from "@/assets/meeting/member-profile.png"
 import {useParams, useRouter} from "next/navigation";
+import NProgress from "nprogress";
 
 export default function MessageSideBar() {
 	const fakeData1 = [
@@ -32,6 +33,7 @@ export default function MessageSideBar() {
 	}
 	const router = useRouter();
 	const handleRouter = (id: number) => {
+		NProgress.start()
 		router.push(`/message/${id}`, {scroll: false});
 	}
 	const params = useParams();

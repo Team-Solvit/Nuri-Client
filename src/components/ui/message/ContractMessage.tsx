@@ -50,14 +50,14 @@ const ContractButtonWrapper = styled.div`
 `;
 
 const MsgTime = styled.div<{ isSent?: boolean }>`
-  font-size: ${fontSizes.Small};
+  font-size: ${fontSizes.Caption};
   color: ${colors.gray};
   font-weight: 300;
   margin-top: 2px;
   text-align: right;
   position: absolute;
   bottom: 0;
-  ${({isSent}) => isSent ? "left: -4rem;" : "right: -4rem;"};
+  ${({isSent}) => isSent ? "left: -4.5rem;" : "right: -4.5rem;"};
 `;
 const DetailButton = styled.button`
   background-color: ${colors.primary};

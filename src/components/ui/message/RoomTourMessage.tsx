@@ -64,14 +64,14 @@ const RoomTourContent = styled.div`
 `;
 
 const MsgTime = styled.div<{ isSent?: boolean }>`
-  font-size: 0.75rem;
+  font-size: ${fontSizes.Caption};
   color: #888;
   font-weight: 300;
   margin-top: 2px;
   text-align: right;
   position: absolute;
   bottom: 0;
-  ${({isSent}) => isSent ? "left: -4rem;" : "right: -4rem;"};
+  ${({isSent}) => isSent ? "left: -4.5rem;" : "right: -4.5rem;"};
 `;
 
 interface RoomTourMessageProps {
