@@ -38,33 +38,6 @@ export const Title = styled.h1`
   font-size: 28px;
   color: ${colors.text};
   margin-bottom: 16px;
-`;
-
-export const ActionButtons = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 2rem;
-`
-
-export const LogoutButton = styled.button`
-  flex: 1;
-  background: #FBE9EB;
-  color: ${colors.text};
-  border: none;
-  padding: 0.8rem 0;
-  border-radius: 10px;
-  cursor: pointer;
-`
-
-export const WithdrawButton = styled.button`
-  flex: 1;
-  background: #FFEAEA;
-  color: red;
-  border: none;
-  padding: 0.8rem 0;
-  border-radius: 10px;
-  cursor: pointer;
 `
 
 export const Section = styled.section`
@@ -140,17 +113,4 @@ export const Input = styled.input`
     color: #8C8C8C;
     font-weight: 200;
   }
-`
-
-export const SaveButton = styled.button`
-  width: 100%;
-  height: 40px;
-  background: ${colors.primary};
-  color: #fff;
-  font-size: 1.1rem;
-  font-weight: 500;
-  border: none;
-  border-radius: 8px;
-  margin-top: 1rem;
-  cursor: pointer;
 `

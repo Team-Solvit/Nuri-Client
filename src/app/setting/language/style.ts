@@ -88,22 +88,8 @@ export const SearchText = styled.input`
   }
 `
 
-export const LangRow = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.2rem;
-`
-
 export const LangName = styled.span`
   font-size: 1.3rem;
   font-weight: 500;
   color: ${colors.text};
-`
-
-export const LangIconWrap = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
 `

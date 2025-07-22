@@ -220,25 +220,3 @@ export const Button = styled.div`
   display: flex;
   gap: 1rem;
 `
-
-export const EditButton = styled.button`
-  background: ${colors.primary};
-  color: ${colors.background};
-  border: none;
-  border-radius: ${radius.md};
-  padding: 0.5rem 1.5rem;
-  font-size: ${fontSizes.Body};
-  font-weight: 500;
-  cursor: pointer;
-`
-
-export const SettingButton = styled.button`
-  background: ${colors.background};
-  color: ${colors.primary};
-  border: 1px solid ${colors.primary};
-  border-radius: ${radius.md};
-  padding: 0.5rem 1.5rem;
-  font-size: ${fontSizes.Body};
-  font-weight: 500;
-  cursor: pointer;
-`
