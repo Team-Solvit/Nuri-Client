@@ -123,6 +123,19 @@ const MemberGrid = styled.div`
   overflow-y: scroll;
   scrollbar-color: #ccc transparent;
   scrollbar-width: thin;
+  padding-right: 8px;
+  background-clip: padding-box;
+
+  &::-webkit-scrollbar {
+	width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+	background: #ccc;
+	border-radius: 8px;
+  }
+  &::-webkit-scrollbar-track {
+	background: transparent;
+  }
 `;
 
 const MemberItem = styled.div`

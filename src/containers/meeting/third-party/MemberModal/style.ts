@@ -105,3 +105,20 @@ export const ExpelBtn = styled.button`
   font-size: ${fontSizes.Caption};
   cursor: pointer;
 `;
+
+export const ExpelModalWrapper = styled.div`
+  padding: 2rem 2.5rem;
+  text-align: center;
+`;
+
+export const ExpelModalTitle = styled.div`
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 24px;
+`;
+
+export const ExpelModalBtnRow = styled.div`
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+`;
