@@ -15,7 +15,7 @@ export const MeetingMember = ({isMember}: { isMember: boolean }) => {
 	]
 	const router = useRouter();
 	const memberClick = (id: number) => {
-		router.push(`/user/${id}`)
+		router.push(`/profile/${id}`)
 	}
 	const {open} = useModalStore();
 	const leaveCheck = (e: React.MouseEvent) => {
@@ -25,7 +25,12 @@ export const MeetingMember = ({isMember}: { isMember: boolean }) => {
 	return (
 		<S.MeetingMemberContainer>
 			{fakeData.map(member => (
-				<S.Member key={member.id} onClick={() => memberClick(member.id)}>
+				<S.Member
+					key={member.id}
+					onClick={() => memberClick(member.id)}
+					role="button"
+					tabIndex={0}
+				>
 					<S.ImgBox>
 						<Image src={Profile} alt="meeting" fill/>
 					</S.ImgBox>

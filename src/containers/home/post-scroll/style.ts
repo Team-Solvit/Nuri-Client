@@ -26,7 +26,6 @@ export const Post = styled.article`
   width: 100%;
   border-radius: ${radius.md};
   border: 1px solid ${colors.line};
-  cursor: pointer;
 `
 export const SliderWrapper = styled.div`
   position: relative;
@@ -66,6 +65,12 @@ export const PostImg = styled.div`
   position: relative;
   cursor: default;
 `
+export const Info = styled.article`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  cursor: pointer;
+`
 
 export const PostInfo = styled.div`
   display: flex;
@@ -73,7 +78,7 @@ export const PostInfo = styled.div`
   padding: 0.5rem 1rem;
 
   & > p {
-    font-size: ${fontSizes.H3};
+    font-size: ${fontSizes.H4};
   }
 `
 export const Thumbnail = styled.div`

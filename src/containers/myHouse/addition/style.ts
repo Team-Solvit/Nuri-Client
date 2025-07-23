@@ -3,7 +3,6 @@ import {colors, fontSizes, radius, zIndex} from '@/styles/theme';
 
 export const Container = styled.div`
   background: ${colors.background};
-  border-radius: ${radius.lg2};
   padding: 3rem 2rem;
   width: 100%;
   max-width: 56.25rem;
@@ -11,6 +10,8 @@ export const Container = styled.div`
   overflow-y: auto;
   margin: 0 auto;
   position: relative;
+  border: none;
+  outline: none;
 `;
 
 export const Title = styled.h1`

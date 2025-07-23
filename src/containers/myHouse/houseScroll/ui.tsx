@@ -7,40 +7,14 @@ import Image from "next/image";
 import Profile from "@/assets/meeting/member-profile.png"
 import {useRouter} from 'next/navigation';
 import {useModalStore} from "@/store/modal";
-
-const fakeData = {
-	roomInfo: {
-		name: '그랜마 하우스',
-		phone: '010-1234-5678',
-		location: '부산광역시 남구 땡땡동',
-		gender: '여성전용',
-		description: "안녕하세요 그랜마 하우스 입니다",
-		nearby_station: "땡땡역",
-		nearby_school: "부산대",
-		meal: true
-		
-	},
-	roomList: [
-		{
-			roomName: '301호',
-			userId: 'huhon123',
-			status: '계약 종료',
-			profile: true,
-		},
-		{
-			roomName: '302호',
-			userId: '',
-			status: '',
-			profile: false,
-			empty: true,
-		},
-	],
-};
+import {fakeData} from "./data";
+import NProgress from "nprogress";
 
 const HouseScroll = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const router = useRouter();
 	const handleLocation = (path: string) => {
+		NProgress.start()
 		router.push(path);
 	}
 	const {open} = useModalStore();
@@ -52,7 +26,7 @@ const HouseScroll = () => {
 		<S.Container>
 			<S.Header>
 				<S.Title>그랜마 하우스</S.Title>
-				<S.Setting onClick={() => handleLocation("/user")}>하숙집 설정</S.Setting>
+				<S.Setting onClick={() => handleLocation("/setting/host")}>하숙집 설정</S.Setting>
 			</S.Header>
 			<S.InfoSection isOpen={isOpen}>
 				<S.InfoRow>

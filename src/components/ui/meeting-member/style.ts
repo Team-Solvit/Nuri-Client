@@ -11,7 +11,8 @@ export const MeetingMemberContainer = styled.div`
   align-items: center;
 `
 
-export const Member = styled.button`
+
+export const Member = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -22,7 +23,13 @@ export const Member = styled.button`
   gap: 1rem;
   cursor: pointer;
   width: 100%;
-`
+
+  &:focus {
+    outline: 2px solid ${colors.primary};
+    outline-offset: 2px;
+  }
+`;
+
 export const ImgBox = styled.div`
   width: 3.5rem;
   height: 3.5rem;

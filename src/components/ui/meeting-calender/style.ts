@@ -58,6 +58,16 @@ export const DateCell = styled.div<{ isOutside?: boolean }>`
     isOutside ? colors.line2 : 'white'};
 `;
 
+export const Schedule = styled.div`
+  width: 100%;
+  padding: 0.2rem;
+  background-color: #FFEDEF;
+  color: ${colors.primary};
+  border-radius: ${radius.sm};
+  border: 1px solid ${colors.primary};
+  font-size: ${fontSizes.Caption};
+  font-weight: 500
+`
 export const Popup = styled.div`
   position: absolute;
   top: -10%;
