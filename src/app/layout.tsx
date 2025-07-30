@@ -14,7 +14,9 @@ export default function RootLayout({children, modal}: { children: React.ReactNod
 	return (
 		<html lang="ko">
 		<TopLoadingBar/>
-		<head/>
+		<head>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		</head>
 		<GlobalStyles/>
 		<body style={{display: 'flex'}}>
 		<Header/>
