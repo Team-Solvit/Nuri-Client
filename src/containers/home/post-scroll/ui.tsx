@@ -60,7 +60,7 @@ export default function PostScroll() {
 							</S.Profile>
 							<S.Nav onClick={(e) => e.stopPropagation()}>
 								<p>{post.subject}</p>
-								<Square text={"채팅하기"} onClick={() => {
+								<Square text={"채팅"} onClick={() => {
 								}} status={true} width={"100px"}/>
 							</S.Nav>
 						</S.PostTitle>
