@@ -73,6 +73,20 @@ export const globalStyles = css`
     box-sizing: border-box;
   }
 
+  .main-container {
+    width: 84.5vw;
+    max-width: 84.5vw;
+    height: 100vh;
+    max-height: 100vh;
+
+    @media screen and (max-width: 393px) {
+      width: 100vw;
+      max-width: 100vw;
+      height: 92vh;
+      max-height: 92vh;
+    }
+  }
+
   body {
     font-family: 'SCoreDream', sans-serif;
     background-color: ${colors.background};
