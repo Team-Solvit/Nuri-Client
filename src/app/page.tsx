@@ -3,6 +3,7 @@
 import PostScroll from "@/containers/home/post-scroll/ui";
 import Navigate from "@/components/ui/navigate/ui";
 import styled from "@emotion/styled";
+import {mq} from "@/styles/media";
 
 export default function Home() {
 	return (
@@ -21,4 +22,9 @@ const HomeContainer = styled.section`
   align-items: flex-start;
   height: 90vh;
   max-height: 90vh;
+
+  ${mq.mobile} {
+    grid-template-columns: 1fr;
+    margin: 0;
+  }
 `
