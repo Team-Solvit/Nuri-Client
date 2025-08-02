@@ -3,10 +3,12 @@
 import PostScroll from "@/containers/home/post-scroll/ui";
 import Navigate from "@/components/ui/navigate/ui";
 import styled from "@emotion/styled";
+import Login from "@/components/ui/login";
 
 export default function Home() {
 	return (
 		<HomeContainer>
+      <Login />
 			<PostScroll/>
 			<Navigate/>
 		</HomeContainer>

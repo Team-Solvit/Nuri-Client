@@ -6,6 +6,7 @@ import { colors, radius, fontSizes } from '@/styles/theme';
 import Square from '@/components/ui/button/square';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { client } from './soket';
 
 export default function Login() {
   const router = useRouter();
@@ -35,7 +36,7 @@ export default function Login() {
               <Right onClick={() => setStep('find-email')}>비밀번호를 잊으셨나요?</Right>
             </Hint>
           </FormGroup>
-          <Square text='로그인' onClick={() => { }} status={true} width='100%' />
+          <Square text='로그인' onClick={() => { client.activate() }} status={true} width='100%' />
           <SocialOther>또는</SocialOther>
           <SocialList>
             <Image src="/login/kakao.svg" alt="카카오 로그인" width={56} height={56} />
