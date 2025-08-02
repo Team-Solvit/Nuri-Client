@@ -42,7 +42,7 @@ export default function Navigate() {
 	] as const
 	return (
 		<S.NavigateContainer>
-			<S.Logo>
+			<S.Logo onClick={() => navigateClick("/")}>
 				<Image
 					src={"/logo.svg"}
 					alt="로고"
