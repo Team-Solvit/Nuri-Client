@@ -20,14 +20,7 @@ export default function RootLayout({children, modal}: { children: React.ReactNod
 		<GlobalStyles/>
 		<body style={{display: 'flex'}}>
 		<Header/>
-		<main
-			style={{
-				width: '84.5vw',
-				height: '100vh',
-				maxHeight: '100vh',
-				maxWidth: '84.5vw',
-			}}
-		>
+		<main className="main-container">
 			{children}
 			{modal}
 		</main>
