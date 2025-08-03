@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import {colors, fontSizes, radius, zIndex} from '@/styles/theme';
+import {mq} from "@/styles/media";
 
 export const Container = styled.div`
   background: ${colors.background};
@@ -19,16 +20,35 @@ export const Title = styled.h1`
   font-size: ${fontSizes.H2};
   color: ${colors.text};
   margin-bottom: 2rem;
+
+  ${mq.mobile} {
+    font-size: ${fontSizes.H3};
+  }
 `;
 
 export const Section = styled.section`
   margin-bottom: 2rem;
+
+  & > p {
+    color: ${colors.primary};
+    padding: 0.5rem 0.25rem;
+  }
+
+  ${mq.mobile} {
+    &:last-of-type {
+      margin-bottom: 6rem;
+    }
+  }
 `;
 
 export const SectionRow = styled.div`
   display: flex;
   gap: 1.5rem;
   margin-bottom: 2rem;
+
+  ${mq.mobile} {
+    flex-direction: column;
+  }
 `;
 
 export const Label = styled.label`
@@ -37,6 +57,11 @@ export const Label = styled.label`
   color: ${colors.text};
   margin-bottom: 0.75rem;
   display: block;
+
+  ${mq.mobile} {
+    font-size: ${fontSizes.H4};
+  }
+}
 `;
 
 export const PhotoUploadBox = styled.div`
@@ -93,6 +118,11 @@ export const InputWithAddonRow = styled.div`
   flex-direction: column;
   align-items: flex-start;
 
+  ${mq.mobile} {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+
   .input-row {
     display: flex;
     align-items: center;
@@ -124,6 +154,12 @@ export const ContractPeriodWrap = styled.div`
   display: flex;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+
+  & > div {
+    width: max-content;
+    padding: 0.5rem 1rem;
+  }
 `;
 
 
@@ -132,6 +168,18 @@ export const ContractPeriodRow = styled.div`
   align-items: center;
   gap: 1rem;
   margin-bottom: 1rem;
+  width: 100%;
+
+  ${mq.mobile} {
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    & > div:nth-of-type(3) {
+      width: max-content;
+      padding: 0.5rem 1rem;
+      margin-left: auto;
+    }
+  }
 `;
 
 export const ContractInputWrap = styled.div`
@@ -141,7 +189,7 @@ export const ContractInputWrap = styled.div`
   border-radius: ${radius.md};
   background: #fff;
   padding: 0.8rem;
-  width: 100%;
+  width: 47%;
 
   input {
     border: none;
@@ -173,6 +221,10 @@ export const FacilityCategory = styled.div`
   color: ${colors.text};
   font-weight: 600;
   margin-top: 1rem;
+
+  ${mq.mobile} {
+    font-weight: 500;
+  }
 `;
 
 export const FacilityCheckbox = styled.label`
@@ -223,6 +275,14 @@ export const FixedFooter = styled.div`
   display: grid;
   gap: 1rem;
   grid-template-columns: 1fr 1fr;
+
+  ${mq.mobile} {
+    position: fixed;
+    bottom: 4rem;
+    left: 0;
+    background: none;
+    padding: 1rem 2rem;
+  }
 `;
 
 

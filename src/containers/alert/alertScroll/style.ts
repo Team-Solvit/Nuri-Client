@@ -28,15 +28,15 @@ export const Alert = styled.article`
   align-items: center;
   border-bottom: 1px solid ${colors.line};
 
-  &:first-child {
+  &:first-of-type {
     ${mq.mobile} {
       margin-top: 6rem;
     }
   }
 
-  &:last-child {
+  &:last-of-type {
     ${mq.mobile} {
-      margin-bottom: 6rem;
+      margin-bottom: 3rem;
     }
   }
 `
@@ -64,9 +64,4 @@ export const Info = styled.div`
   align-items: flex-start;
   gap: 0.5rem;
   padding: 0 1rem;
-`
-
-export const Content = styled.p`
-  font-size: ${fontSizes.Body};
-  color: ${colors.gray};
 `
