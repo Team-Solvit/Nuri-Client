@@ -1,7 +1,8 @@
 import styled from "@emotion/styled";
 import {colors, fontSizes, radius} from "@/styles/theme";
+import {mq} from "@/styles/media";
 
-export const MessageContainer = styled.section`
+export const MessageContainer = styled.section<{ id: string }>`
   width: 100%;
   height: 100%;
   display: flex;
@@ -11,6 +12,10 @@ export const MessageContainer = styled.section`
   background-color: ${colors.background};
   padding: 3rem 0;
   overflow-y: scroll;
+
+  ${mq.mobile} {
+    ${({id}) => id && 'display: none;'}
+  }
 `
 
 export const Search = styled.div`

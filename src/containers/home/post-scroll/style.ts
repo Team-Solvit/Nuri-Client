@@ -161,7 +161,7 @@ export const User = styled.div`
 `
 export const Nav = styled.div`
   display: flex;
-  width: 20%;
+  width: 22%;
   align-items: center;
   justify-content: flex-end;
   gap: 0.5rem;
