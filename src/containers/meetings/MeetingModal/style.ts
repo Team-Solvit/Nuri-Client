@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import {colors, fontSizes, radius} from "@/styles/theme";
+import {mq} from "@/styles/media";
 
 export const ModalContainer = styled.div`
   width: 60vw;
@@ -18,6 +19,11 @@ export const ModalContainer = styled.div`
   &::-webkit-scrollbar {
     width: 0px;
     height: 0px;
+  }
+
+  ${mq.mobile} {
+    width: 90vw;
+    height: 80vh;
   }
 
 `
@@ -48,19 +54,37 @@ export const Content = styled.div`
   flex-direction: column;
   gap: 2rem;
   margin-top: 8rem;
+
+  ${mq.mobile} {
+    padding: 2rem 1rem;
+  }
+`
+export const SignBtnBox = styled.div`
+  ${mq.mobile} {
+    position: absolute;
+    right: 0;
+    top: -5rem;
+  }
 `
 
 export const TitleBox = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+
+  ${mq.mobile} {
+    position: relative;
+  }
 `
 export const Info = styled.div`
   display: flex;
   gap: 1.4rem;
   align-items: center;
   width: 80%;
+
+  ${mq.mobile} {
+    width: 100%;
+  }
 
 `
 export const ImgBox = styled.div`
@@ -69,6 +93,11 @@ export const ImgBox = styled.div`
   border-radius: ${radius.md};
   position: relative;
   overflow: hidden;
+
+  ${mq.mobile} {
+    width: 4rem;
+    height: 4rem;
+  }
 `
 export const Name = styled.div`
   display: flex;
@@ -80,6 +109,14 @@ export const Name = styled.div`
     font-weight: 600
   }
 
+  ${mq.mobile} {
+    max-width: 60%;
+
+    & > h3 {
+      font-size: ${fontSizes.H3};
+    }
+  }
+
   & > p {
     font-size: ${fontSizes.Body};
     color: ${colors.gray};
@@ -88,7 +125,6 @@ export const Name = styled.div`
 export const Description = styled.p`
   font-size: ${fontSizes.Body};
   color: ${colors.text};
-  margin-bottom: 1rem;
   line-height: 140%;
 `
 export const Nav = styled.div<{ isSelected: number }>`
@@ -98,11 +134,13 @@ export const Nav = styled.div<{ isSelected: number }>`
   align-items: center;
   justify-content: space-around;
   font-size: ${fontSizes.Body};
-  color: ${colors.gray};
-  gap: 0.5rem;
-  border-top: 2px solid ${colors.line};
   font-weight: 550;
   position: relative;
+
+  ${mq.mobile} {
+    justify-content: space-between;
+    width: 300px;
+  }
 
   & > div:nth-of-type(1) {
     left: 0;
@@ -112,18 +150,25 @@ export const Nav = styled.div<{ isSelected: number }>`
     right: 0;
   }
 
+  & > div {
+    transition: all 0.1s ease-in-out;
+    color: ${colors.gray};
+    border-top: 2px solid ${colors.line};
+  }
+
   & > div:nth-of-type(${(props) => props.isSelected}) {
     border-top: 2px solid ${colors.primary};
-    transition: all 0.1s ease-in-out;
     color: ${colors.primary};
   }
 `
 export const PBox = styled.div`
-  position: absolute;
-  top: -1px;
   padding: 1.5rem 5rem;
   width: 33.3%;
   text-align: center;
+
+  ${mq.mobile} {
+    padding: 1.25rem 0;
+  }
 
   & > p {
     font-weight: 500;

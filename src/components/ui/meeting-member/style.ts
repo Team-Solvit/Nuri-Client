@@ -1,14 +1,21 @@
 import styled from "@emotion/styled";
 import {colors, fontSizes, radius} from "@/styles/theme";
+import {mq} from "@/styles/media";
 
 export const MeetingMemberContainer = styled.div`
   width: calc(100% - 10rem);
-  margin: 4.5rem 0;
+  margin: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
   justify-content: center;
   align-items: center;
+
+  ${mq.mobile} {
+    width: calc(100% - 2rem);
+    grid-template-columns: 1fr;
+    margin-bottom: 4rem;
+  }
 `
 
 

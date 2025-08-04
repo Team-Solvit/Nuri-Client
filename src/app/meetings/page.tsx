@@ -41,7 +41,13 @@ export default function Meetings() {
 		{id: 2, title: "모임2", content: "누구보다 상냥하게", personnel: 1, maxPersonnel: 3},
 	]
 	const [isAccession, setIsAccession] = useState(false);
-	const AccessionData: Accession = {id: 1, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3}
+	const AccessionData: Accession = {
+		id: 1,
+		title: "다함께dddddddddd 놀자 동네",
+		content: "dajflkdjskfjfj",
+		personnel: 2,
+		maxPersonnel: 3
+	}
 	return (
 		<>
 			<GoogleMap markers={markers} label={(m) => rooms[m.id - 1].title} renderPopup={(marker: typeof markers[0]) => (
