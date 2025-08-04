@@ -39,6 +39,7 @@ export default function Header() {
 					return (
 						<S.MenuItem
 							key={path}
+							label={label}
 							active={active}
 							onClick={() => handleMenuClick(path)}
 						>
