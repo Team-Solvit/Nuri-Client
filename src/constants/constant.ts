@@ -1,0 +1,2 @@
+export const MESSAGE_MAX_WIDTH_MOBILE = 220;
+export const MESSAGE_MAX_WIDTH_DESKTOP = 400;

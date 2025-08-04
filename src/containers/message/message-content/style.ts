@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import {colors, fontSizes, radius, zIndex} from '@/styles/theme';
+import {mq} from "@/styles/media";
 
 export const ContainerBox = styled.section`
   width: 100%;
@@ -42,26 +43,32 @@ export const DateDivider = styled.div`
   }
 `;
 
-export const ReceivedMsgRow = styled.div`
+export const ReceivedMsgRow = styled.div<{ isSameUser: boolean }>`
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 12px;
-  margin-bottom: 0.5rem;
+  ${(props) => props.isSameUser ? "margin-bottom: 2rem;" : null}
 `;
 
 export const ProfileImg = styled.div<{ isFirst: boolean }>`
   position: relative;
   overflow: hidden;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
   background: ${(props) => (props.isFirst ? "#e0e0e0" : "#ffffff")};
+
+  ${mq.mobile} {
+    width: 30px;
+    height: 30px;
+  }
 `;
 
-export const SentMsgRow = styled.div`
+export const SentMsgRow = styled.div<{ isSameUser: boolean }>`
   display: flex;
   justify-content: flex-end;
+  ${(props) => props.isSameUser ? "margin-bottom: 2rem;" : null}
 `;
 
 export const ReceivedMsgAndTimeWrapper = styled.div<{ isHaveReply: string | undefined }>`
@@ -80,7 +87,7 @@ export const ReceivedMsgAndTimeWrapper = styled.div<{ isHaveReply: string | unde
 export const MsgHoverIcons = styled.div`
   position: absolute;
   bottom: 0;
-  right: -4rem;
+  right: -2.5rem;
   display: flex;
   gap: 0.5rem;
   background: ${colors.background};

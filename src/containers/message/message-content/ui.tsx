@@ -4,8 +4,7 @@ import * as S from "./style"
 import {fakeData} from "./data"
 import Profile from "@/assets/meeting/member-profile.png"
 import Image from "next/image"
-import {useEffect, useRef, useState} from "react";
-import Heart from "@/assets/icon/heart.svg"
+import React, {useEffect, useRef, useState} from "react";
 import Reply from "@/assets/icon/reply.svg"
 import Plus from "@/assets/icon/plus.svg";
 import ContractModal from "@/containers/message/contract-modal/ui"
@@ -76,6 +75,7 @@ export default function MessageContent() {
 			
 			<S.MessageContentContainer ref={containerRef}>
 				{fakeData.map((msg, idx) => {
+					const nextUser = idx < fakeData.length && fakeData[idx + 1]?.type;
 					const showDate = msg.date && msg.date !== lastDate;
 					lastDate = msg.date || lastDate;
 					const isLastOfTime =
@@ -141,17 +141,18 @@ export default function MessageContent() {
 										time={isLastOfTime ? msg.time : undefined}
 									/>
 								)}
-								<BasicMessage text={msg.text} time={isLastOfTime ? msg.time : undefined} isSent={msg.type === 'sent'}/>
+								<BasicMessage text={msg.text}
+								              time={isLastOfTime ? msg.time : undefined}
+								              isSent={msg.type === 'sent'}/>
 							</>
 						);
 					};
-					
 					return (
 						<div key={msg.id}>
 							{showDate && <S.DateDivider>{msg.date}</S.DateDivider>}
 							
 							{msg.type === 'received' ? (
-								<S.ReceivedMsgRow>
+								<S.ReceivedMsgRow isSameUser={nextUser !== msg.type}>
 									{isFirstOfTime ? (
 										<S.ProfileImg isFirst={true}>
 											{msg.profile && <Image src={Profile} fill alt={msg.name || 'profile'}/>}
@@ -171,12 +172,11 @@ export default function MessageContent() {
 												style={{cursor: 'pointer'}}
 												onClick={() => setReplyInfo({name: msg.name || '', text: msg.text})}
 											/>
-											<Image src={Heart} width={20} height={20} alt="heart"/>
 										</S.MsgHoverIcons>
 									</S.ReceivedMsgAndTimeWrapper>
 								</S.ReceivedMsgRow>
 							) : (
-								<S.SentMsgRow>
+								<S.SentMsgRow isSameUser={nextUser !== msg.type}>
 									<S.SentMsgAndTimeWrapper isHaveReply={msg.replyTo?.text || ""}>
 										{renderMessageBody()}
 									</S.SentMsgAndTimeWrapper>

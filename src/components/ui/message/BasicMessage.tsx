@@ -1,15 +1,23 @@
 import styled from "@emotion/styled";
-import {colors, fontSizes, zIndex} from '@/styles/theme';
+import {colors, fontSizes, radius, zIndex} from '@/styles/theme';
+import {mq} from "@/styles/media";
+import {MESSAGE_MAX_WIDTH_DESKTOP, MESSAGE_MAX_WIDTH_MOBILE} from "@/constants/constant";
 import React from "react";
 
 const MsgBubble = styled.div<{ isSent?: boolean }>`
   background: ${(props) => props.isSent ? colors.primary : colors.line2};
-  border-radius: 16px;
-  padding: 12px 16px;
-  max-width: 320px;
+  border-radius: ${radius.lg};
+  padding: 0.8rem 1rem;
+  max-width: ${MESSAGE_MAX_WIDTH_DESKTOP}px;
   font-size: ${fontSizes.Body};
   font-weight: 200;
   color: ${colors.text};
+
+  ${mq.mobile} {
+    padding: 0.6rem 0.8rem;
+    border-radius: 12px;
+    max-width: ${MESSAGE_MAX_WIDTH_MOBILE}px;
+  }
 `;
 
 const MsgText = styled.div<{ isSent?: boolean }>`
