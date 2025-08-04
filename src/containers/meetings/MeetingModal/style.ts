@@ -139,7 +139,7 @@ export const Nav = styled.div<{ isSelected: number }>`
 
   ${mq.mobile} {
     justify-content: space-between;
-    width: 300px;
+    width: calc(100% - 2rem);
   }
 
   & > div:nth-of-type(1) {
