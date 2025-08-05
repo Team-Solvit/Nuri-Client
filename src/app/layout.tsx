@@ -2,6 +2,8 @@ import type {Metadata} from "next";
 import {GlobalStyles} from '@/components/layout/globalStyle';
 import Header from "@/components/ui/header";
 import TopLoadingBar from "@/components/layout/loadingbar";
+import React from "react";
+import {Providers} from "@/components/layout/probider";
 
 
 export const metadata: Metadata = {
@@ -19,11 +21,13 @@ export default function RootLayout({children, modal}: { children: React.ReactNod
 		</head>
 		<GlobalStyles/>
 		<body style={{display: 'flex'}}>
-		<Header/>
-		<main className="main-container">
-			{children}
-			{modal}
-		</main>
+		<Providers>
+			<Header/>
+			<main className="main-container">
+				{children}
+				{modal}
+			</main>
+		</Providers>
 		</body>
 		</html>
 	)
