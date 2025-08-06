@@ -45,7 +45,7 @@ export const Menu = styled.nav`
     justify-content: space-around;
   }
 `;
-export const MenuItem = styled.div<{ active?: boolean, label?: string }>`
+export const MenuItem = styled.div<{ active?: boolean, label?: string, order?: number }>`
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -68,32 +68,15 @@ export const MenuItem = styled.div<{ active?: boolean, label?: string }>`
   }
 
   ${mq.mobile} {
-
     ${({label}) => label?.includes("제3자") && `
       display: none;
     `}
-
-    ${({ label }) => {
-      switch (label) {
-        case "홈":
-          return "order: 0;";
-        case "탐색":
-          return "order: 1;";
-        case "만들기":
-          return "order: 2;";
-        case "모임":
-          return "order: 3;";
-        case "프로필":
-          return "order: 4;";
-        default:
-          return "";
-      }
-    }}
-
+    ${({ order }) => order !== undefined && `order: ${order};`}
     flex-direction: column;
     & > div {
       display: none;
     }
+  }
 `;
 
 export const HeaderBottom = styled.div`
