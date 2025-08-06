@@ -1,6 +1,7 @@
 'use client'
 
 import Square from "@/components/ui/button/square";
+import { mq } from "@/styles/media";
 import { colors, fontSizes } from "@/styles/theme";
 import styled from "@emotion/styled";
 import Image from "next/image";
@@ -19,6 +20,8 @@ export default function RegisterSuccessContainer() {
 }
 
 const Wrapper = styled.div`
+  width: 50vw;
+  height: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -31,5 +34,9 @@ const Wrapper = styled.div`
   p {
     color: ${colors.gray};
     font-size: ${fontSizes.H4};
+  }
+
+  ${mq.mobile} {
+    width: 100%;
   }
 `;
