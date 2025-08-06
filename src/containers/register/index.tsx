@@ -219,7 +219,7 @@ export default function RegisterContainer() {
                   onChange={e => onChangeField('verificationCode', e.target.value)}
                   placeholder="인증 번호를 입력해주세요."
                 />
-                <Square text="인증" onClick={() => { }} status={true} width='100%' />
+                <Square text="인증" onClick={() => { }} status={true} width='fit-content' />
               </S.InputButtonGroup>
             </S.FormGroup>
           </>
