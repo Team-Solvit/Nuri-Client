@@ -1,15 +1,29 @@
 import styled from "@emotion/styled";
 import {colors, fontSizes, radius, zIndex} from "@/styles/theme";
 import {css} from "@emotion/react";
+import {mq} from "@/styles/media";
 
 export const PostScrollContainer = styled.section`
   display: flex;
   flex-direction: column;
   gap: 3rem;
+
+  ${mq.mobile} {
+    gap: 0;
+
+    & > article:first-child {
+      margin-top: 6rem;
+    }
+
+    & > article {
+      margin-top: 3rem;
+    }
+  }
+
   width: 100%;
   height: 100%;
   overflow-y: scroll;
-  padding: 0 0 2rem 0;
+  padding: 0 1rem 2rem 1rem;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE, Edge */
 
@@ -64,6 +78,10 @@ export const PostImg = styled.div`
   border-radius: ${radius.md};
   position: relative;
   cursor: default;
+
+  ${mq.mobile} {
+    height: 30vh;
+  }
 `
 export const Info = styled.article`
   display: flex;
@@ -119,6 +137,12 @@ export const Arrow = styled.div<{ status: boolean, isHover: boolean }>`
 
   opacity: ${({isHover}) => (isHover ? 1 : 0)};
   pointer-events: ${({isHover}) => (isHover ? 'auto' : 'none')};
+
+  ${mq.mobile} {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -141,7 +165,7 @@ export const PostDesc = styled.p`
 export const Profile = styled.div`
   display: flex;
   align-items: center;
-  width: 80%;
+  width: 70%;
   height: 100%;
   gap: 0.8rem;
 `
@@ -168,6 +192,14 @@ export const Nav = styled.div`
   font-size: ${fontSizes.Body};
   font-weight: 500;
   color: ${colors.gray};
+
+  ${mq.mobile} {
+    width: 30%;
+
+    & > p {
+      display: none;
+    }
+  }
 `
 export const Interactive = styled.div`
   display: flex;

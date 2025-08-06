@@ -42,24 +42,34 @@ export default function Navigate() {
 	] as const
 	return (
 		<S.NavigateContainer>
-			{NAVIGATE_ITEMS.map(item => {
-				return (
-					<S.NavigateBtn
-						key={item.path}
-						isActive={pathname === item.path}
-						onClick={() => navigateClick(item.path)}
-						role="button"
-						aria-label={item.aria_label}
-						aria-current={item.active}
-					>
-						<S.IconBox>
-							<Image src={item.icon} alt={item.label} width={32} height={32}/>
-							{/*<S.Count>1</S.Count>*/}
-						</S.IconBox>
-						<p>{item.label}</p>
-					</S.NavigateBtn>
-				)
-			})}
+			<S.Logo onClick={() => navigateClick("/")}>
+				<Image
+					src={"/logo.svg"}
+					alt="로고"
+					fill
+					priority
+				/>
+			</S.Logo>
+			<S.BtnBox>
+				{NAVIGATE_ITEMS.map(item => {
+					return (
+						<S.NavigateBtn
+							key={item.path}
+							isActive={pathname === item.path}
+							onClick={() => navigateClick(item.path)}
+							role="button"
+							aria-label={item.aria_label}
+							aria-current={item.active}
+						>
+							<S.IconBox>
+								<Image src={item.icon} alt={item.label} width={32} height={32}/>
+								{/*<S.Count>1</S.Count>*/}
+							</S.IconBox>
+							<p>{item.label}</p>
+						</S.NavigateBtn>
+					)
+				})}
+			</S.BtnBox>
 		</S.NavigateContainer>
 	)
 }
