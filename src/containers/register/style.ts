@@ -1,18 +1,16 @@
 import { fontSizes } from '@/styles/theme';
-export const ErrorMessage = styled.div`
-  color: ${colors.error || '#ff4d4f'};
-  font-size: ${fontSizes?.Small || '0.875rem'};
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-  text-align: left;
-`;
 import styled from '@emotion/styled';
 import { colors } from '@/styles/theme';
+import { mq } from '@/styles/media';
 
 export const Wrapper = styled.div`
   width: 50vw; 
   margin: 0 auto;
   padding: 24px;
+
+  ${mq.mobile} {
+    width: 100%;
+  }
 `;
 
 export const Header = styled.div`
@@ -47,7 +45,7 @@ export const ProgressLine = styled.div<{ progress: number }>`
   border-radius: 2px;
   z-index: 2;
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  width: ${({ progress }) => (progress / 4) * (100 - 40)}%;
+  width: ${({ progress }) => (progress / 4) * (100-40)}%;
 `;
 
 export const Step = styled.div`
@@ -121,12 +119,13 @@ transition: all 0.2s ease;
 `;
 
 export const Content = styled.div`
-background: rgba(255, 255, 255, 0.95);
-backdrop - filter: blur(20px);
-border - radius: 20px;
-padding: 32px;
-box - shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  ${mq.mobile} {
+    padding: 8px;
+  }
 `;
 
 export const Title = styled.h2`
@@ -177,16 +176,23 @@ export const InputButtonGroup = styled.div`
   gap: 1rem;
 `;
 
+export const SelectWrapper = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
 export const Select = styled.select`
   width: 100%;
-  padding: 16px 20px;
+  padding: 16px 40px 16px 20px;
   border: 2px solid #e5e7eb;
   border-radius: 12px;
   font-size: 14px;
   cursor: pointer;
+  appearance: none;
 
   &:focus {
     border: none;
+    outline: 2px solid #FF4C61;
   }
 `;
 
@@ -230,4 +236,12 @@ export const ButtonGroup = styled.div`
   display: flex;
   gap: 16px;
   margin-top: 32px;
+`;
+
+export const ErrorMessage = styled.div`
+  color: ${colors.error || '#ff4d4f'};
+  font-size: ${fontSizes?.Small || '0.875rem'};
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  text-align: left;
 `;

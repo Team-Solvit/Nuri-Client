@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import {css} from '@emotion/react'
 import {colors} from "@/styles/theme"
+import { mq } from './media'
 
 export const globalStyles = css`
   @font-face {
@@ -79,7 +80,7 @@ export const globalStyles = css`
     height: 100vh;
     max-height: 100vh;
 
-    @media screen and (max-width: 393px) {
+    ${mq.mobile} {
       width: 100vw;
       max-width: 100vw;
       height: 92vh;
