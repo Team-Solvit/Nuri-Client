@@ -176,16 +176,23 @@ export const InputButtonGroup = styled.div`
   gap: 1rem;
 `;
 
+export const SelectWrapper = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
 export const Select = styled.select`
   width: 100%;
-  padding: 16px 20px;
+  padding: 16px 40px 16px 20px;
   border: 2px solid #e5e7eb;
   border-radius: 12px;
   font-size: 14px;
   cursor: pointer;
+  appearance: none;
 
   &:focus {
     border: none;
+    outline: 2px solid #FF4C61;
   }
 `;
 
