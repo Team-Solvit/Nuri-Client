@@ -1,6 +1,7 @@
 'use client'
 
 import {usePathname, useRouter} from 'next/navigation'
+import {useEffect, useState} from 'react'
 import Image from 'next/image'
 import * as S from './style'
 import NProgress from "nprogress";
@@ -18,11 +19,18 @@ const MENU_ITEMS = [
 export default function Header() {
 	const pathname = usePathname()
 	const router = useRouter()
+  const [isMobile, setIsMobile] = useState(false);
+
+	useEffect(() => {
+		setIsMobile(window.innerWidth <= 430);
+	}, []);
 	
 	const handleMenuClick = (path: string) => {
 		NProgress.start()
 		router.push(path)
 	}
+
+	if (isMobile && pathname.startsWith('/register')) return null
 	
 	return (
 		<S.HeaderContainer>
