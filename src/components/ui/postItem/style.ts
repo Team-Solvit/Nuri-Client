@@ -1,27 +1,7 @@
 import styled from "@emotion/styled";
 import {colors, radius, fontSizes} from '@/styles/theme';
+import { mq } from '@/styles/media';
 
-export const Container = styled.div`
-    display: flex;
-    width: 100%;
-    height: 100%;
-    z-index: 3;
-    flex-direction: column;
-    gap: 40px;
-`
-
-export const Dropdown = styled.div`
-    display: flex;
-    gap: 15px;
-`
-
-export const PostList = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    overflow-y: auto;
-    max-height: 70vh;
-` 
 
 export const PostItem = styled.div`
     display: flex;
@@ -32,14 +12,23 @@ export const PostItem = styled.div`
     border-radius: ${radius.md};
     background-color: ${colors.background};
     cursor: pointer;
-`
 
+    ${mq.mobile} {
+        width: 87.5vw;
+        height: 12vh;
+        gap: 4rem;
+    }
+`
 
 export const PostMain = styled.div`
     display: flex;
     flex-direction: column;
     color: ${colors.gray};
     gap: 2px;
+
+    ${mq.mobile} {
+        width: 20vw;
+    }
 `
 
 export const Profile = styled.div`
@@ -51,11 +40,20 @@ export const Profile = styled.div`
 
 export const PostUser = styled.span`
     font-size: ${fontSizes.Body};
+
+    ${mq.mobile} {
+        font-size: ${fontSizes.Caption};
+    }
 `
 
 export const PostRegion = styled.span`
     font-size: 12px;
     color: ${colors.gray};
+
+    ${mq.mobile} {
+        font-size: ${fontSizes.Caption};
+        margin-top: 0.5rem;
+  }
 `
 
 export const Post = styled.div`
@@ -71,6 +69,11 @@ export const PostThumbnail = styled.div`
     position: relative;
     border-radius: 10px;
     overflow: hidden;
+
+    ${mq.mobile} {
+        width: 20vw;
+        height: 8.5vh;
+  }
 `
 
 export const PostTitle = styled.p`
@@ -78,9 +81,17 @@ export const PostTitle = styled.p`
     font-weight: 500;
     color: ${colors.text};
     margin-bottom: 6px;
+
+    ${mq.mobile} {
+        font-size: ${fontSizes.Caption};
+  }
 `
 
 export const PostPrice = styled.div`
     color: ${colors.text};
     font-weight: 300;
+
+    ${mq.mobile} {
+        width: 30vw;
+  }
 `

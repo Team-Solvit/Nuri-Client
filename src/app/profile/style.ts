@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import { colors, fontSizes, radius } from '@/styles/theme';
+import { mq } from '@/styles/media';
 
 export const ProfileWrapper = styled.div`
   display: flex;
@@ -13,8 +14,16 @@ export const ProfileWrapper = styled.div`
   outline: none;
   max-height: 100vh;
   &::-webkit-scrollbar {
-        display: none;
-    }
+       display: none;
+  }
+
+  ${mq.mobile} {
+    padding: 0;
+    max-height: 100vh;
+    width: 100%;
+    background: ${colors.background};
+    overflow-y: auto;
+  }
 `
 
 
@@ -37,19 +46,38 @@ export const ProfileImage = styled.div`
     background-color: rgba(0, 0, 0, 0.4);
     z-index: 1;
   }
+
+  ${mq.mobile} {
+    width: 31vw;
+    height: 16vh;
+    margin-left: 1.5rem;
+    margin-top: 6rem;
+  }
 `
+
 
 export const PlusIcon = styled.div`
   position: absolute;
   right: 2.5rem;
   bottom: 2.5rem;
   z-index: 2;
+
+  ${mq.mobile} {
+    right: 2rem;
+    bottom: 1.9rem;
+  }
 `
 
 
 export const Nickname = styled.div`
   font-size: ${fontSizes.H3};
   margin-bottom: 1rem;
+
+  ${mq.mobile} {
+    font-size: 20px;
+    margin-bottom: 0;
+    margin-left: -10rem;
+  }
 `
 
 export const Profile = styled.div`
@@ -57,6 +85,14 @@ export const Profile = styled.div`
   width: 100%;
   height: 28vh;
   padding: 0rem 8rem;
+
+  ${mq.mobile} {
+    flex-direction: row;
+    width: 100%;
+    height: auto;
+    padding: 0;
+    position: relative;
+  }
 `
 
 export const ProfileMain = styled.div`
@@ -64,10 +100,24 @@ export const ProfileMain = styled.div`
   flex-direction: column;
   gap: 20px;
   margin-left: 8rem;
+
+  ${mq.mobile} {
+    margin-left: 0;
+    gap: 0;
+    flex: 1;
+  }
 `
 
 export const introduction = styled.span`
     color: ${colors.gray};
+
+    ${mq.mobile} {
+      font-size: ${fontSizes.Caption};
+      font-weight: 200;
+      margin-top: 10px;
+      margin-left: 1.5rem;
+      display: block;
+    }
 `
 
 export const List1 = styled.div`
@@ -77,6 +127,13 @@ export const List1 = styled.div`
   align-items: center;
   justify-content: flex-start;
   margin-top: 1rem;
+
+  ${mq.mobile} {
+    gap: 18px;
+    margin-top: 0;
+    padding: 0 16px;
+    width: 100%;
+  }
 `
 
 export const PostList = styled.div`
@@ -85,6 +142,11 @@ export const PostList = styled.div`
   width: 100%;
   min-width: 73vw;
   margin-top: 3rem;
+
+  ${mq.mobile} {
+    margin-top: 3.5rem;
+    padding: 0 16px;
+  }
 `
 
 export const List2 = styled.div`
@@ -93,6 +155,12 @@ export const List2 = styled.div`
   gap: 8px;
   width: 100%;
   margin-top: 1rem;
+
+  ${mq.mobile} {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 0;
+  }
 `
 
 
@@ -108,6 +176,16 @@ export const PostItem = styled.div`
   cursor: pointer;
   transition: background-color 0.3s ease;
   flex-shrink: 0;
+
+  ${mq.mobile} {
+    width: 100%;
+    gap: 0;
+    padding: 12.62px;
+    height: 81px;
+    border: 0.37px solid #8C8C8C;
+    border-radius: 11.13px;
+    background: ${colors.background};
+  }
 `
 
 export const Side = styled.div<{ isSelected: number }>`
@@ -136,6 +214,14 @@ export const Side = styled.div<{ isSelected: number }>`
   & > div:nth-of-type(3) {
     right: 0;
   }
+
+  ${mq.mobile} {
+    width: 100%;
+    margin-top: 3rem;
+    border-top: 2px solid #B9B9B9;
+    position: relative;
+    height: 40px;
+  }
 `
 export const Tab = styled.div`
   position: absolute;
@@ -147,6 +233,21 @@ export const Tab = styled.div`
 
   & > p {
     cursor: pointer;
+  }
+
+  ${mq.mobile} {
+    width: 3rem;
+    margin-top: -1px;
+    text-align: center;
+    margin-left: 5rem;
+    font-size: 16px;
+    font-weight: 500;
+
+    & > p {
+      cursor: pointer;
+      width: 3rem;
+      margin-left: -1.3rem;
+    }
   }
 `
 export const Tab2 = styled.div`
@@ -160,6 +261,22 @@ export const Tab2 = styled.div`
   & > p {
     cursor: pointer;
   }
+
+  ${mq.mobile} {
+    width: 3rem;
+    margin-top: -1px;
+    text-align: center;
+    margin-left: 11rem;
+    font-size: 16px;
+    font-weight: 500;
+    color: ${colors.gray};
+
+    & > p {
+      cursor: pointer;
+      width: 3rem;
+      margin-left: -1.3rem;
+    }
+  }
 `
 
 export const Stats = styled.div`
@@ -167,6 +284,14 @@ export const Stats = styled.div`
   justify-content: center;
   gap: 3rem;
   margin-bottom: 1.5rem;
+
+  ${mq.mobile} {
+    justify-content: flex-start;
+    gap: 2rem;
+    margin-bottom: 0;
+    margin-left: 1.5rem;
+    margin-top: 3.5rem;
+  }
 `
 
 export const Stat = styled.div`
@@ -174,12 +299,24 @@ export const Stat = styled.div`
   align-items: center;
   gap: 10px;
   font-size: ${fontSizes.H4};
+
+  ${mq.mobile} {
+    gap: 0.2rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `
 
 export const StatLabel = styled.div`
   font-size: ${fontSizes.H4};
   color: ${colors.gray};
   font-weight: 200;
+
+  ${mq.mobile} {
+    font-size: 14px;
+    font-weight: 200;
+    color: #8C8C8C;
+  }
 `
 
 export const StatLabelF = styled.div`
@@ -187,36 +324,81 @@ export const StatLabelF = styled.div`
   color: ${colors.gray};
   font-weight: 200;
   cursor: pointer;
+
+  ${mq.mobile} {
+    font-size: 14px;
+    font-weight: 200;
+    color: #8C8C8C;
+  }
 `
 export const StatLabelF2 = styled.div`
   font-size: ${fontSizes.H4};
   color: ${colors.gray};
   font-weight: 200;
   cursor: pointer;
+
+  ${mq.mobile} {
+    font-size: 14px;
+    font-weight: 200;
+    color: #8C8C8C;
+  }
 `
 
 export const StatValue = styled.div`
   font-size: ${fontSizes.H3};
   font-weight: 500;
+
+  ${mq.mobile} {
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 10px;
+    color: ${colors.text};
+  }
 `
 
 export const StatValue1 = styled.div`
   font-size: ${fontSizes.H3};
   font-weight: 500;
   cursor: pointer;
+
+  ${mq.mobile} {
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 7px;
+    color: ${colors.text};
+  }
 `
 export const StatValue2 = styled.div`
   font-size: ${fontSizes.H3};
   font-weight: 500;
   cursor: pointer;
+
+  ${mq.mobile} {
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 7px;
+    color: ${colors.text};
+  }
 `
 
 export const ButtonRow = styled.div`
   display: flex;
   gap: 3rem;
+
+  ${mq.mobile} {
+    display: flex;
+    gap: 3rem;
+    margin-top: 2rem;
+    align-items: center;
+    justify-content: center;
+  }
 `
 
 export const Button = styled.div`
   display: flex;
   gap: 1rem;
+
+  ${mq.mobile} {
+    gap: 9.14px;
+  }
 `

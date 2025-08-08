@@ -5,7 +5,7 @@ import * as S from './style';
 import PostItem from '@/components/ui/postItem';
 import { useRouter } from 'next/navigation'
 import Square from '@/components/ui/button/square';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Post from '@/components/ui/post';
 import Follow from '@/components/ui/follow';
 import FollowerList from '@/components/ui/follower';
@@ -149,29 +149,29 @@ export default function ProfilePage() {
                     </S.ButtonRow>
                     <S.Stats>
                         <S.Stat>
-                            <S.StatLabel>게시물</S.StatLabel>
                             <S.StatValue>{profile.post}</S.StatValue>
+                            <S.StatLabel>게시물</S.StatLabel>
                         </S.Stat>
                         <S.Stat style={{ cursor: 'pointer' }} onClick={() => setShowFollowerModal(true)}>
-                            <S.StatLabelF>팔로워</S.StatLabelF>
                             <S.StatValue1>{profile.followers}</S.StatValue1>
+                            <S.StatLabelF>팔로워</S.StatLabelF>
                         </S.Stat>
                         <S.Stat style={{ cursor: 'pointer' }} onClick={() => setShowFollowModal(true)}>
-                            <S.StatLabelF2>팔로잉</S.StatLabelF2>
                             <S.StatValue2>{profile.follow}</S.StatValue2>
+                            <S.StatLabelF2>팔로잉</S.StatLabelF2>
                         </S.Stat>
                     </S.Stats>
                     <S.introduction>{profile.introduction}</S.introduction>
                 </S.ProfileMain>
             </S.Profile>
             <S.Side isSelected={selected}>
-				<S.Tab>
-					<p onClick={() => setSelected(1)}>하숙집</p>
-				</S.Tab>
-				<S.Tab2>
-					<p onClick={() => setSelected(2)}>게시물</p>
-				</S.Tab2>
-			</S.Side>
+                <S.Tab>
+                    <p onClick={() => setSelected(1)}>하숙집</p>
+                </S.Tab>
+                <S.Tab2>
+                    <p onClick={() => setSelected(2)}>게시물</p>
+                </S.Tab2>
+            </S.Side>
             <S.PostList>
                 {selected === 1 && (
                     <S.List1>
