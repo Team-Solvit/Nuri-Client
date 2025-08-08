@@ -5,6 +5,7 @@ import {mq} from "@/styles/media";
 export const MeetingCalenderContainer = styled.div`
   width: calc(100% - 10rem);
   margin-bottom: 4rem;
+  padding: 1rem 0;
 
   ${mq.mobile} {
     width: calc(100% - 2rem);

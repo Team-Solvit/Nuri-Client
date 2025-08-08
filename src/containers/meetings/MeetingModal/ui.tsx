@@ -89,7 +89,7 @@ export default function MeetingModal({
 				<Banner bannerImage={fakeData.bannerImage}/>
 				<MeetingContent {...props} />
 				<Nav selected={selected} setSelected={setSelected}/>
-				{selected === 1 && <MeetingPost/>}
+				{selected === 1 && <MeetingPost isModal={true}/>}
 				{selected === 2 && <MeetingCalender/>}
 				{selected === 3 && <MeetingMember isMember={false}/>}
 			</S.ModalContainer>

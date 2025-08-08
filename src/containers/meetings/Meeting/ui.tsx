@@ -45,7 +45,7 @@ export default function Meeting(meeting: MeetingProps) {
 				</S.Description>
 			</S.Content>
 			<Nav selected={selected} setSelected={setSelected}/>
-			{selected === 1 && <MeetingPost/>}
+			{selected === 1 && <MeetingPost isModal={true}/>}
 			{selected === 1 && <S.BtnBox>
         <Square text={"게시물 작성"} status={true} width={"calc(84.5vw - 10rem)"} onClick={() => {
 				}}/>

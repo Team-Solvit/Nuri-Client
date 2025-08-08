@@ -10,6 +10,7 @@ export const MeetingMemberContainer = styled.div`
   gap: 1rem;
   justify-content: center;
   align-items: center;
+  padding: 1rem 0;
 
   ${mq.mobile} {
     width: calc(100% - 2rem);
