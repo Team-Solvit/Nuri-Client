@@ -1,28 +1,36 @@
 'use client'
 
 import {usePathname, useRouter} from 'next/navigation'
+import {useEffect, useState} from 'react'
 import Image from 'next/image'
 import * as S from './style'
 import NProgress from "nprogress";
 
 const MENU_ITEMS = [
-	{label: '홈', path: '/', icon: '/icons/home.svg'},
-	{label: '탐색', path: '/explore', icon: '/icons/compass.svg'},
-	{label: '모임', path: '/meetings', icon: '/icons/hands.svg'},
-	{label: '프로필', path: '/profile', icon: '/icons/person.svg'},
-	{label: '만들기', path: '/creating', icon: '/icons/create.svg'},
-	{label: '하숙관리(제3자)', path: '/boarding/third-party', icon: '/icons/location.svg'},
-	{label: '모임관리(제3자)', path: '/meeting/third-party', icon: '/icons/person_setting.svg'},
+	{label: '홈', path: '/', icon: '/icons/home.svg', order: 0},
+	{label: '탐색', path: '/explore', icon: '/icons/compass.svg', order: 1},
+	{label: '모임', path: '/meetings', icon: '/icons/hands.svg', order: 3},
+	{label: '프로필', path: '/profile', icon: '/icons/person.svg', order: 4},
+	{label: '만들기', path: '/creating', icon: '/icons/create.svg', order: 2},
+	{label: '하숙관리(제3자)', path: '/boarding/third-party', icon: '/icons/location.svg', order: 99},
+	{label: '모임관리(제3자)', path: '/meeting/third-party', icon: '/icons/person_setting.svg', order: 99},
 ]
 
 export default function Header() {
 	const pathname = usePathname()
 	const router = useRouter()
+  const [isMobile, setIsMobile] = useState(false);
+
+	useEffect(() => {
+		setIsMobile(window.innerWidth <= 430);
+	}, []);
 	
 	const handleMenuClick = (path: string) => {
 		NProgress.start()
 		router.push(path)
 	}
+
+	if (isMobile && pathname.startsWith('/register')) return null
 	
 	return (
 		<S.HeaderContainer>
@@ -34,12 +42,14 @@ export default function Header() {
 				priority
 			/>
 			<S.Menu>
-				{MENU_ITEMS.map(({label, path, icon}) => {
+				{MENU_ITEMS.map(({label, path, icon, order}) => {
 					const active = path === '/' ? pathname === '/' : pathname.startsWith(path)
 					return (
 						<S.MenuItem
 							key={path}
+							label={label}
 							active={active}
+							order={order}
 							onClick={() => handleMenuClick(path)}
 						>
 							<Image

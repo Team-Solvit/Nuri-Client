@@ -1,9 +1,10 @@
 import styled from "@emotion/styled";
-import { zIndex, radius, fontSizes } from "@/styles/theme";
-import { keyframes, css } from '@emotion/react';
+import {zIndex, radius, fontSizes} from "@/styles/theme";
+import {keyframes, css} from '@emotion/react';
+import {mq} from "@/styles/media";
 
 interface Status {
-  success: boolean;
+	success: boolean;
 }
 
 const fadeInUp = keyframes`
@@ -17,6 +18,17 @@ const fadeInUp = keyframes`
   }
 `;
 
+const fadeInUpMobile = keyframes`
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+`;
+
 export const shrink = keyframes`
   from {
     width: 20rem;
@@ -25,19 +37,29 @@ export const shrink = keyframes`
     width: 0;
   }
 `;
-export const fadeOutDown = keyframes`
+const fadeOutDown = keyframes`
   0% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(0);
   }
   100% {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translate(20px);
+  }
+`;
+const fadeOutDownMobile = keyframes`
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, 20px);
   }
 `;
 export const Alert = styled.div<{ isLeaving: boolean }>`
   position: fixed;
-  width: 20rem;
+  width: 21rem;
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.25);
   padding: 1.25rem 0;
   top: 3rem;
@@ -45,10 +67,21 @@ export const Alert = styled.div<{ isLeaving: boolean }>`
   z-index: ${zIndex.modal};
   background-color: white;
   border-radius: ${radius.md};
-  animation: ${({ isLeaving }) =>
+  animation: ${({isLeaving}) =>
     isLeaving
       ? css`${fadeOutDown} 0.5s ease forwards`
       : css`${fadeInUp} 0.5s ease forwards`};
+
+  ${mq.mobile} {
+    top: 4%;
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, 20px);
+    animation: ${({isLeaving}) =>
+      isLeaving
+        ? css`${fadeOutDownMobile} 0.5s ease forwards`
+        : css`${fadeInUpMobile} 0.5s ease forwards`};
+  }
 `;
 export const Content = styled.div`
   display: flex;
@@ -96,7 +129,7 @@ export const GageBox = styled.div`
 
 `
 export const TextBox = styled.div<Status>`
-  padding: 0 1.4rem;
+  padding: 0 1.2rem;
   border-left: 0.05rem solid ${(props) => props.success ? "#71DAAA" : "#FFEDEF"};
   width: 70%;
 
@@ -110,6 +143,8 @@ export const TextBox = styled.div<Status>`
   & > p {
     font-size: ${fontSizes.Caption};
     font-weight: 400;
-    word-break: break-all;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
   }
 `

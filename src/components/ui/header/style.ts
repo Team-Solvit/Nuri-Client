@@ -21,22 +21,31 @@ export const HeaderContainer = styled.header`
     width: 100%;
     height: 8vh;
     padding: 0.375rem 0.1875rem;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+
+    & > img {
+      display: none;
+    }
   }
 `;
 
-export const Logo = styled.img`
-  width: 2rem;
-  height: 2rem;
-  margin-bottom: 1.19rem;
-  cursor: pointer;
-`;
 export const Menu = styled.nav`
   display: flex;
   flex-direction: column;
   gap: 1.31rem;
   margin-top: 1.19rem;
+
+  ${mq.mobile} {
+    flex-direction: row;
+    gap: 0;
+    margin-top: 0;
+    flex: 1;
+    justify-content: space-around;
+  }
 `;
-export const MenuItem = styled.div<{ active?: boolean }>`
+export const MenuItem = styled.div<{ active?: boolean, label?: string, order?: number }>`
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -57,6 +66,17 @@ export const MenuItem = styled.div<{ active?: boolean }>`
   &:hover {
     background: ${({active}) => (active ? "rgb(255, 210, 215)" : "rgba(90, 90, 90, 0.03)")};
   }
+
+  ${mq.mobile} {
+    ${({label}) => label?.includes("제3자") && `
+      display: none;
+    `}
+    ${({ order }) => order !== undefined && `order: ${order};`}
+    flex-direction: column;
+    & > div {
+      display: none;
+    }
+  }
 `;
 
 export const HeaderBottom = styled.div`
@@ -64,6 +84,10 @@ export const HeaderBottom = styled.div`
   flex-direction: column;
   gap: 1.31rem;
   margin-top: auto;
+
+  ${mq.mobile} {
+    display: none;
+  }
 `;
 
 export const Profile = styled.div`
