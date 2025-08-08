@@ -3,7 +3,7 @@ import {GlobalStyles} from '@/components/layout/globalStyle';
 import Header from "@/components/ui/header";
 import TopLoadingBar from "@/components/layout/loadingbar";
 import React from "react";
-import {Providers} from "@/components/layout/probider";
+import {Providers} from "@/components/layout/provider";
 
 
 export const metadata: Metadata = {
