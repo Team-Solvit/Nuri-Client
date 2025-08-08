@@ -57,7 +57,7 @@ export default function MessageContent() {
 	};
 	
 	return (
-		<div style={{width: "100%", height: "82%", position: "relative"}}>
+		<S.ContainerBox>
 			<ContractModal/>
 			<RoomTourModal/>
 			
@@ -186,6 +186,6 @@ export default function MessageContent() {
 					);
 				})}
 			</S.MessageContentContainer>
-		</div>
+		</S.ContainerBox>
 	);
 }

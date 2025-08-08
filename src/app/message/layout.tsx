@@ -17,7 +17,7 @@ export default function MessagePage({children}: { children: React.ReactNode }) {
 
 const MessageContainer = styled.section`
   width: 100%;
-  height: 100%;
+  height: 100vh;
   display: grid;
   grid-template-columns: 1fr 3fr;
   align-items: center;

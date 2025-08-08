@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
-import {fontSizes} from "@/styles/theme";
+import {fontSizes, zIndex} from "@/styles/theme";
+import {mq} from "@/styles/media";
 
 export const MessageHeaderContainer = styled.section`
   width: 100%;
@@ -9,6 +10,15 @@ export const MessageHeaderContainer = styled.section`
   height: 10%;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid #DDDDDD;
+
+  background-color: white;
+  z-index: ${zIndex.overlay};
+
+  ${mq.mobile} {
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
 
   & > p {
     font-size: ${fontSizes.H4};

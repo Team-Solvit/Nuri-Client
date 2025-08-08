@@ -4,7 +4,12 @@ import {mq} from "@/styles/media";
 
 export const ContainerBox = styled.section`
   width: 100%;
-  height: 100%;
+  height: 82%;
+  position: relative;
+
+  ${mq.mobile} {
+    margin-top: 10vh;
+  }
 `
 
 export const MessageContentContainer = styled.section`

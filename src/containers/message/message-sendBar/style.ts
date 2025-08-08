@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import {colors, fontSizes} from "@/styles/theme";
+import {mq} from "@/styles/media";
 
 export const MessageSendBarContainer = styled.section`
   width: 100%;
@@ -10,6 +11,13 @@ export const MessageSendBarContainer = styled.section`
   gap: 1rem;
   padding: 1rem 1.5rem;
   border-top: 1px solid #DDDDDD;
+  background-color: ${colors.background};
+
+  ${mq.mobile} {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+  }
 `
 
 export const ContentBox = styled.div`
@@ -29,12 +37,18 @@ export const SendButton = styled.button`
   justify-content: center;
   align-items: center;
 `
-export const InputText = styled.input`
+export const InputText = styled.textarea`
   width: 100%;
-  height: 100%;
+  height: 24px;
   border: none;
   outline: none;
+  display: flex;
+  scrollbar-width: none;
+  align-items: center;
+  flex-direction: column;
+  line-height: 1.5;
   font-size: ${fontSizes.Body};
+  resize: none;
 `
 export const AddFile = styled.div`
   width: 0.8rem;
