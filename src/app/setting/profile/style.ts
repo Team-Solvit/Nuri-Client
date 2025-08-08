@@ -1,12 +1,18 @@
-// style.ts
 import styled from '@emotion/styled'
 import { colors, fontSizes } from '@/styles/theme'
+import { mq } from '@/styles/media'
 
 export const Container = styled.div`
   display: flex;
   width: 70%;
   min-height: 100vh;
   background: #fff;
+
+  ${mq.mobile} {
+    width: 100%;
+    flex-direction: column;
+    padding-bottom: 67px;
+  }
 `
 
 export const Sidebar = styled.div`
@@ -15,6 +21,10 @@ export const Sidebar = styled.div`
   max-width: 300px;
   border-right: 1px solid #eaeaea;
   background: #fff;
+
+  ${mq.mobile} {
+    display: none;
+  }
 `
 
 export const MainContent = styled.div`
@@ -23,6 +33,11 @@ export const MainContent = styled.div`
   flex-direction: column;
   padding: 4rem 6rem;
   margin: 0 auto;
+
+  ${mq.mobile} {
+    padding: 1rem;
+    margin: 0;
+  }
 `
 
 export const Title = styled.h1`
@@ -30,6 +45,11 @@ export const Title = styled.h1`
   font-size: 28px;
   color: ${colors.text};
   margin-bottom: 1.5rem;
+
+  ${mq.mobile} {
+    font-size: 20px;
+    margin-bottom: 1rem;
+  }
 `
 
 export const ProfileRow = styled.div`
@@ -40,12 +60,27 @@ export const ProfileRow = styled.div`
   border-radius: 15px;
   padding: 2.5rem 2rem;
   width: 50vw;
+
+  ${mq.mobile} {
+    width: 93vw;
+    height: 15vh;
+    padding: 20px 17px;
+    border-radius: 5px;
+    flex-direction: row;
+    align-items: flex-start;
+  }
 `
 
 export const Button = styled.div`
     display: flex;
     flex-direction: column;
     gap: 5px;
+
+    ${mq.mobile} {
+      gap: 0.3rem;
+      margin-left: 1rem;
+      margin-top: -0.3rem;
+    }
 `
 
 export const ProfileImageWrap = styled.div`
@@ -58,17 +93,32 @@ export const ProfileImageWrap = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  ${mq.mobile} {
+    width: 20vw;
+    height: 10vh;
+  }
 `
 
 export const ProfileInfo = styled.div`
   gap: 10rem;
   display: flex;
+
+  ${mq.mobile} {
+    gap: 2rem;
+  }
 `
 
 export const Intro = styled.span`
   display: flex;
   font-size: ${fontSizes.H3};
   margin-top: 3rem;
+
+  ${mq.mobile} {
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 2rem;
+  }
 `
 
 export const NameInput = styled.input`
@@ -80,6 +130,11 @@ export const NameInput = styled.input`
   background: #fff;
   width: 220px;
   margin-top: 5px;
+
+  ${mq.mobile} {
+    width: 25vw;
+    height: 5vh;
+  }
 `
 
 export const NickInput = styled.input`
@@ -90,6 +145,11 @@ export const NickInput = styled.input`
   color: ${colors.text};
   background: #fff;
   width: 220px;
+
+  ${mq.mobile} {
+    width: 25vw;
+    height: 5vh;
+  }
 `
 
 export const ChangePhotoBtn = styled.label`
@@ -102,6 +162,14 @@ export const ChangePhotoBtn = styled.label`
   cursor: pointer;
   max-height: 4.5vh;
   margin-top: 0.5rem;
+
+  ${mq.mobile} {
+    display: flex;
+    font-weight: 500;
+    width: 27vw;
+    align-items: center;
+    justify-content: center;
+  }
 `
 
 export const BioSection = styled.div`
@@ -114,6 +182,14 @@ export const BioSection = styled.div`
   gap: 1rem;
   width: 100%;
   margin-top: 2rem;
+
+  ${mq.mobile} {
+    width: 93vw;
+    height: 20vh;
+    border-radius: 3px;
+    padding: 10px;
+    margin-top: 1rem;
+  }
 `
 
 export const Change = styled.div`
