@@ -1,15 +1,26 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import * as S from './style'
 import SettingNav from '@/components/ui/settingNav'
 import Logout from '@/components/ui/logout'
 import Leave from '@/components/ui/leave'
+import SettingHeader from '@/components/ui/settingHeader'
 
 export default function LanguagePage() {
     const [selectedLang, setSelectedLang] = useState<'ko' | 'en'>('ko')
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [showLeaveModal, setShowLeaveModal] = useState(false);
+    const [isMobile, setIsMobile] = useState(false)
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 430)
+        }
+        handleResize()
+        window.addEventListener('resize', handleResize)
+        return () => window.removeEventListener('resize', handleResize)
+    }, [])
 
     const handleLogout = () => {
         console.log('로그아웃 처리 완료')
@@ -18,6 +29,7 @@ export default function LanguagePage() {
 
     return (
         <S.Layout>
+            {isMobile && <SettingHeader />}
             <S.NavArea>
                 <SettingNav
                     onLogoutClick={() => setShowLogoutModal(true)}

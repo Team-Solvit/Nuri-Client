@@ -66,6 +66,7 @@ export const ProfileRow = styled.div`
     height: 15vh;
     padding: 20px 17px;
     border-radius: 5px;
+    gap: 0;
     flex-direction: row;
     align-items: flex-start;
   }
