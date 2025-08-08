@@ -65,14 +65,13 @@ export const Label = styled.label`
 `;
 
 export const PhotoUploadBox = styled.div`
-  width: 7.5rem;
-  height: 7.5rem;
+  width: 6rem;
+  height: 6rem;
   background: ${colors.line};
   border-radius: ${radius.lg};
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
 `;
 
 export const PhotoAddGroup = styled.div`
@@ -245,14 +244,16 @@ export const FacilityCheckbox = styled.label`
 `;
 
 export const PhotoUploadList = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
   gap: 1rem;
   align-items: center;
+  flex-wrap: wrap;
 `;
 
 export const PhotoThumb = styled.div`
-  width: 7.5rem;
-  height: 7.5rem;
+  width: 6rem;
+  height: 6rem;
   border-radius: ${radius.lg};
   overflow: hidden;
   background: ${colors.line};

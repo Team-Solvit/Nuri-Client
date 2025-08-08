@@ -67,6 +67,10 @@ export const globalStyles = css`
     font-display: swap;
   }
 
+  input::placeholder {
+    font-family: 'SCoreDream', sans-serif;
+  }
+
   * {
     margin: 0;
     padding: 0;
