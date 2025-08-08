@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import * as S from './style'
 import SettingNav from '@/components/ui/settingNav'
+import SettingHeader from '@/components/ui/settingHeader'
 import Image from 'next/image'
 import Square from '@/components/ui/button/square'
 import Logout from '@/components/ui/logout'
@@ -16,19 +17,26 @@ const contactData = [
 export default function SettingPage() {
     const [showLogoutModal, setShowLogoutModal] = useState(false)
     const [showLeaveModal, setShowLeaveModal] = useState(false)
+    const [isMobile, setIsMobile] = useState(false)
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 430)
+        }
+        handleResize()
+        window.addEventListener('resize', handleResize)
+        return () => window.removeEventListener('resize', handleResize)
+    }, [])
 
     const handleLogout = () => {
         console.log('로그아웃 처리 완료')
         setShowLogoutModal(false)
     }
 
-    const handleLeave = () => {
-        console.log('회원탈퇴 처리 완료')
-        setShowLeaveModal(false)
-    }
-
     return (
         <S.Layout>
+            {isMobile && <SettingHeader />}
+
             <S.NavArea>
                 <SettingNav
                     onLogoutClick={() => setShowLogoutModal(true)}
@@ -62,7 +70,11 @@ export default function SettingPage() {
                         <S.Input placeholder="새로운 비밀번호를 입력해주세요" />
                         <S.Input placeholder="새로운 비밀번호를 다시 입력해주세요" />
                     </S.InputBox>
-                    <Square text='비밀번호 변경' status={true} width='44vw' />
+                    <Square
+                        text='비밀번호 변경'
+                        status={true}
+                        width={isMobile ? '90vw' : '44vw'}
+                    />
                 </S.Section>
             </S.ContentArea>
 

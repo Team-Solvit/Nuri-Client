@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import { colors, fontSizes, radius } from '@/styles/theme';
+import { mq } from '@/styles/media';
 
 export const Container = styled.aside`
     padding: 3rem;
@@ -8,6 +9,10 @@ export const Container = styled.aside`
     border-left: 1px solid ${colors.line};
     width: 20vw;
     height: 100vh;
+
+    ${mq.mobile} {
+        width: 40vw;
+    }
 `;
 
 export const Main = styled.div`
@@ -16,17 +21,59 @@ export const Main = styled.div`
     width: 100%;
 `;
 
+export const Top = styled.div`
+    display: flex;
+    gap: 13rem;
+`;
+
 export const Title = styled.h2`
     font-size: ${fontSizes.H3};
     font-weight: 400;
-    margin-bottom: 2rem;
-`;
+`
+
+export const Overlay = styled.div`
+  ${mq.mobile} {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: flex-start; 
+    z-index: 999;
+  }
+`
+
+export const ModalWrapper = styled.div`
+  ${mq.mobile} {
+    background: white;
+    width: 70%;
+    max-width: 300px;
+    height: 100%;
+    padding: 1rem;
+    overflow-y: auto;
+    animation: slideIn 0.3s ease-out;
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(-100%);
+      }
+      to {
+        transform: translateX(0);
+      }
+    }
+  }
+`
+
 
 export const SectionTitle = styled.div`
     font-size: ${fontSizes.Body};
     color: ${colors.gray};
     font-weight: 400;
     margin: 1.8rem 0 0.7rem;
+`;
+
+export const Button = styled.button`
+    background-color: white;
+    color: gray;
+    border: none;
 `;
 
 export const MenuItem = styled.div<{ active?: boolean }>`
