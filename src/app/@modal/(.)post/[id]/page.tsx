@@ -18,7 +18,7 @@ export default function PostModal() {
   return (
     <S.Black onClick={close}>
       <S.Content onClick={(e) => e.stopPropagation()}>
-        <PostDetail id={id} />
+        <PostDetail id={id} isModal />
       </S.Content>
     </S.Black>
   );

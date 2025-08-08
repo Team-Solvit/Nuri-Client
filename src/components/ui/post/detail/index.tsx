@@ -12,9 +12,11 @@ import EllipsisIcon from '@/assets/post/ellipsis.svg';
 import SendIconSvg from '@/assets/post/send.svg';
 import * as S from './style';
 import { radius } from '@/styles/theme';
+import { useRouter } from 'next/navigation';
 
 interface PostDetailProps {
   id: string;
+  isModal?: boolean;
 }
 
 const mockComments = [
@@ -23,7 +25,8 @@ const mockComments = [
   { id: 3, author: 'bazQux', avatar: '/avatars/user3.png', text: '마지막 댓글입니다 :)' },
 ];
 
-export default function PostDetail({ id }: PostDetailProps) {
+export default function PostDetail({ id, isModal }: PostDetailProps) {
+  const router = useRouter();
   const post = fakeData.find((p) => p.id.toString() === id);
   const isHousePost = post?.subject === "하숙집";
   const [current, setCurrent] = useState(0);
@@ -64,6 +67,7 @@ export default function PostDetail({ id }: PostDetailProps) {
 
   return (
     <S.Wrapper>
+      {isModal && <S.MobileClose onClick={() => router.back()}>×</S.MobileClose>}
       <S.Left>
         <S.SliderWrapper>
           {current > 0 && (
@@ -112,7 +116,7 @@ export default function PostDetail({ id }: PostDetailProps) {
       </S.Left>
 
       <S.Right>
-        <S.RightContent showComments={showComments}>
+        <S.RightContent showComments={showComments} isModal={isModal}>
           {isHousePost ? (
             <>
               <S.RightTopRow>
@@ -183,12 +187,12 @@ export default function PostDetail({ id }: PostDetailProps) {
                 </S.RightFeature>
               </S.RightFeatureList>
 
-              <S.RightDivider />
+              {/* <S.RightDivider />
 
               <S.RightLabel>식사</S.RightLabel>
               <S.RightImageBox>
                 <S.RightImage src="/post/meal.png" alt="meal" />
-              </S.RightImageBox>
+              </S.RightImageBox> */}
 
               <S.RightDivider />
 
@@ -238,7 +242,7 @@ export default function PostDetail({ id }: PostDetailProps) {
         </S.RightContent>
 
         {/* 댓글 섹션 */}
-        <S.CommentsSection show={showComments}>
+        <S.CommentsSection show={showComments} isModal={isModal}>
           <S.CommentsHeader>
             <S.CommentsTitle>댓글 {comments.length}개</S.CommentsTitle>
             <S.CommentsCloseButton onClick={() => setShowComments(false)}>
@@ -263,7 +267,7 @@ export default function PostDetail({ id }: PostDetailProps) {
           </S.CommentsList>
         </S.CommentsSection>
 
-        <S.InteractionBar>
+        <S.InteractionBar isModal={isModal}>
           {showComments ? (
             <S.CommentInputContainer>
               <S.CommentInput
