@@ -146,6 +146,7 @@ export const PostList = styled.div`
   ${mq.mobile} {
     margin-top: 3.5rem;
     padding: 0 16px;
+    margin-bottom: 5rem;
   }
 `
 
@@ -157,10 +158,10 @@ export const List2 = styled.div`
   margin-top: 1rem;
 
   ${mq.mobile} {
-    grid-template-columns: 1fr;
-    gap: 18px;
-    margin-top: 0;
-  }
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3px;
+  margin-top: 0;
+}
 `
 
 

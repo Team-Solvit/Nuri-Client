@@ -5,7 +5,7 @@ import * as S from './style';
 import PostItem from '@/components/ui/postItem';
 import { useRouter } from 'next/navigation'
 import Square from '@/components/ui/button/square';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import Post from '@/components/ui/post';
 import Follow from '@/components/ui/follow';
 import FollowerList from '@/components/ui/follower';
@@ -194,8 +194,6 @@ export default function ProfilePage() {
             </S.PostList>
             {showFollowModal && <Follow onClose={() => setShowFollowModal(false)} />}
             {showFollowerModal && <FollowerList onClose={() => setShowFollowerModal(false)} />}
-
-
         </S.ProfileWrapper>
     );
 }
