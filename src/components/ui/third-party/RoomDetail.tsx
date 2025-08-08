@@ -3,6 +3,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 import { fontSizes, colors } from '@/styles/theme';
 import Square from '../button/square';
+import { mq } from '@/styles/media';
 
 interface Room {
 	number: string;
@@ -135,6 +136,12 @@ const MemberGrid = styled.div`
   }
   &::-webkit-scrollbar-track {
 	background: transparent;
+  }
+
+  ${mq.mobile} {
+	grid-template-columns: 1fr;
+
+	padding-right: 20px;
   }
 `;
 
