@@ -29,6 +29,12 @@ export default function Host() {
   return (
     <S.Con>
       {isMobile && <SettingHeader />}
+      <S.NavArea>
+        <SettingNav
+          onLogoutClick={() => setShowLogoutModal(true)}
+          onLeaveClick={() => setShowLeaveModal(true)}
+        />
+      </S.NavArea>
       <S.Container>
         <S.Title>호스트 설정</S.Title>
 

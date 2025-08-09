@@ -23,6 +23,16 @@ export const Section = styled.section`
   }
 `;
 
+export const NavArea = styled.div`
+  flex: 0 0 20vw;
+  background: ${colors.background};
+  border-right: 1px solid ${colors.line};
+
+  ${mq.mobile} {
+    display: none;
+  }
+`
+
 export const Container = styled.div`
   width: 70%;
   margin: 0 auto;
@@ -92,7 +102,6 @@ export const InputRow = styled.div`
   ${mq.mobile} {
     flex-direction: column;
     gap: 8px;
-    margin-bottom: 0;
   }
 `;
 

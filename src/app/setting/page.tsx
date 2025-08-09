@@ -6,8 +6,6 @@ import SettingNav from '@/components/ui/settingNav'
 import SettingHeader from '@/components/ui/settingHeader'
 import Image from 'next/image'
 import Square from '@/components/ui/button/square'
-import Logout from '@/components/ui/logout'
-import Leave from '@/components/ui/leave'
 
 const contactData = [
     { type: 'phone', value: '010-1234-5678', icon: '/icons/call.svg' },
@@ -15,8 +13,6 @@ const contactData = [
 ]
 
 export default function SettingPage() {
-    const [showLogoutModal, setShowLogoutModal] = useState(false)
-    const [showLeaveModal, setShowLeaveModal] = useState(false)
     const [isMobile, setIsMobile] = useState(false)
 
     useEffect(() => {
@@ -28,20 +24,12 @@ export default function SettingPage() {
         return () => window.removeEventListener('resize', handleResize)
     }, [])
 
-    const handleLogout = () => {
-        console.log('로그아웃 처리 완료')
-        setShowLogoutModal(false)
-    }
-
     return (
         <S.Layout>
             {isMobile && <SettingHeader />}
 
             <S.NavArea>
-                <SettingNav
-                    onLogoutClick={() => setShowLogoutModal(true)}
-                    onLeaveClick={() => setShowLeaveModal(true)}
-                />
+                <SettingNav />
             </S.NavArea>
 
             <S.ContentArea>
@@ -77,17 +65,6 @@ export default function SettingPage() {
                     />
                 </S.Section>
             </S.ContentArea>
-
-            {showLogoutModal && <Logout onLogout={handleLogout} onClose={() => setShowLogoutModal(false)} />}
-            {showLeaveModal && (
-                <Leave
-                    onLeave={() => {
-                        console.log('회원탈퇴 처리 완료')
-                        setShowLeaveModal(false)
-                    }}
-                    onClose={() => setShowLeaveModal(false)}
-                />
-            )}
         </S.Layout>
     )
 }
