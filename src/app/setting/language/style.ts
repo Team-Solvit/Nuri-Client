@@ -104,7 +104,7 @@ export const SearchBox = styled.div`
   align-items: center;
 
   ${mq.mobile} {
-    width: 93vw;
+    width: 92vw;
     height: 50px;
   }
 `
