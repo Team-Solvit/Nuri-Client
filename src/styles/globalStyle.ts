@@ -68,6 +68,22 @@ export const globalStyles = css`
     font-display: swap;
   }
 
+  input {
+    font-family: 'SCoreDream', sans-serif;
+  }
+
+  textarea {
+    font-family: 'SCoreDream', sans-serif;
+  }
+
+  textarea::placeholder {
+    font-family: 'SCoreDream', sans-serif;
+  }
+
+  input::placeholder {
+    font-family: 'SCoreDream', sans-serif;
+  }
+
   * {
     margin: 0;
     padding: 0;

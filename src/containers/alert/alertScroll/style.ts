@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import {colors, fontSizes} from "@/styles/theme";
+import {mq} from "@/styles/media";
 
 export const AlertScrollContainer = styled.section`
   display: flex;
@@ -14,6 +15,10 @@ export const AlertScrollContainer = styled.section`
   &::-webkit-scrollbar {
     display: none; /* Chrome, Safari */
   }
+
+  ${mq.mobile} {
+    padding: 0 1rem;
+  }
 `
 export const Alert = styled.article`
   display: flex;
@@ -22,6 +27,18 @@ export const Alert = styled.article`
   width: 100%;
   align-items: center;
   border-bottom: 1px solid ${colors.line};
+
+  &:first-of-type {
+    ${mq.mobile} {
+      margin-top: 6rem;
+    }
+  }
+
+  &:last-of-type {
+    ${mq.mobile} {
+      margin-bottom: 3rem;
+    }
+  }
 `
 
 export const Profile = styled.div`
@@ -37,19 +54,14 @@ export const Profile = styled.div`
 
 export const Title = styled.h3`
   font-size: ${fontSizes.H4};
-  font-weight: 500;
+  font-weight: 400;
 `
 
 export const Info = styled.div`
   display: flex;
-  width: 20%;
+  width: 80%;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.5rem;
   padding: 0 1rem;
-`
-
-export const Content = styled.p`
-  font-size: ${fontSizes.Body};
-  color: ${colors.gray};
 `

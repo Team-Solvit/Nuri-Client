@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import {fontSizes, colors, radius} from "@/styles/theme";
+import {mq} from "@/styles/media";
 
 export const Container = styled.section`
   width: 30vw;
@@ -7,6 +8,10 @@ export const Container = styled.section`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+
+  ${mq.mobile} {
+    width: 80vw;
+  }
 `
 
 export const Title = styled.h3`

@@ -11,7 +11,7 @@ export const PostScrollContainer = styled.section`
   ${mq.mobile} {
     gap: 0;
 
-    & > article:first-child {
+    & > article:first-of-type {
       margin-top: 6rem;
     }
 

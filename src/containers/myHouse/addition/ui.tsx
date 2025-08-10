@@ -25,13 +25,16 @@ const Addition = () => {
 	
 	const handleAddPeriod = () => {
 		if (!yearInput && !monthInput) return;
+		const month = Number(monthInput) % 12;
+		const year = Math.floor(Number(monthInput) / 12) + Number(yearInput);
+		
 		let label = '';
-		if (yearInput && monthInput) {
-			label = `${yearInput}년 ${monthInput}개월`;
-		} else if (yearInput) {
-			label = `${yearInput}년`;
-		} else if (monthInput) {
-			label = `${monthInput}개월`;
+		if (year && month) {
+			label = `${year}년 ${month}개월`;
+		} else if (year) {
+			label = `${year}년`;
+		} else if (month) {
+			label = `${month}개월`;
 		}
 		if (label && !contractOptions.includes(label)) {
 			setContractOptions(prev => [...prev, label]);
@@ -129,6 +132,7 @@ const Addition = () => {
 			</S.SectionRow>
 			<S.Section>
 				<S.Label>계약기간</S.Label>
+				<p>*원하시는 계약기간을 선택하시거나 추가로 작성하여 선택해주세요!</p>
 				<S.ContractPeriodWrap>
 					{contractOptions.map(option => (
 						<Circle
@@ -140,7 +144,7 @@ const Addition = () => {
 					))}
 				</S.ContractPeriodWrap>
 				<S.ContractPeriodRow>
-					<S.ContractInputWrap style={{width: '50%'}}>
+					<S.ContractInputWrap>
 						<input
 							placeholder="년"
 							value={yearInput}
@@ -152,7 +156,7 @@ const Addition = () => {
 						/>
 						<span className="addon">년</span>
 					</S.ContractInputWrap>
-					<S.ContractInputWrap style={{width: '50%'}}>
+					<S.ContractInputWrap>
 						<input
 							placeholder="개월"
 							value={monthInput}
