@@ -93,6 +93,7 @@ export const PhotoAddText = styled.span`
 export const Input = styled.input`
   width: 100%;
   padding: 0.75rem;
+  font-weight: 400;
   border: 1px solid ${colors.gray};
   border-radius: ${radius.md};
   font-size: ${fontSizes.Body};
@@ -107,6 +108,7 @@ export const Textarea = styled.textarea`
   border: 1px solid ${colors.gray};
   border-radius: ${radius.md};
   font-size: ${fontSizes.Body};
+  font-weight: 400;
   resize: vertical;
   outline: none;
 `;
@@ -137,6 +139,7 @@ export const InputWithAddonRow = styled.div`
     border: none;
     outline: none;
     font-size: ${fontSizes.Body};
+    font-weight: 400;
     flex: 1;
     background: transparent;
   }
@@ -195,6 +198,7 @@ export const ContractInputWrap = styled.div`
     outline: none;
     font-size: ${fontSizes.Body};
     background: transparent;
+    font-weight: 400;
     width: 100%;
     flex: 1;
   }
@@ -245,7 +249,7 @@ export const FacilityCheckbox = styled.label`
 
 export const PhotoUploadList = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
   gap: 1rem;
   align-items: center;
   flex-wrap: wrap;
