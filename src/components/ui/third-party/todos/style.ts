@@ -235,7 +235,6 @@ export const UploadWrap = styled.div`
   border-radius: 6px;
   padding: 8px 14px 8px 12px;
   box-shadow: 0 2px 8px 0 rgba(255,76,97,0.07);
-  max-width: 85%;
   flex-wrap: nowrap;
 
   ${mq.mobile} {
@@ -252,8 +251,10 @@ export const FileName = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-width: 300px;
 
   ${mq.mobile} {
+    max-width: 200px;
     font-size: 12px;
     margin-left: 4px;
   }
