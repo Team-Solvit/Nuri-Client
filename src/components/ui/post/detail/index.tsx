@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Arrow from '@/assets/post/arrow-right.svg';
 import Square from '@/components/ui/button/square';
@@ -34,6 +34,14 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
   const [showComments, setShowComments] = useState(false);
   const [showRoomTour, setShowRoomTour] = useState(false);
   const [commentText, setCommentText] = useState('');
+  const [openCommentMenuId, setOpenCommentMenuId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (openCommentMenuId === null) return;
+    const onDocClick = () => setOpenCommentMenuId(null);
+    document.addEventListener('click', onDocClick);
+    return () => document.removeEventListener('click', onDocClick);
+  }, [openCommentMenuId]);
 
   if (!post) return <div>게시물을 불러올수 없습니다.</div>
 
@@ -259,9 +267,39 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
                   <S.CommentAuthor>{comment.author}</S.CommentAuthor>
                   <S.CommentText>{comment.text}</S.CommentText>
                 </S.CommentContent>
-                <S.CommentMenu>
-                  <Image src={EllipsisIcon} alt="메뉴" width={16} height={16} />
-                </S.CommentMenu>
+                <S.MenuButton onClick={(e) => e.stopPropagation()}>
+                  <S.CommentMenu
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenCommentMenuId((prev) => (prev === comment.id ? null : comment.id));
+                    }}
+                  >
+                    <Image src={EllipsisIcon} alt="메뉴" width={16} height={16} />
+                  </S.CommentMenu>
+                  {openCommentMenuId === comment.id && (
+                    <S.MenuDropdown placement="down">
+                      <S.MenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log('댓글 수정', comment.id);
+                          setOpenCommentMenuId(null);
+                        }}
+                      >
+                        수정
+                      </S.MenuItem>
+                      <S.MenuItem
+                        red
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log('댓글 삭제', comment.id);
+                          setOpenCommentMenuId(null);
+                        }}
+                      >
+                        삭제
+                      </S.MenuItem>
+                    </S.MenuDropdown>
+                  )}
+                </S.MenuButton>
               </S.CommentItem>
             ))}
           </S.CommentsList>
@@ -295,8 +333,8 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
                 <Image src={EllipsisIcon} alt="menu" width={24} height={24} />
                 {menuOpen && (
                   <S.MenuDropdown>
-                    <S.MenuItem onClick={() => { console.log('수정'); setMenuOpen(false); }} red={false}>수정</S.MenuItem>
-                    <S.MenuItem onClick={() => { console.log('삭제'); setMenuOpen(false); }} red={true}>삭제</S.MenuItem>
+                    <S.MenuItem onClick={() => { console.log('수정'); setMenuOpen(false); }}>수정</S.MenuItem>
+                    <S.MenuItem onClick={() => { console.log('삭제'); setMenuOpen(false); }} red>삭제</S.MenuItem>
                   </S.MenuDropdown>
                 )}
               </S.MenuButton>

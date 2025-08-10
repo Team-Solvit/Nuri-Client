@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { colors, fontSizes, radius } from '@/styles/theme';
+import { colors, fontSizes, radius, zIndex } from '@/styles/theme';
 import { mq } from '@/styles/media';
 
 export const Wrapper = styled.div`
@@ -143,6 +143,7 @@ export const Right = styled.div`
   ${mq.mobile} {
     flex: none;
     width: 100%;
+    height: 100%;
     border: none;
     border-radius: 0;
     box-shadow: none;
@@ -408,6 +409,7 @@ export const CommentsCloseButton = styled.button`
 `;
 
 export const CommentsList = styled.div`
+  height: 100%;
   flex: 1;
   overflow-y: auto;
   padding: 1rem 1.5rem;
@@ -526,15 +528,10 @@ export const MenuButton = styled.div`
   cursor: pointer;
   margin-left: auto;
   padding: 0.25rem;
-  
-  &:hover {
-    opacity: 0.7;
-  }
 `;
 
-export const MenuDropdown = styled.div`
+export const MenuDropdown = styled.div<{ placement?: 'up' | 'down' }>`
   position: absolute;
-  bottom: 100%;
   right: 0;
   background: #fff;
   border: 1px solid ${colors.line2};
@@ -542,7 +539,13 @@ export const MenuDropdown = styled.div`
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   z-index: 20;
-  margin-bottom: 0.5rem;
+  ${({ placement }) => placement === 'down' ? `
+    top: 100%;
+    margin-top: 0.5rem;
+  ` : `
+    bottom: 100%;
+    margin-bottom: 0.5rem;
+  `}
 `;
 
 export const MenuItem = styled.button<{ red?: boolean }>`
@@ -555,7 +558,6 @@ export const MenuItem = styled.button<{ red?: boolean }>`
 
   color: ${({ red }) => red ? colors.error : colors.text};
   font-size: 0.875rem;
-  color: ${colors.text};
   cursor: pointer;
   
   &:hover {
@@ -617,12 +619,14 @@ export const SendButton = styled.button<{ disabled?: boolean }>`
   
   &:hover:not(:disabled) {
     background: ${colors.primary};
-    opacity: 0.9;
+    opacity: 0.95;
   }
   
-  &:disabled {
-    opacity: 0.5;
+  img {
+    filter: ${({ disabled }) => (disabled ? 'none' : 'brightness(0) invert(1)')};
+    transition: filter 0.2s ease;
   }
+  
   ${mq.mobile} {
     width: 36px;
     height: 36px;
