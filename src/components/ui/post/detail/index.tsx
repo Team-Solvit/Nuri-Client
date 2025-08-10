@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Arrow from '@/assets/post/arrow-right.svg';
 import Square from '@/components/ui/button/square';
@@ -36,12 +36,27 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
   const [commentText, setCommentText] = useState('');
   const [openCommentMenuId, setOpenCommentMenuId] = useState<number | null>(null);
 
+  const roomTourRef = useRef<HTMLDivElement | null>(null);
+  const actionMenuRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
-    if (openCommentMenuId === null) return;
-    const onDocClick = () => setOpenCommentMenuId(null);
+    const onDocClick = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (showRoomTour && roomTourRef.current && !roomTourRef.current.contains(target)) {
+        setShowRoomTour(false);
+      }
+      if (menuOpen && actionMenuRef.current && !actionMenuRef.current.contains(target)) {
+        setMenuOpen(false);
+      }
+
+      if (openCommentMenuId !== null) {
+        setOpenCommentMenuId(null);
+      }
+    };
+
     document.addEventListener('click', onDocClick);
     return () => document.removeEventListener('click', onDocClick);
-  }, [openCommentMenuId]);
+  }, [menuOpen, showRoomTour, openCommentMenuId]);
 
   if (!post) return <div>게시물을 불러올수 없습니다.</div>
 
@@ -106,10 +121,19 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
           </S.Profile>
           {isHousePost && (
             <S.Buttons>
-              <S.RoomTourWrapper>
+              <S.RoomTourWrapper ref={roomTourRef}>
                 <Square
                   text="룸투어"
-                  onClick={() => setShowRoomTour(o => !o)}
+                  onClick={() =>
+                    setShowRoomTour((prev) => {
+                      const next = !prev;
+                      if (next) {
+                        setMenuOpen(false);
+                        setOpenCommentMenuId(null);
+                      }
+                      return next;
+                    })
+                  }
                   status={true}
                   width="max-content"
                 />
@@ -271,7 +295,14 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
                   <S.CommentMenu
                     onClick={(e) => {
                       e.stopPropagation();
-                      setOpenCommentMenuId((prev) => (prev === comment.id ? null : comment.id));
+                      setOpenCommentMenuId((prev) => {
+                        const opening = prev !== comment.id;
+                        if (opening) {
+                          setMenuOpen(false);
+                          setShowRoomTour(false);
+                        }
+                        return opening ? comment.id : null;
+                      });
                     }}
                   >
                     <Image src={EllipsisIcon} alt="메뉴" width={16} height={16} />
@@ -329,7 +360,16 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
                 <Image src={CommentIcon} alt="comment" width={22} height={22} />
                 <S.ActionCount>{post.comments ?? 3}</S.ActionCount>
               </S.ActionButton>
-              <S.MenuButton onClick={() => setMenuOpen(o => !o)}>
+              <S.MenuButton ref={actionMenuRef} onClick={() =>
+                setMenuOpen((prev) => {
+                  const next = !prev;
+                  if (next) {
+                    setShowRoomTour(false);
+                    setOpenCommentMenuId(null);
+                  }
+                  return next;
+                })
+              }>
                 <Image src={EllipsisIcon} alt="menu" width={24} height={24} />
                 {menuOpen && (
                   <S.MenuDropdown>
