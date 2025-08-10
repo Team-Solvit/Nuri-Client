@@ -12,12 +12,15 @@ import {MeetingMember} from "@/components/ui/meeting-member";
 import {useRouter} from "next/navigation";
 import {MeetingProps} from "./type";
 import {Nav} from "@/containers/meetings/MeetingModal/ui";
+import {useOtherMeetingFind} from "@/store/otherMeetingFind";
 
 export default function Meeting(meeting: MeetingProps) {
 	const [selected, setSelected] = useState(1);
+	const {setFind} = useOtherMeetingFind();
 	const router = useRouter();
 	const handleBack = () => {
 		router.push("/meetings");
+		setFind(true);
 	}
 	return (
 		<S.ModalContainer>

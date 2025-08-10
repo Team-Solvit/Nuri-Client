@@ -7,15 +7,16 @@ import MeetingsSidebar from "@/containers/meetings/sidebar/ui";
 import MeetingModal from "@/containers/meetings/MeetingModal/ui";
 import MeetingAccession from "@/containers/meetings/accession/ui";
 import {Accession} from "@/containers/meetings/accession/type";
+import {useOtherMeetingFind} from "@/store/otherMeetingFind";
 
 export default function Meetings() {
 	const navigate = useRouter();
+	const {find} = useOtherMeetingFind();
 	useEffect(() => {
-		if (localStorage.getItem("token")) {
-			// 나중에 조건과 동시에 이동 url 교체하기
+		if (!find) {
 			navigate.push("/meetings/1");
 		}
-	}, []);
+	}, [find]);
 	const markers = [
 		{
 			id: 1,
