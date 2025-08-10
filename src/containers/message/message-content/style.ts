@@ -106,6 +106,19 @@ export const MsgHoverIcons = styled.div`
   pointer-events: none;
   transition: opacity 0.5s, right 0.15s;
   z-index: 2;
+
+  ${ReceivedMsgAndTimeWrapper}:hover &,
+  &:hover {
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: 0s; /* hover될 때는 딜레이 없이 즉시 */
+  }
+
+  /* hover 해제 시 1초 후 사라지게 */
+
+  ${ReceivedMsgAndTimeWrapper} & {
+    transition-delay: 1s; /* hover가 풀리면 사라지는 딜레이 */
+  }
 `;
 
 export const SentMsgAndTimeWrapper = styled.div<{ isHaveReply: string | undefined }>`
