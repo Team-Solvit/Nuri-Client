@@ -83,7 +83,8 @@ export const ReceivedMsgAndTimeWrapper = styled.div<{ isHaveReply: string | unde
   gap: 6px;
   position: relative;
 
-  &:hover .msg-hover-icons {
+  &:hover .msg-hover-icons,
+  .msg-hover-icons:hover {
     opacity: 1;
     pointer-events: auto;
   }
@@ -92,9 +93,10 @@ export const ReceivedMsgAndTimeWrapper = styled.div<{ isHaveReply: string | unde
 export const MsgHoverIcons = styled.div`
   position: absolute;
   bottom: 0;
-  right: -2.5rem;
+  right: -2.4rem;
   display: flex;
   gap: 0.5rem;
+  cursor: pointer;
   background: ${colors.background};
   border-radius: ${radius.md};
   box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.06);
@@ -102,7 +104,7 @@ export const MsgHoverIcons = styled.div`
   margin-bottom: 0.5rem;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.15s, right 0.15s;
+  transition: opacity 0.5s, right 0.15s;
   z-index: 2;
 `;
 
