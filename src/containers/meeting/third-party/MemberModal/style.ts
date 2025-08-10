@@ -4,10 +4,11 @@ import { mq } from '@/styles/media';
 
 export const MemberModalWrapper = styled.div`
   padding: 2rem 3rem;
-  max-width: 40rem;
   box-sizing: border-box;
   ${mq.mobile} {
     padding: 1.25rem 1rem 2rem;
+    width: 90vw;
+    margin: 0 auto;
   }
 `;
 
@@ -103,6 +104,7 @@ export const Name = styled.div`
 export const Desc = styled.div`
   font-size: ${fontSizes.Caption};
   color: ${colors.gray};
+  white-space: nowrap;
   ${mq.mobile} {
     font-size: ${fontSizes.Caption};
   }
@@ -110,11 +112,12 @@ export const Desc = styled.div`
 
 export const BtnRow = styled.div`
   display: flex;
+  justify-content: flex-end;
   gap: 0.5rem;
   ${mq.mobile} {
     gap: 0.5rem;
     flex-wrap: wrap;
-    width: auto; /* prevent full stretch */
+    width: auto;
   }
 `;
 
@@ -136,7 +139,7 @@ export const AcceptBtn = styled.button`
   border: 0.026rem solid ${colors.success};
   color: ${colors.success};
   ${mq.mobile} {
-    flex: 0; /* do not stretch */
+    flex: 0;
     font-size: ${fontSizes.Caption};
     padding: 0.4rem 1rem;
   }
