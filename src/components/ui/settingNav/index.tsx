@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import * as S from './style'
+import { useState, useEffect } from 'react'
 
 const MENU_SECTIONS = [
     {
@@ -36,11 +37,22 @@ const MENU_SECTIONS = [
 interface SettingNavProps {
     onLogoutClick?: () => void
     onLeaveClick?: () => void
+    onClose?: () => void
 }
 
-export default function SettingNav({ onLogoutClick, onLeaveClick }: SettingNavProps) {
+export default function SettingNav({ onLogoutClick, onLeaveClick, onClose }: SettingNavProps) {
     const pathname = usePathname()
     const router = useRouter()
+    const [isMobile, setIsMobile] = useState(false)
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 430)
+        }
+        handleResize()
+        window.addEventListener('resize', handleResize)
+        return () => window.removeEventListener('resize', handleResize)
+    }, [])
 
     const handleMenuClick = (path: string, label: string) => {
         if (label === '로그아웃') {
@@ -49,7 +61,39 @@ export default function SettingNav({ onLogoutClick, onLeaveClick }: SettingNavPr
             onLeaveClick?.()
         } else {
             router.push(path)
+            onClose?.()
         }
+    }
+
+    if (isMobile) {
+        return (
+            <S.Overlay onClick={onClose}>
+                <S.ModalWrapper onClick={(e) => e.stopPropagation()}>
+                    <S.Top>
+                        <S.Title>설정</S.Title>
+                        <S.Button onClick={onClose}>X</S.Button>
+                    </S.Top>
+                    {MENU_SECTIONS.map(section => (
+                        <div key={section.title}>
+                            <S.SectionTitle>{section.title}</S.SectionTitle>
+                            {section.items.map(({ label, path, icon }) => {
+                                const active = pathname === path
+                                return (
+                                    <S.MenuItem
+                                        key={path}
+                                        active={active}
+                                        onClick={() => handleMenuClick(path, label)}
+                                    >
+                                        <Image src={icon} alt={label} width={20} height={20} />
+                                        <span>{label}</span>
+                                    </S.MenuItem>
+                                )
+                            })}
+                        </div>
+                    ))}
+                </S.ModalWrapper>
+            </S.Overlay>
+        )
     }
 
     return (

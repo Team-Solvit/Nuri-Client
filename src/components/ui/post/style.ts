@@ -1,9 +1,14 @@
 import styled from "@emotion/styled";
+import { mq } from "@/styles/media";
 
 export const Post = styled.div`
   width: 100%;
   height: 100%;
   aspect-ratio: 1 / 1.1;
+
+  ${mq.mobile} {
+    aspect-ratio: 1 / 0;
+  }
 `
 export const PostImg = styled.div`
   width: 100%;

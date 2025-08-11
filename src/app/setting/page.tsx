@@ -1,12 +1,11 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import * as S from './style'
 import SettingNav from '@/components/ui/settingNav'
+import SettingHeader from '@/components/ui/settingHeader'
 import Image from 'next/image'
 import Square from '@/components/ui/button/square'
-import Logout from '@/components/ui/logout'
-import Leave from '@/components/ui/leave'
 
 const contactData = [
     { type: 'phone', value: '010-1234-5678', icon: '/icons/call.svg' },
@@ -14,26 +13,23 @@ const contactData = [
 ]
 
 export default function SettingPage() {
-    const [showLogoutModal, setShowLogoutModal] = useState(false)
-    const [showLeaveModal, setShowLeaveModal] = useState(false)
+    const [isMobile, setIsMobile] = useState(false)
 
-    const handleLogout = () => {
-        console.log('로그아웃 처리 완료')
-        setShowLogoutModal(false)
-    }
-
-    const handleLeave = () => {
-        console.log('회원탈퇴 처리 완료')
-        setShowLeaveModal(false)
-    }
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 430)
+        }
+        handleResize()
+        window.addEventListener('resize', handleResize)
+        return () => window.removeEventListener('resize', handleResize)
+    }, [])
 
     return (
         <S.Layout>
+            {isMobile && <SettingHeader />}
+
             <S.NavArea>
-                <SettingNav
-                    onLogoutClick={() => setShowLogoutModal(true)}
-                    onLeaveClick={() => setShowLeaveModal(true)}
-                />
+                <SettingNav />
             </S.NavArea>
 
             <S.ContentArea>
@@ -48,11 +44,9 @@ export default function SettingPage() {
                                     <Image src={contact.icon} alt="icon" width={20} height={20} />
                                     <S.ContactText>{contact.value}</S.ContactText>
                                 </S.ContactInfo>
-                                <S.Delete>삭제</S.Delete>
                             </S.ContactItem>
                         ))}
                     </S.ContactList>
-                    <S.AddContact>+ 새 연락처 추가</S.AddContact>
                 </S.Section>
 
                 <S.Section>
@@ -62,20 +56,13 @@ export default function SettingPage() {
                         <S.Input placeholder="새로운 비밀번호를 입력해주세요" />
                         <S.Input placeholder="새로운 비밀번호를 다시 입력해주세요" />
                     </S.InputBox>
-                    <Square text='비밀번호 변경' status={true} width='44vw' />
+                    <Square
+                        text='비밀번호 변경'
+                        status={true}
+                        width={isMobile ? '90vw' : '44vw'}
+                    />
                 </S.Section>
             </S.ContentArea>
-
-            {showLogoutModal && <Logout onLogout={handleLogout} onClose={() => setShowLogoutModal(false)} />}
-            {showLeaveModal && (
-                <Leave
-                    onLeave={() => {
-                        console.log('회원탈퇴 처리 완료')
-                        setShowLeaveModal(false)
-                    }}
-                    onClose={() => setShowLeaveModal(false)}
-                />
-            )}
         </S.Layout>
     )
 }

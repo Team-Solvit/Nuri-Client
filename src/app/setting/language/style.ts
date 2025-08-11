@@ -1,16 +1,26 @@
 import styled from '@emotion/styled'
 import { colors } from '@/styles/theme'
+import { mq } from '@/styles/media'
 
 export const Layout = styled.div`
   display: flex;
   width: 100%;
   background: ${colors.background};
+
+  ${mq.mobile} {
+    width: 100%;
+    flex-direction: column;
+  }
 `
 
 export const NavArea = styled.div`
   flex: 0 0 20vw;
   background: ${colors.background};
   border-right: 1px solid ${colors.line};
+
+  ${mq.mobile} {
+    display: none;
+  }
 `
 
 export const ContentArea = styled.div`
@@ -19,8 +29,12 @@ export const ContentArea = styled.div`
   flex-direction: column;
   align-items: flex-start;
   padding: 4rem 6rem;
-  width: 200vw;
   margin: 0 auto;
+
+  ${mq.mobile} {
+    padding: 1rem;
+    width: 100%;
+  }
 `
 
 export const RadioGroup = styled.div`
@@ -28,6 +42,11 @@ export const RadioGroup = styled.div`
   flex-direction: column;
   gap: 1.2rem;
   width: 100%;
+
+  ${mq.mobile} {
+    gap: 1rem;
+    width: 100%;
+  }
 `
 
 export const RadioLabel = styled.label`
@@ -35,6 +54,11 @@ export const RadioLabel = styled.label`
   align-items: center;
   cursor: pointer;
   justify-content: space-between;
+
+  ${mq.mobile} {
+    width: 100%;
+    padding: 0 1rem;
+  }
 `
 
 export const Radio = styled.input`
@@ -62,6 +86,11 @@ export const Title = styled.h1`
   font-size: 28px;
   color: ${colors.text};
   margin-bottom: 2rem;
+
+  ${mq.mobile} {
+    font-size: 20px;
+    margin-bottom: 1rem;
+  }
 `
 
 export const SearchBox = styled.div`
@@ -72,6 +101,11 @@ export const SearchBox = styled.div`
   margin-bottom: 2rem;
   display: flex;
   align-items: center;
+
+  ${mq.mobile} {
+    width: 92vw;
+    height: 50px;
+  }
 `
 
 export const SearchText = styled.input`
@@ -92,4 +126,10 @@ export const LangName = styled.span`
   font-size: 1.3rem;
   font-weight: 500;
   color: ${colors.text};
+
+  ${mq.mobile} {
+    font-size: 16px;
+    font-weight: 500;
+    color: #000000;
+  }
 `

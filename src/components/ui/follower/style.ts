@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import { colors, fontSizes, radius } from '@/styles/theme';
+import { mq } from '@/styles/media';
 
 export const Container = styled.div`
   width: 30vw;
@@ -13,6 +14,12 @@ export const Container = styled.div`
   gap: 2rem;
   align-items: center;
   position: relative;
+
+  ${mq.mobile} {
+    width: 80vw;
+    height: 55vh;
+    gap: 1rem;
+  } 
 `
 
 
@@ -62,6 +69,10 @@ export const List = styled.div`
   &::-webkit-scrollbar {
         display: none;
     }
+
+  ${mq.mobile} {
+    margin-bottom: 5rem;
+  }
 `
 
 
@@ -141,5 +152,10 @@ export const DeleteBtn = styled.button`
   transition: background 0.2s;
   &:hover {
     background: #fbe9eb;
+  }
+
+  ${mq.mobile} {
+    margin-left: 2.5rem;
+    white-space: nowrap;
   }
 `; 
