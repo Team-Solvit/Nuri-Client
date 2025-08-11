@@ -16,6 +16,7 @@ interface SectionProps {
 }
 
 export default function Section({ sectionName, todos, handleCheck, handleFileChange }: SectionProps) {
+  const acceptDoc = ".hwp,.hwpx,.doc,.docx,.pdf,application/x-hwp,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf";
   return (
     <S.Section>
       <S.SectionLabel>{sectionName}</S.SectionLabel>
@@ -52,6 +53,7 @@ export default function Section({ sectionName, todos, handleCheck, handleFileCha
                             다시 올리기
                             <input
                               type="file"
+                              accept={acceptDoc}
                               style={{ display: "none" }}
                               onChange={(e) => handleFileChange(e, todo.id)}
                             />
@@ -64,6 +66,7 @@ export default function Section({ sectionName, todos, handleCheck, handleFileCha
                             +
                             <input
                               type="file"
+                              accept={acceptDoc}
                               style={{ display: "none" }}
                               onChange={(e) => handleFileChange(e, todo.id)}
                             />
