@@ -168,6 +168,14 @@ export const MoreItem = styled.button`
   & > span { font-size: 14px; color: #111; }
 `;
 
+export const MoreIcon = styled.span<{ open?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .22s ease;
+  transform: rotate(${({open}) => (open ? '0deg' : '180deg')});
+`;
+
 export const MoreBar = styled.div<{ open?: boolean }>`
   display: none;
   grid-template-columns: repeat(2, 1fr);

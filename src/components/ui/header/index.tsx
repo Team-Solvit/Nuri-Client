@@ -97,12 +97,13 @@ export default function Header() {
 					<S.MoreWrap ref={moreRef}>
 						<S.MenuItem
 							key="__more__"
-							// active={pathname.startsWith('/boarding/third-party') || pathname.startsWith('/meeting/third-party')}
 							onClick={() => setMoreOpen(o => !o)}
 							aria-haspopup="menu"
 							aria-expanded={moreOpen}
 						>
-							<Image src="/icons/upArrow.svg" alt="더보기" width={24} height={24} />
+							<S.MoreIcon open={moreOpen}>
+								<Image src="/icons/upArrow.svg" alt="더보기" width={24} height={24} />
+							</S.MoreIcon>
 						</S.MenuItem>
 					</S.MoreWrap>
 				)}
