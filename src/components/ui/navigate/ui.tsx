@@ -6,10 +6,15 @@ import Home from "@/assets/icon/house.svg"
 import Message from "@/assets/icon/message.svg"
 import * as S from "./style";
 import NProgress from "nprogress";
+import {useUserStore} from "@/store/user";
+import {useLoginModalStore} from "@/store/loginModal";
+import {TextBtn} from "./style";
 
 export default function Navigate() {
 	const router = useRouter();
 	const pathname = usePathname();
+	const {id} = useUserStore();
+	const {open} = useLoginModalStore();
 	const navigateClick = (path: string) => {
 		NProgress.start()
 		router.push(path);
@@ -40,6 +45,17 @@ export default function Navigate() {
 			aria_label: "하숙집 페이지로 이동"
 		},
 	] as const
+	
+	const NAVIGATE_AUTH_ITEMS = [
+		{
+			label: "로그인",
+			onClick: () => open(),
+		},
+		{
+			label: "회원가입",
+			onClick: () => navigateClick("/register"),
+		},
+	] as const
 	return (
 		<S.NavigateContainer>
 			<S.Logo onClick={() => navigateClick("/")}>
@@ -51,7 +67,7 @@ export default function Navigate() {
 				/>
 			</S.Logo>
 			<S.BtnBox>
-				{NAVIGATE_ITEMS.map(item => {
+				{id ? NAVIGATE_ITEMS.map(item => {
 					return (
 						<S.NavigateBtn
 							key={item.path}
@@ -67,6 +83,15 @@ export default function Navigate() {
 							</S.IconBox>
 							<p>{item.label}</p>
 						</S.NavigateBtn>
+					)
+				}) : NAVIGATE_AUTH_ITEMS.map(item => {
+					return (
+						<S.TextBtn
+							key={item.label}
+							onClick={item.onClick}
+						>
+							{item.label}
+						</S.TextBtn>
 					)
 				})}
 			</S.BtnBox>
