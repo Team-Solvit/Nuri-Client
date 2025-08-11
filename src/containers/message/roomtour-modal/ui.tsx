@@ -4,16 +4,16 @@ import Square from "@/components/ui/button/square";
 import Image from "next/image";
 import {roomTourData, visitorData} from "./data";
 import {useMessageModalStore} from "@/store/messageModal";
-import {useModalStore} from "@/store/modal";
 import MapIcon from "@/assets/icon/map.svg"
+import {ConfirmRejectModal} from "@/containers/message/contract-modal/ConfirmRejectModal";
+import {useConfirmStore} from "@/store/confirm";
 
 export default function RoomTourModal() {
 	const {isOpen, master, messageType, close} = useMessageModalStore();
-	const {close: closeModalState} = useModalStore();
 	const closeModal = () => {
 		close()
-		closeModalState();
 	}
+	const {isOpen: isConfirmOpen, openConfirm, closeConfirm} = useConfirmStore();
 	return isOpen && messageType === "roomtour" && (
 		<Modal>
 			<S.ModalContainer>
@@ -71,6 +71,7 @@ export default function RoomTourModal() {
 				<S.ButtonRow>
 					{master ? <>
 						<Square text="거절" onClick={() => {
+							openConfirm();
 						}} status={false} width="48%"/>
 						<Square text="수락" onClick={() => {
 						}} status={true} width="48%"/>
@@ -79,6 +80,12 @@ export default function RoomTourModal() {
 					}} status={true} width="100%"/>}
 				</S.ButtonRow>
 			</S.ModalContainer>
+			<ConfirmRejectModal
+				isOpen={isConfirmOpen}
+				onClose={closeConfirm}
+				onConfirm={close}
+				type={"결제"}
+			/>
 		</Modal>
 	);
 }

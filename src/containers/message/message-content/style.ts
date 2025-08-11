@@ -1,9 +1,15 @@
 import styled from "@emotion/styled";
 import {colors, fontSizes, radius, zIndex} from '@/styles/theme';
+import {mq} from "@/styles/media";
 
 export const ContainerBox = styled.section`
   width: 100%;
-  height: 100%;
+  height: 82%;
+  position: relative;
+
+  ${mq.mobile} {
+    margin-top: 10vh;
+  }
 `
 
 export const MessageContentContainer = styled.section`
@@ -42,26 +48,32 @@ export const DateDivider = styled.div`
   }
 `;
 
-export const ReceivedMsgRow = styled.div`
+export const ReceivedMsgRow = styled.div<{ isSameUser: boolean }>`
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 12px;
-  margin-bottom: 0.5rem;
+  ${(props) => props.isSameUser ? "margin-bottom: 2rem;" : null}
 `;
 
 export const ProfileImg = styled.div<{ isFirst: boolean }>`
   position: relative;
   overflow: hidden;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
   background: ${(props) => (props.isFirst ? "#e0e0e0" : "#ffffff")};
+
+  ${mq.mobile} {
+    width: 30px;
+    height: 30px;
+  }
 `;
 
-export const SentMsgRow = styled.div`
+export const SentMsgRow = styled.div<{ isSameUser: boolean }>`
   display: flex;
   justify-content: flex-end;
+  ${(props) => props.isSameUser ? "margin-bottom: 2rem;" : null}
 `;
 
 export const ReceivedMsgAndTimeWrapper = styled.div<{ isHaveReply: string | undefined }>`
@@ -71,7 +83,8 @@ export const ReceivedMsgAndTimeWrapper = styled.div<{ isHaveReply: string | unde
   gap: 6px;
   position: relative;
 
-  &:hover .msg-hover-icons {
+  &:hover .msg-hover-icons,
+  .msg-hover-icons:hover {
     opacity: 1;
     pointer-events: auto;
   }
@@ -80,9 +93,10 @@ export const ReceivedMsgAndTimeWrapper = styled.div<{ isHaveReply: string | unde
 export const MsgHoverIcons = styled.div`
   position: absolute;
   bottom: 0;
-  right: -4rem;
+  right: -2.4rem;
   display: flex;
   gap: 0.5rem;
+  cursor: pointer;
   background: ${colors.background};
   border-radius: ${radius.md};
   box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.06);
@@ -90,8 +104,21 @@ export const MsgHoverIcons = styled.div`
   margin-bottom: 0.5rem;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.15s, right 0.15s;
+  transition: opacity 0.5s, right 0.15s;
   z-index: 2;
+
+  ${ReceivedMsgAndTimeWrapper}:hover &,
+  &:hover {
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: 0s; /* hover될 때는 딜레이 없이 즉시 */
+  }
+
+  /* hover 해제 시 1초 후 사라지게 */
+
+  ${ReceivedMsgAndTimeWrapper} & {
+    transition-delay: 1s; /* hover가 풀리면 사라지는 딜레이 */
+  }
 `;
 
 export const SentMsgAndTimeWrapper = styled.div<{ isHaveReply: string | undefined }>`

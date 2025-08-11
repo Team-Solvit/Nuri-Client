@@ -1,5 +1,7 @@
 import styled from "@emotion/styled";
 import React from "react";
+import {mq} from "@/styles/media";
+import {MESSAGE_MAX_WIDTH_DESKTOP, MESSAGE_MAX_WIDTH_MOBILE} from "@/constants/constant";
 
 const ImgBubble = styled.div`
   padding: 0;
@@ -9,11 +11,15 @@ const ImgBubble = styled.div`
 const Img = styled.img`
   object-fit: cover;
   border-radius: 1rem;
-  max-width: 320px;
-  max-height: 320px;
+  max-width: ${MESSAGE_MAX_WIDTH_DESKTOP}px;
+  max-height: ${MESSAGE_MAX_WIDTH_DESKTOP}px;
   height: auto;
   width: auto;
   display: block;
+
+  ${mq.mobile} {
+    max-width: ${MESSAGE_MAX_WIDTH_MOBILE}px;
+  }
 `;
 
 const MsgTime = styled.div<{ isSent?: boolean }>`
@@ -28,19 +34,19 @@ const MsgTime = styled.div<{ isSent?: boolean }>`
 `;
 
 interface ImageMessageProps {
-  src: string;
-  alt?: string;
-  time?: string;
-  isSent?: boolean;
+	src: string;
+	alt?: string;
+	time?: string;
+	isSent?: boolean;
 }
 
-const ImageMessage: React.FC<ImageMessageProps> = ({ src, alt, time, isSent }) => (
-  <div style={{ position: 'relative', display: 'inline-block' }}>
-    <ImgBubble>
-      <Img src={src} alt={alt || 'img-msg'} />
-    </ImgBubble>
-    {time && <MsgTime isSent={isSent}>{time}</MsgTime>}
-  </div>
+const ImageMessage: React.FC<ImageMessageProps> = ({src, alt, time, isSent}) => (
+	<div style={{position: 'relative', display: 'inline-block'}}>
+		<ImgBubble>
+			<Img src={src} alt={alt || 'img-msg'}/>
+		</ImgBubble>
+		{time && <MsgTime isSent={isSent}>{time}</MsgTime>}
+	</div>
 );
 
 export default ImageMessage; 

@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import {colors, fontSizes, radius} from "@/styles/theme";
+import {mq} from "@/styles/media";
 
 export const ModalContainer = styled.div`
   width: 39.5rem;
@@ -10,12 +11,20 @@ export const ModalContainer = styled.div`
   flex-direction: column;
   align-items: center;
   overflow: hidden;
+
+  ${mq.mobile} {
+    width: 20rem;
+  }
 `;
 
 export const TopImageWrapper = styled.div`
   width: 100%;
   height: 11.125rem;
   position: relative;
+
+  ${mq.mobile} {
+    height: 7rem;
+  }
 `;
 
 export const Section = styled.section`
@@ -24,6 +33,29 @@ export const Section = styled.section`
   min-height: 20vh;
   max-height: 45vh;
   overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: ${colors.line} transparent;
+  padding-right: 10px;
+  /* Webkit (Chrome, Edge, Safari) */
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: ${radius.md};
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: ${colors.line}; /* 테마 색 사용 */
+    border-radius: ${radius.md};
+    border: 2px solid transparent; /* 여백 효과 */
+    background-clip: padding-box;
+    transition: background-color 180ms ease, opacity 180ms ease;
+    opacity: 0.7;
+  }
 
 `;
 
@@ -66,6 +98,9 @@ export const Value = styled.div`
   font-size: ${fontSizes.Small};
   font-weight: 500;
   color: ${colors.text};
+  text-align: right;
+  word-break: keep-all;
+  overflow-wrap: normal;
 `;
 
 export const PriceBox = styled.div`

@@ -24,7 +24,7 @@ export default function Navigate() {
 			aria_label: "알림 페이지로 이동"
 		},
 		{
-			label: "메세지",
+			label: "메시지",
 			path: "/message",
 			icon: Message,
 			count: 1,
