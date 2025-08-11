@@ -108,6 +108,14 @@ export const Report = styled.div`
 
 export const MoreWrap = styled.div`
   position: relative;
+
+  ${mq.mobile} {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 36px;
+    z-index: 3;
+  }
 `;
 
 export const MoreDropdown = styled.div<{ open?: boolean }>`
