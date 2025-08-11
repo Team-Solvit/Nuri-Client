@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import { colors, fontSizes, radius } from '@/styles/theme';
+import { mq } from '@/styles/media';
 
 export const Container = styled.div`
     position: relative;
@@ -16,6 +17,10 @@ export const Select = styled.button<{ selected: boolean }>`
     align-items: center;
     gap: 7px;
     cursor: pointer;
+
+    ${mq.mobile} {
+        white-space: nowrap;
+  }
 `
 
 export const Main = styled.div`
@@ -33,6 +38,10 @@ export const Main = styled.div`
     z-index: 100;
     background-color: ${colors.background};
     gap: 20px;
+
+    ${mq.mobile} {
+        width: 75vw;
+  }
 `
 
 export const Title = styled.span`
@@ -56,6 +65,10 @@ export const Input1 = styled.input`
     padding: 8px;
     width: 9vw;
     outline: none;
+
+    ${mq.mobile} {
+        width: 25vw;
+  }
 `
 
 export const Input2 = styled.input`
@@ -64,6 +77,10 @@ export const Input2 = styled.input`
     padding: 8px;
     width: 9vw;
     outline: none;
+
+    ${mq.mobile} {
+        width: 25vw;
+  }
 `
 
 export const Slider = styled.div`
@@ -80,4 +97,8 @@ export const Button = styled.div`
     gap: 10px;
     margin-top: 2rem;
     margin-left: 6.5rem;
+
+    ${mq.mobile} {
+        margin-left: 3rem;
+  }
 `

@@ -11,9 +11,10 @@ interface SelectItemProps {
     isOpen: boolean;
     onOpen: () => void;
     onClose: () => void;
+    onChangeRange?: (values: [number, number]) => void;
 }
 
-export default function SelectItem({ text, isOpen, onOpen, onClose }: SelectItemProps) {
+export default function SelectItem({ text, isOpen, onOpen, onClose, onChangeRange }: SelectItemProps) {
     const [selected, setSelected] = useState<string>(text);
     const unit = text === '가격' ? '원' : text === '기간' ? '개월' : '';
 
@@ -77,14 +78,12 @@ export default function SelectItem({ text, isOpen, onOpen, onClose }: SelectItem
                             type="text"
                             value={formatNumber(values[0])}
                             onChange={onChangeMin}
-                            style={{ paddingRight: '30px' }}
                         />
                         <span>~</span>
                         <S.Input2
                             type="text"
                             value={formatNumber(values[1])}
                             onChange={onChangeMax}
-                            style={{ paddingRight: '30px' }}
                         />
                         <span>{unit}</span>
                     </S.Input>
@@ -155,6 +154,7 @@ export default function SelectItem({ text, isOpen, onOpen, onClose }: SelectItem
                             status={true}
                             onClick={() => {
                                 setSelected(`${formatNumber(values[0])} ~ ${formatNumber(values[1])}${unit}`);
+                                if (onChangeRange) onChangeRange(values);
                                 onClose();
                             }}
                             width='100px'

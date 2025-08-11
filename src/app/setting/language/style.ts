@@ -6,11 +6,6 @@ export const Layout = styled.div`
   display: flex;
   width: 100%;
   background: ${colors.background};
-
-  ${mq.mobile} {
-    width: 100%;
-    flex-direction: column;
-  }
 `
 
 export const NavArea = styled.div`
@@ -101,11 +96,6 @@ export const SearchBox = styled.div`
   margin-bottom: 2rem;
   display: flex;
   align-items: center;
-
-  ${mq.mobile} {
-    width: 92vw;
-    height: 50px;
-  }
 `
 
 export const SearchText = styled.input`
