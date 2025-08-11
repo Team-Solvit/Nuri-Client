@@ -6,6 +6,7 @@ import { colors, radius, fontSizes } from '@/styles/theme';
 import Square from '@/components/ui/button/square';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { mq } from '@/styles/media';
 
 export default function Login() {
   const router = useRouter();
@@ -108,6 +109,12 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
+
+  ${mq.mobile} {
+    width: 90vw;
+    padding: 1.5rem;
+    border-radius: ${radius.md};
+  }
 `;
 
 const FormGroup = styled.div`
@@ -153,6 +160,12 @@ const Hint = styled.div`
   margin-top: 0.5rem;
   font-size: ${fontSizes.Small};
   color: ${colors.gray};
+
+  ${mq.mobile} {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
 `;
 
 const Left = styled.div`
