@@ -7,14 +7,16 @@ import Message from "@/assets/icon/message.svg"
 import * as S from "./style";
 import NProgress from "nprogress";
 import {useUserStore} from "@/store/user";
-import {useLoginModalStore} from "@/store/loginModal";
 import {TextBtn} from "./style";
+import Login from "../login";
+import LoginModal from "@/components/layout/loginModal";
+import { useLoginModalStore } from "@/store/loginModal";
 
 export default function Navigate() {
 	const router = useRouter();
 	const pathname = usePathname();
 	const {id} = useUserStore();
-	const {open} = useLoginModalStore();
+	const {isOpen, open} = useLoginModalStore();
 	const navigateClick = (path: string) => {
 		NProgress.start()
 		router.push(path);
@@ -95,6 +97,11 @@ export default function Navigate() {
 					)
 				})}
 			</S.BtnBox>
+			{isOpen && (
+				<LoginModal>
+					<Login />
+				</LoginModal>
+			)}
 		</S.NavigateContainer>
 	)
 }
