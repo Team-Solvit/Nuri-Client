@@ -19,8 +19,8 @@ const MENU_ITEMS = [
 export default function Header() {
 	const pathname = usePathname()
 	const router = useRouter()
-  const [isMobile, setIsMobile] = useState(false);
 
+  const [isMobile, setIsMobile] = useState(false);
 	useEffect(() => {
 		setIsMobile(window.innerWidth <= 430);
 	}, []);
@@ -31,6 +31,8 @@ export default function Header() {
 	}
 
 	if (isMobile && pathname.startsWith('/register')) return null
+	
+	if (isMobile && pathname.startsWith('/register') || isMobile && pathname.startsWith('/message')) return null
 	
 	return (
 		<S.HeaderContainer>

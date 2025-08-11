@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import {colors, fontSizes} from "@/styles/theme";
+import {mq} from "@/styles/media";
 
 export const NoneBoxContainer = styled.section`
   width: 100%;
@@ -16,5 +17,9 @@ export const NoneBoxContainer = styled.section`
     font-size: ${fontSizes.H3};
     font-weight: 500;
     line-height: 100%;
+  }
+
+  ${mq.mobile} {
+    display: none;
   }
 `

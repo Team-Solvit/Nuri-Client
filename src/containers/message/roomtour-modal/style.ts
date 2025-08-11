@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import {colors, fontSizes, radius} from "@/styles/theme";
+import {mq} from "@/styles/media";
 
 export const ModalContainer = styled.div`
   width: 39.5rem;
@@ -10,12 +11,20 @@ export const ModalContainer = styled.div`
   flex-direction: column;
   align-items: center;
   overflow: hidden;
+
+  ${mq.mobile} {
+    width: 20rem;
+  }
 `;
 
 export const TopImageWrapper = styled.div`
   width: 100%;
   height: 11.125rem;
   position: relative;
+
+  ${mq.mobile} {
+    height: 7rem;
+  }
 `;
 
 export const Section = styled.section`
