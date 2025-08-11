@@ -95,6 +95,7 @@ export default function MessageContent() {
 									name={msg.contract.name || ""}
 									time={isLastOfTime ? msg.time : undefined}
 									isSent={msg.type === 'sent'}
+									status={msg.contract.status}
 									button={
 										<Square
 											text="자세히보기"
@@ -115,6 +116,7 @@ export default function MessageContent() {
 									tourTime={msg.roomTour.time || ""}
 									messageTime={isLastOfTime ? msg.time : undefined}
 									isSent={msg.type === 'sent'}
+									status={msg.roomTour.status}
 									button={
 										<Square
 											text="자세히보기"

@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
-import {colors, fontSizes} from '@/styles/theme';
+import {colors, fontSizes, radius} from '@/styles/theme';
 import React from "react";
+import type {Status} from "@/containers/message/message-content/type";
 
 const RoomTourBubble = styled.div`
   background: #fff;
@@ -73,6 +74,19 @@ const MsgTime = styled.div<{ isSent?: boolean }>`
   bottom: 0;
   ${({isSent}) => isSent ? "left: -4.5rem;" : "right: -4.5rem;"};
 `;
+const StatusBox = styled.div<{ status: Status }>`
+  position: absolute;
+  top: 3%;
+  left: 3%;
+  background-color: ${(props) =>
+    props.status === "success" ? "#E74B3C" : "#71DAAA"
+  };
+  color: white;
+  border-radius: ${radius.lg};
+  padding: 0.5rem 1rem;
+  font-size: ${fontSizes.Small};
+`;
+
 
 interface RoomTourMessageProps {
 	thumbnail: string;
@@ -83,8 +97,19 @@ interface RoomTourMessageProps {
 	isSent?: boolean;
 	onDetail?: () => void;
 	button?: React.ReactNode;
+	status: Status
 }
 
+const DetailButton = styled.button`
+  background-color: ${colors.gray};
+  color: white;
+  border: none;
+  width: 100%;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: ${fontSizes.Small};
+  cursor: not-allowed;
+`;
 const RoomTourMessage: React.FC<RoomTourMessageProps> = ({
 	                                                         thumbnail,
 	                                                         name,
@@ -92,19 +117,20 @@ const RoomTourMessage: React.FC<RoomTourMessageProps> = ({
 	                                                         tourTime,
 	                                                         messageTime,
 	                                                         isSent,
-	                                                         onDetail,
-	                                                         button
+	                                                         button,
+	                                                         status
                                                          }) => (
 	<div style={{position: 'relative', display: 'inline-block'}}>
+		{status !== "ing" && <StatusBox status={status}>{status === "success" ? "거절" : "수락"}</StatusBox>}
 		<RoomTourBubble>
 			<RoomTourImage src={thumbnail} alt="roomtour-img"/>
 			<RoomTourContent>
-				<RoomTourTitle>룸투어를 예약했어요</RoomTourTitle>
+				<RoomTourTitle>{status === "ing" ? "룸투어를 예약했어요" : "룸투어 예약이 종료되었어요"}</RoomTourTitle>
 				<RoomTourHouse>{name}</RoomTourHouse>
 				<RoomTourDate>날짜 : {date}</RoomTourDate>
 				<RoomTourTime>시간 : {tourTime}</RoomTourTime>
 				<RoomTourButtonWrapper>
-					{button ? button : onDetail && <button onClick={onDetail}>자세히보기</button>}
+					{button && status === "ing" ? button : <DetailButton>자세히보기</DetailButton>}
 				</RoomTourButtonWrapper>
 			</RoomTourContent>
 		</RoomTourBubble>

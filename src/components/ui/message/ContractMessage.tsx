@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
-import {colors, fontSizes} from '@/styles/theme';
+import {colors, fontSizes, radius} from '@/styles/theme';
 import React from "react";
+import type {Status} from "@/containers/message/message-content/type";
 
 const ContractBubble = styled.div`
   background: #fff;
@@ -60,17 +61,27 @@ const MsgTime = styled.div<{ isSent?: boolean }>`
   ${({isSent}) => isSent ? "left: -4.5rem;" : "right: -4.5rem;"};
 `;
 const DetailButton = styled.button`
-  background-color: ${colors.primary};
+  background-color: ${colors.gray};
   color: white;
   border: none;
+  width: 100%;
   border-radius: 0.5rem;
   padding: 0.5rem 1rem;
   font-size: ${fontSizes.Small};
-  cursor: pointer;
+  cursor: not-allowed;
+`;
 
-  &:hover {
-    opacity: 0.9;
-  }
+const StatusBox = styled.div<{ status: Status }>`
+  position: absolute;
+  top: 3%;
+  left: 3%;
+  background-color: ${(props) =>
+    props.status === "success" ? "#E74B3C" : "#71DAAA"
+  };
+  color: white;
+  border-radius: ${radius.lg};
+  padding: 0.5rem 1rem;
+  font-size: ${fontSizes.Small};
 `;
 
 interface ContractMessageProps {
@@ -78,19 +89,20 @@ interface ContractMessageProps {
 	name: string;
 	time?: string;
 	isSent?: boolean;
-	onDetail?: () => void;
 	button?: React.ReactNode;
+	status: Status
 }
 
-const ContractMessage: React.FC<ContractMessageProps> = ({thumbnail, name, time, isSent, onDetail, button}) => (
+const ContractMessage: React.FC<ContractMessageProps> = ({thumbnail, name, time, isSent, button, status}) => (
 	<div style={{position: 'relative', display: 'inline-block'}}>
+		{status !== "ing" && <StatusBox status={status}>{status === "success" ? "거절" : "수락"}</StatusBox>}
 		<ContractBubble>
 			<ContractThumbnail src={thumbnail} alt="contract-img"/>
 			<ContractContent>
-				<ContractTitle>계약이 완료되었어요</ContractTitle>
+				<ContractTitle>{status === "ing" ? "계약 요청이 되었어요" : "계약 요청이 종료되었어요"}</ContractTitle>
 				<ContractHouse>{name}</ContractHouse>
 				<ContractButtonWrapper>
-					{button ? button : onDetail && <DetailButton onClick={onDetail}>자세히보기</DetailButton>}
+					{button && status === "ing" ? button : <DetailButton>자세히보기</DetailButton>}
 				</ContractButtonWrapper>
 			</ContractContent>
 		</ContractBubble>
