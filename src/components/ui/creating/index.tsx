@@ -130,60 +130,9 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                     />
                     <S.CharCount>{content.length}/10000</S.CharCount>
 
-                    {isMobile && (
-                        <S.ToggleWrap style={{ marginTop: '1rem' }}>
-                            <S.ToggleLabel>모임</S.ToggleLabel>
-                            <S.ToggleButton
-                                className={isPublic ? '' : 'inactive'}
-                                onClick={() => setIsPublic(prev => !prev)}
-                            >
-                                <Image
-                                    src="/icons/toggleOn.svg"
-                                    alt="토글 ON"
-                                    width={40}
-                                    height={30}
-                                    className="on"
-                                    style={{ marginLeft: '8px' }}
-                                />
-                                <Image
-                                    src="/icons/toggleOff.svg"
-                                    alt="토글 OFF"
-                                    width={50}
-                                    height={28}
-                                    className="off"
-                                    style={{ marginTop: '2px' }}
-                                />
-                            </S.ToggleButton>
-                        </S.ToggleWrap>
-                    )}
-
                     {!isMobile && (
                         <S.Header>
                             <S.Title>새 게시물 만들기</S.Title>
-                            <S.ToggleWrap>
-                                <S.ToggleLabel>모임</S.ToggleLabel>
-                                <S.ToggleButton
-                                    className={isPublic ? '' : 'inactive'}
-                                    onClick={() => setIsPublic(prev => !prev)}
-                                >
-                                    <Image
-                                        src="/icons/toggleOn.svg"
-                                        alt="토글 ON"
-                                        width={40}
-                                        height={30}
-                                        className="on"
-                                        style={{ marginLeft: '8px' }}
-                                    />
-                                    <Image
-                                        src="/icons/toggleOff.svg"
-                                        alt="토글 OFF"
-                                        width={50}
-                                        height={28}
-                                        className="off"
-                                        style={{ marginTop: '2px' }}
-                                    />
-                                </S.ToggleButton>
-                            </S.ToggleWrap>
                         </S.Header>
                     )}
 
@@ -232,7 +181,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                     </S.ButtonRow>
                 </S.Main>
             </S.Modal>
-            <Header />
+            {isMobile && <Header />}
         </S.Overlay>
     );
 }

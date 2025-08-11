@@ -22,11 +22,6 @@ export default function SettingPage() {
         setShowLogoutModal(false)
     }
 
-    const handleLeave = () => {
-        console.log('회원탈퇴 처리 완료')
-        setShowLeaveModal(false)
-    }
-
     return (
         <S.Layout>
             <S.NavArea>
