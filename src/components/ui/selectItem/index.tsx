@@ -78,14 +78,12 @@ export default function SelectItem({ text, isOpen, onOpen, onClose, onChangeRang
                             type="text"
                             value={formatNumber(values[0])}
                             onChange={onChangeMin}
-                            style={{ paddingRight: '30px' }}
                         />
                         <span>~</span>
                         <S.Input2
                             type="text"
                             value={formatNumber(values[1])}
                             onChange={onChangeMax}
-                            style={{ paddingRight: '30px' }}
                         />
                         <span>{unit}</span>
                     </S.Input>
