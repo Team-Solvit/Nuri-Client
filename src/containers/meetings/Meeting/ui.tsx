@@ -11,12 +11,16 @@ import MeetingCalender from "@/components/ui/meeting-calender";
 import {MeetingMember} from "@/components/ui/meeting-member";
 import {useRouter} from "next/navigation";
 import {MeetingProps} from "./type";
+import {Nav} from "@/containers/meetings/MeetingModal/ui";
+import {useOtherMeetingFind} from "@/store/otherMeetingFind";
 
 export default function Meeting(meeting: MeetingProps) {
 	const [selected, setSelected] = useState(1);
+	const {setFind} = useOtherMeetingFind();
 	const router = useRouter();
 	const handleBack = () => {
 		router.push("/meetings");
+		setFind(true);
 	}
 	return (
 		<S.ModalContainer>
@@ -43,18 +47,8 @@ export default function Meeting(meeting: MeetingProps) {
 					{meeting.description || "모임 설명이 없습니다."}
 				</S.Description>
 			</S.Content>
-			<S.Nav isSelected={selected}>
-				<S.PBox>
-					<p onClick={() => setSelected(1)}>게시물</p>
-				</S.PBox>
-				<S.PBox>
-					<p onClick={() => setSelected(2)}>일정</p>
-				</S.PBox>
-				<S.PBox>
-					<p onClick={() => setSelected(3)}>모임원</p>
-				</S.PBox>
-			</S.Nav>
-			{selected === 1 && <MeetingPost/>}
+			<Nav selected={selected} setSelected={setSelected}/>
+			{selected === 1 && <MeetingPost isModal={true}/>}
 			{selected === 1 && <S.BtnBox>
         <Square text={"게시물 작성"} status={true} width={"calc(84.5vw - 10rem)"} onClick={() => {
 				}}/>

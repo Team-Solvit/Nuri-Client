@@ -5,6 +5,7 @@ import { colors, fontSizes } from "@/styles/theme";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useMeetingStore } from "@/store/meeting";
+import { mq } from '@/styles/media';
 
 const MeetingTime = "/icons/meeting-time.svg";
 const MeetingLocation = "/icons/meeting-location.svg";
@@ -65,6 +66,10 @@ const SectionTitle = styled.h2`
   font-weight: 700;
   color: ${colors.text};
   margin-bottom: 18px;
+  ${mq.mobile} {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
 `;
 const List = styled.ul`
   display: flex;
@@ -80,10 +85,22 @@ const Card = styled.li`
   border-radius: 8px;
   border: 1px solid #EAEAEA;
   padding: 32px;
+  gap: 32px;
+  ${mq.mobile} {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px 16px 20px;
+    gap: 20px;
+    border-radius: 12px;
+  }
 `;
 const Info = styled.div`
   display: flex;
   gap: 16px;
+  ${mq.mobile} {
+    width: 100%;
+    gap: 12px;
+  }
 `;
 const MeetingTitle = styled.div`
   font-size: 18px;
@@ -98,6 +115,11 @@ const MeetingTitle = styled.div`
     color: ${colors.gray};
     font-weight: 400;
     }
+  ${mq.mobile} {
+    font-size: 16px;
+    gap: 6px;
+    p { font-size: 12px; }
+  }
 `;
 const Meta = styled.div`
   display: flex;
@@ -105,6 +127,10 @@ const Meta = styled.div`
   gap: 10px;
   font-size: 15px;
   color: ${colors.gray};
+  ${mq.mobile} {
+    font-size: 13px;
+    gap: 6px;
+  }
 `;
 const Time = styled.div`
   display: flex;
@@ -121,10 +147,17 @@ const Divider = styled.span`
   align-self: stretch;
   background: ${colors.line};
   display: inline-block;
+  ${mq.mobile} {
+    display: none;
+  }
 `;
 const Empty = styled.div`
   color: #bbb;
   font-size: 16px;
   text-align: center;
   padding: 32px 0;
+  ${mq.mobile} {
+    font-size: 14px;
+    padding: 24px 0;
+  }
 `;

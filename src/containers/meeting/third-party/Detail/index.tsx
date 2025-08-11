@@ -45,6 +45,7 @@ export default function MeetingThirdPartyDetailContainer() {
   const [minute, setMinute] = useState(parsedTime.minute);
   const hours = Array.from({ length: 12 }, (_, i) => i + 1);
   const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+  const acceptDoc = ".hwp,.hwpx,.doc,.docx,.pdf,application/x-hwp,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf";
 
   if (!meeting) return <S.Wrapper>모임 정보를 찾을 수 없습니다.</S.Wrapper>;
 
@@ -53,7 +54,7 @@ export default function MeetingThirdPartyDetailContainer() {
       <S.Header>
         <h1>{title}</h1>
       </S.Header>
-      <div style={{ display: 'flex', gap: '3rem', width: '100%' }}>
+      <S.MainRow>
         <S.Content>
           <S.Field>
             <S.FieldLabel htmlFor="meeting-title">제목</S.FieldLabel>
@@ -100,7 +101,7 @@ export default function MeetingThirdPartyDetailContainer() {
             </S.TimeGrid>
           </div>
         </S.TimePanel>
-      </div>
+      </S.MainRow>
       <S.RecordSection>
         <S.RecordHeader>
           <S.RecordTitle>모임 기록</S.RecordTitle>
@@ -109,6 +110,7 @@ export default function MeetingThirdPartyDetailContainer() {
           <input
             ref={fileInputRef}
             type="file"
+            accept={acceptDoc}
             style={{ display: 'none' }}
             onChange={e => {
               const file = e.target.files?.[0];

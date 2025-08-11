@@ -7,6 +7,7 @@ import Modal from '@/components/layout/modal'
 import RoomDetail from '@/components/ui/third-party/RoomDetail'
 import { useModalStore } from '@/store/modal'
 import Alert from '@/components/ui/alert'
+import { mq } from '@/styles/media'
 
 interface Room {
   number: string
@@ -69,6 +70,10 @@ const PopupContainer = styled.div`
   padding: 1rem;
   border-radius: 0.5rem;
   width: max-content;
+
+  ${mq.mobile} {
+    padding: 1rem 0.5rem;
+  }
 `
 
 const Header = styled.div`

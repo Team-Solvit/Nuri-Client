@@ -15,6 +15,7 @@ import {
 import Alert from '@/components/ui/alert';
 import ArrowLeft from '@/assets/post/arrow/left.svg';
 import ArrowRight from '@/assets/post/arrow/right.svg';
+import { mq } from '@/styles/media';
 
 export default function RoomTourModal() {
   const now = new Date();
@@ -161,9 +162,7 @@ export default function RoomTourModal() {
       </SendButton>
 
       <Arrow>
-        <svg width="20" height="10" viewBox="0 0 20 10" fill="none">
-          <path d="M10 10L0 0h20L10 10z" fill="#fff" />
-        </svg>
+        <img src="/icons/roomtour-popover-arrow.svg" alt="arrow" width={20} height={10} />
       </Arrow>
     </Popover>
   );
@@ -180,6 +179,13 @@ const Popover = styled.div`
   box-shadow: 0 0.25rem 1rem rgba(0,0,0,0.10);
   padding: 1.5rem;
   z-index: ${zIndex.modal};
+
+  ${mq.mobile} {
+    bottom: unset;
+    left: 0;
+    top: 0.5rem;
+    transform: translateX(-50%) translateY(40px);
+  }
 `;
 
 const Title = styled.h2`
@@ -339,4 +345,10 @@ const Arrow = styled.div`
   bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
+  ${mq.mobile} {
+    top: 10px;
+    left: 63%;
+    bottom: auto;
+    transform: translate(-50%, -100%) rotate(180deg);
+  }
 `;

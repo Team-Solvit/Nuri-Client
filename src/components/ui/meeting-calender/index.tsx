@@ -5,6 +5,8 @@ import Image from "next/image";
 import Arrow from "@/assets/meeting/arrow.svg";
 import ArrowBottom from "@/assets/meeting/arrow-bottom.svg";
 import {meetings} from "./data"
+import {breakpoints} from "@/styles/media";
+import Flag from "@/assets/icon/flag.svg";
 
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -78,9 +80,14 @@ export default function MeetingCalender() {
 				{day}
 				{
 					date in meetings &&
-          <S.Schedule>
-						{meetings[date]?.title}
-          </S.Schedule>
+					breakpoints.mobile <= window.innerWidth ?
+						<S.Schedule>
+							{meetings[date]?.title}
+						</S.Schedule> :
+						date in meetings &&
+            <S.Schedule>
+              <Image src={Flag} alt="flag" width={16} height={16}/>
+            </S.Schedule>
 				}
 				
 				{date in meetings && selectedIndex === currentIndex && (
@@ -103,9 +110,11 @@ export default function MeetingCalender() {
 							<p>{meetings[date].endTime}</p>
 						</S.PopupContentBox>
 						<p>{meetings[date].description}</p>
-						<S.ImgBox>
-							<Image src={ArrowBottom} alt="arrow" fill/>
-						</S.ImgBox>
+						{breakpoints.mobile <= window.innerWidth &&
+              <S.ImgBox>
+                <Image src={ArrowBottom} alt="arrow" fill/>
+              </S.ImgBox>
+						}
 					</S.Popup>
 				)}
 			</S.DateCell>

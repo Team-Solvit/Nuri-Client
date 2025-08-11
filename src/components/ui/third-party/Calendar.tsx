@@ -5,6 +5,7 @@ import Image from 'next/image'
 import ArrowLeft from '@/assets/post/arrow/left.svg'
 import ArrowRight from '@/assets/post/arrow/right.svg'
 import { colors } from "@/styles/theme";
+import { mq } from '@/styles/media'
 
 interface CalendarProps {
   selectedDate: Date;
@@ -84,6 +85,11 @@ const Wrapper = styled.div`
     width: 30vw;
     border-radius: 8px;
     padding: 16px;
+
+    ${mq.mobile} {
+        width: 100%;
+        padding: 8px;
+    }
 `
 
 const Header = styled.div`

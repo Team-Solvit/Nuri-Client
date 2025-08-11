@@ -7,15 +7,16 @@ import MeetingsSidebar from "@/containers/meetings/sidebar/ui";
 import MeetingModal from "@/containers/meetings/MeetingModal/ui";
 import MeetingAccession from "@/containers/meetings/accession/ui";
 import {Accession} from "@/containers/meetings/accession/type";
+import {useOtherMeetingFind} from "@/store/otherMeetingFind";
 
 export default function Meetings() {
 	const navigate = useRouter();
+	const {find} = useOtherMeetingFind();
 	useEffect(() => {
-		if (localStorage.getItem("token")) {
-			// 나중에 조건과 동시에 이동 url 교체하기
+		if (!find) {
 			navigate.push("/meetings/1");
 		}
-	}, []);
+	}, [find]);
 	const markers = [
 		{
 			id: 1,
@@ -41,7 +42,13 @@ export default function Meetings() {
 		{id: 2, title: "모임2", content: "누구보다 상냥하게", personnel: 1, maxPersonnel: 3},
 	]
 	const [isAccession, setIsAccession] = useState(false);
-	const AccessionData: Accession = {id: 1, title: "다함께 놀자 동네", content: "dajflkdjskfjfj", personnel: 2, maxPersonnel: 3}
+	const AccessionData: Accession = {
+		id: 1,
+		title: "다함께dddddddddd 놀자 동네",
+		content: "dajflkdjskfjfj",
+		personnel: 2,
+		maxPersonnel: 3
+	}
 	return (
 		<>
 			<GoogleMap markers={markers} label={(m) => rooms[m.id - 1].title} renderPopup={(marker: typeof markers[0]) => (
