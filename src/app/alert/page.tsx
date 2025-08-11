@@ -3,14 +3,15 @@
 import styled from "@emotion/styled";
 import Navigate from "@/components/ui/navigate/ui";
 import AlertScroll from "@/containers/alert/alertScroll/ui";
+import {mq} from "@/styles/media";
 
 export default function AlertPage() {
-  return (
-    <AlertContainer>
-      <AlertScroll />
-      <Navigate />
-    </AlertContainer>
-  )
+	return (
+		<AlertContainer>
+			<AlertScroll/>
+			<Navigate/>
+		</AlertContainer>
+	)
 }
 
 const AlertContainer = styled.section`
@@ -21,4 +22,9 @@ const AlertContainer = styled.section`
   align-items: flex-start;
   height: 90vh;
   max-height: 90vh;
+
+  ${mq.mobile} {
+    grid-template-columns: 1fr;
+    margin: 0;
+  }
 `

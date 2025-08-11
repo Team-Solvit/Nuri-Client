@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Arrow from '@/assets/post/arrow-right.svg';
 import Square from '@/components/ui/button/square';
@@ -12,9 +12,11 @@ import EllipsisIcon from '@/assets/post/ellipsis.svg';
 import SendIconSvg from '@/assets/post/send.svg';
 import * as S from './style';
 import { radius } from '@/styles/theme';
+import { useRouter } from 'next/navigation';
 
 interface PostDetailProps {
   id: string;
+  isModal?: boolean;
 }
 
 const mockComments = [
@@ -23,7 +25,8 @@ const mockComments = [
   { id: 3, author: 'bazQux', avatar: '/avatars/user3.png', text: '마지막 댓글입니다 :)' },
 ];
 
-export default function PostDetail({ id }: PostDetailProps) {
+export default function PostDetail({ id, isModal }: PostDetailProps) {
+  const router = useRouter();
   const post = fakeData.find((p) => p.id.toString() === id);
   const isHousePost = post?.subject === "하숙집";
   const [current, setCurrent] = useState(0);
@@ -31,6 +34,29 @@ export default function PostDetail({ id }: PostDetailProps) {
   const [showComments, setShowComments] = useState(false);
   const [showRoomTour, setShowRoomTour] = useState(false);
   const [commentText, setCommentText] = useState('');
+  const [openCommentMenuId, setOpenCommentMenuId] = useState<number | null>(null);
+
+  const roomTourRef = useRef<HTMLDivElement | null>(null);
+  const actionMenuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const onDocClick = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (showRoomTour && roomTourRef.current && !roomTourRef.current.contains(target)) {
+        setShowRoomTour(false);
+      }
+      if (menuOpen && actionMenuRef.current && !actionMenuRef.current.contains(target)) {
+        setMenuOpen(false);
+      }
+
+      if (openCommentMenuId !== null) {
+        setOpenCommentMenuId(null);
+      }
+    };
+
+    document.addEventListener('click', onDocClick);
+    return () => document.removeEventListener('click', onDocClick);
+  }, [menuOpen, showRoomTour, openCommentMenuId]);
 
   if (!post) return <div>게시물을 불러올수 없습니다.</div>
 
@@ -64,6 +90,7 @@ export default function PostDetail({ id }: PostDetailProps) {
 
   return (
     <S.Wrapper>
+      {isModal && <S.MobileClose onClick={() => router.back()}>×</S.MobileClose>}
       <S.Left>
         <S.SliderWrapper>
           {current > 0 && (
@@ -94,10 +121,19 @@ export default function PostDetail({ id }: PostDetailProps) {
           </S.Profile>
           {isHousePost && (
             <S.Buttons>
-              <S.RoomTourWrapper>
+              <S.RoomTourWrapper ref={roomTourRef}>
                 <Square
                   text="룸투어"
-                  onClick={() => setShowRoomTour(o => !o)}
+                  onClick={() =>
+                    setShowRoomTour((prev) => {
+                      const next = !prev;
+                      if (next) {
+                        setMenuOpen(false);
+                        setOpenCommentMenuId(null);
+                      }
+                      return next;
+                    })
+                  }
                   status={true}
                   width="max-content"
                 />
@@ -112,7 +148,7 @@ export default function PostDetail({ id }: PostDetailProps) {
       </S.Left>
 
       <S.Right>
-        <S.RightContent showComments={showComments}>
+        <S.RightContent showComments={showComments} isModal={isModal}>
           {isHousePost ? (
             <>
               <S.RightTopRow>
@@ -183,12 +219,12 @@ export default function PostDetail({ id }: PostDetailProps) {
                 </S.RightFeature>
               </S.RightFeatureList>
 
-              <S.RightDivider />
+              {/* <S.RightDivider />
 
               <S.RightLabel>식사</S.RightLabel>
               <S.RightImageBox>
                 <S.RightImage src="/post/meal.png" alt="meal" />
-              </S.RightImageBox>
+              </S.RightImageBox> */}
 
               <S.RightDivider />
 
@@ -238,7 +274,7 @@ export default function PostDetail({ id }: PostDetailProps) {
         </S.RightContent>
 
         {/* 댓글 섹션 */}
-        <S.CommentsSection show={showComments}>
+        <S.CommentsSection show={showComments} isModal={isModal}>
           <S.CommentsHeader>
             <S.CommentsTitle>댓글 {comments.length}개</S.CommentsTitle>
             <S.CommentsCloseButton onClick={() => setShowComments(false)}>
@@ -255,15 +291,52 @@ export default function PostDetail({ id }: PostDetailProps) {
                   <S.CommentAuthor>{comment.author}</S.CommentAuthor>
                   <S.CommentText>{comment.text}</S.CommentText>
                 </S.CommentContent>
-                <S.CommentMenu>
-                  <Image src={EllipsisIcon} alt="메뉴" width={16} height={16} />
-                </S.CommentMenu>
+                <S.MenuButton onClick={(e) => e.stopPropagation()}>
+                  <S.CommentMenu
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenCommentMenuId((prev) => {
+                        const opening = prev !== comment.id;
+                        if (opening) {
+                          setMenuOpen(false);
+                          setShowRoomTour(false);
+                        }
+                        return opening ? comment.id : null;
+                      });
+                    }}
+                  >
+                    <Image src={EllipsisIcon} alt="메뉴" width={16} height={16} />
+                  </S.CommentMenu>
+                  {openCommentMenuId === comment.id && (
+                    <S.MenuDropdown placement="down">
+                      <S.MenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log('댓글 수정', comment.id);
+                          setOpenCommentMenuId(null);
+                        }}
+                      >
+                        수정
+                      </S.MenuItem>
+                      <S.MenuItem
+                        red
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log('댓글 삭제', comment.id);
+                          setOpenCommentMenuId(null);
+                        }}
+                      >
+                        삭제
+                      </S.MenuItem>
+                    </S.MenuDropdown>
+                  )}
+                </S.MenuButton>
               </S.CommentItem>
             ))}
           </S.CommentsList>
         </S.CommentsSection>
 
-        <S.InteractionBar>
+        <S.InteractionBar isModal={isModal}>
           {showComments ? (
             <S.CommentInputContainer>
               <S.CommentInput
@@ -287,12 +360,21 @@ export default function PostDetail({ id }: PostDetailProps) {
                 <Image src={CommentIcon} alt="comment" width={22} height={22} />
                 <S.ActionCount>{post.comments ?? 3}</S.ActionCount>
               </S.ActionButton>
-              <S.MenuButton onClick={() => setMenuOpen(o => !o)}>
+              <S.MenuButton ref={actionMenuRef} onClick={() =>
+                setMenuOpen((prev) => {
+                  const next = !prev;
+                  if (next) {
+                    setShowRoomTour(false);
+                    setOpenCommentMenuId(null);
+                  }
+                  return next;
+                })
+              }>
                 <Image src={EllipsisIcon} alt="menu" width={24} height={24} />
                 {menuOpen && (
                   <S.MenuDropdown>
-                    <S.MenuItem onClick={() => { console.log('수정'); setMenuOpen(false); }} red={false}>수정</S.MenuItem>
-                    <S.MenuItem onClick={() => { console.log('삭제'); setMenuOpen(false); }} red={true}>삭제</S.MenuItem>
+                    <S.MenuItem onClick={() => { console.log('수정'); setMenuOpen(false); }}>수정</S.MenuItem>
+                    <S.MenuItem onClick={() => { console.log('삭제'); setMenuOpen(false); }} red>삭제</S.MenuItem>
                   </S.MenuDropdown>
                 )}
               </S.MenuButton>

@@ -5,6 +5,7 @@ import React from "react";
 import {useRouter} from "next/navigation";
 import NProgress from "nprogress";
 import {useModalStore} from "@/store/modal";
+import {useOtherMeetingFind} from '@/store/otherMeetingFind';
 
 export default function Accession({isAccession, setIsAccession, accessions}: AccessionProps) {
 	const modalClose = () => {
@@ -12,10 +13,12 @@ export default function Accession({isAccession, setIsAccession, accessions}: Acc
 	}
 	const router = useRouter();
 	const {close} = useModalStore();
+	const {setFind} = useOtherMeetingFind();
 	const handelRouter = (id: number) => {
 		router.push(`/meetings/${id}`)
 		setIsAccession(false)
 		NProgress.start()
+		setFind(false);
 		close()
 	}
 	if (!isAccession) return null

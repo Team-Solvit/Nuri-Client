@@ -4,6 +4,7 @@ import MyHouseScroll from "@/containers/myHouse/houseScroll/ui";
 import Navigate from "@/components/ui/navigate/ui";
 import styled from "@emotion/styled";
 import LeaveModal from "@/containers/myHouse/leave-modal/ui";
+import {mq} from "@/styles/media";
 
 export default function MyHouse() {
 	return (
@@ -23,4 +24,10 @@ const HouseContainer = styled.section`
   align-items: flex-start;
   height: 90vh;
   max-height: 90vh;
+
+  ${mq.mobile} {
+    grid-template-columns: 1fr;
+    padding: 0 1rem;
+    margin: 0;
+  }
 `

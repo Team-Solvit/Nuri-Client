@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import {css, keyframes} from "@emotion/react";
 import {colors, fontSizes, radius, zIndex} from "@/styles/theme";
+import {mq} from "@/styles/media";
 
 const fadeIn = keyframes`
   0% {
@@ -8,6 +9,15 @@ const fadeIn = keyframes`
   }
   100% {
     transform: translateX(0);
+  }
+`;
+
+const fadeInMobile = keyframes`
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
   }
 `;
 
@@ -25,6 +35,18 @@ export const SidebarContainer = styled.section<{ isOpen: boolean }>`
       ? css`${fadeIn} 0.3s ease-out`
       : 'none'};
   background-color: ${colors.line2};
+
+  ${mq.mobile} {
+    width: 100%;
+    height: 40vh;
+    left: 0;
+    top: auto;
+    bottom: 8vh;
+    animation: ${({isOpen}) =>
+      isOpen
+        ? css`${fadeInMobile} 0.3s ease-out`
+        : 'none'};
+  }
 `
 
 export const Head = styled.article`
