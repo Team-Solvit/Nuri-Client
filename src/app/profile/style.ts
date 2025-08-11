@@ -34,6 +34,9 @@ export const ProfileImage = styled.div`
   border-radius: 50%;
   overflow: hidden;
   background: ${colors.gray};
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
   img {
     object-fit: cover;
@@ -49,7 +52,7 @@ export const ProfileImage = styled.div`
 
   ${mq.mobile} {
     width: 31vw;
-    height: 16vh;
+    height: 15.5vh;
     margin-left: 1.5rem;
     margin-top: 6rem;
   }
@@ -58,14 +61,7 @@ export const ProfileImage = styled.div`
 
 export const PlusIcon = styled.div`
   position: absolute;
-  right: 2.5rem;
-  bottom: 2.5rem;
   z-index: 2;
-
-  ${mq.mobile} {
-    right: 2rem;
-    bottom: 1.9rem;
-  }
 `
 
 
@@ -76,7 +72,7 @@ export const Nickname = styled.div`
   ${mq.mobile} {
     font-size: 20px;
     margin-bottom: 0;
-    margin-left: -10rem;
+    margin-left: -9rem;
   }
 `
 
@@ -115,7 +111,7 @@ export const introduction = styled.span`
       font-size: ${fontSizes.Caption};
       font-weight: 200;
       margin-top: 10px;
-      margin-left: 1.5rem;
+      margin-left: 1rem;
       display: block;
     }
 `
@@ -290,7 +286,7 @@ export const Stats = styled.div`
     justify-content: flex-start;
     gap: 2rem;
     margin-bottom: 0;
-    margin-left: 1.5rem;
+    margin-left: 1rem;
     margin-top: 3.5rem;
   }
 `
@@ -388,7 +384,7 @@ export const ButtonRow = styled.div`
 
   ${mq.mobile} {
     display: flex;
-    gap: 3rem;
+    gap: 1rem;
     margin-top: 2rem;
     align-items: center;
     justify-content: center;

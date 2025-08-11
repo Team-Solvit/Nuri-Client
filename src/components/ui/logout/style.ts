@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import { mq } from '@/styles/media'
 
 export const FullScreenOverlay = styled.div`
   position: fixed;
@@ -22,6 +23,11 @@ export const ModalBox = styled.div`
   justify-content: center;
   display: flex;
   flex-direction: column;
+
+  ${mq.mobile} {
+    width: 70vw;
+    height: 30vh;
+  }
 `
 
 export const Title = styled.h2`
@@ -55,4 +61,9 @@ export const CancelBtn = styled.button<{ width?: string }>`
   font-weight: 600;
   font-size: 1rem;
   width: ${({ width }) => width || 'auto'};
+
+  ${mq.mobile} {
+    width: 25vw;
+    white-space: nowrap;
+  }
 `

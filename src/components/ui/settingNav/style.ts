@@ -26,9 +26,10 @@ export const Top = styled.div`
     gap: 13rem;
 `;
 
-export const Title = styled.h2`
-    font-size: ${fontSizes.H3};
+export const Title = styled.p`
+    font-size: ${fontSizes.H4};
     font-weight: 400;
+    white-space: nowrap;
 `
 
 export const Overlay = styled.div`

@@ -3,7 +3,6 @@
 import * as S from './style';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-
 interface PostCardProps {
   id: number;
   user: string;
@@ -13,6 +12,7 @@ interface PostCardProps {
   thumbnail: string;
   userProfile: string;
   onClick: (id: number) => void;
+  hideProfile?: boolean;
 }
 
 export default function PostItem({
@@ -24,32 +24,24 @@ export default function PostItem({
   thumbnail,
   userProfile,
   onClick,
+  hideProfile = false,
 }: PostCardProps) {
-
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 430);
     };
-
     handleResize();
     window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
+
   return (
     <S.PostItem onClick={() => onClick(id)}>
       <S.Post>
         <S.PostThumbnail>
-          <Image
-            src={thumbnail}
-            alt={user}
-            fill
-            style={{ objectFit: 'cover' }}
-          />
+          <Image src={thumbnail} alt={user} fill style={{ objectFit: 'cover' }} />
         </S.PostThumbnail>
         <S.PostMain>
           <S.PostTitle>{title}</S.PostTitle>
@@ -57,19 +49,19 @@ export default function PostItem({
           <S.PostPrice>₩ {price}0,000+ / 월</S.PostPrice>
         </S.PostMain>
       </S.Post>
-      <S.Profile>
-        <Image
-          src={userProfile}
-          alt={user}
-          width={isMobile ? 50 : 70}
-          height={isMobile ? 50 : 70}
-          style={{
-            borderRadius: '50%',
-            objectFit: 'cover',
-          }}
-        />
-        <S.PostUser>{user}</S.PostUser>
-      </S.Profile>
+
+      {!hideProfile && (
+        <S.Profile>
+          <Image
+            src={userProfile}
+            alt={user}
+            width={isMobile ? 50 : 70}
+            height={isMobile ? 50 : 70}
+            style={{ borderRadius: '50%', objectFit: 'cover' }}
+          />
+          <S.PostUser>{user}</S.PostUser>
+        </S.Profile>
+      )}
     </S.PostItem>
   );
 }

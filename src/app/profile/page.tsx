@@ -180,8 +180,10 @@ export default function ProfilePage() {
                                 key={post.id}
                                 {...post}
                                 onClick={handleClick}
+                                hideProfile
                             />
                         ))}
+
                     </S.List1>
                 )}
                 {selected === 2 && (

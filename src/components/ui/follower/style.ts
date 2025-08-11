@@ -16,7 +16,7 @@ export const Container = styled.div`
   position: relative;
 
   ${mq.mobile} {
-    width: 80vw;
+    width: 80vw;margin-left: 1.5rem;
     height: 55vh;
     gap: 1rem;
   }
@@ -155,7 +155,7 @@ export const DeleteBtn = styled.button`
   }
 
   ${mq.mobile} {
-    margin-left: 4rem;
+    margin-left: 2.5rem;
     white-space: nowrap;
   }
 `; 

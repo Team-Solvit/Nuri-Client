@@ -29,7 +29,6 @@ export const ContentArea = styled.div`
   flex-direction: column;
   align-items: flex-start;
   padding: 4rem 6rem;
-  width: 200vw;
   margin: 0 auto;
 
   ${mq.mobile} {

@@ -50,15 +50,15 @@ export default function Host() {
               <S.Input placeholder="하숙집 위치를 입력해주세요" />
             </S.InputRow>
           </S.Home>
-          <S.Guide>* 하숙집 위치는 동까지만 작성해주세요. </S.Guide>
         </S.Section>
 
         <S.Section>
           <S.SectionTitle>지역</S.SectionTitle>
           <S.InputRow>
-            <S.Input placeholder="가까운 역을 모두 입력해주세요." />
-            <S.Input placeholder="가까운 학교를 모두 입력해주세요" />
+            <S.Input placeholder="가까운 역을 입력해주세요." />
+            <S.Input placeholder="가까운 학교를 입력해주세요" />
           </S.InputRow>
+          <S.Guide>* 하나씩만 작성해주세요. </S.Guide>
         </S.Section>
 
         <S.Section>

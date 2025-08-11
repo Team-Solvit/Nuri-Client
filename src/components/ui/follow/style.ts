@@ -134,7 +134,7 @@ export const DeleteBtn = styled.button`
   }
 
   ${mq.mobile} {
-    margin-left: 3rem;
+    margin-left: 1.5rem;
     white-space: nowrap;
   }
 `;

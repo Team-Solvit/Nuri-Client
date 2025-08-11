@@ -5,7 +5,6 @@ import { mq } from '@/styles/media';
 export const Guide = styled.div`
   font-size: 13px;
   color: rgba(255, 0, 0, 0.41);
-  margin-left: 22.5rem;
 
   ${mq.mobile} {
     font-size: 12px;
