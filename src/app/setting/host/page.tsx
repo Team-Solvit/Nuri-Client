@@ -6,7 +6,7 @@ import SettingNav from "@/components/ui/settingNav";
 import Logout from "@/components/ui/logout";
 import { useState, useEffect } from "react";
 import Leave from "@/components/ui/leave";
-import SettingHeader from "@/components/ui/settingHeader";
+//import SettingHeader from "@/components/ui/settingHeader";
 
 export default function Host() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
