@@ -102,7 +102,7 @@ export default function Header() {
 							aria-expanded={moreOpen}
 						>
 							<S.MoreIcon open={moreOpen}>
-								<Image src="/icons/upArrow.svg" alt="더보기" width={24} height={24} />
+								<Image src="/icons/dropdown.svg" alt="더보기" width={24} height={24} />
 							</S.MoreIcon>
 						</S.MenuItem>
 					</S.MoreWrap>
