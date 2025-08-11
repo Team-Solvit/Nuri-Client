@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
-import {colors, radius, fontSizes} from '@/styles/theme';
+import {colors} from '@/styles/theme';
+import { mq } from "@/styles/media";
 
 export const Search = styled.div`
     display: flex;
@@ -9,6 +10,10 @@ export const Search = styled.div`
     border: none;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     padding: 20px 30px;
+
+    ${mq.mobile} {
+        width: 88vw;
+}
 `
 
 export const Input = styled.input`
@@ -28,7 +33,32 @@ export const Input = styled.input`
 
 export const Dropdown = styled.div`
     display: flex;
-    gap: 15px;
+    gap: 10px;
+
+    ${mq.mobile} {
+    flex-direction: column;
+    width: 100%;
+    gap: 5px;
+    margin-top: 20px;
+
+    & > * {
+        width: 100%;
+    }
+}
+`
+
+export const FilterToggle = styled.button`
+  display: none;
+  ${mq.mobile} {
+    display: block;
+    background-color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 10px 0;
+    font-size: 14px;
+    cursor: pointer;
+  }
 `
 
 export const PostList = styled.div`

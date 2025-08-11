@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import {colors, radius, fontSizes, zIndex} from "@/styles/theme";
+import { mq } from "@/styles/media";
 
 interface DropdownProps {
     selected?: boolean;
@@ -16,6 +17,10 @@ export const Dropdown = styled.button<DropdownProps>`
     align-items: center;
     gap: 7px;
     cursor: pointer;
+
+    ${mq.mobile} {
+        white-space: nowrap;
+  }
 `
 
 export const DropdownContainer = styled.div`
@@ -28,6 +33,7 @@ export const Container = styled.div`
     top: 100%; 
     width: 15vw;
     max-height: 35vh;
+    height: auto;
     display: flex;
     flex-direction: column;
     border: 1px solid ${colors.line};
@@ -37,6 +43,14 @@ export const Container = styled.div`
     overflow-y: auto;
     z-index: ${zIndex.dropdown};
     background-color: ${colors.background};
+
+    ${mq.mobile} {
+        width: 45vw;
+        height: auto;
+        &::-webkit-scrollbar {
+        display: none;
+    }
+  }
 `
 
 export const Input = styled.input`
