@@ -1,7 +1,7 @@
 import * as S from "./style"
 import Post from "@/components/ui/post";
 
-export default function MeetingPost() {
+export default function MeetingPost({isModal}: { isModal: boolean }) {
 	const fakeData = [
 		{
 			id: 1,
@@ -41,7 +41,7 @@ export default function MeetingPost() {
 		},
 	]
 	return (
-		<S.MetingPostContainer>
+		<S.MetingPostContainer isModal={isModal}>
 			{fakeData.map(post => (
 				<Post key={post.id} post={post}/>
 			))}

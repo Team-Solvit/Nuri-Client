@@ -1,9 +1,15 @@
 import styled from "@emotion/styled";
 import {colors, fontSizes, radius, zIndex} from "@/styles/theme";
+import {mq} from "@/styles/media";
 
 export const MeetingCalenderContainer = styled.div`
   width: calc(100% - 10rem);
-  margin: 4.5rem 0;
+  margin-bottom: 4rem;
+  padding: 1rem 0;
+
+  ${mq.mobile} {
+    width: calc(100% - 2rem);
+  }
 `
 
 export const CalendarHeader = styled.div`
@@ -17,6 +23,12 @@ export const CalendarHeader = styled.div`
   h2 {
     font-size: ${fontSizes.H3};
     font-weight: 500;
+  }
+
+  ${mq.mobile} {
+    h2 {
+      font-size: ${fontSizes.H4};
+    }
   }
 `;
 
@@ -47,6 +59,11 @@ export const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   grid-auto-rows: 80px;
+
+  ${mq.mobile} {
+    grid-auto-rows: auto;
+    position: relative;
+  }
 `;
 
 export const DateCell = styled.div<{ isOutside?: boolean }>`
@@ -56,9 +73,23 @@ export const DateCell = styled.div<{ isOutside?: boolean }>`
   ${({isOutside}) => !isOutside && 'cursor: pointer;'}
   background-color: ${({isOutside}) =>
     isOutside ? colors.line2 : 'white'};
+
+  ${mq.mobile} {
+    padding: 0.5rem 0.4rem;
+    font-size: ${fontSizes.Caption};
+    height: 60px;
+    position: static;
+  }
 `;
 
 export const Schedule = styled.div`
+  ${mq.mobile} {
+    background: ${colors.primary};
+    width: 25px;
+    height: 25px;
+    border-radius: 100%;
+  }
+
   width: 100%;
   padding: 0.2rem;
   background-color: #FFEDEF;
@@ -84,6 +115,11 @@ export const Popup = styled.div`
 
   & > h3 {
     padding-bottom: 0.5rem;
+  }
+
+  ${mq.mobile} {
+    top: 30%;
+    transform: translate(-50%, -50%);
   }
 `;
 export const PopupContentBox = styled.div`

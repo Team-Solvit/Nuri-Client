@@ -37,9 +37,11 @@ export const MeetingContent = (props: MeetingModalProps & {
 						<p>{props.location}</p>
 					</S.Name>
 				</S.Info>
-				<Square text={"가입"} onClick={() => {
-					props.setIsAccessionAction(true)
-				}} status={true} width={"100px"}/>
+				<S.SignBtnBox>
+					<Square text={"가입"} onClick={() => {
+						props.setIsAccessionAction(true)
+					}} status={true} width={"100px"}/>
+				</S.SignBtnBox>
 			</S.TitleBox>
 			<S.Description>
 				{props.description || "모임 설명이 없습니다."}
@@ -87,7 +89,7 @@ export default function MeetingModal({
 				<Banner bannerImage={fakeData.bannerImage}/>
 				<MeetingContent {...props} />
 				<Nav selected={selected} setSelected={setSelected}/>
-				{selected === 1 && <MeetingPost/>}
+				{selected === 1 && <MeetingPost isModal={true}/>}
 				{selected === 2 && <MeetingCalender/>}
 				{selected === 3 && <MeetingMember isMember={false}/>}
 			</S.ModalContainer>
