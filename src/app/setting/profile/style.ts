@@ -31,7 +31,7 @@ export const MainContent = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 4rem 6rem;
+  padding: 4rem 6rem 0rem 5rem;
   margin: 0 auto;
 
   ${mq.mobile} {
@@ -96,9 +96,11 @@ export const ProfileImageWrap = styled.div`
   justify-content: center;
 
   ${mq.mobile} {
-    width: 20vw;
-    height: 10vh;
-  }
+  width: 20vw;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  margin-top: 0.3rem;
+}
 `
 
 export const ProfileInfo = styled.div`
@@ -167,7 +169,7 @@ export const ChangePhotoBtn = styled.label`
   ${mq.mobile} {
     display: flex;
     font-weight: 500;
-    width: 27vw;
+    width: 30vw;
     align-items: center;
     justify-content: center;
   }

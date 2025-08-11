@@ -6,7 +6,7 @@ import SettingNav from "@/components/ui/settingNav";
 import Logout from "@/components/ui/logout";
 import { useState, useEffect } from "react";
 import Leave from "@/components/ui/leave";
-//import SettingHeader from "@/components/ui/settingHeader";
+import SettingHeader from "@/components/ui/settingHeader";
 
 export default function Host() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -50,15 +50,15 @@ export default function Host() {
               <S.Input placeholder="하숙집 위치를 입력해주세요" />
             </S.InputRow>
           </S.Home>
-          <S.Guide>* 하숙집 위치는 동까지만 작성해주세요. </S.Guide>
         </S.Section>
 
         <S.Section>
           <S.SectionTitle>지역</S.SectionTitle>
           <S.InputRow>
-            <S.Input placeholder="가까운 역을 모두 입력해주세요." />
-            <S.Input placeholder="가까운 학교를 모두 입력해주세요" />
+            <S.Input placeholder="가까운 역을 입력해주세요." />
+            <S.Input placeholder="가까운 학교를 입력해주세요" />
           </S.InputRow>
+          <S.Guide>* 하나씩만 작성해주세요. </S.Guide>
         </S.Section>
 
         <S.Section>

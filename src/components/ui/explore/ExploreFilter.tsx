@@ -12,19 +12,45 @@ export default function ExploreFilter() {
   const regionList = ['남구'];
   const stationList = ['못골역', '국제금융센터·부산은행역', '문현역', '지게골역', '대연역', '경성대·부경대역'];
 
-  return (
-    <>
-      <S.Search>
-        <Image src='/icons/search.svg' alt="search" width={24} height={24} />
-        <S.Input type='text' placeholder='검색어를 입력하세요.' />
-      </S.Search>
-      <S.Dropdown>
-        <Dropdown text="지역" list={regionList} isOpen={openedDropdown === 'region'} onOpen={() => setOpenedDropdown('region')} onClose={() => setOpenedDropdown(null)} />
-        <Dropdown text="역" list={stationList} isOpen={openedDropdown === 'station'} onOpen={() => setOpenedDropdown('station')} onClose={() => setOpenedDropdown(null)} />
-        <Dropdown text="학교" list={schoolList} isOpen={openedDropdown === 'school'} onOpen={() => setOpenedDropdown('school')} onClose={() => setOpenedDropdown(null)} />
-        <SelectItem text="가격" isOpen={openedDropdown === 'money'} onOpen={() => setOpenedDropdown('money')} onClose={() => setOpenedDropdown(null)} />
-        <SelectItem text="기간" isOpen={openedDropdown === 'period'} onOpen={() => setOpenedDropdown('period')} onClose={() => setOpenedDropdown(null)} />
-      </S.Dropdown>
-    </>
-  );
+    return (
+        <>
+            <S.Search>
+                <Image src='/icons/search.svg' alt="search" width={24} height={24} />
+                <S.Input type='text' placeholder='검색어를 입력하세요.' />
+            </S.Search>
+            <S.Dropdown>
+                <Dropdown
+                    text="학교"
+                    list={schoolList}
+                    isOpen={openedDropdown === 'school'}
+                    onOpen={() => setOpenedDropdown('school')}
+                    onClose={() => setOpenedDropdown(null)} />
+                <Dropdown
+                    text="지역(구)"
+                    list={regionList}
+                    isOpen={openedDropdown === 'region'}
+                    onOpen={() => setOpenedDropdown('region')}
+                    onClose={() => setOpenedDropdown(null)} />
+                <Dropdown
+                    text="역"
+                    list={stationList}
+                    isOpen={openedDropdown === 'station'}
+                    onOpen={() => setOpenedDropdown('station')}
+                    onClose={() => setOpenedDropdown(null)}
+                />
+                <SelectItem
+                    text="가격"
+                    isOpen={openedDropdown === 'money'}
+                    onOpen={() => setOpenedDropdown('money')}
+                    onClose={() => setOpenedDropdown(null)} 
+                />
+                <SelectItem
+                    text="기간"
+                    isOpen={openedDropdown === 'period'}
+                    onOpen={() => setOpenedDropdown('period')}
+                    onClose={() => setOpenedDropdown(null)}
+                />
+            </S.Dropdown>
+        </>
+    );
 }

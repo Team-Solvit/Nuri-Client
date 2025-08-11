@@ -14,7 +14,7 @@ export const PostItem = styled.div`
     cursor: pointer;
 
     ${mq.mobile} {
-        width: 88vw;
+        width: 87.5vw;
         height: 12vh;
         gap: 4rem;
     }

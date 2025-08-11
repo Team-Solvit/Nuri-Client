@@ -9,10 +9,9 @@ interface DropdownProps {
     isOpen: boolean;
     onOpen: () => void;
     onClose: () => void;
-    onSelect: (item: string) => void;
 }
 
-export default function Dropdown({ text, list, isOpen, onOpen, onClose, onSelect }: DropdownProps) {
+export default function Dropdown({ text, list, isOpen, onOpen, onClose }: DropdownProps) {
     const [selected, setSelected] = useState<string>(text);
 
     const toggleDropdown = (e: React.MouseEvent) => {
@@ -27,7 +26,6 @@ export default function Dropdown({ text, list, isOpen, onOpen, onClose, onSelect
     const handleSelect = (item: string) => {
         setSelected(item);
         onClose();
-        onSelect(item);
     };
 
     return (
