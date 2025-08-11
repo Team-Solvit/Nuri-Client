@@ -16,10 +16,10 @@ export const Container = styled.div`
   position: relative;
 
   ${mq.mobile} {
-    width: 80vw;margin-left: 1.5rem;
+    width: 80vw;
     height: 55vh;
     gap: 1rem;
-  }
+  } 
 `
 
 

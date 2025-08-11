@@ -120,33 +120,6 @@ export const ContactText = styled.span`
   }
 `
 
-export const Delete = styled.button`
-  color: ${colors.primary};
-  font-size: 0.95rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-
-  ${mq.mobile} {
-    font-size: 11px;
-  }
-`
-
-export const AddContact = styled.button`
-  color: #0064E0;
-  font-size: 1rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  margin-left: 32.5rem;
-  text-align: left;
-
-  ${mq.mobile} {
-    font-size: 15px;
-    margin-left: 0;
-  }
-`
-
 export const InputBox = styled.div`
   display: flex;
   flex-direction: column;

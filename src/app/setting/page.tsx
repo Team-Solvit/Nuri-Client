@@ -44,11 +44,9 @@ export default function SettingPage() {
                                     <Image src={contact.icon} alt="icon" width={20} height={20} />
                                     <S.ContactText>{contact.value}</S.ContactText>
                                 </S.ContactInfo>
-                                <S.Delete>삭제</S.Delete>
                             </S.ContactItem>
                         ))}
                     </S.ContactList>
-                    <S.AddContact>+ 새 연락처 추가</S.AddContact>
                 </S.Section>
 
                 <S.Section>

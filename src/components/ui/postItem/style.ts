@@ -92,6 +92,6 @@ export const PostPrice = styled.div`
     font-weight: 300;
 
     ${mq.mobile} {
-        width: 30vw;
+        width: 33vw;
   }
 `

@@ -52,9 +52,10 @@ export const ProfileImage = styled.div`
 
   ${mq.mobile} {
     width: 31vw;
-    height: 15.5vh;
     margin-left: 1.5rem;
     margin-top: 6rem;
+    aspect-ratio: 1 / 1;
+    height: auto;
   }
 `
 
