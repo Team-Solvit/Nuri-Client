@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import {colors} from '@/styles/theme';
+import { colors } from '@/styles/theme';
 import { mq } from "@/styles/media";
 
 export const Search = styled.div`
@@ -36,10 +36,14 @@ export const Dropdown = styled.div`
     gap: 10px;
 
     ${mq.mobile} {
-        flex-wrap: wrap;
-        justify-content: flex-start;
-        gap: 5px;
+    flex-direction: column;
+    width: 100%;
+    gap: 5px;
+
+    & > * {
+        width: 100%;
     }
+}
 `
 
 export const PostList = styled.div`
