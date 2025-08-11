@@ -3,6 +3,7 @@
 import styled from "@emotion/styled";
 import ExploreFilter from '@/components/ui/explore/ExploreFilter';
 import ExplorePostList from '@/components/ui/explore/ExplorePostList';
+import { mq } from "@/styles/media";
 
 export default function ExplorePage() {
   return (
@@ -21,4 +22,8 @@ const Container = styled.div`
     padding: 5% 6% 0% 6%;
     flex-direction: column;
     gap: 40px;
+
+    ${mq.mobile} {
+      gap: 0;
+    }
 `

@@ -33,6 +33,7 @@ export const Container = styled.div`
     top: 100%; 
     width: 15vw;
     max-height: 35vh;
+    height: auto;
     display: flex;
     flex-direction: column;
     border: 1px solid ${colors.line};
@@ -44,8 +45,8 @@ export const Container = styled.div`
     background-color: ${colors.background};
 
     ${mq.mobile} {
-        width: 35vw;
-        height: 25vh;
+        width: 45vw;
+        height: auto;
         &::-webkit-scrollbar {
         display: none;
     }

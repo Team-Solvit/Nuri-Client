@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { colors } from '@/styles/theme';
+import {colors} from '@/styles/theme';
 import { mq } from "@/styles/media";
 
 export const Search = styled.div`
@@ -39,11 +39,26 @@ export const Dropdown = styled.div`
     flex-direction: column;
     width: 100%;
     gap: 5px;
+    margin-top: 20px;
 
     & > * {
         width: 100%;
     }
 }
+`
+
+export const FilterToggle = styled.button`
+  display: none;
+  ${mq.mobile} {
+    display: block;
+    background-color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 10px 0;
+    font-size: 14px;
+    cursor: pointer;
+  }
 `
 
 export const PostList = styled.div`
