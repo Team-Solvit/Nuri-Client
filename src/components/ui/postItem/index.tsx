@@ -2,6 +2,7 @@
 
 import * as S from './style';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
 interface PostCardProps {
   id: number;
@@ -24,6 +25,21 @@ export default function PostItem({
   userProfile,
   onClick,
 }: PostCardProps) {
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 430);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
   return (
     <S.PostItem onClick={() => onClick(id)}>
       <S.Post>
@@ -45,8 +61,8 @@ export default function PostItem({
         <Image
           src={userProfile}
           alt={user}
-          width={70}
-          height={70}
+          width={isMobile ? 40 : 70}
+          height={isMobile ? 40 : 70}
           style={{
             borderRadius: '50%',
             objectFit: 'cover',
