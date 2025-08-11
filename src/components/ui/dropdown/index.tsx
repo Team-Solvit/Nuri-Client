@@ -3,16 +3,16 @@
 import * as S from './style';
 import Image from 'next/image';
 import { useState } from 'react';
-
 interface DropdownProps {
     text: string;
     list: string[];
     isOpen: boolean;
     onOpen: () => void;
     onClose: () => void;
-}  
+    onSelect: (item: string) => void;
+}
 
-export default function Dropdown({ text, list, isOpen, onOpen, onClose }: DropdownProps) {
+export default function Dropdown({ text, list, isOpen, onOpen, onClose, onSelect }: DropdownProps) {
     const [selected, setSelected] = useState<string>(text);
 
     const toggleDropdown = (e: React.MouseEvent) => {
@@ -27,6 +27,7 @@ export default function Dropdown({ text, list, isOpen, onOpen, onClose }: Dropdo
     const handleSelect = (item: string) => {
         setSelected(item);
         onClose();
+        onSelect(item);
     };
 
     return (
@@ -41,24 +42,21 @@ export default function Dropdown({ text, list, isOpen, onOpen, onClose }: Dropdo
                 />
             </S.Dropdown>
 
-
             {isOpen && (
                 <S.Container>
                     <S.Input type="text" placeholder={`${text}를 검색`} />
                     <S.List>
-                        {list.map((school, idx) => (
+                        {list.map((item, idx) => (
                             <S.ListItem
                                 key={idx}
-                                onClick={() => handleSelect(school)}
+                                onClick={() => handleSelect(item)}
                             >
-                                {school}
+                                {item}
                             </S.ListItem>
                         ))}
                     </S.List>
                 </S.Container>
-            )
-            }
-
+            )}
         </S.DropdownContainer >
     );
 }

@@ -1,12 +1,13 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import * as S from './style'
 import Image from 'next/image'
 import SettingNav from '@/components/ui/settingNav'
 import Logout from '@/components/ui/logout'
 import Leave from '@/components/ui/leave'
 import Follow from '@/components/ui/follow'
+import SettingHeader from '@/components/ui/settingHeader'
 
 const initialUser = {
     userid: 'Happy_y',
@@ -22,6 +23,16 @@ export default function ProfilePage() {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [showLeaveModal, setShowLeaveModal] = useState(false);
     const [showFollowerModal, setShowFollowerModal] = useState(false);
+    const [isMobile, setIsMobile] = useState(false)
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 430)
+        }
+        handleResize()
+        window.addEventListener('resize', handleResize)
+        return () => window.removeEventListener('resize', handleResize)
+    }, [])
 
 
     const handleLogout = () => {
@@ -44,6 +55,7 @@ export default function ProfilePage() {
 
     return (
         <S.Container>
+            {isMobile && <SettingHeader />}
             <S.Sidebar>
                 <SettingNav
                     onLogoutClick={() => setShowLogoutModal(true)}
@@ -97,7 +109,7 @@ export default function ProfilePage() {
                     <S.BioInput
                         placeholder="소개 글을 작성해주세요."
                         value={introduction}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIntroduction(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setIntroduction(e.target.value)}
                     />
                 </S.BioSection>
             </S.MainContent>

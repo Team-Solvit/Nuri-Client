@@ -3,6 +3,7 @@
 import * as S from './style';
 import Image from 'next/image'
 import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 interface PostProps {
     post: {
@@ -12,6 +13,17 @@ interface PostProps {
 }
 
 export default function Post({ post }: PostProps) {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 430);
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const router = useRouter();
 
     const postClick = (path: string) => {
@@ -20,7 +32,7 @@ export default function Post({ post }: PostProps) {
 
     return (
         <S.Post onClick={() => postClick(`/post/${post.id}`)}>
-            <S.PostImg>
+            <S.PostImg style={isMobile ? { width: '46vw', height: '21vh' } : {}}>
                 <Image
                     src={post.thumbnail}
                     alt="thumbnail"

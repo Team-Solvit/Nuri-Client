@@ -9,7 +9,7 @@ interface PostCardProps {
   user: string;
   title: string;
   region: string;
-  price: string;
+  price: number;
   thumbnail: string;
   userProfile: string;
   onClick: (id: number) => void;
@@ -54,7 +54,7 @@ export default function PostItem({
         <S.PostMain>
           <S.PostTitle>{title}</S.PostTitle>
           <S.PostRegion>{region}</S.PostRegion>
-          <S.PostPrice>₩ {price}0,000+ / 월</S.PostPrice>
+          <S.PostPrice>₩ {price}+ / 월</S.PostPrice>
         </S.PostMain>
       </S.Post>
       <S.Profile>

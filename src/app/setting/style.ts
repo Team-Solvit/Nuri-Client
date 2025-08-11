@@ -1,11 +1,19 @@
 import styled from '@emotion/styled'
 import { colors, fontSizes, radius } from '@/styles/theme'
+import { mq } from '@/styles/media'
 
 export const Layout = styled.div`
   display: flex;
   width: 70%;
   min-height: 100vh;
   background: ${colors.background};
+
+  ${mq.mobile} {
+    width: 100%;
+    padding-bottom: 67px;
+    display: flex;
+    flex-direction: column;
+  }
 `
 
 export const NavArea = styled.div`
@@ -14,6 +22,10 @@ export const NavArea = styled.div`
   max-width: 300px;
   background: ${colors.background};
   border-right: 1px solid ${colors.line};
+
+  ${mq.mobile} {
+    display: none;
+  }
 `
 
 export const ContentArea = styled.div`
@@ -24,6 +36,11 @@ export const ContentArea = styled.div`
   padding: 4rem 6rem;
   margin: 0 auto;
   gap: 30px;
+
+  ${mq.mobile} {
+    padding: 1rem;
+    gap: 18px;
+  }
 `
 
 export const ContactInfo = styled.div`
@@ -38,6 +55,10 @@ export const Title = styled.h1`
   font-size: 28px;
   color: ${colors.text};
   margin-bottom: 16px;
+
+  ${mq.mobile} {
+    font-size: 20px;
+  }
 `
 
 export const Section = styled.section`
@@ -45,6 +66,10 @@ export const Section = styled.section`
   flex-direction: column;
   gap: 1.5rem;
   width: 100%;
+
+  ${mq.mobile} {
+    gap: 18px;
+  }
 `
 
 export const SectionTitle = styled.h2`
@@ -52,12 +77,20 @@ export const SectionTitle = styled.h2`
   font-size: 1.25rem;
   color: ${colors.text};
   margin-bottom: 0.5rem;
+
+  ${mq.mobile} {
+    font-size: 15.5px;
+  }
 `
 
 export const ContactList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+
+  ${mq.mobile} {
+    gap: 8.86px;
+  }
 `
 
 export const ContactItem = styled.div`
@@ -70,11 +103,21 @@ export const ContactItem = styled.div`
   height: 55px;
   width: 44vw;
   background: #fff;
+
+  ${mq.mobile} {
+    height: 6vh;
+    width: 90vw;
+    border-radius: 4.43px;
+  }
 `
 
 export const ContactText = styled.span`
   font-size: 1rem;
   color: ${colors.text};
+
+  ${mq.mobile} {
+    font-size: 12px;
+  }
 `
 
 export const Delete = styled.button`
@@ -83,6 +126,10 @@ export const Delete = styled.button`
   background: none;
   border: none;
   cursor: pointer;
+
+  ${mq.mobile} {
+    font-size: 11px;
+  }
 `
 
 export const AddContact = styled.button`
@@ -93,12 +140,21 @@ export const AddContact = styled.button`
   cursor: pointer;
   margin-left: 32.5rem;
   text-align: left;
+
+  ${mq.mobile} {
+    font-size: 15px;
+    margin-left: 0;
+  }
 `
 
 export const InputBox = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+
+  ${mq.mobile} {
+    gap: 8.86px;
+  }
 `
 
 export const Input = styled.input`
