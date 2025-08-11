@@ -97,7 +97,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                                     <S.FileBtn as="label" htmlFor="fileUpload">파일 열기</S.FileBtn>
                                 </>
                             )}
-        
+
                             <input
                                 type="file"
                                 id="fileUpload"
@@ -122,6 +122,11 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                 </S.Left>
 
                 <S.Main>
+                    {!isMobile && (
+                        <S.Header>
+                            <S.Title>새 게시물 만들기</S.Title>
+                        </S.Header>
+                    )}
                     <S.Textarea
                         placeholder="글을 작성하세요."
                         value={content}
@@ -129,12 +134,6 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                         maxLength={9999}
                     />
                     <S.CharCount>{content.length}/10000</S.CharCount>
-
-                    {!isMobile && (
-                        <S.Header>
-                            <S.Title>새 게시물 만들기</S.Title>
-                        </S.Header>
-                    )}
 
                     <S.Row>
                         <S.PublicWrap

@@ -190,7 +190,7 @@ export const CharCount = styled.div`
   margin-left: 19rem;
 
   ${mq.mobile} {
-    margin-left:  21rem;
+    margin-left:  19rem;
   }
 `
 
