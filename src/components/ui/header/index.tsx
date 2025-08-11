@@ -1,7 +1,7 @@
 'use client'
 
 import {usePathname, useRouter} from 'next/navigation'
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import Image from 'next/image'
 import * as S from './style'
 import NProgress from "nprogress";
@@ -21,18 +21,48 @@ export default function Header() {
 	const router = useRouter()
 
   const [isMobile, setIsMobile] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLDivElement | null>(null);
+  const moreBarRef = useRef<HTMLDivElement | null>(null);
 	useEffect(() => {
 		setIsMobile(window.innerWidth <= 430);
 	}, []);
+
+  useEffect(() => {
+    if (!moreOpen) return;
+    const onClick = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node;
+      const insideTrigger = moreRef.current?.contains(target);
+      const insideBar = moreBarRef.current?.contains(target);
+      if (!insideTrigger && !insideBar) {
+        setMoreOpen(false);
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMoreOpen(false);
+    };
+    document.addEventListener('click', onClick);
+    document.addEventListener('touchstart', onClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('click', onClick);
+      document.removeEventListener('touchstart', onClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [moreOpen]);
 	
 	const handleMenuClick = (path: string) => {
 		NProgress.start()
 		router.push(path)
+    	setMoreOpen(false);
 	}
 
 	if (isMobile && pathname.startsWith('/register')) return null
 	
 	if (isMobile && pathname.startsWith('/register') || isMobile && pathname.startsWith('/message')) return null
+
+  const primaryItems = isMobile ? MENU_ITEMS.filter(i => i.order < 99) : MENU_ITEMS;
+  const extraItems = isMobile ? MENU_ITEMS.filter(i => i.order >= 99) : [];
 	
 	return (
 		<S.HeaderContainer>
@@ -44,7 +74,7 @@ export default function Header() {
 				priority
 			/>
 			<S.Menu>
-				{MENU_ITEMS.map(({label, path, icon, order}) => {
+				{primaryItems.map(({label, path, icon, order}) => {
 					const active = path === '/' ? pathname === '/' : pathname.startsWith(path)
 					return (
 						<S.MenuItem
@@ -64,7 +94,35 @@ export default function Header() {
 						</S.MenuItem>
 					)
 				})}
+
+        {isMobile && extraItems.length > 0 && (
+          <div ref={moreRef}>
+            <S.MenuItem
+              key="__more__"
+              label="더보기"
+              active={pathname.startsWith('/boarding/third-party') || pathname.startsWith('/meeting/third-party')}
+              onClick={() => setMoreOpen(o => !o)}
+              aria-haspopup="menu"
+              aria-expanded={moreOpen}
+            >
+              <Image src="/icons/upArrow.svg" alt="더보기" width={24} height={24} />
+              <div>더보기</div>
+            </S.MenuItem>
+          </div>
+        )}
 			</S.Menu>
+
+      {/* Two-row expansion bar */}
+      {isMobile && extraItems.length > 0 && (
+        <S.MoreBar open={moreOpen} ref={moreBarRef}>
+          {extraItems.map(({ label, path, icon }) => (
+            <S.MoreAction key={path} onClick={() => handleMenuClick(path)}>
+              <Image src={icon} alt={label} width={20} height={20} />
+              <span>{label}</span>
+            </S.MoreAction>
+          ))}
+        </S.MoreBar>
+      )}
 			<S.HeaderBottom>
 				<S.Profile>
 					<Image
