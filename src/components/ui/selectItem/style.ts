@@ -40,7 +40,7 @@ export const Main = styled.div`
     gap: 20px;
 
     ${mq.mobile} {
-        width: 65vw;
+        width: 63vw;
   }
 `
 
@@ -67,7 +67,7 @@ export const Input1 = styled.input`
     outline: none;
 
     ${mq.mobile} {
-        width: 22vw;
+        width: 19vw;
   }
 `
 
@@ -79,7 +79,7 @@ export const Input2 = styled.input`
     outline: none;
 
     ${mq.mobile} {
-        width: 23vw;
+        width: 22vw;
   }
 `
 
@@ -97,4 +97,8 @@ export const Button = styled.div`
     gap: 10px;
     margin-top: 2rem;
     margin-left: 6.5rem;
+
+    ${mq.mobile} {
+        margin-left: 3rem;
+  }
 `

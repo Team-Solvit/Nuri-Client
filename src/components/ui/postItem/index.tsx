@@ -61,8 +61,8 @@ export default function PostItem({
         <Image
           src={userProfile}
           alt={user}
-          width={isMobile ? 50 : 70}
-          height={isMobile ? 50 : 70}
+          width={isMobile ? 40 : 70}
+          height={isMobile ? 40 : 70}
           style={{
             borderRadius: '50%',
             objectFit: 'cover',

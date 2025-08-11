@@ -38,6 +38,7 @@ export const Dropdown = styled.div`
     ${mq.mobile} {
         flex-wrap: wrap;
         justify-content: flex-start;
+        gap: 5px;
     }
 `
 

@@ -14,7 +14,7 @@ export const PostItem = styled.div`
     cursor: pointer;
 
     ${mq.mobile} {
-        width: 87.5vw;
+        width: 88vw;
         height: 12vh;
         gap: 4rem;
     }
@@ -35,7 +35,7 @@ export const Profile = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
 `
 
 export const PostUser = styled.span`
@@ -92,6 +92,6 @@ export const PostPrice = styled.div`
     font-weight: 300;
 
     ${mq.mobile} {
-        width: 30vw;
+        width: 31vw;
   }
 `
