@@ -34,6 +34,29 @@ export const Section = styled.section`
   max-height: 45vh;
   overflow-y: auto;
 
+  scrollbar-width: thin;
+  scrollbar-color: ${colors.line} transparent;
+  padding-right: 10px;
+  /* Webkit (Chrome, Edge, Safari) */
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: ${radius.md};
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: ${colors.line}; /* 테마 색 사용 */
+    border-radius: ${radius.md};
+    border: 2px solid transparent; /* 여백 효과 */
+    background-clip: padding-box;
+    transition: background-color 180ms ease, opacity 180ms ease;
+    opacity: 0.7;
+  }
+
 `;
 
 export const SectionTitle = styled.h2`

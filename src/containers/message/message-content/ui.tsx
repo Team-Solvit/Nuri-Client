@@ -163,17 +163,19 @@ export default function MessageContent() {
 									
 									<S.ReceivedMsgAndTimeWrapper isHaveReply={msg.replyTo?.text || ""}>
 										{renderMessageBody()}
-										<S.MsgHoverIcons className="msg-hover-icons"
-										                 onClick={() => setReplyInfo({name: msg.name || '', text: msg.text})}
-										>
-											<Image
-												src={Reply}
-												width={20}
-												height={20}
-												alt="reply"
-												style={{cursor: 'pointer'}}
-											/>
-										</S.MsgHoverIcons>
+										{!msg.contract && !msg.roomTour && !msg.img && (
+											<S.MsgHoverIcons className="msg-hover-icons"
+											                 onClick={() => setReplyInfo({name: msg.name || '', text: msg.text})}
+											>
+												<Image
+													src={Reply}
+													width={20}
+													height={20}
+													alt="reply"
+													style={{cursor: 'pointer'}}
+												/>
+											</S.MsgHoverIcons>
+										)}
 									</S.ReceivedMsgAndTimeWrapper>
 								</S.ReceivedMsgRow>
 							) : (
