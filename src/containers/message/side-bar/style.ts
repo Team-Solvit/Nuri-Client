@@ -9,10 +9,34 @@ export const MessageContainer = styled.section`
   align-items: center;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
   background-color: ${colors.background};
-  padding: 3rem 0;
+  padding: 2rem 0;
   overflow-y: scroll;
 `
+export const NewChat = styled.div`
+  width: 90%;
+  gap: 0.5rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 1rem;
+`
+export const NewChatButton = styled.button`
+  all: unset;
+  margin: 0;
+  box-sizing: border-box;
+  border-radius: ${radius.md};
+  color: ${colors.text};
+  border: 1px solid #DDDDDD;
+  padding: 0.5rem 1rem;
+  width: max-content;
+  cursor: pointer;
+  transition: all 0.3s ease;
 
+  &:hover {
+    color: ${colors.gray};
+    opacity: 0.8;
+  }
+`
 export const Search = styled.div`
   width: 90%;
   gap: 1rem;
@@ -94,7 +118,7 @@ export const Info = styled.div`
 export const CategoryBox = styled.article<{ isDrop: boolean }>`
   width: 100%;
   overflow: hidden;
-  max-height: ${(props) => (props.isDrop ? "5rem" : "1000px;")};
+  max-height: ${(props) => (props.isDrop ? "4.5rem" : "1000px;")};
   transition: all 0.4s ease-in-out;
 `
 export const CategoryList = styled.div`

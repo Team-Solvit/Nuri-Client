@@ -6,8 +6,11 @@ import Search from "@/assets/icon/search.svg"
 import Profile from "@/assets/meeting/member-profile.png"
 import {useParams, useRouter} from "next/navigation";
 import NProgress from "nprogress";
+import UserSelectionModal from "@/containers/message/user-selection/ui";
 
 export default function MessageSideBar() {
+	const [showUserModal, setShowUserModal] = useState(false);
+	
 	const fakeData1 = [
 		{id: 1, name: "그랜마 하우스", last_message: "감사합니다"},
 		{id: 2, name: "그랜마 하우스", last_message: "감사합니다"},
@@ -39,6 +42,20 @@ export default function MessageSideBar() {
 	const params = useParams();
 	return (
 		<S.MessageContainer>
+			<S.NewChat>
+				<p>채팅방 추가</p>
+				<S.NewChatButton onClick={() => setShowUserModal(true)}>
+					+
+				</S.NewChatButton>
+				{showUserModal && (
+					<UserSelectionModal
+						onClose={() => setShowUserModal(false)}
+						onCreate={() => {
+							handleRouter(0);
+						}}
+					/>
+				)}
+			</S.NewChat>
 			<S.Search>
 				<input type={"text"} placeholder={"채팅방을 입력하세요"}/>
 				<Image src={Search} alt={"search-icon"} width={16} height={16}/>

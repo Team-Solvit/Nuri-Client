@@ -22,6 +22,9 @@ export default function Meeting(meeting: MeetingProps) {
 		router.push("/meetings");
 		setFind(true);
 	}
+	const handleCreate = () => {
+		router.push("/creating?type=meeting");
+	}
 	return (
 		<S.ModalContainer>
 			<S.Banner>
@@ -50,7 +53,8 @@ export default function Meeting(meeting: MeetingProps) {
 			<Nav selected={selected} setSelected={setSelected}/>
 			{selected === 1 && <MeetingPost isModal={true}/>}
 			{selected === 1 && <S.BtnBox>
-        <Square text={"게시물 작성"} status={true} width={"calc(84.5vw - 10rem)"} onClick={() => {
+        <Square text={"모임 게시물 작성"} status={true} width={"calc(84.5vw - 10rem)"} onClick={() => {
+					handleCreate();
 				}}/>
       </S.BtnBox>}
 			{selected === 2 && <MeetingCalender/>}
