@@ -42,7 +42,7 @@ export default function Dropdown({ text, list, isOpen, onOpen, onClose }: Dropdo
 
             {isOpen && (
                 <S.Container>
-                    <S.Input type="text" placeholder={`${text}를 검색`} />
+                    <S.Input type="text" placeholder={`${text}을(를) 검색`} />
                     <S.List>
                         {list.map((item, idx) => (
                             <S.ListItem
