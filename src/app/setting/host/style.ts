@@ -1,17 +1,36 @@
 import styled from "@emotion/styled";
 import { colors, radius } from "@/styles/theme";
+import { mq } from '@/styles/media';
 
 export const Guide = styled.div`
   font-size: 13px;
   color: rgba(255, 0, 0, 0.41);
-  margin-left: 22.5rem;
+
+  ${mq.mobile} {
+    font-size: 12px;
+    margin-left: 0;
+  }
 `;
 
 export const Section = styled.section`
   display: flex;
   flex-direction: column;
   gap: 15px;
+
+  ${mq.mobile} {
+    gap: 8px;
+  }
 `;
+
+export const NavArea = styled.div`
+  flex: 0 0 20vw;
+  background: ${colors.background};
+  border-right: 1px solid ${colors.line};
+
+  ${mq.mobile} {
+    display: none;
+  }
+`
 
 export const Container = styled.div`
   width: 70%;
@@ -20,17 +39,34 @@ export const Container = styled.div`
   flex-direction: column;
   gap: 35px;
   padding: 4rem;
+
+  ${mq.mobile} {
+    width: 100%;
+    margin: 0;
+    gap: 28px;
+    padding: 1rem;
+  }
 `;
 
 export const Home = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
+
+  ${mq.mobile} {
+    gap: 8px;
+  }
 `;
 
 export const Con = styled.div`
   width: 100%;
   display: flex;
+
+  ${mq.mobile} {
+    width: 100%;
+    flex-direction: column;
+    padding-bottom: 67px;
+  }
 `;
 
 export const Title = styled.h1`
@@ -38,6 +74,11 @@ export const Title = styled.h1`
   font-size: 28px;
   color: ${colors.text};
   margin-bottom: 16px;
+
+  ${mq.mobile} {
+    font-size: 20px;
+    margin-bottom: 0;
+  }
 `;
 
 export const SectionTitle = styled.h2`
@@ -45,12 +86,22 @@ export const SectionTitle = styled.h2`
   font-size: 20px;
   color: ${colors.text};
   margin-bottom: 8px;
+
+  ${mq.mobile} {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
 `;
 
 export const InputRow = styled.div`
   display: flex;
   gap: 12px;
   margin-bottom: 4px;
+
+  ${mq.mobile} {
+    flex-direction: column;
+    gap: 8px;
+  }
 `;
 
 export const Input = styled.input`
@@ -65,12 +116,21 @@ export const Input = styled.input`
     font-family: "SCoreDream", sans-serif;
     font-size: 15px;
   }
+
+  ${mq.mobile} {
+    width: 93vw;
+    padding: 15px;
+  }
 `;
 
 export const RadioRow = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
+
+  ${mq.mobile} {
+    gap: 12px;
+  }
 `;
 
 export const RadioLabel = styled.label`
@@ -79,6 +139,11 @@ export const RadioLabel = styled.label`
   gap: 8px;
   font-size: 16px;
   cursor: pointer;
+
+  ${mq.mobile} {
+    font-size: 14px;
+    gap: 6px;
+  }
 `;
 
 export const Radio = styled.input`
@@ -98,4 +163,10 @@ export const Radio = styled.input`
     background-repeat: no-repeat;
     border: none;
   }
+
+  ${mq.mobile} {
+    width: 20px;
+    height: 20px;
+  }
 `;
+

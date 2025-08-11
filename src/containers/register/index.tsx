@@ -219,7 +219,7 @@ export default function RegisterContainer() {
                   onChange={e => onChangeField('verificationCode', e.target.value)}
                   placeholder="인증 번호를 입력해주세요."
                 />
-                <Square text="인증" onClick={() => { }} status={true} width='100%' />
+                <Square text="인증" onClick={() => { }} status={true} width='fit-content' />
               </S.InputButtonGroup>
             </S.FormGroup>
           </>
@@ -254,37 +254,55 @@ export default function RegisterContainer() {
             <S.Title>국적과 사용할 언어를 선택해주세요.</S.Title>
             <S.FormGroup>
               <S.Label>국적</S.Label>
-              <S.Select
-                value={formData.nationality}
-                onChange={e => onChangeField('nationality', e.target.value)}
-              >
-                <option value="">국적을 선택해주세요</option>
-                <option value="KR">🇰🇷 대한민국</option>
-                <option value="US">🇺🇸 미국</option>
-                <option value="JP">🇯🇵 일본</option>
-                <option value="CN">🇨🇳 중국</option>
-                <option value="DE">🇩🇪 독일</option>
-                <option value="FR">🇫🇷 프랑스</option>
-                <option value="GB">🇬🇧 영국</option>
-                <option value="OT">🌍 기타</option>
-              </S.Select>
+              <S.SelectWrapper>
+                <S.Select
+                  value={formData.nationality}
+                  onChange={e => onChangeField('nationality', e.target.value)}
+                >
+                  <option value="">국적을 선택해주세요</option>
+                  <option value="KR">🇰🇷 대한민국</option>
+                  <option value="US">🇺🇸 미국</option>
+                  <option value="JP">🇯🇵 일본</option>
+                  <option value="CN">🇨🇳 중국</option>
+                  <option value="DE">🇩🇪 독일</option>
+                  <option value="FR">🇫🇷 프랑스</option>
+                  <option value="GB">🇬🇧 영국</option>
+                  <option value="OT">🌍 기타</option>
+                </S.Select>
+                <Image
+                  src="/icons/dropdown.svg"
+                  alt="드롭다운 화살표"
+                  width={20}
+                  height={20}
+                  style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
+                />
+              </S.SelectWrapper>
             </S.FormGroup>
             <S.FormGroup>
               <S.Label>언어</S.Label>
-              <S.Select
-                value={formData.language}
-                onChange={e => onChangeField('language', e.target.value)}
-              >
-                <option value="">언어를 선택해주세요</option>
-                <option value="KR">🇰🇷 한국어</option>
-                <option value="EN">🇺🇸 영어</option>
-                <option value="JP">🇯🇵 일본어</option>
-                <option value="CN">🇨🇳 중국어</option>
-                <option value="VN">🇻🇳 베트남어</option>
-                <option value="DE">🇩🇪 독일어</option>
-                <option value="FR">🇫🇷 프랑스어</option>
-                <option value="OT">🌍 기타</option>
-              </S.Select>
+              <S.SelectWrapper>
+                <S.Select
+                  value={formData.language}
+                  onChange={e => onChangeField('language', e.target.value)}
+                >
+                  <option value="">언어를 선택해주세요</option>
+                  <option value="KR">🇰🇷 한국어</option>
+                  <option value="EN">🇺🇸 영어</option>
+                  <option value="JP">🇯🇵 일본어</option>
+                  <option value="CN">🇨🇳 중국어</option>
+                  <option value="VN">🇻🇳 베트남어</option>
+                  <option value="DE">🇩🇪 독일어</option>
+                  <option value="FR">🇫🇷 프랑스어</option>
+                  <option value="OT">🌍 기타</option>
+                </S.Select>
+                <Image
+                  src="/icons/dropdown.svg"
+                  alt="드롭다운 화살표"
+                  width={20}
+                  height={20}
+                  style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
+                />
+              </S.SelectWrapper>
             </S.FormGroup>
           </>
         );
@@ -326,6 +344,9 @@ export default function RegisterContainer() {
         {renderStepContent()}
         {touched && error && <S.ErrorMessage>{error}</S.ErrorMessage>}
         <S.ButtonGroup>
+          {currentStep === 0 && (
+            <Square text='돌아가기' onClick={() => router.back()} status={false} width="100%" />
+          )}
           <Square
             text={currentStep === steps.length - 1 ? '가입완료' : '다음'}
             onClick={handleNext}

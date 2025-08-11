@@ -4,13 +4,13 @@ import Square from "@/components/ui/button/square";
 import Image from "next/image";
 import {contractData, userData} from "./data";
 import {useMessageModalStore} from "@/store/messageModal";
-import {useModalStore} from "@/store/modal";
+import {useConfirmStore} from "@/store/confirm";
+import {ConfirmRejectModal} from "./ConfirmRejectModal";
 
 export default function ContractModal() {
 	const {isOpen, messageType, master, close} = useMessageModalStore();
-	const {close: modalClose} = useModalStore();
+	const {isOpen: isConfirmOpen, openConfirm, closeConfirm} = useConfirmStore();
 	const closeModal = () => {
-		modalClose();
 		close();
 	}
 	return isOpen && messageType === "contract" && (
@@ -73,13 +73,18 @@ export default function ContractModal() {
 				{/* 버튼 */}
 				<S.ButtonRow>
 					{master ? <>
-						<Square text="거절" onClick={() => {
-						}} status={false} width="48%"/>
+						<Square text="거절" onClick={openConfirm} status={false} width="48%"/>
 						<Square text="수락" onClick={() => {
 						}} status={true} width="48%"/>
 					</> : <Square text="확인" onClick={closeModal} status={true} width="100%"/>}
 				</S.ButtonRow>
 			</S.ModalContainer>
+			<ConfirmRejectModal
+				isOpen={isConfirmOpen}
+				onClose={closeConfirm}
+				onConfirm={close}
+				type={"결제"}
+			/>
 		</Modal>
 	);
 }

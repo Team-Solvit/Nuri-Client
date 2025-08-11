@@ -1,6 +1,8 @@
 import styled from "@emotion/styled";
 import {colors, fontSizes} from '@/styles/theme';
 import React from "react";
+import {mq} from "@/styles/media";
+import {MESSAGE_MAX_WIDTH_MOBILE} from "@/constants/constant";
 
 const RoomTourBubble = styled.div`
   background: #fff;
@@ -12,6 +14,10 @@ const RoomTourBubble = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  ${mq.mobile} {
+    max-width: ${MESSAGE_MAX_WIDTH_MOBILE}px;
+  }
 `;
 
 const RoomTourImage = styled.img`

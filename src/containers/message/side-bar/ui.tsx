@@ -38,7 +38,7 @@ export default function MessageSideBar() {
 	}
 	const params = useParams();
 	return (
-		<S.MessageContainer>
+		<S.MessageContainer id={typeof params.id === 'string' ? params.id : params.id?.[0] ?? ''}>
 			<S.Search>
 				<input type={"text"} placeholder={"채팅방을 입력하세요"}/>
 				<Image src={Search} alt={"search-icon"} width={16} height={16}/>

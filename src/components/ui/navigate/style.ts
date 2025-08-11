@@ -15,6 +15,7 @@ export const NavigateContainer = styled.section`
   ${mq.mobile} {
     justify-content: space-between;
     flex-direction: row;
+    align-items: center;
     background: rgba(255, 255, 255, 0.90);
     position: fixed;
     top: 0;
@@ -49,6 +50,19 @@ export const NavigateBtn = styled.button<{ isActive: boolean }>`
   & > p {
     ${mq.mobile} {
       display: none;
+    }
+  }
+`
+export const TextBtn = styled.p`
+  display: none;
+
+  ${mq.mobile} {
+    display: block;
+    cursor: pointer;
+    margin-left: 1rem;
+
+    &:active {
+      text-decoration: underline;
     }
   }
 `

@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import { colors, fontSizes, radius } from '@/styles/theme'
+import { mq } from '@/styles/media'
 
 export const FullScreenOverlay = styled.div`
   position: fixed;
@@ -23,6 +24,11 @@ export const ModalBox = styled.div`
   justify-content: center;
   display: flex;
   flex-direction: column;
+
+  ${mq.mobile} {
+    width: 75vw;
+    height: 45vh;
+  }
 `
 
 export const Title = styled.h2`
@@ -56,6 +62,11 @@ export const CancelBtn = styled.button<{ width?: string }>`
   font-weight: 600;
   font-size: 1rem;
   width: ${({ width }) => width || 'auto'};
+
+  ${mq.mobile} {
+    width: 25vw;
+    white-space: nowrap;
+  }
 `
 
 export const Input = styled.input`
@@ -72,6 +83,10 @@ export const Input = styled.input`
   &::placeholder {
     color: #8C8C8C;
     font-weight: 200;
+  }
+
+  ${mq.mobile} {
+    width: 55vw;
   }
 `
 

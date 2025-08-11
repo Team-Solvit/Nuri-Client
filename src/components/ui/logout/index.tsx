@@ -4,6 +4,7 @@ import React from 'react'
 import * as S from './style'
 import Square from '../button/square'
 import Image from 'next/image'
+import { useState, useEffect } from 'react'
 
 interface LogoutModalProps {
   onLogout: () => void
@@ -11,6 +12,15 @@ interface LogoutModalProps {
 }
 
 export default function Logout({ onLogout, onClose }: LogoutModalProps) {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 430)
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   return (
     <S.FullScreenOverlay
       onClick={onClose}
@@ -31,7 +41,12 @@ export default function Logout({ onLogout, onClose }: LogoutModalProps) {
           <S.CancelBtn onClick={onClose} width='7vw'>
             취소
           </S.CancelBtn>
-          <Square text="로그아웃" onClick={onLogout} status={true} width='7vw'/>
+          <Square
+            text="로그아웃"
+            onClick={onLogout}
+            status={true}
+            width={isMobile ? '25vw' : '7vw'}
+          />
         </S.ButtonContainer>
       </S.ModalBox>
     </S.FullScreenOverlay>

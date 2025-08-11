@@ -12,7 +12,7 @@ const ReplyBubbleWrapper = styled.div<{ type: 'sent' | 'received' }>`
   justify-content: ${({type}) => type === 'sent' ? 'flex-end' : 'flex-start'};
   gap: 0.5rem;
   position: absolute;
-  top: -6.5rem;
+  top: -3.8rem;
   z-index: ${zIndex.base};
   ${({type}) => type === "sent" ? "right:0.5rem;" : "left: 0.5rem;"};
 `;
@@ -48,17 +48,6 @@ const ReplyBubbleText = styled.div<{ type: 'sent' | 'received' }>`
   word-break: break-all;
 `;
 
-const MsgTime = styled.div<{ isSent?: boolean }>`
-  font-size: ${fontSizes.Caption};
-  color: ${colors.gray};
-  font-weight: 300;
-  margin-top: 2px;
-  text-align: right;
-  position: absolute;
-  bottom: 0;
-  ${({isSent}) => isSent ? "left: -4rem;" : "right: -4rem;"};
-`;
-
 interface ReplyMessageProps {
 	type: 'sent' | 'received';
 	name: string;
@@ -67,8 +56,8 @@ interface ReplyMessageProps {
 	time?: string;
 }
 
-const ReplyMessage: React.FC<ReplyMessageProps> = ({type, name, text, icon, time}) => (
-	<div style={{position: 'relative', display: 'inline-block'}}>
+const ReplyMessage: React.FC<ReplyMessageProps> = ({type, name, text, icon, time}) => {
+	return (
 		<ReplyBubbleWrapper type={type}>
 			<ReplyBox>
 				{type === 'sent' && icon}
@@ -79,8 +68,7 @@ const ReplyMessage: React.FC<ReplyMessageProps> = ({type, name, text, icon, time
 				<ReplyBubbleText type={type}>{text}</ReplyBubbleText>
 			</ReplyBubble>
 		</ReplyBubbleWrapper>
-		{time && <MsgTime isSent={type === 'sent'}>{time}</MsgTime>}
-	</div>
-);
+	)
+};
 
 export default ReplyMessage; 

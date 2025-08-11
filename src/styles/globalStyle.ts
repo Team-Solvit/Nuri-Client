@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import {css} from '@emotion/react'
 import {colors} from "@/styles/theme"
+import { mq } from './media'
 
 export const globalStyles = css`
   @font-face {
@@ -67,6 +68,22 @@ export const globalStyles = css`
     font-display: swap;
   }
 
+  input {
+    font-family: 'SCoreDream', sans-serif;
+  }
+
+  textarea {
+    font-family: 'SCoreDream', sans-serif;
+  }
+
+  textarea::placeholder {
+    font-family: 'SCoreDream', sans-serif;
+  }
+
+  input::placeholder {
+    font-family: 'SCoreDream', sans-serif;
+  }
+
   * {
     margin: 0;
     padding: 0;
@@ -79,7 +96,7 @@ export const globalStyles = css`
     height: 100vh;
     max-height: 100vh;
 
-    @media screen and (max-width: 393px) {
+    ${mq.mobile} {
       width: 100vw;
       max-width: 100vw;
       height: 92vh;

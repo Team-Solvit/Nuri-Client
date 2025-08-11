@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import {colors, fontSizes, radius} from '@/styles/theme';
+import {mq} from "@/styles/media";
 
 export const Container = styled.div`
   background: ${colors.background};
@@ -9,6 +10,12 @@ export const Container = styled.div`
   width: 100%;
   height: 85vh;
   overflow-y: auto;
+
+  ${mq.mobile} {
+    padding: 2rem 1.5rem;
+    margin-top: 6rem;
+    height: 80vh;
+  }
 `;
 
 export const Header = styled.div`
@@ -109,13 +116,16 @@ export const RoomCard = styled.div`
   border: 1px solid ${colors.line};
   width: 100%;
   padding: 16px;
+
+  ${mq.mobile} {
+    padding: 0;
+  }
 `;
 
 export const RoomHeader = styled.div`
   display: flex;
   width: 100%;
   align-items: center;
-  margin-bottom: 8px;
 `;
 
 export const RoomInfo = styled.div`
@@ -125,6 +135,11 @@ export const RoomInfo = styled.div`
   align-items: start;
   padding: 1rem 2rem;
   gap: 0.4rem;
+
+  ${mq.mobile} {
+    width: max-content;
+    padding: 1.5rem;
+  }
 `;
 
 export const RoomName = styled.span`
@@ -166,4 +181,8 @@ export const RoomImage = styled.div`
   margin-top: 8px;
   position: relative;
   overflow: hidden;
+
+  ${mq.mobile} {
+    display: none;
+  }
 `

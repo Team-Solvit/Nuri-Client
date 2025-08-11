@@ -11,7 +11,7 @@ export const PostScrollContainer = styled.section`
   ${mq.mobile} {
     gap: 0;
 
-    & > article:first-child {
+    & > article:first-of-type {
       margin-top: 6rem;
     }
 
@@ -185,7 +185,7 @@ export const User = styled.div`
 `
 export const Nav = styled.div`
   display: flex;
-  width: 20%;
+  width: 22%;
   align-items: center;
   justify-content: flex-end;
   gap: 0.5rem;

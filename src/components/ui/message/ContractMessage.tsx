@@ -1,6 +1,8 @@
 import styled from "@emotion/styled";
 import {colors, fontSizes} from '@/styles/theme';
 import React from "react";
+import {MESSAGE_MAX_WIDTH_MOBILE} from "@/constants/constant";
+import {mq} from "@/styles/media";
 
 const ContractBubble = styled.div`
   background: #fff;
@@ -13,6 +15,10 @@ const ContractBubble = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  ${mq.mobile} {
+    max-width: ${MESSAGE_MAX_WIDTH_MOBILE}px;
+  }
 `;
 const ContractThumbnail = styled.img`
   width: 100%;
