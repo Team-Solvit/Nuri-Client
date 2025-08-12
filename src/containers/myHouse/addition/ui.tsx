@@ -5,6 +5,7 @@ import Circle from '@/components/ui/button/circle';
 import Square from '@/components/ui/button/square';
 import {DEFAULT_CONTRACT_OPTIONS, FACILITY_CATEGORIES} from "./data"
 import {useRouter} from 'next/navigation';
+import {useAlertStore} from "@/store/alert";
 
 const Addition = () => {
 	const [contractOptions, setContractOptions] = useState<string[]>(DEFAULT_CONTRACT_OPTIONS);
@@ -78,6 +79,8 @@ const Addition = () => {
 			checked ? [...prev, facility] : prev.filter((f) => f !== facility)
 		);
 	};
+	
+	const {error, success} = useAlertStore();
 	return (
 		<S.Container style={{position: 'relative'}}>
 			<S.Title>방추가</S.Title>
@@ -202,6 +205,7 @@ const Addition = () => {
 					<S.Name>취소</S.Name>
 				</S.CancelBtn>
 				<Square text="등록" onClick={() => {
+					error("등록 완료");
 				}} status={true} width="100%"/>
 			</S.FixedFooter>
 		</S.Container>
