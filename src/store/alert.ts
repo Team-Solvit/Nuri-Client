@@ -29,19 +29,39 @@ export const useAlertStore = create<AlertState>((set) => ({
 		})
 	},
 	success: (des: string) => {
+		// init 용 set
 		set({
-			isStatus: 'success',
-			description: des,
-			isVisible: true,
-			isLeavingAnimation: true
+			isStatus: 'none',
+			isVisible: false,
+			isLeavingAnimation: false,
+			description: '',
 		});
+		// 실제 set
+		setTimeout(() => {
+			set({
+				isStatus: 'success',
+				description: des,
+				isVisible: true,
+				isLeavingAnimation: true
+			});
+		}, 0);
 	},
 	error: (des: string) => {
+		// init 용 set
 		set({
-			isStatus: 'error',
-			description: des,
-			isVisible: true,
-			isLeavingAnimation: true
+			isStatus: 'none',
+			isVisible: false,
+			isLeavingAnimation: false,
+			description: '',
 		});
+		// 실제 set
+		setTimeout(() => {
+			set({
+				isStatus: 'error',
+				description: des,
+				isVisible: true,
+				isLeavingAnimation: true
+			});
+		}, 0);
 	},
 }));
