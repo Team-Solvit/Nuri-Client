@@ -33,7 +33,7 @@ export default function ProfilePage() {
             title: '해피해피하숙',
             region: '강서구',
             price: '30',
-            thumbnail: '/post/room.svg',
+            thumbnail: '/post/post-example.png',
             userProfile: '/profile/profile.svg',
         },
         {
@@ -42,7 +42,7 @@ export default function ProfilePage() {
             title: '해피해피하숙',
             region: '강서구',
             price: '30',
-            thumbnail: '/post/room.svg',
+            thumbnail: '/post/post-example.png',
             userProfile: '/profile/profile.svg',
         },
         {
@@ -51,7 +51,7 @@ export default function ProfilePage() {
             title: '해피해피하숙',
             region: '강서구',
             price: '30',
-            thumbnail: '/post/room.svg',
+            thumbnail: '/post/post-example.png',
             userProfile: '/profile/profile.svg',
         },
         {
@@ -60,7 +60,7 @@ export default function ProfilePage() {
             title: '해피해피하숙',
             region: '강서구',
             price: '30',
-            thumbnail: '/post/room.svg',
+            thumbnail: '/post/post-example.png',
             userProfile: '/profile/profile.svg',
         },
         {
@@ -69,7 +69,7 @@ export default function ProfilePage() {
             title: '해피해피하숙',
             region: '강서구',
             price: '30',
-            thumbnail: '/post/room.svg',
+            thumbnail: '/post/post-example.png',
             userProfile: '/profile/profile.svg',
         },
         {
@@ -78,7 +78,7 @@ export default function ProfilePage() {
             title: '해피해피하숙',
             region: '강서구',
             price: '30',
-            thumbnail: '/post/room.svg',
+            thumbnail: '/post/post-example.png',
             userProfile: '/profile/profile.svg',
         }
     ];

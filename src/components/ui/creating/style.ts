@@ -184,6 +184,61 @@ export const Row = styled.div`
   gap: 1rem;
 `
 
+
+export const ImageWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 4;
+  overflow: hidden;
+  background-color: #f0f0f0;
+`;
+
+export const SlideImages = styled.div<{ currentIndex: number }>`
+  display: flex;
+  height: 100%;
+  transition: transform 0.4s ease-in-out;
+  transform: ${({ currentIndex }) => `translateX(-${currentIndex * 100}%)`};
+`;
+
+
+export const PrevBtn = styled.button`
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+  font-size: 18px;
+  z-index: 2;
+
+  img {
+    transform: rotate(180deg);
+    object-fit: cover;
+  }
+`;
+
+
+export const NextBtn = styled.button`
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+  font-size: 18px;
+  z-index: 2;
+`;
+
 export const CharCount = styled.div`
   font-size: ${fontSizes.Small};
   color: ${colors.gray};

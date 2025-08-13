@@ -13,7 +13,7 @@ const postList = [
         price: '30',
         period: 6,
         gender: 'M',
-        thumbnail: '/post/room.svg',
+        thumbnail: '/post/post-example.png',
         userProfile: '/profile/profile.svg',
     },
     {
@@ -24,7 +24,7 @@ const postList = [
         price: '30',
         period: 6,
         gender: 'M',
-        thumbnail: '/post/room.svg',
+        thumbnail: '/post/post-example.png',
         userProfile: '/profile/profile.svg',
     },
     {
@@ -35,7 +35,7 @@ const postList = [
         price: '30',
         period: 6,
         gender: 'M',
-        thumbnail: '/post/room.svg',
+        thumbnail: '/post/post-example.png',
         userProfile: '/profile/profile.svg',
     },
     {
@@ -46,7 +46,7 @@ const postList = [
         price: '30',
         period: 6,
         gender: 'M',
-        thumbnail: '/post/room.svg',
+        thumbnail: '/post/post-example.png',
         userProfile: '/profile/profile.svg',
     },
     {
@@ -57,7 +57,7 @@ const postList = [
         price: '30',
         period: 6,
         gender: 'M',
-        thumbnail: '/post/room.svg',
+        thumbnail: '/post/post-example.png',
         userProfile: '/profile/profile.svg',
     },
     {
@@ -68,7 +68,7 @@ const postList = [
         price: '30',
         period: 6,
         gender: 'M',
-        thumbnail: '/post/room.svg',
+        thumbnail: '/post/post-example.png',
         userProfile: '/profile/profile.svg',
     }
 ];
