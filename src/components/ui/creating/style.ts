@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import { colors, fontSizes, radius } from '@/styles/theme';
+import { mq } from '@/styles/media';
 
 export const Overlay = styled.div`
   position: fixed;
@@ -20,6 +21,11 @@ export const Image = styled.div`
   position: relative;
   overflow: hidden;
   background: ${colors.line2};
+
+  ${mq.mobile} {
+    height: 38vh;
+    width: 100%;
+  }
 `
 
 export const InputImage = styled.div`
@@ -76,6 +82,23 @@ export const Modal = styled.div`
   display: flex;
   gap: 1.5rem;
   position: relative;
+
+  ${mq.mobile} {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    display: flex;
+    gap: 0;
+    flex-direction: column;
+  }
+`
+
+export const HeaderM = styled.div`
+  ${mq.mobile} {
+    display: flex;
+    padding: 1rem;
+    gap: 1rem;
+  }
 `
 
 export const Header = styled.div`
@@ -97,6 +120,11 @@ export const PublicIconWrap = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
+
+  ${mq.mobile} {
+    margin-left: -0.1rem;
+    margin-top: 0.5rem;
+  }
 `
 
 export const ProfileRow = styled.div`
@@ -104,6 +132,10 @@ export const ProfileRow = styled.div`
   gap: 1rem;
   padding: 1.5rem;
   align-items: center;
+
+  ${mq.mobile} {
+    display: none;
+  }
 `
 
 export const ProfileImg = styled.div`
@@ -137,6 +169,12 @@ export const Textarea = styled.textarea`
     font-family: "SCoreDream", sans-serif;
     font-size: 15px;
   }
+
+  ${mq.mobile} {
+    min-height: 15vh;
+    margin-top: -0.5rem;
+    margin-left: 0.5rem;
+  }
 `
 
 export const Row = styled.div`
@@ -150,6 +188,10 @@ export const CharCount = styled.div`
   font-size: ${fontSizes.Small};
   color: ${colors.gray};
   margin-left: 19rem;
+
+  ${mq.mobile} {
+    margin-left:  19rem;
+  }
 `
 
 export const ToggleWrap = styled.div`
@@ -161,6 +203,10 @@ export const ToggleLabel = styled.span`
   font-size: 14px;
   font-weight: 400;
   margin-top: 2px;
+
+  ${mq.mobile} {
+    margin-left: 0.5rem;
+  }
 `
 
 export const ToggleButton = styled.button`

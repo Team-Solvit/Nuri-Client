@@ -1,9 +1,10 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as S from './style';
 import Image from 'next/image';
 import Square from '../button/square';
+import Header from '../header';
 
 interface CreatingModalProps {
     onClose: () => void;
@@ -15,6 +16,21 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [publicTarget, setPublicTarget] = useState('공개대상');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 430);
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -57,6 +73,13 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                 e.stopPropagation();
                 handleModalClick();
             }}>
+                {isMobile && (
+                    <S.HeaderM>
+                        <S.Title>새 게시물 만들기</S.Title>
+                        <button onClick={onClose} style={{ backgroundColor: 'white', border: 'none', color: 'gray', fontSize: '15px', marginLeft: 'auto' }}>취소</button>
+                        <button onClick={onClose} style={{ backgroundColor: 'white', border: 'none', color: '#FF4C61', fontSize: '15px' }}>업로드</button>
+                    </S.HeaderM>
+                )}
                 <S.Left>
                     <S.Image>
                         <S.InputImage>
@@ -99,34 +122,11 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                 </S.Left>
 
                 <S.Main>
-                    <S.Header>
-                        <S.Title>새 게시물 만들기</S.Title>
-                        <S.ToggleWrap>
-                            <S.ToggleLabel>모임</S.ToggleLabel>
-                            <S.ToggleButton
-                                className={isPublic ? '' : 'inactive'}
-                                onClick={() => setIsPublic(prev => !prev)}
-                            >
-                                <Image
-                                    src="/icons/toggleOn.svg"
-                                    alt="토글 ON"
-                                    width={40}
-                                    height={30}
-                                    className="on"
-                                    style={{ marginLeft: '8px' }}
-                                />
-                                <Image
-                                    src="/icons/toggleOff.svg"
-                                    alt="토글 OFF"
-                                    width={50}
-                                    height={28}
-                                    className="off"
-                                    style={{ marginTop: '2px' }}
-                                />
-                            </S.ToggleButton>
-                        </S.ToggleWrap>
-                    </S.Header>
-
+                    {!isMobile && (
+                        <S.Header>
+                            <S.Title>새 게시물 만들기</S.Title>
+                        </S.Header>
+                    )}
                     <S.Textarea
                         placeholder="글을 작성하세요."
                         value={content}
@@ -180,6 +180,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                     </S.ButtonRow>
                 </S.Main>
             </S.Modal>
+            {isMobile && <Header />}
         </S.Overlay>
     );
 }
