@@ -4,6 +4,7 @@ import Header from "@/components/ui/header";
 import TopLoadingBar from "@/components/layout/loadingbar";
 import React from "react";
 import {Providers} from "@/components/layout/provider";
+import MessageAlert from "@/components/ui/messageAlert";
 import Alert from "@/components/ui/alert";
 
 
@@ -17,6 +18,7 @@ export default function RootLayout({children, modal}: { children: React.ReactNod
 	return (
 		<html lang="ko">
 		<TopLoadingBar/>
+		<MessageAlert/>
 		<Alert/>
 		<head>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
