@@ -9,6 +9,8 @@ import Comment from "@/assets/post/comment.svg";
 import Arrow from "@/assets/post/arrow-right.svg";
 import {useState} from "react";
 import {useRouter} from "next/navigation";
+import {useQuery} from "@apollo/client";
+import {PostQueries} from "@/services/post";
 
 export default function PostScroll() {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null);
@@ -35,6 +37,12 @@ export default function PostScroll() {
 			return {...prev, [postId]: next};
 		});
 	};
+	
+	const {data} = useQuery(PostQueries.GET_POST_LIST, {
+		variables: {start: 0},
+	});
+	
+	console.log(data);
 	return (
 		<S.PostScrollContainer>
 			{fakeData.map(post => {

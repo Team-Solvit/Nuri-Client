@@ -1,8 +1,12 @@
 import * as S from "./style"
 import Image from "next/image";
 import Profile from "@/assets/meeting/member-profile.png"
+import {useQuery} from "@apollo/client";
+import {AlertQueries} from "@/services/Alert";
 
 export default function AlertScroll() {
+	const {data} = useQuery(AlertQueries.GET_ALERT_LIST)
+	console.log(data)
 	const fakeData = [
 		{id: 1, title: "알림 제목"},
 		{id: 2, title: "알림 제목"},

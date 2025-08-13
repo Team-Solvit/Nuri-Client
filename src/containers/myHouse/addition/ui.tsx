@@ -1,14 +1,18 @@
 "use client"
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import * as S from './style';
 import Circle from '@/components/ui/button/circle';
 import Square from '@/components/ui/button/square';
 import {DEFAULT_CONTRACT_OPTIONS, FACILITY_CATEGORIES} from "./data"
-import {useRouter} from 'next/navigation';
+import {useParams, useRouter} from 'next/navigation';
 import {useAlertStore} from "@/store/alert";
+import {useMutation, useQuery} from "@apollo/client";
+import {BoardingHouseMutations, BoardingHouseQueries} from "@/services/BoardingHouse";
 
 const Addition = () => {
 	const [contractOptions, setContractOptions] = useState<string[]>(DEFAULT_CONTRACT_OPTIONS);
+	const [name, setName] = useState('');
+	const [description, setDescription] = useState('');
 	const [selectedContracts, setSelectedContracts] = useState<string[]>([]);
 	const [yearInput, setYearInput] = useState('');
 	const [monthInput, setMonthInput] = useState('');
@@ -80,7 +84,73 @@ const Addition = () => {
 		);
 	};
 	
+	const params = useParams();
+	const roomId = params.roomId;
+	
+	const {data} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOM_INFO, {
+		variables: {
+			roomId: roomId
+		}
+	});
+	
+	console.log(data)
+	
+	const [createRoom, {
+		data: roomData,
+		error: roomError
+	}] = useMutation(BoardingHouseMutations.CREATE_BOARDING_ROOM);
+	
+	const [patchRoom, {
+		data: patchRoomData,
+		error: patchRoomError
+	}] = useMutation(BoardingHouseMutations.PATCH_BOARDING_ROOM);
+	
 	const {error, success} = useAlertStore();
+	useEffect(() => {
+		if (roomData) {
+			success("방 생성 성공");
+		}
+		if (roomError) {
+			error("방 생성 실패");
+		}
+		if (patchRoomData) {
+			success("방 수정 성공");
+		}
+		if (patchRoomError) {
+			error("방 수정 실패");
+		}
+	}, [roomData, roomError, patchRoomData, patchRoomError]);
+	
+	const checkValue = () => {
+		if (!images.length) return error('사진을 추가해주세요')
+		if (!name) return error('방의 이름을 추가해주세요')
+		if (!description) return error('방의 내용을 추가해주세요')
+		if (!contractOptions.length) return error('가격을 추가해주세요')
+		if (!selectedContracts.length) return error('계약 기간을 선택해주세요')
+		// 방의 주인과 로그인중의 사용자가 일치하는지 확읺 추가
+		if (roomId) {
+			patchRoom({
+				variables: {
+					roomId: roomId,
+					name: name,
+					description: description,
+					images: images,
+					contracts: selectedContracts,
+					facilities: selectedFacilities,
+				}
+			})
+		} else {
+			createRoom({
+				variables: {
+					name: name,
+					description: description,
+					images: images,
+					contracts: selectedContracts,
+					facilities: selectedFacilities,
+				}
+			})
+		}
+	}
 	return (
 		<S.Container style={{position: 'relative'}}>
 			<S.Title>방추가</S.Title>
@@ -110,11 +180,19 @@ const Addition = () => {
 			</S.Section>
 			<S.Section>
 				<S.Label>이름</S.Label>
-				<S.Input placeholder="이름을 입력해주세요"/>
+				<S.Input
+					value={name}
+					onChange={e => setName(e.target.value)}
+					placeholder="이름을 입력해주세요"
+				/>
 			</S.Section>
 			<S.Section>
 				<S.Label>자세한 설명</S.Label>
-				<S.Textarea placeholder="설명을 입력해주세요"/>
+				<S.Textarea
+					value={description}
+					onChange={e => setDescription(e.target.value)}
+					placeholder="설명을 입력해주세요"
+				/>
 			</S.Section>
 			<S.SectionRow>
 				<S.InputWithAddonRow>
@@ -205,7 +283,7 @@ const Addition = () => {
 					<S.Name>취소</S.Name>
 				</S.CancelBtn>
 				<Square text="등록" onClick={() => {
-					error("등록 완료");
+					checkValue();
 				}} status={true} width="100%"/>
 			</S.FixedFooter>
 		</S.Container>

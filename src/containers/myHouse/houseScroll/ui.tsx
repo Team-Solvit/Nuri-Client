@@ -9,6 +9,8 @@ import {useRouter} from 'next/navigation';
 import {useModalStore} from "@/store/modal";
 import {fakeData} from "./data";
 import NProgress from "nprogress";
+import {useQuery} from "@apollo/client";
+import {BoardingHouseQueries} from "@/services/BoardingHouse";
 
 const HouseScroll = () => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -22,6 +24,11 @@ const HouseScroll = () => {
 		open();
 		router.push(`/myHouse?name=${fakeData.roomInfo.name}&number=${number}`, {scroll: false});
 	}
+	const {data: boardingHouseInfo} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_INFO);
+	const {data: boardingHouseRooms} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOMS);
+	
+	console.log(boardingHouseInfo)
+	console.log(boardingHouseRooms)
 	return (
 		<S.Container>
 			<S.Header>

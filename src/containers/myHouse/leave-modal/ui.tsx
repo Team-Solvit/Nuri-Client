@@ -3,6 +3,8 @@ import Square from "@/components/ui/button/square";
 import {useModalStore} from "@/store/modal";
 import {useRouter, useSearchParams} from "next/navigation";
 import Modal from "@/components/layout/modal";
+import {useMutation} from "@apollo/client";
+import {BoardingHouseMutations} from "@/services/BoardingHouse";
 
 export default function LeaveModal() {
 	const {close} = useModalStore();
@@ -14,6 +16,10 @@ export default function LeaveModal() {
 		close();
 		router.push('/myHouse', {scroll: false});
 	}
+	const [endContract, {data, loading, error}] = useMutation(BoardingHouseMutations.END_BOARDING_ROOM_CONTRACT);
+	console.log(data)
+	console.log(loading)
+	console.log(error)
 	return name && number && (
 		<Modal>
 			<S.Container>
@@ -23,8 +29,7 @@ export default function LeaveModal() {
 					<S.CancelBtn onClick={modalClose} $width={"100%"}>
 						<S.Name>취소</S.Name>
 					</S.CancelBtn>
-					<Square text={"계약 종료"} onClick={() => {
-					}} status={true} width={"100%"}/>
+					<Square text={"계약 종료"} onClick={endContract} status={true} width={"100%"}/>
 				</S.ButtonContainer>
 			</S.Container>
 		</Modal>

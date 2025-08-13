@@ -7,10 +7,11 @@ import Message from "@/assets/icon/message.svg"
 import * as S from "./style";
 import NProgress from "nprogress";
 import {useUserStore} from "@/store/user";
-import {TextBtn} from "./style";
 import Login from "../login";
 import LoginModal from "@/components/layout/loginModal";
-import { useLoginModalStore } from "@/store/loginModal";
+import {useLoginModalStore} from "@/store/loginModal";
+import {useQuery} from "@apollo/client";
+import {AlertQueries} from "@/services/Alert";
 
 export default function Navigate() {
 	const router = useRouter();
@@ -58,6 +59,8 @@ export default function Navigate() {
 			onClick: () => navigateClick("/register"),
 		},
 	] as const
+	
+	const {data} = useQuery(AlertQueries.GET_ALERT_COUNT);
 	return (
 		<S.NavigateContainer>
 			<S.Logo onClick={() => navigateClick("/")}>
@@ -81,7 +84,7 @@ export default function Navigate() {
 						>
 							<S.IconBox>
 								<Image src={item.icon} alt={item.label} width={32} height={32}/>
-								{/*<S.Count>1</S.Count>*/}
+								{item.label === "알림" && data.alertCount > 0 && <S.Count>{data.alertCount}</S.Count>}
 							</S.IconBox>
 							<p>{item.label}</p>
 						</S.NavigateBtn>
@@ -99,7 +102,7 @@ export default function Navigate() {
 			</S.BtnBox>
 			{isOpen && (
 				<LoginModal>
-					<Login />
+					<Login/>
 				</LoginModal>
 			)}
 		</S.NavigateContainer>
