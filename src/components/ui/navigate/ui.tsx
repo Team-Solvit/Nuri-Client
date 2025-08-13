@@ -7,10 +7,9 @@ import Message from "@/assets/icon/message.svg"
 import * as S from "./style";
 import NProgress from "nprogress";
 import {useUserStore} from "@/store/user";
-import {TextBtn} from "./style";
 import Login from "../login";
 import LoginModal from "@/components/layout/loginModal";
-import { useLoginModalStore } from "@/store/loginModal";
+import {useLoginModalStore} from "@/store/loginModal";
 
 export default function Navigate() {
 	const router = useRouter();
@@ -54,6 +53,11 @@ export default function Navigate() {
 			onClick: () => open(),
 		},
 		{
+			label: "또는",
+			onClick: () => {
+			}
+		},
+		{
 			label: "회원가입",
 			onClick: () => navigateClick("/register"),
 		},
@@ -87,6 +91,20 @@ export default function Navigate() {
 						</S.NavigateBtn>
 					)
 				}) : NAVIGATE_AUTH_ITEMS.map(item => {
+					if (item.label === "또는") {
+						return (
+							<S.Or key={item.label}>
+								<S.Line
+									onClick={item.onClick}
+								/>
+								<p>{item.label}</p>
+								<S.Line
+									onClick={item.onClick}
+								/>
+							</S.Or>
+						
+						)
+					}
 					return (
 						<S.TextBtn
 							key={item.label}
@@ -99,7 +117,7 @@ export default function Navigate() {
 			</S.BtnBox>
 			{isOpen && (
 				<LoginModal>
-					<Login />
+					<Login/>
 				</LoginModal>
 			)}
 		</S.NavigateContainer>
