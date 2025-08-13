@@ -4,11 +4,8 @@ import Header from "@/components/ui/header";
 import TopLoadingBar from "@/components/layout/loadingbar";
 import React from "react";
 import {Providers} from "@/components/layout/provider";
-<<<<<<< HEAD
 import Alert from "@/components/ui/alert";
-=======
 import MessageAlert from "@/components/ui/messageAlert";
->>>>>>> 90cb590 (feat/#58 :: 메세지 알림 추가)
 
 
 export const metadata: Metadata = {
@@ -21,11 +18,8 @@ export default function RootLayout({children, modal}: { children: React.ReactNod
 	return (
 		<html lang="ko">
 		<TopLoadingBar/>
-<<<<<<< HEAD
 		<Alert/>
-=======
 		<MessageAlert/>
->>>>>>> 90cb590 (feat/#58 :: 메세지 알림 추가)
 		<head>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		</head>
