@@ -1,53 +1,50 @@
 'use client';
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import * as S from './style';
 import Image from "next/image";
 import Smile from "@/assets/icon/smile.svg"
 import Lose from "@/assets/icon/lose.svg"
 import X from "@/assets/icon/x.svg"
 import {createPortal} from 'react-dom';
+import {useAlertStore} from "@/store/alert";
 
-interface Props {
-	description: string,
-	success: boolean
-}
 
-export default function Alert({description = "error", success = false}: Props) {
-	const [visible, setVisible] = useState(true);
-	const [isLeaving, setIsLeaving] = useState(true);
+export default function Alert() {
+	const {isStatus, description, none, isLeavingAnimation, setIsLeavingAnimation, isVisible} = useAlertStore();
+	
 	useEffect(() => {
 		const leavingTimer = setTimeout(() => {
-			setIsLeaving(false);
+			setIsLeavingAnimation(false);
 		}, 4_800);
 		const visibleTimer = setTimeout(() => {
-			setVisible(false);
+			none();
 		}, 5_500);
 		return () => {
 			clearTimeout(leavingTimer);
 			clearTimeout(visibleTimer);
 		};
-	}, []);
+	}, [isStatus]);
 	
 	const closeAlert = () => {
-		setIsLeaving(false);
+		setIsLeavingAnimation(false);
 		setTimeout(() => {
-			setVisible(false);
+			none();
 		}, 500)
 	}
-	if (!visible) return null;
+	if (!isVisible && isStatus === "none") return null;
 	
 	return (
 		createPortal(
-			<S.Alert isLeaving={!isLeaving}>
+			<S.Alert isLeaving={!isLeavingAnimation}>
 				<S.Content>
 					<S.Close onClick={closeAlert}>
 						<Image src={X} alt="X"/>
 					</S.Close>
 					<S.Emotion>
-						<Image src={success ? Smile : Lose} alt="emotion"/>
+						<Image src={isStatus === "success" ? Smile : Lose} alt="emotion"/>
 					</S.Emotion>
-					<S.TextBox success={success}>
-						<h3>{success ? "Success" : "Error"}</h3>
+					<S.TextBox success={isStatus === "success"}>
+						<h3>{isStatus === "success" ? "Success" : "Error"}</h3>
 						<p>
 							{description.length > 60
 								? description.slice(0, 60) + '...'
@@ -56,7 +53,7 @@ export default function Alert({description = "error", success = false}: Props) {
 					</S.TextBox>
 				</S.Content>
 				<S.GageBox>
-					<S.Gauge success={success}/>
+					<S.Gauge success={isStatus === "success"}/>
 				</S.GageBox>
 			</S.Alert>,
 			document.body
