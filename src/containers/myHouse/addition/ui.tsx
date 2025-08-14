@@ -7,7 +7,7 @@ import {DEFAULT_CONTRACT_OPTIONS, FACILITY_CATEGORIES} from "./data"
 import {useParams, useRouter} from 'next/navigation';
 import {useAlertStore} from "@/store/alert";
 import {useMutation, useQuery} from "@apollo/client";
-import {BoardingHouseMutations, BoardingHouseQueries} from "@/services/BoardingHouse";
+import {BoardingHouseMutations, BoardingHouseQueries} from "@/services/boardingHouse";
 
 const Addition = () => {
 	const [contractOptions, setContractOptions] = useState<string[]>(DEFAULT_CONTRACT_OPTIONS);

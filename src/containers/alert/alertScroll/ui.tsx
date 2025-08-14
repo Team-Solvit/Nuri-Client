@@ -2,7 +2,7 @@ import * as S from "./style"
 import Image from "next/image";
 import Profile from "@/assets/meeting/member-profile.png"
 import {useQuery} from "@apollo/client";
-import {AlertQueries} from "@/services/Alert";
+import {AlertQueries} from "@/services/alert";
 
 export default function AlertScroll() {
 	const {data} = useQuery(AlertQueries.GET_ALERT_LIST)

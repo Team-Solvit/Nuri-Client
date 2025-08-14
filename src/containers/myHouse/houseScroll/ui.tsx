@@ -10,7 +10,7 @@ import {useModalStore} from "@/store/modal";
 import {fakeData} from "./data";
 import NProgress from "nprogress";
 import {useQuery} from "@apollo/client";
-import {BoardingHouseQueries} from "@/services/BoardingHouse";
+import {BoardingHouseQueries} from "@/services/boardingHouse";
 
 const HouseScroll = () => {
 	const [isOpen, setIsOpen] = useState(false);
