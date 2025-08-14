@@ -1,7 +1,17 @@
 import * as S from "./style"
 import Post from "@/components/ui/post";
+import {useQuery} from "@apollo/client";
+import {MeetingQueries} from "@/services/meeting";
 
-export default function MeetingPost({isModal}: { isModal: boolean }) {
+export default function MeetingPost({isModal, groupId}: { isModal: boolean, groupId: number }) {
+	
+	const {data: meetingPost} = useQuery(MeetingQueries.GET_MEETING_POST, {
+		variables: {
+			groupId: 1
+		}
+	})
+	console.log('모임 게시물(meetingPost):', meetingPost) // 모임 게시물(meetingPost) 데이터 출력
+	
 	const fakeData = [
 		{
 			id: 1,

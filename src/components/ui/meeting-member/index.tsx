@@ -5,8 +5,10 @@ import {useRouter} from "next/navigation";
 import Square from "@/components/ui/button/square";
 import React from "react";
 import {useModalStore} from "@/store/modal";
+import {useMutation, useQuery} from "@apollo/client";
+import {MeetingMutations, MeetingQueries} from "@/services/meeting";
 
-export const MeetingMember = ({isMember}: { isMember: boolean }) => {
+export const MeetingMember = ({groupId}: { groupId: number }) => {
 	const fakeData = [
 		{id: 1, name: "test1", "게시물": 0, "팔로워": 0, "팔로우": 0},
 		{id: 2, name: "test2", "게시물": 0, "팔로워": 0, "팔로우": 0},
@@ -22,6 +24,17 @@ export const MeetingMember = ({isMember}: { isMember: boolean }) => {
 		e.stopPropagation();
 		open();
 	}
+	
+	const {data: meetingMember} = useQuery(MeetingQueries.GET_MEETING_MEMBER, {
+		variables: {
+			groupId: groupId
+		}
+	})
+	
+	console.log('모임 멤버(meetingMember):', meetingMember) // 모임 멤버(meetingMember) 정보 출력
+	
+	const [leaveMeeting] = useMutation(MeetingMutations.LEAVE_MEETING);
+	
 	return (
 		<S.MeetingMemberContainer>
 			{fakeData.map(member => (
@@ -37,9 +50,11 @@ export const MeetingMember = ({isMember}: { isMember: boolean }) => {
 					<S.NameBox>
 						<S.Name>{member.name}</S.Name>
 						<S.Count>게시물 {member["게시물"]} 팔로워 {member["팔로워"]} 팔로우 {member["팔로우"]}</S.Count>
-						{isMember &&
+						{/*탈퇴버튼 띄우는 조건 바꾸기*/}
+						{member.id === 1 &&
               <S.Leave onClick={(e) => leaveCheck(e)}>
                 <Square text={"탈퇴"} onClick={() => {
+									leaveMeeting();
 								}} status={true} width={"max-content"}/>
               </S.Leave>}
 					</S.NameBox>

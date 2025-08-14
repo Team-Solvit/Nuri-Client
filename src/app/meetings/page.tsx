@@ -8,6 +8,8 @@ import MeetingModal from "@/containers/meetings/MeetingModal/ui";
 import MeetingAccession from "@/containers/meetings/accession/ui";
 import {Accession} from "@/containers/meetings/accession/type";
 import {useOtherMeetingFind} from "@/store/otherMeetingFind";
+import {useQuery} from "@apollo/client";
+import {MeetingQueries} from "@/services/meeting";
 
 export default function Meetings() {
 	const navigate = useRouter();
@@ -49,6 +51,16 @@ export default function Meetings() {
 		personnel: 2,
 		maxPersonnel: 3
 	}
+	const {data: areas} = useQuery(MeetingQueries.GET_MEETING_AREAS);
+	
+	const {data: areaMeetings} = useQuery(MeetingQueries.GET_MEETINGS, {
+		variables: {
+			areaId: 1
+		}
+	});
+	console.log('지역(areas):', areas) // 지역(areas) 데이터 출력
+	console.log('지역별 모임(areaMeetings):', areaMeetings) // 지역별 모임(areaMeetings) 데이터 출력
+	
 	return (
 		<>
 			<GoogleMap markers={markers} label={(m) => rooms[m.id - 1].title} renderPopup={(marker: typeof markers[0]) => (

@@ -12,6 +12,8 @@ import MeetingPost from "@/components/ui/meting-post";
 import MeetingCalender from "@/components/ui/meeting-calender";
 import {MeetingMember} from "@/components/ui/meeting-member";
 import {MeetingModalProps} from "@/containers/meetings/MeetingModal/type";
+import {useQuery} from "@apollo/client";
+import {MeetingQueries} from "@/services/meeting";
 
 export const Banner = ({bannerImage}: { bannerImage: string | StaticImageData }) => {
 	return (
@@ -82,6 +84,16 @@ export default function MeetingModal({
 	}
 	const props = {...fakeData, setIsAccessionAction};
 	
+	
+	const {data: meetingInfo} = useQuery(MeetingQueries.GET_MEETING_INFO, {
+		variables: {
+			groupId: 1
+		}
+	});
+	
+	console.log('모임 상세 정보(meetingInfo):', meetingInfo) // 모임 상세 정보(meetingInfo) 출력
+	
+	
 	if (!isOpen) return null
 	return (
 		<Modal>
@@ -89,9 +101,9 @@ export default function MeetingModal({
 				<Banner bannerImage={fakeData.bannerImage}/>
 				<MeetingContent {...props} />
 				<Nav selected={selected} setSelected={setSelected}/>
-				{selected === 1 && <MeetingPost isModal={true}/>}
-				{selected === 2 && <MeetingCalender/>}
-				{selected === 3 && <MeetingMember isMember={false}/>}
+				{selected === 1 && <MeetingPost isModal={true} groupId={1}/>}
+				{selected === 2 && <MeetingCalender groupId={1}/>}
+				{selected === 3 && <MeetingMember groupId={1}/>}
 			</S.ModalContainer>
 		</Modal>
 	)

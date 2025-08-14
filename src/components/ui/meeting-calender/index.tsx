@@ -7,10 +7,19 @@ import ArrowBottom from "@/assets/meeting/arrow-bottom.svg";
 import {meetings} from "./data"
 import {breakpoints} from "@/styles/media";
 import Flag from "@/assets/icon/flag.svg";
+import {useQuery} from "@apollo/client";
+import {MeetingQueries} from "@/services/meeting";
 
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
-export default function MeetingCalender() {
+export default function MeetingCalender({groupId}: { groupId: number }) {
+	
+	const {data: meetingSchedule} = useQuery(MeetingQueries.GET_MEETING_SCHEDULE, {
+		variables: {
+			groupId: groupId
+		}
+	})
+	console.log('모임 일정(meetingSchedule):', meetingSchedule) // 모임 일정(meetingSchedule) 데이터 출력
 	const today = new Date();
 	const [year, setYear] = useState(today.getFullYear());
 	const [month, setMonth] = useState(today.getMonth());

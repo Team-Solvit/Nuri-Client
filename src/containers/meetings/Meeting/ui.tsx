@@ -13,6 +13,8 @@ import {useRouter} from "next/navigation";
 import {MeetingProps} from "./type";
 import {Nav} from "@/containers/meetings/MeetingModal/ui";
 import {useOtherMeetingFind} from "@/store/otherMeetingFind";
+import {useQuery} from "@apollo/client";
+import {MeetingQueries} from "@/services/meeting";
 
 export default function Meeting(meeting: MeetingProps) {
 	const [selected, setSelected] = useState(1);
@@ -22,6 +24,14 @@ export default function Meeting(meeting: MeetingProps) {
 		router.push("/meetings");
 		setFind(true);
 	}
+	const {data: meetingInfo} = useQuery(MeetingQueries.GET_MEETING_INFO, {
+		variables: {
+			groupId: 1
+		}
+	})
+	console.log('모임 정보(meetingInfo):', meetingInfo)
+	
+	
 	return (
 		<S.ModalContainer>
 			<S.Banner>
@@ -48,13 +58,13 @@ export default function Meeting(meeting: MeetingProps) {
 				</S.Description>
 			</S.Content>
 			<Nav selected={selected} setSelected={setSelected}/>
-			{selected === 1 && <MeetingPost isModal={true}/>}
+			{selected === 1 && <MeetingPost groupId={1} isModal={true}/>}
 			{selected === 1 && <S.BtnBox>
         <Square text={"게시물 작성"} status={true} width={"calc(84.5vw - 10rem)"} onClick={() => {
 				}}/>
       </S.BtnBox>}
-			{selected === 2 && <MeetingCalender/>}
-			{selected === 3 && <MeetingMember isMember={true}/>}
+			{selected === 2 && <MeetingCalender groupId={1}/>}
+			{selected === 3 && <MeetingMember groupId={1}/>}
 		</S.ModalContainer>
 	)
 }
