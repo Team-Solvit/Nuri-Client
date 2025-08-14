@@ -1,25 +1,24 @@
 'use client'
 
-import { usePathname, useRouter } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import {usePathname} from 'next/navigation'
+import {useEffect, useRef, useState} from 'react'
 import Image from 'next/image'
 import * as S from './style'
-import NProgress from "nprogress";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 
 const MENU_ITEMS = [
-	{ label: '홈', path: '/', icon: '/icons/home.svg', order: 0 },
-	{ label: '탐색', path: '/explore', icon: '/icons/compass.svg', order: 1 },
-	{ label: '모임', path: '/meetings', icon: '/icons/hands.svg', order: 3 },
-	{ label: '프로필', path: '/profile', icon: '/icons/person.svg', order: 4 },
-	{ label: '만들기', path: '/creating', icon: '/icons/create.svg', order: 2 },
-	{ label: '하숙관리(제3자)', path: '/boarding/third-party', icon: '/icons/location.svg', order: 99 },
-	{ label: '모임관리(제3자)', path: '/meeting/third-party', icon: '/icons/person_setting.svg', order: 99 },
+	{label: '홈', path: '/', icon: '/icons/home.svg', order: 0},
+	{label: '탐색', path: '/explore', icon: '/icons/compass.svg', order: 1},
+	{label: '모임', path: '/meetings', icon: '/icons/hands.svg', order: 3},
+	{label: '프로필', path: '/profile', icon: '/icons/person.svg', order: 4},
+	{label: '만들기', path: '/creating', icon: '/icons/create.svg', order: 2},
+	{label: '하숙관리(제3자)', path: '/boarding/third-party', icon: '/icons/location.svg', order: 99},
+	{label: '모임관리(제3자)', path: '/meeting/third-party', icon: '/icons/person_setting.svg', order: 99},
 ]
 
 export default function Header() {
 	const pathname = usePathname()
-	const router = useRouter()
-
+	
 	const [isMobile, setIsMobile] = useState(false);
 	const [moreOpen, setMoreOpen] = useState(false);
 	const moreRef = useRef<HTMLDivElement | null>(null);
@@ -27,7 +26,7 @@ export default function Header() {
 	useEffect(() => {
 		setIsMobile(window.innerWidth <= 430);
 	}, []);
-
+	
 	useEffect(() => {
 		if (!moreOpen) return;
 		const onClick = (e: MouseEvent | TouchEvent) => {
@@ -50,18 +49,19 @@ export default function Header() {
 			document.removeEventListener('keydown', onKey);
 		};
 	}, [moreOpen]);
-
+	
+	const navigate = useNavigationWithProgress();
+	
 	const handleMenuClick = (path: string) => {
-		NProgress.start()
-		router.push(path)
+		navigate(path)
 		setMoreOpen(false);
 	}
-
+	
 	if (isMobile && pathname.startsWith('/register') || isMobile && pathname.startsWith('/message')) return null
-
+	
 	const primaryItems = isMobile ? MENU_ITEMS.filter(i => i.order < 99) : MENU_ITEMS;
 	const extraItems = isMobile ? MENU_ITEMS.filter(i => i.order >= 99) : [];
-
+	
 	return (
 		<S.HeaderContainer>
 			<Image
@@ -72,7 +72,7 @@ export default function Header() {
 				priority
 			/>
 			<S.Menu>
-				{primaryItems.map(({ label, path, icon, order }) => {
+				{primaryItems.map(({label, path, icon, order}) => {
 					const active = path === '/' ? pathname === '/' : pathname.startsWith(path)
 					return (
 						<S.MenuItem
@@ -92,7 +92,7 @@ export default function Header() {
 						</S.MenuItem>
 					)
 				})}
-
+				
 				{isMobile && extraItems.length > 0 && (
 					<S.MoreWrap ref={moreRef}>
 						<S.MenuItem
@@ -102,7 +102,7 @@ export default function Header() {
 							aria-expanded={moreOpen}
 						>
 							<S.MoreIcon open={moreOpen}>
-								<Image src="/icons/dropdown.svg" alt="더보기" width={24} height={24} />
+								<Image src="/icons/dropdown.svg" alt="더보기" width={24} height={24}/>
 							</S.MoreIcon>
 						</S.MenuItem>
 					</S.MoreWrap>
@@ -110,9 +110,9 @@ export default function Header() {
 			</S.Menu>
 			{isMobile && extraItems.length > 0 && (
 				<S.MoreBar open={moreOpen} ref={moreBarRef}>
-					{extraItems.map(({ label, path, icon }) => (
+					{extraItems.map(({label, path, icon}) => (
 						<S.MoreAction key={path} onClick={() => handleMenuClick(path)}>
-							<Image src={icon} alt={label} width={20} height={20} />
+							<Image src={icon} alt={label} width={20} height={20}/>
 							<span>{label}</span>
 						</S.MoreAction>
 					))}
@@ -125,7 +125,7 @@ export default function Header() {
 						alt="프로필"
 						width={36}
 						height={36}
-						style={{ borderRadius: '50%' }}
+						style={{borderRadius: '50%'}}
 						unoptimized={true}
 					/>
 					<span>xx._un8</span>

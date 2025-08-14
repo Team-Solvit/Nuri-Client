@@ -4,8 +4,8 @@ import * as S from './style';
 import Circle from '@/components/ui/button/circle';
 import Square from '@/components/ui/button/square';
 import {DEFAULT_CONTRACT_OPTIONS, FACILITY_CATEGORIES} from "./data"
-import {useRouter} from 'next/navigation';
 import {useAlertStore} from "@/store/alert";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 
 const Addition = () => {
 	const [contractOptions, setContractOptions] = useState<string[]>(DEFAULT_CONTRACT_OPTIONS);
@@ -14,7 +14,6 @@ const Addition = () => {
 	const [monthInput, setMonthInput] = useState('');
 	const [images, setImages] = useState<string[]>([]);
 	const fileInputRef = useRef<HTMLInputElement>(null);
-	const router = useRouter();
 	
 	const handleContractClick = (option: string) => {
 		setSelectedContracts(prev =>
@@ -68,8 +67,9 @@ const Addition = () => {
 		setImages(prev => prev.filter((_, i) => i !== idx));
 	};
 	
+	const navigate = useNavigationWithProgress();
 	const handleRoute = (path: string) => {
-		router.push(path);
+		navigate(path);
 	}
 	
 	const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);

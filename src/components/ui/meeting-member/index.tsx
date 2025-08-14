@@ -1,10 +1,10 @@
 import * as S from "./style"
 import Profile from "@/assets/meeting/member-profile.png"
 import Image from "next/image"
-import {useRouter} from "next/navigation";
 import Square from "@/components/ui/button/square";
 import React from "react";
 import {useModalStore} from "@/store/modal";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 
 export const MeetingMember = ({isMember}: { isMember: boolean }) => {
 	const fakeData = [
@@ -13,9 +13,9 @@ export const MeetingMember = ({isMember}: { isMember: boolean }) => {
 		{id: 3, name: "test3", "게시물": 0, "팔로워": 0, "팔로우": 0},
 		{id: 4, name: "test4", "게시물": 0, "팔로워": 0, "팔로우": 0},
 	]
-	const router = useRouter();
+	const navigate = useNavigationWithProgress();
 	const memberClick = (id: number) => {
-		router.push(`/profile/${id}`)
+		navigate(`/profile/${id}`)
 	}
 	const {open} = useModalStore();
 	const leaveCheck = (e: React.MouseEvent) => {

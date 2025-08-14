@@ -2,20 +2,20 @@ import * as S from '@/styles/confirm'
 import Square from "@/components/ui/button/square";
 import {AccessionProps} from "@/containers/meetings/accession/type";
 import React from "react";
-import {useRouter} from "next/navigation";
 import NProgress from "nprogress";
 import {useModalStore} from "@/store/modal";
 import {useOtherMeetingFind} from '@/store/otherMeetingFind';
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 
 export default function Accession({isAccession, setIsAccession, accessions}: AccessionProps) {
 	const modalClose = () => {
 		setIsAccession(false)
 	}
-	const router = useRouter();
+	const navigate = useNavigationWithProgress();
 	const {close} = useModalStore();
 	const {setFind} = useOtherMeetingFind();
 	const handelRouter = (id: number) => {
-		router.push(`/meetings/${id}`)
+		navigate(`/meetings/${id}`)
 		setIsAccession(false)
 		NProgress.start()
 		setFind(false);
