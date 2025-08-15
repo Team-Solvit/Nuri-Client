@@ -4,7 +4,7 @@ import {useModalStore} from "@/store/modal";
 import {useRouter, useSearchParams} from "next/navigation";
 import Modal from "@/components/layout/modal";
 import {useMutation} from "@apollo/client";
-import {BoardingHouseMutations} from "@/services/boardingHouse";
+import {BoardingHouseMutations} from "@/services/BoardingHouse";
 
 export default function LeaveModal() {
 	const {close} = useModalStore();
