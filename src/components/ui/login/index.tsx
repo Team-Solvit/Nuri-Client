@@ -1,10 +1,15 @@
 import styled from '@emotion/styled';
-import {useState} from 'react';
+import {useCallback, useState} from 'react';
 import {colors, radius, fontSizes} from '@/styles/theme';
 import Square from '@/components/ui/button/square';
 import Image from 'next/image';
 import {useRouter} from 'next/navigation';
 import {mq} from '@/styles/media';
+import {localLogin} from '@/services/auth';
+import {useApollo} from '@/lib/apolloClient';
+import {useAlertStore} from '@/store/alert';
+import {useLoginModalStore} from '@/store/loginModal';
+import {useUserStore} from '@/store/user';
 
 export default function Login() {
 	const router = useRouter();
@@ -13,6 +18,34 @@ export default function Login() {
 	const [code, setCode] = useState("");
 	const [pw, setPw] = useState("");
 	const [pw2, setPw2] = useState("");
+	const [id, setId] = useState("");
+	const [password, setPassword] = useState("");
+	const [loading, setLoading] = useState(false);
+
+	const client = useApollo();
+	const alertStore = useAlertStore();
+	const loginModal = useLoginModalStore();
+	const setAuth = useUserStore(s => s.setAuth);
+
+	const handleLogin = useCallback(async () => {
+		if (loading) return;
+		if (!id.trim() || !password.trim()) {
+			alertStore.error('아이디와 비밀번호를 입력해주세요.');
+			return;
+		}
+		setLoading(true);
+		try {
+			const token = await localLogin(client, { id: id.trim(), password: password });
+			localStorage.setItem('AT', token);
+			setAuth(id.trim(), 'USER');
+			alertStore.success('로그인 성공');
+			loginModal.close();
+		} catch (e: any) {
+			alertStore.error(e?.message || '로그인 실패');
+		} finally {
+			setLoading(false);
+		}
+	}, [id, password, client, alertStore, loginModal, loading, setAuth]);
 	
 	return (
 		<Wrapper>
@@ -22,11 +55,23 @@ export default function Login() {
 				<>
 					<FormGroup>
 						<Label>아이디</Label>
-						<Input type="text" placeholder="아이디 또는 이메일을 입력해주세요."/>
+						<Input
+							type="text"
+							placeholder="아이디 또는 이메일을 입력해주세요."
+							value={id}
+							onChange={e => setId(e.target.value)}
+							onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(); }}
+						/>
 					</FormGroup>
 					<FormGroup>
 						<Label>비밀번호</Label>
-						<Input type="password" placeholder="비밀번호를 입력해주세요."/>
+						<Input
+							type="password"
+							placeholder="비밀번호를 입력해주세요."
+							value={password}
+							onChange={e => setPassword(e.target.value)}
+							onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(); }}
+						/>
 						<Hint>
 							<Left>
 								계정이 없으신가요? <SignUp onClick={() => {
@@ -36,8 +81,12 @@ export default function Login() {
 							<Right onClick={() => setStep('find-email')}>비밀번호를 잊으셨나요?</Right>
 						</Hint>
 					</FormGroup>
-					<Square text='로그인' onClick={() => {
-					}} status={true} width='100%'/>
+					<Square
+						text={loading ? '로그인 중...' : '로그인'}
+						onClick={handleLogin}
+						status={!!id && !!password && !loading}
+						width='100%'
+					/>
 					<SocialOther>또는</SocialOther>
 					<SocialList>
 						<Image src="/login/kakao.svg" alt="카카오 로그인" width={56} height={56}/>

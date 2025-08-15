@@ -2,14 +2,14 @@ import { gql, ApolloClient } from '@apollo/client';
 import { LocalLoginInput, LocalSignUpInput, TokenString } from '@/types/auth';
 
 export const LOCAL_LOGIN = gql`
-  mutation LocalLogin($input: LocalLoginRequest!) {
-    localLogin(request: $input)
-  }
+  mutation LocalLogin($input: localLoginRequest!) {
+    localLogin(localLoginInput: $input)
+}
 `;
 
 export const LOCAL_SIGN_UP = gql`
-  mutation LocalSignUp($input: LocalSignUpRequest!) {
-    localSignUp(request: $input)
+  mutation LocalSignUp($input: localSignUpRequest!) {
+    localSignUp(localSignUpInput: $input)
   }
 `;
 
