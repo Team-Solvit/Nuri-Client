@@ -4,10 +4,8 @@ import * as S from "./style";
 import {useModalStore} from "@/store/modal";
 import {createPortal} from "react-dom";
 import React, {useEffect, useState} from "react";
-import {useRouter} from "next/navigation";
 
 export default function Modal({children}: { children: React.ReactNode }) {
-	const router = useRouter();
 	const {close, isOpen} = useModalStore();
 	const [mounted, setMounted] = useState(false)
 	useEffect(() => {
@@ -17,7 +15,6 @@ export default function Modal({children}: { children: React.ReactNode }) {
 	
 	const closeModal = () => {
 		close()
-		router.push(window.location.pathname, {scroll: false});
 	}
 	
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -27,6 +24,7 @@ export default function Modal({children}: { children: React.ReactNode }) {
 	}
 	return createPortal(
 		<S.Black
+			style={{zIndex: 999}}
 			onClick={closeModal}
 			role="dialog"
 			aria-modal="true"

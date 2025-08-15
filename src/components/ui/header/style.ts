@@ -11,7 +11,7 @@ export const HeaderContainer = styled.header`
   color: #6C757D;
   display: flex;
   flex-direction: column;
-  z-index: ${zIndex.modal};
+  z-index: ${zIndex.overlay};
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 
   ${mq.mobile} {
@@ -71,8 +71,9 @@ export const MenuItem = styled.div<{ active?: boolean, label?: string, order?: n
     ${({label}) => label?.includes("제3자") && `
       display: none;
     `}
-    ${({ order }) => order !== undefined && `order: ${order};`}
+    ${({order}) => order !== undefined && `order: ${order};`}
     flex-direction: column;
+
     & > div {
       display: none;
     }
@@ -162,10 +163,18 @@ export const MoreItem = styled.button`
   -webkit-tap-highlight-color: transparent;
   transition: background .15s ease;
 
-  &:hover { background: rgba(0,0,0,0.04); }
-  &:active { background: rgba(0,0,0,0.06); }
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
 
-  & > span { font-size: 14px; color: #111; }
+  &:active {
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  & > span {
+    font-size: 14px;
+    color: #111;
+  }
 `;
 
 export const MoreIcon = styled.span<{ open?: boolean }>`
@@ -183,8 +192,8 @@ export const MoreBar = styled.div<{ open?: boolean }>`
   padding: 10px;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(0,0,0,0.06);
-  box-shadow: 0 12px 36px rgba(0,0,0,0.16);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16);
   backdrop-filter: blur(8px);
   width: calc(100% - 24px);
   margin: 0 auto;
@@ -218,8 +227,16 @@ export const MoreAction = styled.button`
   -webkit-tap-highlight-color: transparent;
   transition: background .15s ease;
 
-  &:hover { background: rgba(0,0,0,0.04); }
-  &:active { background: rgba(0,0,0,0.06); }
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
 
-  & > span { font-size: 14px; color: #111; }
+  &:active {
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  & > span {
+    font-size: 14px;
+    color: #111;
+  }
 `;

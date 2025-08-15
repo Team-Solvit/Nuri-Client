@@ -3,13 +3,12 @@
 import Image from 'next/image';
 import * as S from './style';
 import PostItem from '@/components/ui/postItem';
-import { useRouter } from 'next/navigation'
 import Square from '@/components/ui/button/square';
-import { useState, useRef } from 'react';
+import {useState, useRef} from 'react';
 import Post from '@/components/ui/post';
 import Follow from '@/components/ui/follow';
 import FollowerList from '@/components/ui/follower';
-import NProgress from "nprogress";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 
 export default function ProfilePage() {
     const router = useRouter()

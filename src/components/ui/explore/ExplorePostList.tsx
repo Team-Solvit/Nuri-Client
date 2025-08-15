@@ -1,8 +1,8 @@
 'use client'
 
 import PostItem from '@/components/ui/postItem';
-import { useRouter } from 'next/navigation';
 import * as S from './style';
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 
 const postList = [
     {
@@ -75,17 +75,14 @@ const postList = [
 
 
 export default function ExplorePostList() {
-  const router = useRouter();
-
-  const handleClick = (id: number) => {
-    router.push(`/post/${id}`);
-  }
-
-  return (
-    <S.PostList>
-      {postList.map((post) => (
-        <PostItem key={post.id} {...post} onClick={handleClick} />
-      ))}
-    </S.PostList>
-  );
+	
+	const navigate = useNavigationWithProgress();
+	
+	return (
+		<S.PostList>
+			{postList.map((post) => (
+				<PostItem key={post.id} {...post} onClick={() => navigate(`/post/${post.id}`)}/>
+			))}
+		</S.PostList>
+	);
 }
