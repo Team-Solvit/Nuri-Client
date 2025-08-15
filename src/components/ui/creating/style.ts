@@ -348,4 +348,55 @@ export const ButtonRow = styled.div`
   justify-content: flex-end;
   gap: 1rem;
   margin-top: 10rem;
+
+  ${mq.mobile} {
+    display: none;
+  }
+`
+
+export const AddMoreImageBtn = styled.label`
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border-radius: 8px;
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.8);
+  }
+
+  ${mq.mobile} {
+    bottom: 15px;
+    right: 15px;
+    padding: 10px 14px;
+  }
+`
+
+export const AddMoreIcon = styled.span`
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+
+  ${mq.mobile} {
+    font-size: 16px;
+  }
+`
+
+export const AddMoreText = styled.span`
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  white-space: nowrap;
+
+  ${mq.mobile} {
+    font-size: 12px;
+  }
 `

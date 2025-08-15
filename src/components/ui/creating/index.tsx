@@ -122,6 +122,11 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                                             </S.NextBtn>
                                         </>
                                     )}
+                                    
+                                    <S.AddMoreImageBtn as="label" htmlFor="fileUpload">
+                                        <S.AddMoreIcon>+</S.AddMoreIcon>
+                                        <S.AddMoreText>사진을 더 추가하세요</S.AddMoreText>
+                                    </S.AddMoreImageBtn>
                                 </S.ImageWrapper>
 
                             ) : (
