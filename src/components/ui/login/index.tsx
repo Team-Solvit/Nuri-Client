@@ -3,17 +3,18 @@ import {useState} from 'react';
 import {colors, radius, fontSizes} from '@/styles/theme';
 import Square from '@/components/ui/button/square';
 import Image from 'next/image';
-import {useRouter} from 'next/navigation';
 import {mq} from '@/styles/media';
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 
 export default function Login() {
-	const router = useRouter();
+	
 	const [step, setStep] = useState<'login' | 'find-email' | 'find-reset'>("login");
 	const [email, setEmail] = useState("");
 	const [code, setCode] = useState("");
 	const [pw, setPw] = useState("");
 	const [pw2, setPw2] = useState("");
 	
+	const navigate = useNavigationWithProgress();
 	return (
 		<Wrapper>
 			<Image src="/logo.svg" alt="로고" width={80} height={80} priority/>
@@ -30,7 +31,7 @@ export default function Login() {
 						<Hint>
 							<Left>
 								계정이 없으신가요? <SignUp onClick={() => {
-								router.push('/register');
+								navigate('/register');
 							}}>회원가입 하기</SignUp>
 							</Left>
 							<Right onClick={() => setStep('find-email')}>비밀번호를 잊으셨나요?</Right>

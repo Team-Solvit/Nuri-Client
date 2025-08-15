@@ -2,11 +2,10 @@
 
 import {useMessageAlertStore} from "@/store/messageAlert";
 import {useEffect} from "react";
-import {useRouter} from "next/navigation";
 import {createPortal} from "react-dom";
 import * as S from "./style";
 import Image from "next/image";
-import NProgress from "nprogress";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 
 
 export default function MessageAlert() {
@@ -22,10 +21,9 @@ export default function MessageAlert() {
 		content
 	} = useMessageAlertStore();
 	
-	const router = useRouter();
+	const navigate = useNavigationWithProgress();
 	const navigateClick = (url: string) => {
-		router.push(url);
-		NProgress.start()
+		navigate(url)
 		closeAlert();
 	}
 	useEffect(() => {

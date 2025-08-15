@@ -9,17 +9,17 @@ import {useState} from "react";
 import MeetingPost from "@/components/ui/meting-post";
 import MeetingCalender from "@/components/ui/meeting-calender";
 import {MeetingMember} from "@/components/ui/meeting-member";
-import {useRouter} from "next/navigation";
 import {MeetingProps} from "./type";
 import {Nav} from "@/containers/meetings/MeetingModal/ui";
 import {useOtherMeetingFind} from "@/store/otherMeetingFind";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 
 export default function Meeting(meeting: MeetingProps) {
 	const [selected, setSelected] = useState(1);
 	const {setFind} = useOtherMeetingFind();
-	const router = useRouter();
+	const navigate = useNavigationWithProgress();
 	const handleBack = () => {
-		router.push("/meetings");
+		navigate("/meetings");
 		setFind(true);
 	}
 	return (
