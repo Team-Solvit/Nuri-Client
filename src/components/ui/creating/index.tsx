@@ -46,17 +46,23 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
         const files = e.target.files;
         if (files) {
             const newImages: string[] = [];
+
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
                 reader.onloadend = () => {
                     if (typeof reader.result === 'string') {
-                        setPreviewImages(prev => [...prev, reader.result as string]);
+                        setPreviewImages(prev => {
+                            const updated = [...prev, reader.result as string];
+                            setCurrentIndex(updated.length - 1);
+                            return updated;
+                        });
                     }
                 };
                 reader.readAsDataURL(file);
             });
         }
     };
+
 
     const handleToggleDropdown = () => {
         setIsDropdownOpen(prev => !prev);
@@ -115,14 +121,14 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                                     {previewImages.length > 1 && (
                                         <>
                                             <S.PrevBtn onClick={prevImage}>
-                                                <Image src={Arrow} alt="arrow" fill style={{objectFit: "cover"}}/>
+                                                <Image src={Arrow} alt="arrow" fill style={{ objectFit: "cover" }} />
                                             </S.PrevBtn>
                                             <S.NextBtn onClick={nextImage}>
-                                                <Image src={Arrow} alt="arrow" fill style={{objectFit: "cover"}}/>
+                                                <Image src={Arrow} alt="arrow" fill style={{ objectFit: "cover" }} />
                                             </S.NextBtn>
                                         </>
                                     )}
-                                    
+
                                     <S.AddMoreImageBtn as="label" htmlFor="fileUpload">
                                         <S.AddMoreIcon>+</S.AddMoreIcon>
                                         <S.AddMoreText>사진을 더 추가하세요</S.AddMoreText>
