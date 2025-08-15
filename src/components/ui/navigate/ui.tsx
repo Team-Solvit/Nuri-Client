@@ -9,6 +9,7 @@ import {useUserStore} from "@/store/user";
 import Login from "../login";
 import LoginModal from "@/components/layout/loginModal";
 import {useLoginModalStore} from "@/store/loginModal";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 
 export default function Navigate() {
 	const navigate = useNavigationWithProgress();

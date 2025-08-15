@@ -1,8 +1,6 @@
 import styled from '@emotion/styled';
 import {useState} from 'react';
 import {colors, radius, fontSizes} from '@/styles/theme';
-import {useState} from 'react';
-import {colors, radius, fontSizes} from '@/styles/theme';
 import Square from '@/components/ui/button/square';
 import Image from 'next/image';
 import {useRouter} from 'next/navigation';

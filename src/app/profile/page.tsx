@@ -8,7 +8,8 @@ import {useState, useRef} from 'react';
 import Post from '@/components/ui/post';
 import Follow from '@/components/ui/follow';
 import FollowerList from '@/components/ui/follower';
-import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {useRouter} from 'next/navigation';
+import NProgress from 'nprogress';
 
 export default function ProfilePage() {
     const router = useRouter()
