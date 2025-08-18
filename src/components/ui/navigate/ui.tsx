@@ -55,6 +55,11 @@ export default function Navigate() {
 			onClick: () => open(),
 		},
 		{
+			label: "또는",
+			onClick: () => {
+			}
+		},
+		{
 			label: "회원가입",
 			onClick: () => navigateClick("/register"),
 		},
@@ -90,6 +95,20 @@ export default function Navigate() {
 						</S.NavigateBtn>
 					)
 				}) : NAVIGATE_AUTH_ITEMS.map(item => {
+					if (item.label === "또는") {
+						return (
+							<S.Or key={item.label}>
+								<S.Line
+									onClick={item.onClick}
+								/>
+								<p>{item.label}</p>
+								<S.Line
+									onClick={item.onClick}
+								/>
+							</S.Or>
+						
+						)
+					}
 					return (
 						<S.TextBtn
 							key={item.label}
