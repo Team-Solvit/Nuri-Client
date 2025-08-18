@@ -1,5 +1,6 @@
 import { gql, ApolloClient } from '@apollo/client';
 import { LocalLoginInput, LocalSignUpInput, TokenString } from '@/types/auth';
+import { headersToObject } from '@/utils/headers';
 
 export const AuthGQL = {
   QUERIES: {
@@ -33,13 +34,21 @@ export const AuthGQL = {
 };
 
 export const AuthService = {
-  localLogin: async (client: ApolloClient<any>, input: LocalLoginInput): Promise<TokenString> => {
-    const { data } = await client.mutate<{ localLogin: TokenString }>({
+  localLogin: async (client: ApolloClient<any>, input: LocalLoginInput) => {
+    const res = await client.mutate<{ localLogin: TokenString }>({
       mutation: AuthGQL.MUTATIONS.LOCAL_LOGIN,
       variables: { input },
       fetchPolicy: 'no-cache',
     });
-    return data?.localLogin ?? '';
+
+    const headers = headersToObject((res as any).__headers);
+    const status = (res as any).__status as number | undefined;
+
+    return {
+      tokenFromBody: res.data?.localLogin ?? '',
+      headers,
+      status,
+    };
   },
   localSignUp: async (client: ApolloClient<any>, input: LocalSignUpInput): Promise<TokenString> => {
     const { data } = await client.mutate<{ localSignUp: TokenString }>({
@@ -63,7 +72,3 @@ export const AuthService = {
     return data?.logout ?? '';
   },
 };
-
-// (기존 export 함수 사용처가 있으면 아래 alias 유지 가능)
-export const localLogin = AuthService.localLogin;
-export const localSignUp = AuthService.localSignUp;
