@@ -11,7 +11,7 @@ import Login from "../login";
 import LoginModal from "@/components/layout/loginModal";
 import {useLoginModalStore} from "@/store/loginModal";
 import {useQuery} from "@apollo/client";
-import {AlertQueries} from "@/services/Alert";
+import {AlertQueries} from "@/services/alert";
 
 export default function Navigate() {
 	const router = useRouter();
