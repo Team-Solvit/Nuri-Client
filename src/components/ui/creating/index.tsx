@@ -1,9 +1,11 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as S from './style';
 import Image from 'next/image';
 import Square from '../button/square';
+import Header from '../header';
+import Arrow from "@/assets/post/arrow-right.svg";
 
 interface CreatingModalProps {
     onClose: () => void;
@@ -11,23 +13,56 @@ interface CreatingModalProps {
 
 export default function CreatingModal({ onClose }: CreatingModalProps) {
     const [content, setContent] = useState('');
-    const [isPublic, setIsPublic] = useState(true);
-    const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [previewImages, setPreviewImages] = useState<string[]>([]);
     const [publicTarget, setPublicTarget] = useState('공개대상');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    const prevImage = () => {
+        setCurrentIndex(prev => (prev === 0 ? previewImages.length - 1 : prev - 1));
+    };
+
+    const nextImage = () => {
+        setCurrentIndex(prev => (prev === previewImages.length - 1 ? 0 : prev + 1));
+    };
+
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 430);
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                if (typeof reader.result === 'string') {
-                    setPreviewImage(reader.result);
-                }
-            };
-            reader.readAsDataURL(file);
+        const files = e.target.files;
+        if (files) {
+            const newImages: string[] = [];
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    if (typeof reader.result === 'string') {
+                        setPreviewImages(prev => {
+                            const updated = [...prev, reader.result as string];
+                            setCurrentIndex(updated.length - 1);
+                            return updated;
+                        });
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
         }
     };
+
 
     const handleToggleDropdown = () => {
         setIsDropdownOpen(prev => !prev);
@@ -57,17 +92,49 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                 e.stopPropagation();
                 handleModalClick();
             }}>
+                {isMobile && (
+                    <S.HeaderM>
+                        <S.Title>새 게시물 만들기</S.Title>
+                        <button onClick={onClose} style={{ backgroundColor: 'white', border: 'none', color: 'gray', fontSize: '15px', marginLeft: 'auto' }}>취소</button>
+                        <button onClick={onClose} style={{ backgroundColor: 'white', border: 'none', color: '#FF4C61', fontSize: '15px' }}>업로드</button>
+                    </S.HeaderM>
+                )}
                 <S.Left>
                     <S.Image>
                         <S.InputImage>
-                            {previewImage ? (
-                                <Image
-                                    src={previewImage}
-                                    alt="선택한 이미지"
-                                    fill
-                                    style={{ objectFit: 'cover', zIndex: 0 }}
-                                    unoptimized
-                                />
+                            {previewImages.length > 0 ? (
+                                <S.ImageWrapper>
+                                    <S.SlideImages currentIndex={currentIndex}>
+                                        {previewImages.map((img, idx) => (
+                                            <div key={idx} style={{ minWidth: '100%', height: '100%', position: 'relative' }}>
+                                                <Image
+                                                    src={img}
+                                                    alt={`선택한 이미지 ${idx + 1}`}
+                                                    fill
+                                                    style={{ objectFit: 'cover' }}
+                                                    unoptimized
+                                                />
+                                            </div>
+                                        ))}
+                                    </S.SlideImages>
+
+                                    {previewImages.length > 1 && (
+                                        <>
+                                            <S.PrevBtn onClick={prevImage}>
+                                                <Image src={Arrow} alt="arrow" fill style={{ objectFit: "cover" }} />
+                                            </S.PrevBtn>
+                                            <S.NextBtn onClick={nextImage}>
+                                                <Image src={Arrow} alt="arrow" fill style={{ objectFit: "cover" }} />
+                                            </S.NextBtn>
+                                        </>
+                                    )}
+
+                                    <S.AddMoreImageBtn as="label" htmlFor="fileUpload">
+                                        <S.AddMoreIcon>+</S.AddMoreIcon>
+                                        <S.AddMoreText>사진을 더 추가하세요</S.AddMoreText>
+                                    </S.AddMoreImageBtn>
+                                </S.ImageWrapper>
+
                             ) : (
                                 <>
                                     <p>사진을 선택하세요.</p>
@@ -75,13 +142,16 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                                 </>
                             )}
 
+
                             <input
                                 type="file"
                                 id="fileUpload"
                                 accept="image/*"
+                                multiple
                                 onChange={handleFileChange}
                                 style={{ display: 'none' }}
                             />
+
                         </S.InputImage>
                     </S.Image>
 
@@ -99,34 +169,11 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                 </S.Left>
 
                 <S.Main>
-                    <S.Header>
-                        <S.Title>새 게시물 만들기</S.Title>
-                        <S.ToggleWrap>
-                            <S.ToggleLabel>모임</S.ToggleLabel>
-                            <S.ToggleButton
-                                className={isPublic ? '' : 'inactive'}
-                                onClick={() => setIsPublic(prev => !prev)}
-                            >
-                                <Image
-                                    src="/icons/toggleOn.svg"
-                                    alt="토글 ON"
-                                    width={40}
-                                    height={30}
-                                    className="on"
-                                    style={{ marginLeft: '8px' }}
-                                />
-                                <Image
-                                    src="/icons/toggleOff.svg"
-                                    alt="토글 OFF"
-                                    width={50}
-                                    height={28}
-                                    className="off"
-                                    style={{ marginTop: '2px' }}
-                                />
-                            </S.ToggleButton>
-                        </S.ToggleWrap>
-                    </S.Header>
-
+                    {!isMobile && (
+                        <S.Header>
+                            <S.Title>새 게시물 만들기</S.Title>
+                        </S.Header>
+                    )}
                     <S.Textarea
                         placeholder="글을 작성하세요."
                         value={content}
@@ -180,6 +227,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                     </S.ButtonRow>
                 </S.Main>
             </S.Modal>
+            {isMobile && <Header />}
         </S.Overlay>
     );
 }

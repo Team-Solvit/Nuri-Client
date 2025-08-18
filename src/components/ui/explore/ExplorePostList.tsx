@@ -1,8 +1,8 @@
 'use client'
 
 import PostItem from '@/components/ui/postItem';
-import { useRouter } from 'next/navigation';
 import * as S from './style';
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 
 const postList = [
     {
@@ -13,7 +13,7 @@ const postList = [
         price: '30',
         period: 6,
         gender: 'M',
-        thumbnail: '/post/room.svg',
+        thumbnail: '/post/post-example.png',
         userProfile: '/profile/profile.svg',
     },
     {
@@ -24,7 +24,7 @@ const postList = [
         price: '30',
         period: 6,
         gender: 'M',
-        thumbnail: '/post/room.svg',
+        thumbnail: '/post/post-example.png',
         userProfile: '/profile/profile.svg',
     },
     {
@@ -35,7 +35,7 @@ const postList = [
         price: '30',
         period: 6,
         gender: 'M',
-        thumbnail: '/post/room.svg',
+        thumbnail: '/post/post-example.png',
         userProfile: '/profile/profile.svg',
     },
     {
@@ -46,7 +46,7 @@ const postList = [
         price: '30',
         period: 6,
         gender: 'M',
-        thumbnail: '/post/room.svg',
+        thumbnail: '/post/post-example.png',
         userProfile: '/profile/profile.svg',
     },
     {
@@ -57,7 +57,7 @@ const postList = [
         price: '30',
         period: 6,
         gender: 'M',
-        thumbnail: '/post/room.svg',
+        thumbnail: '/post/post-example.png',
         userProfile: '/profile/profile.svg',
     },
     {
@@ -68,24 +68,21 @@ const postList = [
         price: '30',
         period: 6,
         gender: 'M',
-        thumbnail: '/post/room.svg',
+        thumbnail: '/post/post-example.png',
         userProfile: '/profile/profile.svg',
     }
 ];
 
 
 export default function ExplorePostList() {
-  const router = useRouter();
-
-  const handleClick = (id: number) => {
-    router.push(`/post/${id}`);
-  }
-
-  return (
-    <S.PostList>
-      {postList.map((post) => (
-        <PostItem key={post.id} {...post} onClick={handleClick} />
-      ))}
-    </S.PostList>
-  );
+	
+	const navigate = useNavigationWithProgress();
+	
+	return (
+		<S.PostList>
+			{postList.map((post) => (
+				<PostItem key={post.id} {...post} onClick={() => navigate(`/post/${post.id}`)}/>
+			))}
+		</S.PostList>
+	);
 }

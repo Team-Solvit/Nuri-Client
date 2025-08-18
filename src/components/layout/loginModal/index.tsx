@@ -1,13 +1,11 @@
 'use client';
 import * as S from "./style";
 
-import { useLoginModalStore } from "@/store/loginModal";
+import {useLoginModalStore} from "@/store/loginModal";
 import {createPortal} from "react-dom";
 import React, {useEffect, useState} from "react";
-import {useRouter} from "next/navigation";
 
 export default function LoginModal({children}: { children: React.ReactNode }) {
-	const router = useRouter();
 	const {close, isOpen} = useLoginModalStore();
 	const [mounted, setMounted] = useState(false)
 	useEffect(() => {
@@ -17,7 +15,6 @@ export default function LoginModal({children}: { children: React.ReactNode }) {
 	
 	const closeModal = () => {
 		close()
-		router.push(window.location.pathname, {scroll: false});
 	}
 	
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {

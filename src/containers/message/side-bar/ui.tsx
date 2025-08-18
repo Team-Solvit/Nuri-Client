@@ -4,8 +4,8 @@ import {useState} from "react";
 import UnderArrow from "@/assets/icon/arrow-under.svg"
 import Search from "@/assets/icon/search.svg"
 import Profile from "@/assets/meeting/member-profile.png"
-import {useParams, useRouter} from "next/navigation";
-import NProgress from "nprogress";
+import {useParams} from "next/navigation";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 
 export default function MessageSideBar() {
 	const fakeData1 = [
@@ -31,10 +31,9 @@ export default function MessageSideBar() {
 		newDrop[number - 1] = !newDrop[number - 1];
 		setIsDrop(newDrop)
 	}
-	const router = useRouter();
+	const navigate = useNavigationWithProgress();
 	const handleRouter = (id: number) => {
-		NProgress.start()
-		router.push(`/message/${id}`, {scroll: false});
+		navigate(`/message/${id}`);
 	}
 	const params = useParams();
 	return (

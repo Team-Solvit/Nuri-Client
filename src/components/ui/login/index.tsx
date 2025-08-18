@@ -141,10 +141,12 @@ const Input = styled.input`
   background: #fff;
   transition: border-color 0.2s;
 
+
   &:focus {
     outline: none;
     border-color: ${colors.primary};
   }
+
 
   &::placeholder {
     color: ${colors.gray};
