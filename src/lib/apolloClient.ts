@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { AuthGQL } from '@/services/auth';
-import { ApolloClient, InMemoryCache, HttpLink, NormalizedCacheObject, ApolloLink, from } from '@apollo/client';
+import { withRefreshLock, extractTokenFromApolloResult, saveAccessToken } from '@/utils/token';
+import { ApolloClient, InMemoryCache, HttpLink, NormalizedCacheObject, ApolloLink, from, fromPromise, Observable } from '@apollo/client';
 
 let apolloClient: ApolloClient<NormalizedCacheObject>;
 
@@ -38,33 +39,37 @@ function createApolloClient() {
 		};
 	});
 
-	const errorLink = onError(({ graphQLErrors, operation, forward, networkError }) => {
+	const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
 		const unauth =
 			(graphQLErrors ?? []).some(e => e.extensions?.code === 'UNAUTHENTICATED') ||
 			(networkError as any)?.statusCode === 401;
 
 		if (!unauth) return;
 
-		return forward(operation).flatMap({
-			next: () => { /* no-op */ },
-			error: async () => {
-				return operation.getContext().client
-					.mutate({ mutation: AuthGQL.MUTATIONS.REISSUE, fetchPolicy: 'no-cache' })
-					.then((r) => {
-						const token = r?.data?.reissue as string | undefined;
-						if (token) localStorage.setItem('AT', token);
-						const prevHeaders = operation.getContext().headers ?? {};
-						operation.setContext({
-							headers: { ...prevHeaders, Authorization: `Bearer ${token}` },
-						});
-						return forward(operation);
-					})
-					.catch(() => {
-						localStorage.removeItem('AT');
-						throw networkError;
-					});
-			},
-		} as any);
+		return fromPromise(
+			withRefreshLock(async () => {
+				const r = await apolloClient.mutate({
+					mutation: AuthGQL.MUTATIONS.REISSUE,
+					fetchPolicy: 'no-cache',
+				});
+				const newToken = extractTokenFromApolloResult(r);
+				if (newToken) saveAccessToken(newToken);
+				return newToken ?? null;
+			})
+		).flatMap((newToken) => {
+			if (!newToken) {
+				return new Observable<never>((observer) => {
+					observer.complete();
+				});
+			}
+
+			const prev = operation.getContext().headers ?? {};
+			operation.setContext({
+				headers: { ...prev, Authorization: `Bearer ${newToken}` },
+			});
+
+			return forward(operation);
+		});
 	});
 
 	return new ApolloClient({
