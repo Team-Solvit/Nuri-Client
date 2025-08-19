@@ -1,11 +1,11 @@
 'use client';
 
-import {useState} from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import * as S from './style';
 import Square from '@/components/ui/button/square';
-import {useRouter} from 'next/navigation';
-import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import { useRouter } from 'next/navigation';
+import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 
 const check = "icons/check.svg";
 
@@ -55,7 +55,7 @@ export default function RegisterContainer() {
 	const [error, setError] = useState<string | null>(null);
 	const [touched, setTouched] = useState(false);
 	const router = useRouter();
-	
+
 	const validateCurrentStep = () => {
 		if (currentStep === 0) {
 			if (!formData.terms1 || !formData.terms2 || !formData.terms3 || !formData.terms4 || !formData.terms5 || !formData.terms6 || !formData.terms7) {
@@ -90,7 +90,7 @@ export default function RegisterContainer() {
 		}
 		return null;
 	};
-	
+
 	const navigate = useNavigationWithProgress()
 	const handleNext = () => {
 		setTouched(true);
@@ -109,15 +109,15 @@ export default function RegisterContainer() {
 			navigate('/register/success');
 		}
 	};
-	
+
 	const handleEdit = (stepIndex: number) => {
 		setCurrentStep(stepIndex);
 		setCompletedSteps(completedSteps.filter(i => i !== stepIndex));
 	};
-	
+
 	const onChangeField = <K extends keyof FormData>(key: K, value: FormData[K]) => {
 		setFormData(prev => {
-			const updated = {...prev, [key]: value};
+			const updated = { ...prev, [key]: value };
 			if (touched) {
 				const validationError = validateCurrentStep();
 				if (!validationError) setError(null);
@@ -125,13 +125,29 @@ export default function RegisterContainer() {
 			return updated;
 		});
 	};
-	
+
+	const allTermsChecked = formData.terms1 && formData.terms2 && formData.terms3 && formData.terms4 && formData.terms5 && formData.terms6 && formData.terms7;
+	const toggleAllTerms = (checked: boolean) => {
+		['terms1', 'terms2', 'terms3', 'terms4', 'terms5', 'terms6', 'terms7'].forEach(k => onChangeField(k as keyof FormData, checked as any));
+	};
+
 	const renderStepContent = () => {
 		switch (currentStep) {
 			case 0:
 				return (
 					<>
 						<S.Title>아래의 내용을 동의해야 서비스를 이용할 수 있어요.</S.Title>
+						<S.CheckboxGroup style={{ marginBottom: '1.2rem' }}>
+							<S.CheckboxItem>
+								<S.Checkbox
+									id="allTerms"
+									type="checkbox"
+									checked={allTermsChecked}
+									onChange={e => toggleAllTerms(e.target.checked)}
+								/>
+								<S.CheckboxLabel htmlFor="allTerms" style={{ fontWeight: 600 }}>약관 전체동의</S.CheckboxLabel>
+							</S.CheckboxItem>
+						</S.CheckboxGroup>
 						<S.SectionBox>누리 약관 및 동의사항</S.SectionBox>
 						<S.CheckboxGroup>
 							{['terms1', 'terms2', 'terms3'].map((t, i) => (
@@ -194,7 +210,7 @@ export default function RegisterContainer() {
 									placeholder="아이디를 입력해주세요."
 								/>
 								<Square text="중복확인" onClick={() => {
-								}} status={true} width='max-content'/>
+								}} status={true} width='max-content' />
 							</S.InputButtonGroup>
 						</S.FormGroup>
 					</>
@@ -222,7 +238,7 @@ export default function RegisterContainer() {
 									placeholder="인증 번호를 입력해주세요."
 								/>
 								<Square text="인증" onClick={() => {
-								}} status={true} width='fit-content'/>
+								}} status={true} width='fit-content' />
 							</S.InputButtonGroup>
 						</S.FormGroup>
 					</>
@@ -325,12 +341,12 @@ export default function RegisterContainer() {
 				return null;
 		}
 	};
-	
+
 	return (
 		<S.Wrapper>
 			<S.Header>
 				<S.Progress>
-					<S.ProgressLine progress={completedSteps.length}/>
+					<S.ProgressLine progress={completedSteps.length} />
 					{steps.map((label, idx) => (
 						<S.Step key={idx}>
 							<S.StepCircle
@@ -338,7 +354,7 @@ export default function RegisterContainer() {
 								current={idx === currentStep}
 							>
 								{completedSteps.includes(idx)
-									? <Image src={check} alt="완료" width={18} height={18}/>
+									? <Image src={check} alt="완료" width={18} height={18} />
 									: idx + 1}
 							</S.StepCircle>
 							<S.StepLabel
@@ -354,13 +370,13 @@ export default function RegisterContainer() {
 					))}
 				</S.Progress>
 			</S.Header>
-			
+
 			<S.Content>
 				{renderStepContent()}
 				{touched && error && <S.ErrorMessage>{error}</S.ErrorMessage>}
 				<S.ButtonGroup>
 					{currentStep === 0 && (
-						<Square text='돌아가기' onClick={() => router.back()} status={false} width="100%"/>
+						<Square text='돌아가기' onClick={() => router.back()} status={false} width="100%" />
 					)}
 					<Square
 						text={currentStep === steps.length - 1 ? '가입완료' : '다음'}
