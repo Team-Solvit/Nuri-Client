@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import {colors, fontSizes, radius} from "@/styles/theme";
+import {colors, fontSizes, radius, zIndex} from "@/styles/theme";
 import {mq} from "@/styles/media";
 
 export const MessageContainer = styled.section<{ id: string }>`
@@ -10,14 +10,31 @@ export const MessageContainer = styled.section<{ id: string }>`
   align-items: center;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
   background-color: ${colors.background};
-  padding: 3rem 0;
+  padding: 1rem 0;
   overflow-y: scroll;
+  z-index: ${zIndex.overlay};
 
   ${mq.mobile} {
     ${({id}) => id && 'display: none;'}
   }
 `
+export const AddRoom = styled.div`
+  width: 100%;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding: 1rem;
+  align-items: center;
+  position: relative;
 
+  & > img {
+    cursor: pointer;
+    border-radius: 100%;
+    background: white;
+    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
+    padding: 0.2rem;
+  }
+`
 export const Search = styled.div`
   width: 90%;
   gap: 1rem;

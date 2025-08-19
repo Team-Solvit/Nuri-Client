@@ -1,11 +1,13 @@
 import * as S from "./style"
 import Image from "next/image";
-import {useState} from "react";
+import React, {useRef, useState} from "react";
 import UnderArrow from "@/assets/icon/arrow-under.svg"
 import Search from "@/assets/icon/search.svg"
 import Profile from "@/assets/meeting/member-profile.png"
-import {useParams} from "next/navigation";
-import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {useParams, useRouter} from "next/navigation";
+import NProgress from "nprogress";
+import Plus from "@/assets/icon/plus.svg"
+import AdditionRoom from "@/containers/message/additionRoom/ui";
 
 export default function MessageSideBar() {
 	const fakeData1 = [
@@ -31,13 +33,32 @@ export default function MessageSideBar() {
 		newDrop[number - 1] = !newDrop[number - 1];
 		setIsDrop(newDrop)
 	}
-	const navigate = useNavigationWithProgress();
+	const router = useRouter();
 	const handleRouter = (id: number) => {
-		navigate(`/message/${id}`);
+		NProgress.start()
+		router.push(`/message/${id}`, {scroll: false});
 	}
 	const params = useParams();
+	const [isAddition, setIsAddition] = useState(false);
+	
+	const iconRef = useRef<HTMLImageElement>(null);
+	
 	return (
 		<S.MessageContainer id={typeof params.id === 'string' ? params.id : params.id?.[0] ?? ''}>
+			<S.AddRoom>
+				방추가
+				<Image
+					ref={iconRef}
+					onClick={(e) => {
+						e.stopPropagation();
+						setIsAddition(!isAddition);
+					}} src={Plus} alt={"plus-icon"} width={24} height={24}/>
+				<AdditionRoom
+					isAddition={isAddition}
+					setIsAddition={setIsAddition}
+					iconRef={iconRef as React.RefObject<HTMLImageElement>}
+				/>
+			</S.AddRoom>
 			<S.Search>
 				<input type={"text"} placeholder={"채팅방을 입력하세요"}/>
 				<Image src={Search} alt={"search-icon"} width={16} height={16}/>

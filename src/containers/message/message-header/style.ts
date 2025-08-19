@@ -12,7 +12,7 @@ export const MessageHeaderContainer = styled.section`
   border-bottom: 1px solid #DDDDDD;
 
   background-color: white;
-  z-index: ${zIndex.overlay};
+  z-index: ${zIndex.dropdown};
 
   ${mq.mobile} {
     position: fixed;
@@ -20,12 +20,18 @@ export const MessageHeaderContainer = styled.section`
     left: 0;
   }
 
+`;
+export const ProfileBox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
   & > p {
     font-size: ${fontSizes.H4};
     font-weight: 500;
   }
-`;
-export const ProfileBox = styled.div`
+`
+export const Profile = styled.div`
   width: 3rem;
   height: 3rem;
   border-radius: 100%;

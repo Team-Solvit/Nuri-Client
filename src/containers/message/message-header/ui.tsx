@@ -8,9 +8,11 @@ export default function MessageHeaderUI() {
 	return (
 		<S.MessageHeaderContainer className="message-header">
 			<S.ProfileBox>
-				<Image src={Message} alt="message" fill/>
+				<S.Profile>
+					<Image src={Message} alt="message" fill/>
+				</S.Profile>
+				<p>huhon123</p>
 			</S.ProfileBox>
-			<p>huhon123</p>
 		</S.MessageHeaderContainer>
 	);
 }
