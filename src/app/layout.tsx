@@ -3,10 +3,12 @@ import { GlobalStyles } from '@/components/layout/globalStyle';
 import Header from "@/components/ui/header";
 import TopLoadingBar from "@/components/layout/loadingbar";
 import React from "react";
-import { Providers } from "@/components/layout/provider";
+import {Providers} from "@/components/layout/provider";
+import ChatComponent from "@/components/layout/chat";
 import Alert from "@/components/ui/alert";
 import MessageAlert from "@/components/ui/messageAlert";
 import AuthBootstrap from "@/components/layout/AuthBootstrap";
+
 
 
 export const metadata: Metadata = {
@@ -21,6 +23,7 @@ export default function RootLayout({ children, modal }: { children: React.ReactN
 			<TopLoadingBar />
 			<Alert />
 			<MessageAlert />
+			<ChatComponent/>
 			<head>
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 			</head>

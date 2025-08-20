@@ -5,6 +5,7 @@ import Send from "@/assets/icon/sent.svg"
 import Image from "next/image"
 import Plus from "@/assets/icon/plus.svg"
 import {useRef, useState} from "react";
+import {sendMessageDm} from "@/lib/soketClient";
 
 export default function MessageSendBar() {
 	const [message, setMessage] = useState("")
@@ -45,7 +46,7 @@ export default function MessageSendBar() {
 					placeholder="메시지를 입력하세요"
 				/>
 			</S.ContentBox>
-			<S.SendButton>
+			<S.SendButton onClick={() => sendMessageDm(message, "test")}>
 				<Image src={Send} alt={"send-icon"} fill/>
 			</S.SendButton>
 		</S.MessageSendBarContainer>
