@@ -69,7 +69,7 @@ export default function MessageHeaderUI() {
 		setShowExitConfirm(false);
 	};
 	const [isAddition, setIsAddition] = useState(false);
-	const iconRef = useRef(null);
+	const iconRef = useRef<HTMLImageElement>(null);
 	return (
 		<S.MessageHeaderContainer className="message-header">
 			<S.ProfileBox>
