@@ -20,10 +20,11 @@ const mockUsers: User[] = [
 	{id: 5, name: '최준호', email: 'junho@example.com'},
 ];
 
-export default function AdditionRoom({isAddition, setIsAddition, iconRef}: {
+export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}: {
 	isAddition: boolean;
 	setIsAddition: (value: boolean) => void;
 	iconRef: React.RefObject<HTMLImageElement>;
+	type: "add" | "update"
 }) {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
@@ -81,6 +82,9 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef}: {
 	};
 	
 	const handleCreateRoom = () => {
+		if (type === "add") {
+			handleClose();
+		}
 		handleClose();
 	};
 	
@@ -93,7 +97,12 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef}: {
 	if (!isAddition) return null;
 	
 	return (
-		<S.DropdownContainer ref={dropdownRef}>
+		<S.DropdownContainer
+			onClick={(e) => {
+				e.stopPropagation();
+			}}
+			ref={dropdownRef}
+		>
 			<S.Content>
 				<S.SearchBar>
 					<S.SearchInput
@@ -168,7 +177,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef}: {
 					onClick={handleCreateRoom}
 					disabled={selectedUsers.length === 0}
 				>
-					{selectedUsers.length}명의 대화상대와 채팅방 만들기
+					{selectedUsers.length}{type === "add" ? "명의 대화상대와 채팅방 만들기" : "명의 대화상대 초대하기"}
 				</S.ActionButton>
 			</S.Content>
 		</S.DropdownContainer>

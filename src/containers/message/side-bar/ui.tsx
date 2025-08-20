@@ -57,6 +57,7 @@ export default function MessageSideBar() {
 					isAddition={isAddition}
 					setIsAddition={setIsAddition}
 					iconRef={iconRef as React.RefObject<HTMLImageElement>}
+					type={"add"}
 				/>
 			</S.AddRoom>
 			<S.Search>
