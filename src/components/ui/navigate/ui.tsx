@@ -1,27 +1,25 @@
 "use client";
-import {usePathname, useRouter} from "next/navigation";
+import {usePathname} from "next/navigation";
 import Image from "next/image";
 import Alert from "@/assets/icon/alert.svg"
 import Home from "@/assets/icon/house.svg"
 import Message from "@/assets/icon/message.svg"
 import * as S from "./style";
-import NProgress from "nprogress";
 import {useUserStore} from "@/store/user";
 import Login from "../login";
 import LoginModal from "@/components/layout/loginModal";
 import {useLoginModalStore} from "@/store/loginModal";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import {useQuery} from "@apollo/client";
 import {AlertQueries} from "@/services/alert";
 
 export default function Navigate() {
-	const router = useRouter();
+	const navigate = useNavigationWithProgress();
+	
 	const pathname = usePathname();
 	const {id} = useUserStore();
 	const {isOpen, open} = useLoginModalStore();
-	const navigateClick = (path: string) => {
-		NProgress.start()
-		router.push(path);
-	}
+	
 	const NAVIGATE_ITEMS = [
 		{
 			label: "알림",
@@ -61,14 +59,14 @@ export default function Navigate() {
 		},
 		{
 			label: "회원가입",
-			onClick: () => navigateClick("/register"),
+			onClick: () => navigate("/register"),
 		},
 	] as const
 	
 	const {data} = useQuery(AlertQueries.GET_ALERT_COUNT);
 	return (
 		<S.NavigateContainer>
-			<S.Logo onClick={() => navigateClick("/")}>
+			<S.Logo onClick={() => navigate("/")}>
 				<Image
 					src={"/logo.svg"}
 					alt="로고"
@@ -82,7 +80,7 @@ export default function Navigate() {
 						<S.NavigateBtn
 							key={item.path}
 							isActive={pathname === item.path}
-							onClick={() => navigateClick(item.path)}
+							onClick={() => navigate(item.path)}
 							role="button"
 							aria-label={item.aria_label}
 							aria-current={item.active}

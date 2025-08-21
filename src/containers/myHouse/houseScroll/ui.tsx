@@ -5,24 +5,29 @@ import * as S from './style';
 import Square from '@/components/ui/button/square';
 import Image from "next/image";
 import Profile from "@/assets/meeting/member-profile.png"
-import {useRouter} from 'next/navigation';
 import {useModalStore} from "@/store/modal";
 import {fakeData} from "./data";
-import NProgress from "nprogress";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import LeaveModal from "@/containers/myHouse/leave-modal/ui";
 import {useQuery} from "@apollo/client";
-import {BoardingHouseQueries} from "@/services/BoardingHouse";
+import {BoardingHouseQueries} from "@/services/boardingHouse";
 
 const HouseScroll = () => {
 	const [isOpen, setIsOpen] = useState(false);
-	const router = useRouter();
-	const handleLocation = (path: string) => {
-		NProgress.start()
-		router.push(path);
-	}
+	
+	const navigate = useNavigationWithProgress();
+	
+	const [leaveInfo, setLeaveInfo] = useState({
+		name: "",
+		number: ""
+	})
 	const {open} = useModalStore();
-	const openModal = (number: string) => {
+	const openModal = (name: string, number: string) => {
 		open();
-		router.push(`/myHouse?name=${fakeData.roomInfo.name}&number=${number}`, {scroll: false});
+		setLeaveInfo({
+			name: name,
+			number: number
+		})
 	}
 	const {data: boardingHouseInfo} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_INFO);
 	const {data: boardingHouseRooms} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOMS);
@@ -31,9 +36,10 @@ const HouseScroll = () => {
 	console.log(boardingHouseRooms)
 	return (
 		<S.Container>
+			{leaveInfo["name"] && leaveInfo["number"] && <LeaveModal name={leaveInfo["name"]} number={leaveInfo["number"]}/>}
 			<S.Header>
 				<S.Title>그랜마 하우스</S.Title>
-				<S.Setting onClick={() => handleLocation("/setting/host")}>하숙집 설정</S.Setting>
+				<S.Setting onClick={() => navigate("/setting/host")}>하숙집 설정</S.Setting>
 			</S.Header>
 			<S.InfoSection isOpen={isOpen}>
 				<S.InfoRow>
@@ -67,7 +73,7 @@ const HouseScroll = () => {
 			<S.More onClick={() => setIsOpen(!isOpen)}>{isOpen ? "숨기기" : "더보기"}</S.More>
 			<S.RoomInfoContainer>
 				<S.RoomInfoTitle>방 정보</S.RoomInfoTitle>
-				<Square text='방추가' status={true} width='100px' onClick={() => handleLocation("/myHouse/addition")}/>
+				<Square text='방추가' status={true} width='100px' onClick={() => navigate("/myHouse/addition")}/>
 			</S.RoomInfoContainer>
 			<S.RoomList>
 				{fakeData.roomList.map((room, idx) => (
@@ -91,7 +97,8 @@ const HouseScroll = () => {
 								)}
 							</S.RoomInfo>
 							{room.status && (
-								<Square text={"계약 종료"} onClick={() => openModal(room.roomName)} status={true} width={"max-content"}/>
+								<Square text={"계약 종료"} onClick={() => openModal(room.userId, room.roomName)} status={true}
+								        width={"max-content"}/>
 							)}
 						</S.RoomHeader>
 					</S.RoomCard>

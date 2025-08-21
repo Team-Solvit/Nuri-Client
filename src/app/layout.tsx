@@ -1,11 +1,12 @@
-import type {Metadata} from "next";
-import {GlobalStyles} from '@/components/layout/globalStyle';
+import type { Metadata } from "next";
+import { GlobalStyles } from '@/components/layout/globalStyle';
 import Header from "@/components/ui/header";
 import TopLoadingBar from "@/components/layout/loadingbar";
 import React from "react";
-import {Providers} from "@/components/layout/provider";
-import MessageAlert from "@/components/ui/messageAlert";
+import { Providers } from "@/components/layout/provider";
 import Alert from "@/components/ui/alert";
+import MessageAlert from "@/components/ui/messageAlert";
+import AuthBootstrap from "@/components/layout/AuthBootstrap";
 
 
 export const metadata: Metadata = {
@@ -14,25 +15,26 @@ export const metadata: Metadata = {
 };
 
 
-export default function RootLayout({children, modal}: { children: React.ReactNode, modal: React.ReactNode }) {
+export default function RootLayout({ children, modal }: { children: React.ReactNode, modal: React.ReactNode }) {
 	return (
 		<html lang="ko">
-		<TopLoadingBar/>
-		<MessageAlert/>
-		<Alert/>
-		<head>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		</head>
-		<GlobalStyles/>
-		<body style={{display: 'flex'}}>
-		<Providers>
-			<Header/>
-			<main className="main-container">
-				{children}
-				{modal}
-			</main>
-		</Providers>
-		</body>
+			<TopLoadingBar />
+			<Alert />
+			<MessageAlert />
+			<head>
+				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+			</head>
+			<GlobalStyles />
+			<body style={{ display: 'flex' }}>
+				<Providers>
+					<AuthBootstrap />
+					<Header />
+					<main className="main-container">
+						{children}
+						{modal}
+					</main>
+				</Providers>
+			</body>
 		</html>
 	)
 }

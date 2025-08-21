@@ -18,7 +18,6 @@ const Addition = () => {
 	const [monthInput, setMonthInput] = useState('');
 	const [images, setImages] = useState<string[]>([]);
 	const fileInputRef = useRef<HTMLInputElement>(null);
-	const router = useRouter();
 	
 	const handleContractClick = (option: string) => {
 		setSelectedContracts(prev =>
@@ -72,8 +71,9 @@ const Addition = () => {
 		setImages(prev => prev.filter((_, i) => i !== idx));
 	};
 	
+	const navigate = useNavigationWithProgress();
 	const handleRoute = (path: string) => {
-		router.push(path);
+		navigate(path);
 	}
 	
 	const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);
