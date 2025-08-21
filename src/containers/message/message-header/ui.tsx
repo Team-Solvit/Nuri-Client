@@ -6,9 +6,11 @@ import Image from "next/image"
 import Message from "@/assets/meeting/profile.png"
 import EllipsisIcon from '@/assets/post/ellipsis.svg';
 import StateModal from "@/components/layout/stateModal";
-import {useRouter} from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import Square from "@/components/ui/button/square";
 import AdditionRoom from "@/containers/message/additionRoom/ui";
+import {MessageService} from "@/services/message";
+import {useApollo} from "@/lib/apolloClient";
 
 interface FadeBoxProps {
 	onClose: () => void;
@@ -60,8 +62,13 @@ export default function MessageHeaderUI() {
 		setShowExitConfirm(true);
 	};
 	
-	const confirmExit = () => {
-		router.push('/message'); // Redirect to messages list
+	const apolloClient = useApollo()
+	const params = useParams();
+	const roomId = typeof params.id === 'string' ? params.id : params.id?.[0] ?? '';
+	
+	const confirmExit = async () => {
+		await MessageService.exitChatRoom(apolloClient, roomId);
+		router.push('/message');
 		setShowExitConfirm(false);
 	};
 	

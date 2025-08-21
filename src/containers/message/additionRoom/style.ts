@@ -24,7 +24,6 @@ export const Content = styled.div`
   flex: 1;
 `;
 
-
 export const SearchBar = styled.div`
   position: relative;
   margin-bottom: 16px;
@@ -126,7 +125,16 @@ export const UserAvatar = styled.div`
     object-fit: cover;
   }
 `;
-
+export const AvatarFallback = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e0e0e0;
+  color: #666;
+  font-size: 16px
+`
 export const UserInfo = styled.div`
   flex: 1;
 `;
@@ -162,5 +170,68 @@ export const ActionButton = styled.button`
   &:disabled {
     background-color: #9ca3af;
     cursor: not-allowed;
+  }
+`;
+
+// 프로필 업로드 섹션
+export const ProfileUploadContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 16px;
+`;
+
+export const ProfilePreviewBox = styled.div`
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f1f1f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e5e5e5;
+
+  span {
+    color: #999;
+    font-size: 12px;
+  }
+
+  img {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    display: block;
+  }
+`;
+
+export const FileInput = styled.input`
+  display: none;
+`;
+
+export const FileLabel = styled.label`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #2563eb;
+  font-size: 14px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+export const RemoveImageButton = styled.label`
+  display: inline-flex;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #ef4444;
+  font-size: 14px;
+
+  &:hover {
+    text-decoration: underline;
   }
 `;
