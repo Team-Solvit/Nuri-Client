@@ -82,9 +82,8 @@ export const typeDefs = gql`
 
   # --- Alert 관련 타입 ---
   type Alert {
-    alertId: Int!
+    alertId: ID!
     alertContent: String!
-    alertDate: String!
     alertNavigate: String
   }
 
