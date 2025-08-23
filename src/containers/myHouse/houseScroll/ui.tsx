@@ -22,8 +22,9 @@ const HouseScroll = () => {
 		roomName: ""
 	}])
 	const {open} = useModalStore();
-	const openModal = (boarderNames: string[], roomName: string) => {
+	const openModal = (boarderNames: string[], roomName: string, roomId: string) => {
 		open();
+		setRoomId(roomId)
 		const newBoarders = boarderNames.map((item) => ({
 			boarderName: item,
 			roomName: roomName,
@@ -37,9 +38,10 @@ const HouseScroll = () => {
 	const boardingHouse: BoardingHouseType = boardingHouseInfo?.getMyBoardingHouse;
 	const boardingHouseRoomsList: BoardingRoomAndBoardersType[] = boardingHouseRooms?.getBoardingRoomAndBoardersInfoList;
 	
+	const [roomId, setRoomId] = useState<string>("");
 	return (
 		<S.Container>
-			{leaveInfo && <LeaveModal boarders={leaveInfo}/>}
+			{leaveInfo && <LeaveModal boarders={leaveInfo} roomId={roomId}/>}
 			<S.Header>
 				<S.Title>{boardingHouse?.name}</S.Title>
 				<S.Setting onClick={() => navigate("/setting/host")}>하숙집 설정</S.Setting>
@@ -108,7 +110,8 @@ const HouseScroll = () => {
 								        onClick={() =>
 									        openModal(
 										        room.boarders?.map(boarder => boarder.name) ?? [],
-										        room.room?.name ?? ""
+										        room.room?.name ?? "",
+										        room.room?.roomId ?? ""
 									        )
 								        } status={true}
 								        width={"max-content"}/>
