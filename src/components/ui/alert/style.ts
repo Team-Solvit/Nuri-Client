@@ -143,8 +143,9 @@ export const TextBox = styled.div<Status>`
   & > p {
     font-size: ${fontSizes.Caption};
     font-weight: 400;
-    word-break: break-word;
-    overflow-wrap: break-word;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    white-space: normal;
     line-height: 1.5;
   }
 `
