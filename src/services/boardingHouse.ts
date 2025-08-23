@@ -1,4 +1,5 @@
-import {gql} from '@apollo/client';
+import {ApolloClient, gql} from '@apollo/client';
+import {CreateBoardingHouseType} from "@/types/boardinghouse";
 
 export const BoardingHouseQueries = {
 	GET_BOARDING_HOUSE_INFO: gql`
@@ -36,6 +37,7 @@ export const BoardingHouseQueries = {
 		    boarders {
 		      id
 		      name
+		      profile
 		    }
 		  }
 		}
@@ -87,4 +89,50 @@ export const BoardingHouseMutations = {
 		  patchBoardingRoom(roomId: $roomId, patchBoardingRoomInput: $input)
 		}
 	`,
+};
+
+export const BoardingHouseService = {
+	createBoardingRoom: async (
+		client: ApolloClient<any>,
+		input: CreateBoardingHouseType
+	): Promise<string> => {
+		const {data} = await client.mutate<{ createBoardingRoom: string }>({
+			mutation: BoardingHouseMutations.CREATE_BOARDING_ROOM,
+			variables: {input},
+		});
+		return data?.createBoardingRoom ?? "";
+	},
+	
+	deleteBoardingRoom: async (
+		client: ApolloClient<any>,
+		roomId: string
+	): Promise<string> => {
+		const {data} = await client.mutate<{ deleteBoardingRoom: string }>({
+			mutation: BoardingHouseMutations.DELETE_BOARDING_ROOM,
+			variables: {roomId},
+		});
+		return data?.deleteBoardingRoom ?? "";
+	},
+	
+	endBoardingRoomContract: async (
+		client: ApolloClient<any>,
+		roomId: string
+	): Promise<string> => {
+		const {data} = await client.mutate<{ endBoardingRoomContract: string }>({
+			mutation: BoardingHouseMutations.END_BOARDING_ROOM_CONTRACT,
+			variables: {roomId},
+		});
+		return data?.endBoardingRoomContract ?? "";
+	},
+	
+	patchBoardingRoom: async (
+		client: ApolloClient<any>,
+		input: CreateBoardingHouseType & { roomId: string }
+	): Promise<string> => {
+		const {data} = await client.mutate<{ patchBoardingRoom: string }>({
+			mutation: BoardingHouseMutations.PATCH_BOARDING_ROOM,
+			variables: {input},
+		});
+		return data?.patchBoardingRoom ?? "";
+	},
 };

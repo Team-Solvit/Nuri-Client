@@ -80,3 +80,10 @@ export interface BoardingRoomAndBoardersType {
 	boarders?: BoarderType[];
 }
 
+export interface CreateBoardingHouseType {
+	name: string,
+	description: string,
+	images: string[],
+	contracts: string[],
+	facilities: string[],
+}

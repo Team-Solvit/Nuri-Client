@@ -1,13 +1,15 @@
 "use client"
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import * as S from './style';
 import Circle from '@/components/ui/button/circle';
 import Square from '@/components/ui/button/square';
 import {DEFAULT_CONTRACT_OPTIONS, FACILITY_CATEGORIES} from "./data"
-import {useParams, useRouter} from 'next/navigation';
+import {useParams} from 'next/navigation';
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import {useAlertStore} from "@/store/alert";
-import {useMutation, useQuery} from "@apollo/client";
-import {BoardingHouseMutations, BoardingHouseQueries} from "@/services/boardingHouse";
+import {useQuery} from "@apollo/client";
+import {BoardingHouseQueries, BoardingHouseService} from "@/services/boardingHouse";
+import {useApollo} from "@/lib/apolloClient";
 
 const Addition = () => {
 	const [contractOptions, setContractOptions] = useState<string[]>(DEFAULT_CONTRACT_OPTIONS);
@@ -85,7 +87,7 @@ const Addition = () => {
 	};
 	
 	const params = useParams();
-	const roomId = params.roomId;
+	const roomId = Array.isArray(params.roomId) ? params.roomId[0] : params.roomId;
 	
 	const {data} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOM_INFO, {
 		variables: {
@@ -95,62 +97,48 @@ const Addition = () => {
 	
 	console.log(data)
 	
-	const [createRoom, {
-		data: roomData,
-		error: roomError
-	}] = useMutation(BoardingHouseMutations.CREATE_BOARDING_ROOM);
-	
-	const [patchRoom, {
-		data: patchRoomData,
-		error: patchRoomError
-	}] = useMutation(BoardingHouseMutations.PATCH_BOARDING_ROOM);
 	
 	const {error, success} = useAlertStore();
-	useEffect(() => {
-		if (roomData) {
-			success("방 생성 성공");
-		}
-		if (roomError) {
-			error("방 생성 실패");
-		}
-		if (patchRoomData) {
-			success("방 수정 성공");
-		}
-		if (patchRoomError) {
-			error("방 수정 실패");
-		}
-	}, [roomData, roomError, patchRoomData, patchRoomError]);
 	
-	const checkValue = () => {
-		if (!images.length) return error('사진을 추가해주세요')
-		if (!name) return error('방의 이름을 추가해주세요')
-		if (!description) return error('방의 내용을 추가해주세요')
-		if (!contractOptions.length) return error('가격을 추가해주세요')
-		if (!selectedContracts.length) return error('계약 기간을 선택해주세요')
-		// 방의 주인과 로그인중의 사용자가 일치하는지 확읺 추가
-		if (roomId) {
-			patchRoom({
-				variables: {
-					roomId: roomId,
-					name: name,
-					description: description,
-					images: images,
+	const client = useApollo();
+	const checkValue = async () => {
+		
+		if (!images.length) return error('사진을 추가해주세요');
+		if (!name) return error('방의 이름을 추가해주세요');
+		if (!description) return error('방의 내용을 추가해주세요');
+		if (!contractOptions.length) return error('가격을 추가해주세요');
+		if (!selectedContracts.length) return error('계약 기간을 선택해주세요');
+		
+		try {
+			if (roomId) {
+				// 방 수정
+				const result = await BoardingHouseService.patchBoardingRoom(client, {
+					roomId,
+					name,
+					description,
+					images,
 					contracts: selectedContracts,
 					facilities: selectedFacilities,
-				}
-			})
-		} else {
-			createRoom({
-				variables: {
-					name: name,
-					description: description,
-					images: images,
+				});
+				success("방 수정 성공");
+				console.log(result);
+			} else {
+				// 방 생성
+				const result = await BoardingHouseService.createBoardingRoom(client, {
+					name,
+					description,
+					images,
 					contracts: selectedContracts,
-					facilities: selectedFacilities,
-				}
-			})
+					facilities: selectedFacilities
+				});
+				success("방 생성 성공");
+				console.log(result);
+			}
+		} catch (e) {
+			console.error(e);
+			error(roomId ? "방 수정 실패" : "방 생성 실패");
 		}
-	}
+	};
 	return (
 		<S.Container style={{position: 'relative'}}>
 			<S.Title>방추가</S.Title>
