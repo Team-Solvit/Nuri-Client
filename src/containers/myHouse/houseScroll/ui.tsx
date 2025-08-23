@@ -4,55 +4,58 @@ import React, {useState} from 'react';
 import * as S from './style';
 import Square from '@/components/ui/button/square';
 import Image from "next/image";
-import Profile from "@/assets/meeting/member-profile.png"
 import {useModalStore} from "@/store/modal";
 import {fakeData} from "./data";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import LeaveModal from "@/containers/myHouse/leave-modal/ui";
 import {useQuery} from "@apollo/client";
 import {BoardingHouseQueries} from "@/services/boardingHouse";
+import {BoardingHouseType, BoardingRoomAndBoardersType} from "@/types/boardinghouse";
 
 const HouseScroll = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	
 	const navigate = useNavigationWithProgress();
 	
-	const [leaveInfo, setLeaveInfo] = useState({
-		name: "",
-		number: ""
-	})
+	const [leaveInfo, setLeaveInfo] = useState([{
+		boarderName: "",
+		roomName: ""
+	}])
 	const {open} = useModalStore();
-	const openModal = (name: string, number: string) => {
+	const openModal = (boarderNames: string[], roomName: string) => {
 		open();
-		setLeaveInfo({
-			name: name,
-			number: number
-		})
+		const newBoarders = boarderNames.map((item) => ({
+			boarderName: item,
+			roomName: roomName,
+		}));
+		
+		setLeaveInfo(newBoarders)
 	}
 	const {data: boardingHouseInfo} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_INFO);
 	const {data: boardingHouseRooms} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOMS);
 	
-	console.log(boardingHouseInfo)
-	console.log(boardingHouseRooms)
+	const boardingHouse: BoardingHouseType = boardingHouseInfo?.getMyBoardingHouse;
+	const boardingHouseRoomsList: BoardingRoomAndBoardersType[] = boardingHouseRooms?.getBoardingRoomAndBoardersInfoList;
+	
 	return (
 		<S.Container>
-			{leaveInfo["name"] && leaveInfo["number"] && <LeaveModal name={leaveInfo["name"]} number={leaveInfo["number"]}/>}
+			{leaveInfo && <LeaveModal boarders={leaveInfo}/>}
 			<S.Header>
-				<S.Title>그랜마 하우스</S.Title>
+				<S.Title>{boardingHouse?.name}</S.Title>
 				<S.Setting onClick={() => navigate("/setting/host")}>하숙집 설정</S.Setting>
 			</S.Header>
 			<S.InfoSection isOpen={isOpen}>
 				<S.InfoRow>
 					<S.InfoLabel>전화번호</S.InfoLabel>
-					<S.InfoValue>{fakeData.roomInfo.phone}</S.InfoValue>
+					<S.InfoValue>{boardingHouse?.houseCallNumber}</S.InfoValue>
 				</S.InfoRow>
 				<S.InfoRow>
 					<S.InfoLabel>위치</S.InfoLabel>
-					<S.InfoValue>{fakeData.roomInfo.location}</S.InfoValue>
+					<S.InfoValue>{boardingHouse?.location}</S.InfoValue>
 				</S.InfoRow>
 				<S.InfoRow>
 					<S.InfoLabel>성별</S.InfoLabel>
-					<S.InfoValue>{fakeData.roomInfo.gender}</S.InfoValue>
+					<S.InfoValue>{boardingHouse?.gender}</S.InfoValue>
 				</S.InfoRow>
 				<S.InfoRow>
 					<S.InfoLabel>식사제공여부</S.InfoLabel>
@@ -60,14 +63,14 @@ const HouseScroll = () => {
 				</S.InfoRow>
 				<S.InfoRow>
 					<S.InfoLabel>가까운 역</S.InfoLabel>
-					<S.InfoValue>{fakeData.roomInfo.nearby_station}</S.InfoValue>
+					<S.InfoValue>{boardingHouse?.nearestStation}</S.InfoValue>
 				</S.InfoRow>
 				<S.InfoRow>
 					<S.InfoLabel>가까운 학교</S.InfoLabel>
-					<S.InfoValue>{fakeData.roomInfo.nearby_school}</S.InfoValue>
+					<S.InfoValue>{boardingHouse?.nearestSchool}</S.InfoValue>
 				</S.InfoRow>
 				<S.InfoRow>
-					<S.InfoValue>{fakeData.roomInfo.description}</S.InfoValue>
+					<S.InfoValue>{boardingHouse?.description}</S.InfoValue>
 				</S.InfoRow>
 			</S.InfoSection>
 			<S.More onClick={() => setIsOpen(!isOpen)}>{isOpen ? "숨기기" : "더보기"}</S.More>
@@ -76,28 +79,38 @@ const HouseScroll = () => {
 				<Square text='방추가' status={true} width='100px' onClick={() => navigate("/myHouse/addition")}/>
 			</S.RoomInfoContainer>
 			<S.RoomList>
-				{fakeData.roomList.map((room, idx) => (
-					<S.RoomCard key={room.roomName + idx}>
+				{boardingHouseRoomsList?.map((room, idx) => (
+					<S.RoomCard key={idx}>
 						<S.RoomImage>
-							<Image src={Profile} alt={"profile"} fill style={{objectFit: "cover"}}/>
+							<Image src={room?.room?.boardingRoomFile?.[0]?.url ?? ""} alt={"profile"} fill
+							       style={{objectFit: "cover"}}/>
 						</S.RoomImage>
 						<S.RoomHeader>
 							<S.RoomInfo>
-								<S.RoomName>{room.roomName}</S.RoomName>
-								{room.profile && (
-									<S.ProfileWrap>
-										<S.ProfileImg>
-											<Image src={Profile} alt={"profile"} fill style={{objectFit: "cover"}}/>
-										</S.ProfileImg>
-										<S.UserId>{room.userId}</S.UserId>
-									</S.ProfileWrap>
-								)}
-								{room.empty && (
+								<S.RoomName>{room.room?.name}</S.RoomName>
+								{room.boarders && room.boarders.map(boarder => {
+									return (
+										<S.ProfileWrap key={boarder.id}>
+											<S.ProfileImg>
+												<Image src={boarder.profile} alt={"profile"} fill style={{objectFit: "cover"}}/>
+											</S.ProfileImg>
+											<S.UserId>{boarder.name}</S.UserId>
+										</S.ProfileWrap>
+									)
+								})
+								}
+								{!room.room?.roomId && (
 									<S.UserId color="#8c8c8c">비어있음</S.UserId>
 								)}
 							</S.RoomInfo>
-							{room.status && (
-								<Square text={"계약 종료"} onClick={() => openModal(room.userId, room.roomName)} status={true}
+							{room.room?.roomId && (
+								<Square text={"계약 종료"}
+								        onClick={() =>
+									        openModal(
+										        room.boarders?.map(boarder => boarder.name) ?? [],
+										        room.room?.name ?? ""
+									        )
+								        } status={true}
 								        width={"max-content"}/>
 							)}
 						</S.RoomHeader>

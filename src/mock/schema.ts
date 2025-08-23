@@ -27,18 +27,33 @@ export const typeDefs = gql`
     isGroup: Boolean
   }
 
-  # --- BoardingPost 관련 타입 ---
+  # --- Boarding 관련 타입 ---
   type BoardingUser {
     profile: String
     userId: Int!
+    name: String
+    email: String
+    id: ID
   }
 
   type BoardingHost {
-    user: BoardingUser!
+    id: ID
+    name: String
+    email: String
+    user: BoardingUser
   }
 
   type BoardingHouse {
-    host: BoardingHost!
+    houseId: ID!
+    host: BoardingHost
+    name: String
+    location: String
+    houseCallNumber: String
+    description: String
+    nearestStation: String
+    nearestSchool: String
+    gender: String
+    isMealProvided: Boolean
   }
 
   type BoardingRoomFile {
@@ -49,20 +64,37 @@ export const typeDefs = gql`
 
   type ContractPeriod {
     contractPeriodId: Int!
-    roomId: Int!
     contractPeriod: String!
   }
 
+  type BoardingRoomOption {
+    optionId: Int!
+    name: String!
+  }
+
   type BoardingRoom {
-    boardingHouse: BoardingHouse!
-    boardingRoomFile: [BoardingRoomFile!]!
-    contractPeriod: [ContractPeriod!]!
-    day: String
-    headCount: Int
+    roomId: Int!
+    name: String!
     description: String
     monthlyRent: Float
+    headCount: Int
+    status: String
+    day: String
+    boardingHouse: BoardingHouse
+    boardingRoomFile: [BoardingRoomFile!]!
+    contractPeriod: [ContractPeriod!]!
+    boardingRoomOption: [BoardingRoomOption!]!
+  }
+
+  type Boarder {
+    id: ID!
     name: String!
-    roomId: Int!
+    profile : String!
+  }
+
+  type BoardingRoomAndBoarders {
+    room: BoardingRoom!
+    boarders: [Boarder!]!
   }
 
   type BoardingPost {
@@ -92,5 +124,10 @@ export const typeDefs = gql`
     getPostList(start: Int!): [Post!]!
     getAlertList: [Alert!]!
     getAlertCount: Int!
+
+    # BoardingHouse 관련 쿼리 추가
+    getMyBoardingHouse: BoardingHouse
+    getBoardingRoomAndBoardersInfoList(userId: String): [BoardingRoomAndBoarders!]!
+    getBoardingRoom(roomId: String!): BoardingRoom
   }
 `;
