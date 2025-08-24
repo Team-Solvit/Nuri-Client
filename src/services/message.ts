@@ -3,25 +3,17 @@ import {RoomCreateRequestDto, RoomInviteRequestDto} from "@/types/message";
 
 export const MessageQueries = {
 	GET_ROOMS_CHAT_LIST: gql`
-      query GetRooms($page: Int!, $size: Int!) {
-			  getRooms(page: $page, size: $size) {
-			    content {
-			      roomDto {
-			        name
-			        profile
-			      }
-			      latestMessage
-			      latestCreatedAt
-			    }
-			    pageInfo {
-			      pageNumber
-			      pageSize
-			      totalElements
-			      totalPages
-			    }
-			  }
-			}
-    `,
+    query GetRooms($page: Int!, $size: Int!) {
+      getRooms(page: $page, size: $size) {
+        roomDto {
+          name
+          profile
+        }
+        latestMessage
+        latestCreatedAt
+      }
+    }
+  `,
 	READ_MESSAGES: gql`
 		query ReadMessages($roomId: String!) {
 		  readMessages(roomId: $roomId) {
