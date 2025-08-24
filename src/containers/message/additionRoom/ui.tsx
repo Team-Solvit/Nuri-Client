@@ -3,27 +3,19 @@
 import React, {useState, useEffect, useRef} from 'react';
 import Image from 'next/image';
 import * as S from './style';
-import {MessageService} from "@/services/message";
+import {MessageQueries, MessageService} from "@/services/message";
 import {useApollo} from "@/lib/apolloClient";
 import {RoomCreateRequestDto} from "@/types/message";
 import {useParams} from "next/navigation";
 import {useAlertStore} from "@/store/alert";
+import {useQuery} from "@apollo/client";
+import {useUserStore} from "@/store/user";
 
 interface User {
-	id: string;
+	userId: string;
 	name: string;
-	email: string;
-	avatar?: string;
+	profile: string;
 }
-
-// Mock data - replace with actual API call in production
-const mockUsers: User[] = [
-	{id: "1", name: '김철수', email: 'chulsoo@example.com'},
-	{id: "2", name: '이영희', email: 'younghi@example.com'},
-	{id: "3", name: '박민수', email: 'minsu@example.com'},
-	{id: "4", name: '정지은', email: 'jieun@example.com'},
-	{id: "5", name: '최준호', email: 'junho@example.com'},
-];
 
 export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}: {
 	isAddition: boolean;
@@ -39,10 +31,25 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 	const [profilePreview, setProfilePreview] = useState<string | null>(null);
 	const [profileDataUrl, setProfileDataUrl] = useState<string | null>(null);
 	
-	useEffect(() => {
-		setUsers(mockUsers);
-	}, []);
+	const [debouncedTerm, setDebouncedTerm] = useState("");
 	
+	useEffect(() => {
+		const handler = setTimeout(() => setDebouncedTerm(searchTerm), 300);
+		return () => clearTimeout(handler);
+	}, [searchTerm]);
+	
+	const {data: searchUserResult} = useQuery(
+		MessageQueries.GET_USER_SEARCH,
+		{
+			variables: {userId: debouncedTerm},
+			skip: !debouncedTerm,
+		}
+	);
+	useEffect(() => {
+		setUsers(searchUserResult?.queryUsers || []);
+	}, [searchUserResult]);
+	console.log(users)
+	console.log(selectedUsers)
 	// Close dropdown when clicking outside
 	useEffect(() => {
 		function handleClickOutside(event: MouseEvent) {
@@ -79,7 +86,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 	
 	const handleInviteChatMember = async (roomId: string) => {
 		const inviteChatMemberInput = {
-			users: selectedUsers.map(user => user.id),
+			users: selectedUsers.map(user => user.userId),
 			roomId: roomId
 		}
 		try {
@@ -103,13 +110,14 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 		}
 	}
 	
+	const {id} = useUserStore()
 	const handleCreateRoom = async () => {
 		const inputData: RoomCreateRequestDto = {
 			roomDto: {
 				name: "test",
 				profile: "profile.png"
 			},
-			users: ["zuu4", "zuu5"],
+			users: [...selectedUsers.map(user => user.userId), id || ""],
 			isTeam: false
 		}
 		try {
@@ -156,26 +164,20 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 		reader.readAsDataURL(file);
 	};
 	
-	// 유저 관리
-	const filteredUsers = users.filter(
-		user =>
-			user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			user.email.toLowerCase().includes(searchTerm.toLowerCase())
-	);
 	
 	const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchTerm(e.target.value);
 	};
 	
 	const removeSelectedUser = (userId: string) => {
-		setSelectedUsers(prev => prev.filter(user => user.id !== userId));
+		setSelectedUsers(prev => prev.filter(user => user.userId !== userId));
 	};
 	
 	const toggleUserSelection = (user: User) => {
 		setSelectedUsers(prev => {
-			const isSelected = prev.some(u => u.id === user.id);
+			const isSelected = prev.some(u => u.userId === user.userId);
 			if (isSelected) {
-				return prev.filter(u => u.id !== user.id);
+				return prev.filter(u => u.userId !== user.userId);
 			} else {
 				return [...prev, user];
 			}
@@ -241,8 +243,8 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 				{selectedUsers.length > 0 && (
 					<S.SelectedUsers>
 						{selectedUsers.map(user => (
-							<S.UserTag onClick={() => removeSelectedUser(user.id)} key={`selected-${user.id}`}>
-								{user.name}
+							<S.UserTag onClick={() => removeSelectedUser(user.userId)} key={`selected-${user.userId}`}>
+								{user.userId}
 								<S.RemoveButton>
 									×
 								</S.RemoveButton>
@@ -252,18 +254,20 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 				)}
 				
 				<S.UserList>
-					{filteredUsers.map(user => {
-						const isSelected = selectedUsers.some(u => u.id === user.id);
+					{users?.map(user => {
+						const isSelected = selectedUsers.some(u => u.userId === user.userId);
+						const isMe = user.userId === id;
+						if (isMe) return null
 						return (
 							<S.UserItem
-								key={user.id}
+								key={user.userId}
 								isSelected={isSelected}
 								onClick={() => toggleUserSelection(user)}
 							>
 								<S.UserAvatar>
-									{user.avatar ? (
+									{user.profile ? (
 										<Image
-											src={user.avatar}
+											src={user.profile}
 											alt={user.name}
 											width={40}
 											height={40}
@@ -276,7 +280,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 								</S.UserAvatar>
 								<S.UserInfo>
 									<S.UserName>{user.name}</S.UserName>
-									<S.UserEmail>{user.email}</S.UserEmail>
+									<S.UserEmail>{user.userId}</S.UserEmail>
 								</S.UserInfo>
 								<input
 									type="checkbox"

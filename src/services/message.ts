@@ -37,6 +37,15 @@ export const MessageQueries = {
 		query {
 		  getRoomsGroupChat
 		}
+	`,
+	GET_USER_SEARCH: gql`
+		query Query($userId: String!) {
+		  queryUsers(userId: $userId) {
+		    userId
+		    name
+		    profile
+		  }
+		}
 	`
 }
 
