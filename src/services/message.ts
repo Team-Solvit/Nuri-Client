@@ -33,6 +33,11 @@ export const MessageQueries = {
 		  }
 		}
 	`,
+	GET_CONNECT_MESSAGES_LIST: gql`
+		query {
+		  getRoomsGroupChat
+		}
+	`
 }
 
 export const MessageMutations = {

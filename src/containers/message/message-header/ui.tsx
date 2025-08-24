@@ -11,6 +11,7 @@ import Square from "@/components/ui/button/square";
 import AdditionRoom from "@/containers/message/additionRoom/ui";
 import {MessageService} from "@/services/message";
 import {useApollo} from "@/lib/apolloClient";
+import {useAlertStore} from "@/store/alert";
 
 interface FadeBoxProps {
 	onClose: () => void;
@@ -66,10 +67,17 @@ export default function MessageHeaderUI() {
 	const params = useParams();
 	const roomId = typeof params.id === 'string' ? params.id : params.id?.[0] ?? '';
 	
+	const {success, error} = useAlertStore();
 	const confirmExit = async () => {
-		await MessageService.exitChatRoom(apolloClient, roomId);
-		router.push('/message');
-		setShowExitConfirm(false);
+		try {
+			await MessageService.exitChatRoom(apolloClient, roomId);
+			router.push('/message');
+			setShowExitConfirm(false);
+			success("대화방 나가기에 성공하였습니다.")
+		} catch (e) {
+			console.log(e)
+			error("대화방 나가기에 실패하였습니다.")
+		}
 	};
 	
 	const cancelExit = () => {

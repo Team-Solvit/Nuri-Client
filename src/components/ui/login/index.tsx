@@ -1,16 +1,17 @@
 import styled from '@emotion/styled';
-import { useCallback, useState } from 'react';
-import { colors, radius, fontSizes } from '@/styles/theme';
+import {useCallback, useState} from 'react';
+import {colors, radius, fontSizes} from '@/styles/theme';
 import Square from '@/components/ui/button/square';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { mq } from '@/styles/media';
-import { useApollo } from '@/lib/apolloClient';
-import { useAlertStore } from '@/store/alert';
-import { useLoginModalStore } from '@/store/loginModal';
-import { useUserStore } from '@/store/user';
-import { AuthService } from '@/services/auth';
-import { decodeJWT } from '@/utils/jwt';
+import {useRouter} from 'next/navigation';
+import {mq} from '@/styles/media';
+import {useApollo} from '@/lib/apolloClient';
+import {useAlertStore} from '@/store/alert';
+import {useLoginModalStore} from '@/store/loginModal';
+import {useUserStore} from '@/store/user';
+import {AuthService} from '@/services/auth';
+import {decodeJWT} from '@/utils/jwt';
+import {useMessageRoomListConnectStore} from "@/store/messageRoomListConnect";
 
 
 export default function Login() {
@@ -23,12 +24,13 @@ export default function Login() {
 	const [id, setId] = useState("");
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
-
+	
 	const client = useApollo();
 	const alertStore = useAlertStore();
 	const loginModal = useLoginModalStore();
 	const setAuth = useUserStore(s => s.setAuth);
-
+	const {setOpen} = useMessageRoomListConnectStore();
+	
 	const handleLogin = useCallback(async () => {
 		if (loading) return;
 		if (!id.trim() || !password.trim()) {
@@ -37,37 +39,39 @@ export default function Login() {
 		}
 		setLoading(true);
 		try {
-			const { headers, status } = await AuthService.localLogin(
+			const {headers, status} = await AuthService.localLogin(
 				client,
-				{ id: id.trim(), password }
+				{id: id.trim(), password}
 			);
-
+			
 			const headerTokenRaw =
 				headers['authorization'] || headers['x-access-token'] || '';
 			const headerToken = headerTokenRaw.replace(/^Bearer\s+/i, '');
-
+			
 			if (!headerToken) {
 				throw new Error(`토큰이 응답에 없습니다. status=${status ?? 'N/A'}`);
 			}
-
+			
 			const decodedToken = decodeJWT(headerToken);
 			const role = decodedToken?.role || 'USER';
-
+			
 			localStorage.setItem('AT', headerToken);
-			setAuth(id.trim(), role);
+			
+			setAuth(id.trim(), role, headerToken);
 			alertStore.success('로그인 성공');
 			loginModal.close();
+			setOpen();
 		} catch (e: any) {
 			alertStore.error(e?.message || '로그인 실패');
 		} finally {
 			setLoading(false);
 		}
 	}, [id, password, client, alertStore, loginModal, loading, setAuth]);
-
+	
 	return (
 		<Wrapper>
-			<Image src="/logo.svg" alt="로고" width={80} height={80} priority />
-
+			<Image src="/logo.svg" alt="로고" width={80} height={80} priority/>
+			
 			{step === 'login' && (
 				<>
 					<FormGroup>
@@ -77,7 +81,9 @@ export default function Login() {
 							placeholder="아이디 또는 이메일을 입력해주세요."
 							value={id}
 							onChange={e => setId(e.target.value)}
-							onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(); }}
+							onKeyDown={(e) => {
+								if (e.key === 'Enter') handleLogin();
+							}}
 						/>
 					</FormGroup>
 					<FormGroup>
@@ -87,13 +93,15 @@ export default function Login() {
 							placeholder="비밀번호를 입력해주세요."
 							value={password}
 							onChange={e => setPassword(e.target.value)}
-							onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(); }}
+							onKeyDown={(e) => {
+								if (e.key === 'Enter') handleLogin();
+							}}
 						/>
 						<Hint>
 							<Left>
 								계정이 없으신가요? <SignUp onClick={() => {
-									router.push('/register');
-								}}>회원가입 하기</SignUp>
+								router.push('/register');
+							}}>회원가입 하기</SignUp>
 							</Left>
 							<Right onClick={() => setStep('find-email')}>비밀번호를 잊으셨나요?</Right>
 						</Hint>
@@ -106,14 +114,14 @@ export default function Login() {
 					/>
 					<SocialOther>또는</SocialOther>
 					<SocialList>
-						<Image src="/login/kakao.svg" alt="카카오 로그인" width={56} height={56} />
-						<Image src="/login/tiktok.svg" alt="틱톡 로그인" width={56} height={56} />
-						<Image src="/login/facebook.svg" alt="페이스북 로그인" width={56} height={56} />
-						<Image src="/login/google.svg" alt="구글 로그인" width={56} height={56} />
+						<Image src="/login/kakao.svg" alt="카카오 로그인" width={56} height={56}/>
+						<Image src="/login/tiktok.svg" alt="틱톡 로그인" width={56} height={56}/>
+						<Image src="/login/facebook.svg" alt="페이스북 로그인" width={56} height={56}/>
+						<Image src="/login/google.svg" alt="구글 로그인" width={56} height={56}/>
 					</SocialList>
 				</>
 			)}
-
+			
 			{step === 'find-email' && (
 				<>
 					<FormGroup>
@@ -133,16 +141,16 @@ export default function Login() {
 								placeholder="인증 번호를 입력해주세요."
 								value={code}
 								onChange={e => setCode(e.target.value)}
-								style={{ flex: 1 }}
+								style={{flex: 1}}
 							/>
 							<Square text='인증' onClick={() => {
-							}} status={true} width='6vw' />
+							}} status={true} width='6vw'/>
 						</InputRow>
 					</FormGroup>
-					<Square text='다음' onClick={() => setStep('find-reset')} status={true} width='100%' />
+					<Square text='다음' onClick={() => setStep('find-reset')} status={true} width='100%'/>
 				</>
 			)}
-
+			
 			{step === 'find-reset' && (
 				<>
 					<FormGroup>
@@ -163,7 +171,7 @@ export default function Login() {
 							onChange={e => setPw2(e.target.value)}
 						/>
 					</FormGroup>
-					<Square text='비밀번호 재설정' onClick={() => setStep('login')} status={true} width='100%' />
+					<Square text='비밀번호 재설정' onClick={() => setStep('login')} status={true} width='100%'/>
 				</>
 			)}
 		</Wrapper>

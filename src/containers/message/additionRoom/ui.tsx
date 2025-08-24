@@ -7,6 +7,7 @@ import {MessageService} from "@/services/message";
 import {useApollo} from "@/lib/apolloClient";
 import {RoomCreateRequestDto} from "@/types/message";
 import {useParams} from "next/navigation";
+import {useAlertStore} from "@/store/alert";
 
 interface User {
 	id: string;
@@ -70,6 +71,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 		setProfileDataUrl(null);
 	};
 	
+	const {success, error} = useAlertStore();
 	// Service 영역(채팅생성, 채팅초대)
 	const apolloClient = useApollo()
 	const params = useParams();
@@ -80,10 +82,17 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 			users: selectedUsers.map(user => user.id),
 			roomId: roomId
 		}
-		await MessageService.inviteUserInChatRoom(
-			apolloClient,
-			inviteChatMemberInput
-		)
+		try {
+			await MessageService.inviteUserInChatRoom(
+				apolloClient,
+				inviteChatMemberInput
+			)
+			success("채팅방 초대에 성공하였습니다.")
+			handleClose();
+		} catch (e) {
+			console.log(e)
+			error("채팅방 초대에 실패하였습니다.")
+		}
 	}
 	
 	const handleAddition = async () => {
@@ -97,17 +106,23 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 	const handleCreateRoom = async () => {
 		const inputData: RoomCreateRequestDto = {
 			roomDto: {
-				name: "새로운 채팅방",
-				profile: type === "add" ? (profileDataUrl ?? null) : null
+				name: "test",
+				profile: "profile.png"
 			},
-			users: selectedUsers.map(user => user.id),
+			users: ["zuu4", "zuu5"],
 			isTeam: false
 		}
-		await MessageService.createChatRoom(
-			apolloClient,
-			inputData
-		);
-		handleClose();
+		try {
+			await MessageService.createChatRoom(
+				apolloClient,
+				inputData
+			);
+			success("채팅방 생성에 성공하였습니다.")
+			handleClose();
+		} catch (e) {
+			console.log(e)
+			error("채팅방 생성에 실패하였습니다.")
+		}
 	};
 	
 	
