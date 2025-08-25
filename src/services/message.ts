@@ -6,6 +6,7 @@ export const MessageQueries = {
     query GetRooms($page: Int!, $size: Int!) {
       getRooms(page: $page, size: $size) {
         roomDto {
+          id
           name
           profile
         }

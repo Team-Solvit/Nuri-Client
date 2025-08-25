@@ -5,14 +5,14 @@ import {mq} from "@/styles/media";
 export const MessageContainer = styled.section<{ id: string }>`
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-template-rows: 1fr 1fr 12fr;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
   background-color: ${colors.background};
   padding: 1rem 0;
-  overflow-y: scroll;
   z-index: ${zIndex.overlay};
+  place-items: center;
+  overflow: hidden;
 
   ${mq.mobile} {
     ${({id}) => id && 'display: none;'}
@@ -21,6 +21,7 @@ export const MessageContainer = styled.section<{ id: string }>`
 export const AddRoom = styled.div`
   width: 100%;
   display: flex;
+  height: 100%;
   gap: 1rem;
   justify-content: flex-end;
   padding: 1rem;
@@ -42,6 +43,7 @@ export const Search = styled.div`
   border: 1px solid #DDDDDD;
   padding: 0.5rem 2rem;
   display: flex;
+  margin-bottom: 1rem;
 
   & > input {
     width: 100%;
@@ -53,26 +55,6 @@ export const Search = styled.div`
   & > input::placeholder {
     color: #DDDDDD;
   }
-`
-
-export const Category = styled.article`
-  display: flex;
-  padding: 0 2rem;
-  margin: 3rem 0 0.5rem 0;
-  width: 100%;
-
-  & > h3 {
-    font-weight: 500;
-  }
-
-  & > img {
-    cursor: pointer;
-  }
-
-  font-size: ${fontSizes.Body};
-  justify-content: space-between;
-  align-items: center;
-
 `
 export const ChatBox = styled.div<{ isRead: boolean }>`
   width: 100%;
@@ -113,13 +95,10 @@ export const Info = styled.div`
   }
 `
 
-export const CategoryBox = styled.article<{ isDrop: boolean }>`
-  width: 100%;
-  overflow: hidden;
-  max-height: ${(props) => (props.isDrop ? "5rem" : "1000px;")};
-  transition: all 0.4s ease-in-out;
-`
 export const CategoryList = styled.div`
   width: 100%;
   height: 100%;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 `

@@ -61,6 +61,7 @@ export interface NotificationResponseDto {
 
 export interface RoomDto {
 	name: string;
+	id: string;
 	profile?: string | null;
 }
 
