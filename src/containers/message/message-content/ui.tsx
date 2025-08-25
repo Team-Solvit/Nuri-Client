@@ -18,8 +18,18 @@ import ReplyMessage from "@/components/ui/message/ReplyMessage";
 import ImageMessage from "@/components/ui/message/ImageMessage";
 import RoomTourMessage from "@/components/ui/message/RoomTourMessage";
 import ContractMessage from "@/components/ui/message/ContractMessage";
+import {useParams} from "next/navigation";
+import {useQuery} from "@apollo/client";
+import {MessageQueries} from "@/services/message";
 
 export default function MessageContent() {
+	const {id} = useParams();
+	const {data} = useQuery(MessageQueries.READ_MESSAGES, {
+		variables: {
+			roomId: id,
+		}
+	})
+	console.log("content : ", data?.readMessages)
 	let lastDate: string | null = null;
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [replyInfo, setReplyInfo] = useState<null | { name: string, text: string }>(null);
