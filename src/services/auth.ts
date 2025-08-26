@@ -1,5 +1,5 @@
 import { gql, ApolloClient } from '@apollo/client';
-import { LocalLoginInput, LocalSignUpInput, TokenString } from '@/types/auth';
+import { LocalLoginInput, LocalSignUpInput, LoginOAuthCodeInput, OAuthLoginResponse, TokenString } from '@/types/auth';
 import { headersToObject } from '@/utils/headers';
 
 export const AuthGQL = {
@@ -10,6 +10,11 @@ export const AuthGQL = {
           id
           role
         }
+      }
+    `,
+    GET_SOCIAL_URL: gql`
+      query GetOAuth2Link($provider: String!) {
+        getOAuth2Link(provider: $provider)
       }
     `,
   },
@@ -29,6 +34,14 @@ export const AuthGQL = {
     `,
     LOGOUT: gql`
       mutation Logout { logout }
+    `,
+    OAUTH_LOGIN: gql`
+      mutation OAuthLogin($input: OAuth2LoginInput!) {
+        oauthLogin(oauthLoginInput: $input) {
+          oauthId
+          isNewUser
+        }
+      }
     `,
   }
 };
@@ -70,5 +83,21 @@ export const AuthService = {
       fetchPolicy: 'no-cache'
     });
     return data?.logout ?? '';
+  },
+  oauthLogin: async (client: ApolloClient<any>, input: LoginOAuthCodeInput) => {
+    const res = await client.mutate<{ oauthLogin: OAuthLoginResponse }>({
+      mutation: AuthGQL.MUTATIONS.OAUTH_LOGIN,
+      variables: { input },
+      fetchPolicy: 'no-cache',
+    });
+
+    const headers = headersToObject((res as any).__headers);
+    const status = (res as any).__status as number | undefined;
+
+    return {
+      response: res.data?.oauthLogin,
+      headers,
+      status,
+    };
   },
 };
