@@ -46,8 +46,9 @@ export const InputText = styled.textarea`
   scrollbar-width: none;
   align-items: center;
   flex-direction: column;
-  line-height: 1.5;
+  line-height: 1;
   font-size: ${fontSizes.Body};
+  padding: 0.2rem;
   resize: none;
 `
 export const AddFile = styled.div`

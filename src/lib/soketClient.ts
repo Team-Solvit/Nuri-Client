@@ -26,7 +26,7 @@ export const sendGroupChatMessage = (roomId: string, message: string) => {
 	};
 	
 	client.publish({
-		destination: `/app/group`,
+		destination: `/chat/group`,
 		body: JSON.stringify(payload),
 	});
 };

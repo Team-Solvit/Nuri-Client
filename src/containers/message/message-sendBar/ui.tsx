@@ -4,7 +4,7 @@ import * as S from "./style"
 import Send from "@/assets/icon/sent.svg"
 import Image from "next/image"
 import Plus from "@/assets/icon/plus.svg"
-import {useRef, useState} from "react";
+import React, {useRef, useState} from "react";
 import {sendGroupChatMessage} from "@/lib/soketClient";
 import {useParams} from "next/navigation";
 
@@ -12,6 +12,7 @@ export default function MessageSendBar() {
 	const {id} = useParams();
 	const [message, setMessage] = useState("")
 	const fileInputRef = useRef<HTMLInputElement>(null)
+	const [isComposing, setIsComposing] = useState(false);
 	
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -29,6 +30,25 @@ export default function MessageSendBar() {
 		fileInputRef.current?.click();
 	};
 	
+	const [isSending, setIsSending] = useState(false);
+	const handleKeyDownSendMessage = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+		if (isComposing) return;
+		if (e.key === "Enter" && !e.shiftKey) {
+			e.preventDefault();
+			if (!message.trim() || isSending) return;
+			
+			setIsSending(true);
+			await sendGroupChatMessage(id as string, message);
+			setMessage("");
+			setIsSending(false);
+		}
+	};
+	const handleSendMessage = () => {
+		if (!message.trim()) return;
+		sendGroupChatMessage(id as string, message);
+		setMessage("");
+	};
+	
 	return (
 		<S.MessageSendBarContainer>
 			<S.ContentBox>
@@ -43,12 +63,17 @@ export default function MessageSendBar() {
 					/>
 				</S.AddFile>
 				<S.InputText
+					onCompositionStart={() => setIsComposing(true)}
+					onCompositionEnd={() => setIsComposing(false)}
 					value={message}
 					onChange={(e) => setMessage(e.target.value)}
-					placeholder="메시지를 입력하세요"
+					onKeyDown={async (e) => {
+						await handleKeyDownSendMessage(e)
+					}}
+					placeholder="메시지를 입력하세요 (Shift+Enter로 줄바꿈)"
 				/>
 			</S.ContentBox>
-			<S.SendButton onClick={() => sendGroupChatMessage(id as string, message)}>
+			<S.SendButton onClick={handleSendMessage}>
 				<Image src={Send} alt={"send-icon"} fill/>
 			</S.SendButton>
 		</S.MessageSendBarContainer>

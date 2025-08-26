@@ -1,6 +1,6 @@
 "use client";
 
-import useSocketConnect from "@/hooks/useSoketConnect";
+import useSocketConnect from "@/hooks/useSocketConnect";
 
 export default function ChatConnect() {
 	useSocketConnect();

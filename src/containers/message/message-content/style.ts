@@ -11,7 +11,15 @@ export const ContainerBox = styled.section`
     margin-top: 10vh;
   }
 `
-
+export const ProfileName = styled.div`
+  position: absolute;
+  top: -1.5rem;
+  left: 3.5rem;
+  font-size: ${fontSizes.Body};
+  font-weight: 500;
+  color: ${colors.gray};
+  z-index: 1;
+`
 export const MessageContentContainer = styled.section`
   width: 100%;
   height: 100%;
@@ -76,7 +84,7 @@ export const SentMsgRow = styled.div<{ isSameUser: boolean }>`
   ${(props) => props.isSameUser ? "margin-bottom: 2rem;" : null}
 `;
 
-export const ReceivedMsgAndTimeWrapper = styled.div<{ isHaveReply: string | undefined }>`
+export const ReceivedMsgAndTimeWrapper = styled.div<{ isHaveReply: boolean | null }>`
   ${(props) => props.isHaveReply ? "margin-top:4rem;" : null}
   display: flex;
   align-items: flex-end;
@@ -121,7 +129,7 @@ export const MsgHoverIcons = styled.div`
   }
 `;
 
-export const SentMsgAndTimeWrapper = styled.div<{ isHaveReply: string | undefined }>`
+export const SentMsgAndTimeWrapper = styled.div<{ isHaveReply: boolean | null }>`
   display: flex;
   position: relative;
   align-items: flex-end;

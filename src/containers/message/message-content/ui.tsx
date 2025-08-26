@@ -1,7 +1,6 @@
 "use client"
 
 import * as S from "./style"
-import {fakeData} from "./data"
 import Profile from "@/assets/meeting/member-profile.png"
 import Image from "next/image"
 import React, {useEffect, useRef, useState} from "react";
@@ -11,8 +10,7 @@ import ContractModal from "@/containers/message/contract-modal/ui"
 import RoomTourModal from "@/containers/message/roomtour-modal/ui"
 import Square from '@/components/ui/button/square';
 import {useModalStore} from "@/store/modal"
-import {messageType, type, useMessageModalStore} from "@/store/messageModal"
-
+import {messageType, useMessageModalStore} from "@/store/messageModal"
 import BasicMessage from "@/components/ui/message/BasicMessage";
 import ReplyMessage from "@/components/ui/message/ReplyMessage";
 import ImageMessage from "@/components/ui/message/ImageMessage";
@@ -21,15 +19,49 @@ import ContractMessage from "@/components/ui/message/ContractMessage";
 import {useParams} from "next/navigation";
 import {useQuery} from "@apollo/client";
 import {MessageQueries} from "@/services/message";
+import {useUserStore} from "@/store/user";
+import {formatKoreanDateTime} from "@/utils/formatKoreanDateTime"
+import type {ChatMessage, ChatMessageResponse} from "@/containers/message/message-content/type";
+import {useMessageReflectStore} from "@/store/messageReflect";
 
 export default function MessageContent() {
+	const {message: newMessageReflect} = useMessageReflectStore();
+	console.log("newMessageReflect : ", newMessageReflect)
 	const {id} = useParams();
 	const {data} = useQuery(MessageQueries.READ_MESSAGES, {
 		variables: {
 			roomId: id,
 		}
 	})
-	console.log("content : ", data?.readMessages)
+	const [messages, setMessages] = useState<ChatMessage[]>([]);
+	useEffect(() => {
+		const newMessage = data?.readMessages.map((message: ChatMessageResponse) => {
+			return {
+				...message,
+				createdAt: formatKoreanDateTime(message.createdAt)
+			}
+		})
+		setMessages(newMessage);
+	}, [data?.readMessages]);
+	
+	useEffect(() => {
+		if (!newMessageReflect) return;
+		const newSetMessage = newMessageReflect;
+		newSetMessage["createdAt"] = formatKoreanDateTime(newSetMessage.sendAt)
+		newSetMessage["sender"] = {
+			name: newSetMessage.userId,
+			profile: newSetMessage.picture,
+		}
+		delete newSetMessage["name"]
+		delete newSetMessage["userId"]
+		delete newSetMessage["sendAt"]
+		delete newSetMessage["picture"]
+		
+		const newMessage = (newMessage: ChatMessage) => {
+			setMessages(prev => [...prev, newMessage]);
+		};
+		newMessage(newSetMessage)
+	}, [newMessageReflect]);
 	let lastDate: string | null = null;
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [replyInfo, setReplyInfo] = useState<null | { name: string, text: string }>(null);
@@ -50,22 +82,22 @@ export default function MessageContent() {
 	const {open} = useModalStore();
 	const {
 		setMessageType,
-		setType,
 		open: messageModalOpen,
 		setMaster,
 		unSetMaster
 	} = useMessageModalStore();
 	
 	
-	const openContract = (type: type, messageType: messageType, isMaster: boolean) => {
+	const openContract = (messageType: messageType, isMaster: boolean) => {
 		open();
 		messageModalOpen();
-		setType(type);
 		setMessageType(messageType);
 		if (isMaster) setMaster();
 		else unSetMaster();
 	};
 	
+	const {id: userId} = useUserStore();
+	console.log(messages)
 	return (
 		<S.ContainerBox>
 			<ContractModal/>
@@ -84,31 +116,32 @@ export default function MessageContent() {
 			)}
 			
 			<S.MessageContentContainer ref={containerRef}>
-				{fakeData.map((msg, idx) => {
-					const nextUser = idx < fakeData.length && fakeData[idx + 1]?.type;
-					const showDate = msg.date && msg.date !== lastDate;
-					lastDate = msg.date || lastDate;
+				{messages && messages.map((msg, idx) => {
+					const nextUser = idx < messages.length && messages[idx + 1]?.sender.name
+					const showDate = msg.createdAt.date && msg.createdAt.date !== lastDate;
+					lastDate = msg.createdAt.date || lastDate;
 					const isLastOfTime =
-						idx === fakeData.length - 1 ||
-						fakeData[idx + 1].time !== msg.time ||
-						fakeData[idx + 1].type !== msg.type;
+						idx === messages.length - 1 ||
+						messages[idx + 1].createdAt.time !== msg.createdAt.time ||
+						messages[idx + 1].sender.name !== msg.sender.name;
 					
 					const isFirstOfTime =
 						idx === 0 ||
-						fakeData[idx - 1].time !== msg.time ||
-						fakeData[idx - 1].type !== msg.type;
+						messages[idx - 1].createdAt.time !== msg.createdAt.time ||
+						messages[idx - 1].sender.name !== msg.sender.name;
+					
 					const renderMessageBody = () => {
-						if (msg.text === "" && msg.contract) {
+						if (msg.contents === "" && msg.contract) {
 							return (
 								<ContractMessage
 									thumbnail={msg.contract.thumbnail || '/assets/meeting/profile.png'}
 									name={msg.contract.name || ""}
-									time={isLastOfTime ? msg.time : undefined}
-									isSent={msg.type === 'sent'}
+									time={isLastOfTime ? msg.createdAt.time : undefined}
+									isSent={msg.sender.name === userId}
 									button={
 										<Square
 											text="자세히보기"
-											onClick={() => openContract(msg.type, "contract", msg.type === "received")}
+											onClick={() => openContract("contract", msg.sender.name !== userId)}
 											status={true}
 											width="100%"
 										/>
@@ -116,19 +149,19 @@ export default function MessageContent() {
 								/>
 							);
 						}
-						if (msg.text === "" && msg.roomTour) {
+						if (msg.contents === "" && msg.roomTour) {
 							return (
 								<RoomTourMessage
 									thumbnail={msg.roomTour.thumbnail || '/assets/meeting/profile.png'}
 									name={msg.roomTour.name || ""}
 									date={msg.roomTour.date || ""}
 									tourTime={msg.roomTour.time || ""}
-									messageTime={isLastOfTime ? msg.time : undefined}
-									isSent={msg.type === 'sent'}
+									messageTime={isLastOfTime ? msg.createdAt.time : undefined}
+									isSent={msg.sender.name === userId}
 									button={
 										<Square
 											text="자세히보기"
-											onClick={() => openContract(msg.type, "roomtour", msg.type === "received")}
+											onClick={() => openContract("roomtour", msg.sender.name !== userId)}
 											status={true}
 											width="100%"
 										/>
@@ -136,46 +169,51 @@ export default function MessageContent() {
 								/>
 							);
 						}
-						if (msg.text === "" && msg.img) {
-							return <ImageMessage src={msg.img} alt="img-msg" time={isLastOfTime ? msg.time : undefined}
-							                     isSent={msg.type === 'sent'}/>;
-						}
+						
+						// 이미지 형식
+						// if (msg.contents === "" && msg.img) {
+						// 	return <ImageMessage src={msg.img} alt="img-msg" time={isLastOfTime ? msg.time : undefined}
+						// 	                     isSent={msg.type === 'sent'}/>;
+						// }
+						// 답장형식
 						return (
 							<>
-								{msg.replyTo && (
-									<ReplyMessage
-										type={msg.type}
-										name={msg.replyTo.name || ""}
-										text={msg.replyTo.text || ""}
-										icon={<Image src={Reply} width={20} height={20} alt="reply"/>}
-										time={isLastOfTime ? msg.time : undefined}
-									/>
-								)}
-								<BasicMessage text={msg.text}
-								              time={isLastOfTime ? msg.time : undefined}
-								              isSent={msg.type === 'sent'}/>
+								{/*{msg.replyChat && (*/}
+								{/*	<ReplyMessage*/}
+								{/*		type={msg.type}*/}
+								{/*		name={msg.replyTo.name || ""}*/}
+								{/*		text={msg.replyTo.text || ""}*/}
+								{/*		icon={<Image src={Reply} width={20} height={20} alt="reply"/>}*/}
+								{/*		time={isLastOfTime ? msg.time : undefined}*/}
+								{/*	/>*/}
+								{/*)}*/}
+								<BasicMessage text={msg.contents}
+								              time={isLastOfTime ? msg.createdAt.time : undefined}
+								              isSent={msg.sender.name === userId}/>
 							</>
 						);
 					};
 					return (
 						<div key={msg.id}>
-							{showDate && <S.DateDivider>{msg.date}</S.DateDivider>}
+							{showDate && <S.DateDivider>{msg.createdAt.time}</S.DateDivider>}
 							
-							{msg.type === 'received' ? (
-								<S.ReceivedMsgRow isSameUser={nextUser !== msg.type}>
+							{msg.sender.name !== userId ? (
+								<S.ReceivedMsgRow isSameUser={nextUser !== msg.sender.name}>
 									{isFirstOfTime ? (
-										<S.ProfileImg isFirst={true}>
-											{msg.profile && <Image src={Profile} fill alt={msg.name || 'profile'}/>}
-										</S.ProfileImg>
+										<div style={{position: "relative"}}>
+											<S.ProfileName>{msg.sender.name}</S.ProfileName>
+											<S.ProfileImg isFirst={true}>
+												{msg.sender.profile && <Image src={Profile} fill alt={msg.sender.name || 'profile'}/>}
+											</S.ProfileImg>
+										</div>
 									) : (
 										<S.ProfileImg isFirst={false}/>
 									)}
-									
-									<S.ReceivedMsgAndTimeWrapper isHaveReply={msg.replyTo?.text || ""}>
+									<S.ReceivedMsgAndTimeWrapper isHaveReply={msg.replyChat ?? false}>
 										{renderMessageBody()}
 										{!msg.contract && !msg.roomTour && !msg.img && (
 											<S.MsgHoverIcons className="msg-hover-icons"
-											                 onClick={() => setReplyInfo({name: msg.name || '', text: msg.text})}
+											                 onClick={() => setReplyInfo({name: msg.sender.name || '', text: msg.contents})}
 											>
 												<Image
 													src={Reply}
@@ -189,8 +227,8 @@ export default function MessageContent() {
 									</S.ReceivedMsgAndTimeWrapper>
 								</S.ReceivedMsgRow>
 							) : (
-								<S.SentMsgRow isSameUser={nextUser !== msg.type}>
-									<S.SentMsgAndTimeWrapper isHaveReply={msg.replyTo?.text || ""}>
+								<S.SentMsgRow isSameUser={nextUser !== msg.sender.name}>
+									<S.SentMsgAndTimeWrapper isHaveReply={msg.replyChat ?? false}>
 										{renderMessageBody()}
 									</S.SentMsgAndTimeWrapper>
 								</S.SentMsgRow>
