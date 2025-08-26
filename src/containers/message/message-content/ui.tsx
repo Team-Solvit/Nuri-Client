@@ -21,8 +21,9 @@ import {useQuery} from "@apollo/client";
 import {MessageQueries} from "@/services/message";
 import {useUserStore} from "@/store/user";
 import {formatKoreanDateTime} from "@/utils/formatKoreanDateTime"
-import type {ChatMessage, ChatMessageResponse} from "@/containers/message/message-content/type";
+import type {ChatMessage, ChatReadMessageResponse} from "@/containers/message/message-content/type";
 import {useMessageReflectStore} from "@/store/messageReflect";
+import {scrollToBottom} from "@/utils/scrollToBottom";
 
 export default function MessageContent() {
 	const {message: newMessageReflect} = useMessageReflectStore();
@@ -35,7 +36,7 @@ export default function MessageContent() {
 	})
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	useEffect(() => {
-		const newMessage = data?.readMessages.map((message: ChatMessageResponse) => {
+		const newMessage = data?.readMessages.map((message: ChatReadMessageResponse) => {
 			return {
 				...message,
 				createdAt: formatKoreanDateTime(message.createdAt)
@@ -47,7 +48,7 @@ export default function MessageContent() {
 	useEffect(() => {
 		if (!newMessageReflect) return;
 		const newSetMessage = newMessageReflect;
-		newSetMessage["createdAt"] = formatKoreanDateTime(newSetMessage.sendAt)
+		newSetMessage["createdAt"] = formatKoreanDateTime(newSetMessage.sendAt ?? "")
 		newSetMessage["sender"] = {
 			name: newSetMessage.userId,
 			profile: newSetMessage.picture,
@@ -66,18 +67,6 @@ export default function MessageContent() {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [replyInfo, setReplyInfo] = useState<null | { name: string, text: string }>(null);
 	
-	const scrollToBottom = () => {
-		if (containerRef.current) {
-			containerRef.current.scrollTop = containerRef.current.scrollHeight;
-		}
-	};
-	
-	useEffect(() => {
-		scrollToBottom();
-		const handleResize = () => scrollToBottom();
-		window.addEventListener('resize', handleResize);
-		return () => window.removeEventListener('resize', handleResize);
-	}, []);
 	
 	const {open} = useModalStore();
 	const {
@@ -97,7 +86,16 @@ export default function MessageContent() {
 	};
 	
 	const {id: userId} = useUserStore();
-	console.log(messages)
+	// 접속 시 맨 밑으로 스크롤
+	useEffect(() => {
+		const handleResize = () => scrollToBottom(containerRef.current);
+		window.addEventListener('resize', handleResize);
+		return () => window.removeEventListener('resize', handleResize);
+	}, []);
+	
+	useEffect(() => {
+		scrollToBottom(containerRef.current);
+	}, [messages]);
 	return (
 		<S.ContainerBox>
 			<ContractModal/>
@@ -127,7 +125,7 @@ export default function MessageContent() {
 					
 					const isFirstOfTime =
 						idx === 0 ||
-						messages[idx - 1].createdAt.time !== msg.createdAt.time ||
+						messages[idx - 1].createdAt.date !== msg.createdAt.date ||
 						messages[idx - 1].sender.name !== msg.sender.name;
 					
 					const renderMessageBody = () => {
@@ -195,7 +193,7 @@ export default function MessageContent() {
 					};
 					return (
 						<div key={msg.id}>
-							{showDate && <S.DateDivider>{msg.createdAt.time}</S.DateDivider>}
+							{showDate && <S.DateDivider>{msg.createdAt.date} {msg.createdAt.time}</S.DateDivider>}
 							
 							{msg.sender.name !== userId ? (
 								<S.ReceivedMsgRow isSameUser={nextUser !== msg.sender.name}>

@@ -17,16 +17,27 @@ export interface ChatMessage {
 	contract?: Contract
 }
 
+export interface ChatReadMessageResponse extends Omit<ChatMessage, "createdAt"> {
+	createdAt: string;
+}
+
 export interface ChatMessageResponse {
 	id: string;
 	contents: string;
-	createdAt: string;
+	createdAt: {
+		time: string;
+		date: string;
+	};
+	sendAt?: string;
+	userId?: string;
+	name?: string;
 	sender: {
-		profile: string | null;
-		name: string;
+		profile: string | undefined;
+		name: string | undefined;
 	}
 	roomId: string;
-	
+	picture?: string;
+	img?: string;
 	roomTour?: RoomTour
 	replyChat?: boolean | null;
 	contract?: Contract
