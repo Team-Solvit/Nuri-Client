@@ -6,8 +6,9 @@ import * as S from './style';
 import Square from '@/components/ui/button/square';
 import { useRouter } from 'next/navigation';
 import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
-
-const check = "icons/check.svg";
+import { useApollo } from '@/lib/apolloClient';
+import { useAlertStore } from '@/store/alert';
+import { AuthService } from '@/services/auth';
 
 const steps = [
 	'이용약관',
@@ -54,7 +55,11 @@ export default function RegisterContainer() {
 	});
 	const [error, setError] = useState<string | null>(null);
 	const [touched, setTouched] = useState(false);
+	const [loading, setLoading] = useState(false);
 	const router = useRouter();
+
+	const client = useApollo();
+	const alertStore = useAlertStore();
 
 	const validateCurrentStep = () => {
 		if (currentStep === 0) {
@@ -92,7 +97,7 @@ export default function RegisterContainer() {
 	};
 
 	const navigate = useNavigationWithProgress()
-	const handleNext = () => {
+	const handleNext = async () => {
 		setTouched(true);
 		const validationError = validateCurrentStep();
 		if (validationError) {
@@ -105,8 +110,34 @@ export default function RegisterContainer() {
 			setCurrentStep(currentStep + 1);
 			setTouched(false);
 		} else {
-			console.log('submit', formData);
-			navigate('/register/success');
+			// 회원가입 완료 처리
+			if (loading) return;
+			setLoading(true);
+			try {
+				await AuthService.localSignUp(client, {
+					id: formData.username,
+					password: formData.password,
+					name: formData.name,
+					email: formData.email,
+					country: formData.nationality,
+					language: formData.language,
+					userAgreement: {
+						agreedTermsOfService: formData.terms1,
+						agreedPrivacyCollection: formData.terms2,
+						agreedPrivacyThirdParty: formData.terms3,
+						agreedIdentityAgencyTerms: formData.terms4,
+						agreedIdentityPrivacyDelegate: formData.terms5,
+						agreedIdentityUniqueInfo: formData.terms6,
+						agreedIdentityProviderTerms: formData.terms7
+					}
+				});
+				alertStore.success('회원가입이 완료되었습니다.');
+				navigate('/register/success');
+			} catch (e: any) {
+				alertStore.error(e?.message || '회원가입에 실패했습니다.');
+			} finally {
+				setLoading(false);
+			}
 		}
 	};
 
@@ -279,7 +310,7 @@ export default function RegisterContainer() {
 									onChange={e => onChangeField('nationality', e.target.value)}
 								>
 									<option value="">국적을 선택해주세요</option>
-									<option value="KR">🇰🇷 대한민국</option>
+									<option value="대한민국">🇰🇷 대한민국</option>
 									<option value="US">🇺🇸 미국</option>
 									<option value="JP">🇯🇵 일본</option>
 									<option value="CN">🇨🇳 중국</option>
@@ -311,7 +342,7 @@ export default function RegisterContainer() {
 									onChange={e => onChangeField('language', e.target.value)}
 								>
 									<option value="">언어를 선택해주세요</option>
-									<option value="KR">🇰🇷 한국어</option>
+									<option value="한국어">🇰🇷 한국어</option>
 									<option value="EN">🇺🇸 영어</option>
 									<option value="JP">🇯🇵 일본어</option>
 									<option value="CN">🇨🇳 중국어</option>
@@ -354,7 +385,7 @@ export default function RegisterContainer() {
 								current={idx === currentStep}
 							>
 								{completedSteps.includes(idx)
-									? <Image src={check} alt="완료" width={18} height={18} />
+									? <Image src="icons/check.svg" alt="완료" width={18} height={18} />
 									: idx + 1}
 							</S.StepCircle>
 							<S.StepLabel
@@ -379,9 +410,9 @@ export default function RegisterContainer() {
 						<Square text='돌아가기' onClick={() => router.back()} status={false} width="100%" />
 					)}
 					<Square
-						text={currentStep === steps.length - 1 ? '가입완료' : '다음'}
+						text={currentStep === steps.length - 1 ? (loading ? '가입 중...' : '가입완료') : '다음'}
 						onClick={handleNext}
-						status
+						status={!loading}
 						width="100%"
 					/>
 				</S.ButtonGroup>
