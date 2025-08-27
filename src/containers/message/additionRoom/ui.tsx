@@ -48,8 +48,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 	useEffect(() => {
 		setUsers(searchUserResult?.queryUsers || []);
 	}, [searchUserResult]);
-	console.log(users)
-	console.log(selectedUsers)
+	
 	// Close dropdown when clicking outside
 	useEffect(() => {
 		function handleClickOutside(event: MouseEvent) {

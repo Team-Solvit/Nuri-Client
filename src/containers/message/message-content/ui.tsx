@@ -27,7 +27,6 @@ import {scrollToBottom} from "@/utils/scrollToBottom";
 
 export default function MessageContent() {
 	const {message: newMessageReflect} = useMessageReflectStore();
-	console.log("newMessageReflect : ", newMessageReflect)
 	const {id} = useParams();
 	const {data} = useQuery(MessageQueries.READ_MESSAGES, {
 		variables: {
@@ -47,19 +46,22 @@ export default function MessageContent() {
 	
 	useEffect(() => {
 		if (!newMessageReflect) return;
-		const newSetMessage = newMessageReflect;
-		newSetMessage["createdAt"] = formatKoreanDateTime(newSetMessage.sendAt ?? "")
-		newSetMessage["sender"] = {
-			name: newSetMessage.userId,
-			profile: newSetMessage.picture,
-		}
-		delete newSetMessage["name"]
-		delete newSetMessage["userId"]
-		delete newSetMessage["sendAt"]
-		delete newSetMessage["picture"]
+		if (newMessageReflect.roomId !== id) return;
+		const newSetMessage: ChatMessage = {
+			roomId: newMessageReflect.roomId,
+			contents: newMessageReflect.contents,
+			id: newMessageReflect.id,
+			sender: {
+				name: newMessageReflect.userId,
+				profile: newMessageReflect.picture,
+			},
+			createdAt: formatKoreanDateTime(newMessageReflect.sendAt)
+		};
 		
 		const newMessage = (newMessage: ChatMessage) => {
-			setMessages(prev => [...prev, newMessage]);
+			setMessages(prev => {
+				return [...(prev ?? []), newMessage];
+			});
 		};
 		newMessage(newSetMessage)
 	}, [newMessageReflect]);

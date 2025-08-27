@@ -22,25 +22,13 @@ export interface ChatReadMessageResponse extends Omit<ChatMessage, "createdAt"> 
 }
 
 export interface ChatMessageResponse {
-	id: string;
 	contents: string;
-	createdAt: {
-		time: string;
-		date: string;
-	};
-	sendAt?: string;
-	userId?: string;
-	name?: string;
-	sender: {
-		profile: string | undefined;
-		name: string | undefined;
-	}
+	id: string;
+	name: string;
+	picture: string;
 	roomId: string;
-	picture?: string;
-	img?: string;
-	roomTour?: RoomTour
-	replyChat?: boolean | null;
-	contract?: Contract
+	sendAt: string;
+	userId: string;
 }
 
 export interface ReplyTo {

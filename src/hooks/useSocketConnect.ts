@@ -24,17 +24,14 @@ export default function useSocketConnect() {
 		};
 		
 		client.onConnect = () => {
-			console.log("연결 성공!");
 			
 			client.subscribe(`/user/${id}/messages`, (message) => {
 				const messageData = JSON.parse(message.body);
-				console.log("새 메시지 ✅", messageData)
 				setMessage(messageData)
 			});
 			
 			client.subscribe(`/user/${id}/notify`, (message) => {
 				const messageData = JSON.parse(message.body);
-				console.log("새 메시지 ✅", messageData)
 				setMessage(messageData)
 			});
 			
@@ -47,7 +44,6 @@ export default function useSocketConnect() {
 				if (!roomId) return;
 				client.subscribe(`/messages/${roomId}`, (message) => {
 					const messageData = JSON.parse(message.body);
-					console.log("새 메시지 ✅", messageData)
 					setMessage(messageData)
 				});
 			});
