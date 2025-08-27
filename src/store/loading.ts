@@ -6,6 +6,10 @@ interface LoadingState {
 	show: () => void;
 }
 
+// import {useLoadingStore} from "@/store/loading";
+// const {none, show} = useLoadingStore();
+// show(), none() 으로 조절하기
+
 export const useLoadingStore = create<LoadingState>((set) => ({
 	isVisible: false,
 	none: () => {

@@ -9,7 +9,6 @@ import Comment from "@/assets/post/comment.svg";
 import Arrow from "@/assets/post/arrow-right.svg";
 import {useState} from "react";
 import {useRouter} from "next/navigation";
-import {useLoadingStore} from "@/store/loading";
 
 export default function PostScroll() {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null);
@@ -36,7 +35,6 @@ export default function PostScroll() {
 			return {...prev, [postId]: next};
 		});
 	};
-	const {show} = useLoadingStore();
 	return (
 		<S.PostScrollContainer>
 			{fakeData.map(post => {
@@ -63,7 +61,6 @@ export default function PostScroll() {
 							<S.Nav onClick={(e) => e.stopPropagation()}>
 								<p>{post.subject}</p>
 								<Square text={"채팅"} onClick={() => {
-									show()
 								}} status={true} width={"100px"}/>
 							</S.Nav>
 						</S.PostTitle>
