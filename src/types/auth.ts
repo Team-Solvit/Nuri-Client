@@ -41,6 +41,7 @@ export interface OAuthSignUpInput {
   email: string;     // !
   country: string;   // !
   language: string;  // !
+  emailVerifyTicket?: string;
   userAgreement: UserAgreement; // !
 }
 

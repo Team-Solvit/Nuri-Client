@@ -1,5 +1,5 @@
 import { gql, ApolloClient } from '@apollo/client';
-import { LocalLoginInput, LocalSignUpInput, LoginOAuthCodeInput, OAuthLoginResponse, TokenString } from '@/types/auth';
+import { LocalLoginInput, LocalSignUpInput, LoginOAuthCodeInput, OAuthLoginResponse, TokenString, OAuthSignUpInput } from '@/types/auth';
 import { headersToObject } from '@/utils/headers';
 
 export const AuthGQL = {
@@ -59,7 +59,11 @@ export const AuthGQL = {
         verifyMailCode(mailCodeVerifyInput: $input)
       }
     `,
-
+    OAUTH_SIGN_UP: gql`
+      mutation OAuth2SignUp($input: OAuth2SignUpInput!) {
+        oauth2SignUp(oauth2SignUpInput: $input)
+      }
+    `,
   }
 };
 
@@ -140,5 +144,12 @@ export const AuthService = {
       fetchPolicy: 'no-cache'
     });
     return data?.verifyMailCode ?? '';
+  },
+  oauthSignUp: async (client: ApolloClient<any>, input: OAuthSignUpInput): Promise<TokenString> => {
+    const { data } = await client.mutate<{ oauthSignUp: TokenString }>({
+      mutation: AuthGQL.MUTATIONS.OAUTH_SIGN_UP,
+      variables: { input },
+    });
+    return data?.oauthSignUp ?? '';
   },
 };

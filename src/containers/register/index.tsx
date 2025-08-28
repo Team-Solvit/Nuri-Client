@@ -29,18 +29,30 @@ export default function RegisterContainer() {
 	const [error, setError] = useState<string | null>(null);
 	const [touched, setTouched] = useState(false);
 	const [loading, setLoading] = useState(false);
+	const [oauthId, setOauthId] = useState<string | null>(null);
 	const router = useRouter();
 	const client = useApollo();
 	const alertStore = useAlertStore();
 	const { usernameState, checkUsername, resetUsername } = useUsernameCheck(client);
 	const { emailState, sendMailCode, verifyMailCode, resetEmail } = useEmailVerification(client);
 
+	useState(() => {
+		try {
+			const stored = typeof window !== 'undefined' ? sessionStorage.getItem('pending_oauth_id') : null;
+			if (stored) setOauthId(stored);
+		} catch { }
+		return undefined;
+	});
+
+	const effectiveSteps = oauthId ? steps.filter(s => s !== '비밀번호') : steps;
+
 	const validateCurrentStep = () => {
-		if (currentStep === 0) return validateTerms(formData as any);
-		if (currentStep === 1) return validateAccount({ name: formData.name, username: formData.username, usernameChecked: usernameState.status !== 'idle', usernameAvailable: usernameState.status === 'available' });
-		if (currentStep === 2) return validateEmail({ email: formData.email, code: formData.verificationCode, verified: emailState.phase === 'verified' });
-		if (currentStep === 3) return validatePassword({ password: formData.password, confirmPassword: formData.confirmPassword });
-		if (currentStep === 4) return validateProfile({ nationality: formData.nationality, language: formData.language });
+		const stepLabel = effectiveSteps[currentStep];
+		if (stepLabel === '이용약관') return validateTerms(formData as any);
+		if (stepLabel === '활동정보') return validateAccount({ name: formData.name, username: formData.username, usernameChecked: usernameState.status !== 'idle', usernameAvailable: usernameState.status === 'available' });
+		if (stepLabel === '인증') return validateEmail({ email: formData.email, code: formData.verificationCode, verified: emailState.phase === 'verified' });
+		if (stepLabel === '비밀번호') return validatePassword({ password: formData.password, confirmPassword: formData.confirmPassword });
+		if (stepLabel === '국적') return validateProfile({ nationality: formData.nationality, language: formData.language });
 		return null;
 	};
 
@@ -53,7 +65,7 @@ export default function RegisterContainer() {
 			return;
 		}
 		setError(null);
-		if (currentStep < steps.length - 1) {
+		if (currentStep < effectiveSteps.length - 1) {
 			setCompletedSteps([...completedSteps, currentStep]);
 			setCurrentStep(currentStep + 1);
 			setTouched(false);
@@ -61,25 +73,47 @@ export default function RegisterContainer() {
 			if (loading) return;
 			setLoading(true);
 			try {
-				await AuthService.localSignUp(client, {
-					id: formData.username,
-					password: formData.password,
-					name: formData.name,
-					email: formData.email,
-					country: formData.nationality,
-					language: formData.language,
-					emailVerifyTicket: emailState.ticket,
-					userAgreement: {
-						agreedTermsOfService: formData.terms1,
-						agreedPrivacyCollection: formData.terms2,
-						agreedPrivacyThirdParty: formData.terms3,
-						agreedIdentityAgencyTerms: formData.terms4,
-						agreedIdentityPrivacyDelegate: formData.terms5,
-						agreedIdentityUniqueInfo: formData.terms6,
-						agreedIdentityProviderTerms: formData.terms7
-					},
-				});
-				alertStore.success('회원가입이 완료되었습니다.');
+				if (oauthId) {
+					await AuthService.oauthSignUp(client, {
+						oauthId,
+						id: formData.username,
+						email: formData.email,
+						country: formData.nationality,
+						language: formData.language,
+						emailVerifyTicket: emailState.ticket,
+						userAgreement: {
+							agreedTermsOfService: formData.terms1,
+							agreedPrivacyCollection: formData.terms2,
+							agreedPrivacyThirdParty: formData.terms3,
+							agreedIdentityAgencyTerms: formData.terms4,
+							agreedIdentityPrivacyDelegate: formData.terms5,
+							agreedIdentityUniqueInfo: formData.terms6,
+							agreedIdentityProviderTerms: formData.terms7
+						},
+					});
+					alertStore.success('회원가입이 완료되었습니다.');
+					sessionStorage.removeItem('pending_oauth_id');
+				} else {
+					await AuthService.localSignUp(client, {
+						id: formData.username,
+						password: formData.password,
+						name: formData.name,
+						email: formData.email,
+						country: formData.nationality,
+						language: formData.language,
+						emailVerifyTicket: emailState.ticket,
+						userAgreement: {
+							agreedTermsOfService: formData.terms1,
+							agreedPrivacyCollection: formData.terms2,
+							agreedPrivacyThirdParty: formData.terms3,
+							agreedIdentityAgencyTerms: formData.terms4,
+							agreedIdentityPrivacyDelegate: formData.terms5,
+							agreedIdentityUniqueInfo: formData.terms6,
+							agreedIdentityProviderTerms: formData.terms7
+						},
+					});
+					alertStore.success('회원가입이 완료되었습니다.');
+				}
 				navigate('/register/success');
 			} catch (e: any) {
 				alertStore.error(e?.message || '회원가입에 실패했습니다.');
@@ -112,16 +146,17 @@ export default function RegisterContainer() {
 	const handleVerifyMailCode = () => { verifyMailCode(formData.email, formData.verificationCode); };
 
 	const renderStepContent = () => {
-		switch (currentStep) {
-			case 0:
+		const stepLabel = effectiveSteps[currentStep];
+		switch (stepLabel) {
+			case '이용약관':
 				return <StepTerms form={formData} onChange={onChangeField} />;
-			case 1:
+			case '활동정보':
 				return <StepAccount form={formData} onChange={onChangeField} usernameState={usernameState} onCheck={handleUsernameCheck} />;
-			case 2:
+			case '인증':
 				return <StepEmail form={formData} onChange={onChangeField} emailState={emailState} onSend={handleSendMailCode} onVerify={handleVerifyMailCode} />;
-			case 3:
+			case '비밀번호':
 				return <StepPassword form={formData} onChange={onChangeField} />;
-			case 4:
+			case '국적':
 				return <StepProfile form={formData} onChange={onChangeField} />;
 			default:
 				return null;
@@ -133,7 +168,7 @@ export default function RegisterContainer() {
 			<S.Header>
 				<S.Progress>
 					<S.ProgressLine progress={completedSteps.length} />
-					{steps.map((label, idx) => (
+					{effectiveSteps.map((label, idx) => (
 						<S.Step key={idx}>
 							<S.StepCircle
 								completed={completedSteps.includes(idx)}
@@ -165,7 +200,7 @@ export default function RegisterContainer() {
 						<Square text='돌아가기' onClick={() => router.back()} status={false} width="100%" />
 					)}
 					<Square
-						text={currentStep === steps.length - 1 ? (loading ? '가입 중...' : '가입완료') : '다음'}
+						text={currentStep === effectiveSteps.length - 1 ? (loading ? '가입 중...' : '가입완료') : '다음'}
 						onClick={handleNext}
 						status={!loading}
 						width="100%"
