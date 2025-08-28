@@ -30,3 +30,19 @@ export const sendGroupChatMessage = (roomId: string, message: string) => {
 		body: JSON.stringify(payload),
 	});
 };
+
+export const sendDmChatMessage = (userId: string, message: string) => {
+	if (!client.active) {
+		console.error("❌ 소켓 연결 안 됨");
+		return;
+	}
+	if (!userId || !message) return;
+	const payload: Omit<ChatRecordRequestDto, "roomId"> = {
+		contents: message,
+		replyChat: null,
+	};
+	client.publish({
+		destination: `/chat/${userId}`,
+		body: JSON.stringify(payload),
+	});
+};

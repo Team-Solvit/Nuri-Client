@@ -8,13 +8,15 @@ import Heart from "@/assets/post/heart.svg";
 import Comment from "@/assets/post/comment.svg";
 import Arrow from "@/assets/post/arrow-right.svg";
 import {useState} from "react";
-import {useRouter} from "next/navigation";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {useUserStore} from "@/store/user";
+import {useMessageDmManageStore} from "@/store/messageDmManage";
 
 export default function PostScroll() {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null);
-	const navigate = useRouter();
+	const navigate = useNavigationWithProgress();
 	const navigateClick = (path: string) => {
-		navigate.push(path);
+		navigate(path);
 	}
 	const [imageIndexMap, setImageIndexMap] = useState<Record<number, number>>({});
 	
@@ -35,6 +37,15 @@ export default function PostScroll() {
 			return {...prev, [postId]: next};
 		});
 	};
+	
+	const {setValues} = useMessageDmManageStore();
+	
+	const {id} = useUserStore();
+	const moveChatRoom = (opponent: string) => {
+		const chatRoomId = id + ":" + opponent
+		navigate(`/message/${chatRoomId}`)
+		setValues(opponent, opponent, opponent, true);
+	}
 	return (
 		<S.PostScrollContainer>
 			{fakeData.map(post => {
@@ -61,6 +72,7 @@ export default function PostScroll() {
 							<S.Nav onClick={(e) => e.stopPropagation()}>
 								<p>{post.subject}</p>
 								<Square text={"채팅"} onClick={() => {
+									moveChatRoom(post.user.userId)
 								}} status={true} width={"100px"}/>
 							</S.Nav>
 						</S.PostTitle>

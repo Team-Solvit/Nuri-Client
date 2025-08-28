@@ -10,6 +10,7 @@ import AdditionRoom from "@/containers/message/additionRoom/ui";
 import {useQuery} from "@apollo/client";
 import {MessageQueries} from "@/services/message";
 import {RoomReadResponseDto} from "@/types/message";
+import {useMessageDmManageStore} from "@/store/messageDmManage";
 
 export default function MessageSideBar() {
 	const [size, setSize] = useState(10);
@@ -17,7 +18,8 @@ export default function MessageSideBar() {
 	const {data} = useQuery(MessageQueries.GET_ROOMS_CHAT_LIST, {
 		variables: {page: 1, size},
 	});
-	const roomDataList: RoomReadResponseDto[] = data?.getRooms;
+	const [roomDataList, setRoomDataList] = useState<RoomReadResponseDto[]>(data?.getRooms || []);
+	
 	const router = useRouter();
 	const handleRouter = (id: string) => {
 		NProgress.start()
@@ -46,6 +48,49 @@ export default function MessageSideBar() {
 		container?.addEventListener("scroll", handleScroll);
 		return () => container?.removeEventListener("scroll", handleScroll);
 	}, []);
+	
+	const {chatRoomId, chatRoomName, chatProfile, isOpen, setValues} = useMessageDmManageStore();
+	
+	useEffect(() => {
+		if (roomDataList.length === 0) {
+			setRoomDataList(data?.getRooms)
+		}
+		if (isOpen && roomDataList?.length > 0) {
+			setRoomDataList((prev) => {
+				return [
+					...prev,
+					{
+						latestMessage: "",
+						latestCreatedAt: "",
+						roomDto: {
+							name: chatRoomName,
+							id: chatRoomId,
+							profile: chatProfile,
+						}
+					}
+				];
+			});
+			setValues("", "", "", false);
+		} else if (isOpen && roomDataList?.length === 0) {
+			setRoomDataList([
+				{
+					latestMessage: "",
+					latestCreatedAt: "",
+					roomDto: {
+						name: chatRoomName,
+						id: chatRoomId,
+						profile: chatProfile,
+					}
+				}
+			]);
+			setValues("", "", "", false);
+		}
+	}, []);
+	const changeParamsId = (id: string) => {
+		const decoded = decodeURIComponent(id);
+		const idx = decoded.lastIndexOf(":");
+		return idx !== -1 ? decoded.substring(idx + 1) : decoded;
+	};
 	return (
 		<S.MessageContainer id={typeof params.id === 'string' ? params.id : params.id?.[0] ?? ''}>
 			<S.AddRoom>
@@ -75,7 +120,7 @@ export default function MessageSideBar() {
 							ref={targetRef}
 							key={room.roomDto.id}
 							onClick={() => handleRouter(room.roomDto.id)}
-							isRead={params.id === room.roomDto.id}
+							isRead={params.id === room.roomDto.id || changeParamsId(params.id as string) === room.roomDto.id}
 						>
 							<S.Profile>
 								<Image src={Profile} alt={"profile"} fill/>

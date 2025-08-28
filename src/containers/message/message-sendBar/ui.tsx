@@ -5,7 +5,7 @@ import Send from "@/assets/icon/sent.svg"
 import Image from "next/image"
 import Plus from "@/assets/icon/plus.svg"
 import React, {useRef, useState} from "react";
-import {sendGroupChatMessage} from "@/lib/soketClient";
+import {sendDmChatMessage, sendGroupChatMessage} from "@/lib/soketClient";
 import {useParams} from "next/navigation";
 
 export default function MessageSendBar() {
@@ -36,16 +36,37 @@ export default function MessageSendBar() {
 		if (e.key === "Enter" && !e.shiftKey) {
 			e.preventDefault();
 			if (!message.trim() || isSending) return;
-			
 			setIsSending(true);
-			await sendGroupChatMessage(id as string, message);
+			if (checkType(id as string)) {
+				await sendDmChatMessage(id as string, message);
+			} else {
+				await sendGroupChatMessage(id as string, message);
+			}
 			setMessage("");
 			setIsSending(false);
 		}
 	};
+	
+	function checkType(str: string) {
+		const userIdRegex = /^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$/;
+		const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+		
+		if (userIdRegex.test(str)) {
+			return "userId 형식";
+		} else if (uuidRegex.test(str)) {
+			return "UUID 형식";
+		} else {
+			return "알 수 없음";
+		}
+	}
+	
 	const handleSendMessage = () => {
 		if (!message.trim()) return;
-		sendGroupChatMessage(id as string, message);
+		if (checkType(id as string) === "userId 형식") {
+			sendDmChatMessage(id as string, message);
+		} else {
+			sendGroupChatMessage(id as string, message);
+		}
 		setMessage("");
 	};
 	
