@@ -36,8 +36,8 @@ export const AuthGQL = {
       mutation Logout { logout }
     `,
     OAUTH_LOGIN: gql`
-      mutation OAuthLogin($input: OAuth2LoginInput!) {
-        oauthLogin(oauthLoginInput: $input) {
+      mutation OAuth2Login($input: OAuth2LoginInput!) {
+        oauth2Login(oauth2LoginInput: $input) {
           oauthId
           isNewUser
         }
@@ -85,7 +85,7 @@ export const AuthService = {
     return data?.logout ?? '';
   },
   oauthLogin: async (client: ApolloClient<any>, input: LoginOAuthCodeInput) => {
-    const res = await client.mutate<{ oauthLogin: OAuthLoginResponse }>({
+    const res = await client.mutate<{ oauth2Login: OAuthLoginResponse }>({
       mutation: AuthGQL.MUTATIONS.OAUTH_LOGIN,
       variables: { input },
       fetchPolicy: 'no-cache',
@@ -95,7 +95,7 @@ export const AuthService = {
     const status = (res as any).__status as number | undefined;
 
     return {
-      response: res.data?.oauthLogin,
+      response: res.data?.oauth2Login,
       headers,
       status,
     };
