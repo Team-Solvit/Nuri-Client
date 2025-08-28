@@ -17,6 +17,12 @@ export const AuthGQL = {
         getOAuth2Link(provider: $provider)
       }
     `,
+    VALIDATE_USER_ID: gql`
+      query ValidateUserId($userId: String!) {
+        validateUserId(userId: $userId)
+      }
+    `,
+
   },
   MUTATIONS: {
     LOCAL_LOGIN: gql`
@@ -43,6 +49,17 @@ export const AuthGQL = {
         }
       }
     `,
+    SEND_MAIL_CODE: gql`
+      mutation SendMailCode($email: String!) {
+        sendMailCode(email: $email)
+      }
+    `,
+    VERIFY_MAIL_CODE: gql`
+      mutation VerifyMailCode($input: MailCodeVerifyInput!) {
+        verifyMailCode(mailCodeVerifyInput: $input)
+      }
+    `,
+
   }
 };
 
@@ -99,5 +116,29 @@ export const AuthService = {
       headers,
       status,
     };
+  },
+  validateUserId: async (client: ApolloClient<any>, userId: string): Promise<boolean> => {
+    const { data } = await client.query<{ validateUserId: boolean }>({
+      query: AuthGQL.QUERIES.VALIDATE_USER_ID,
+      variables: { userId },
+      fetchPolicy: 'no-cache'
+    });
+    return !!data?.validateUserId;
+  },
+  sendMailCode: async (client: ApolloClient<any>, email: string): Promise<string> => {
+    const { data } = await client.mutate<{ sendMailCode: string }>({
+      mutation: AuthGQL.MUTATIONS.SEND_MAIL_CODE,
+      variables: { email },
+      fetchPolicy: 'no-cache'
+    });
+    return data?.sendMailCode ?? '';
+  },
+  verifyMailCode: async (client: ApolloClient<any>, email: string, code: string): Promise<string> => {
+    const { data } = await client.mutate<{ verifyMailCode: string }>({
+      mutation: AuthGQL.MUTATIONS.VERIFY_MAIL_CODE,
+      variables: { input: { email, code } },
+      fetchPolicy: 'no-cache'
+    });
+    return data?.verifyMailCode ?? '';
   },
 };
