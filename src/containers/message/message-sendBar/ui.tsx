@@ -38,7 +38,8 @@ export default function MessageSendBar() {
 			if (!message.trim() || isSending) return;
 			setIsSending(true);
 			if (checkType(id as string)) {
-				await sendDmChatMessage(id as string, message);
+				const chatId = selectId(id as string);
+				await sendDmChatMessage(chatId, message);
 			} else {
 				await sendGroupChatMessage(id as string, message);
 			}
@@ -60,10 +61,19 @@ export default function MessageSendBar() {
 		}
 	}
 	
+	const selectId = (id: string) => {
+		const value = Array.isArray(id) ? id[0] : id;
+		const decoded = decodeURIComponent(value);
+		return decoded.split(":")[1];
+	};
+	
+	
 	const handleSendMessage = () => {
 		if (!message.trim()) return;
 		if (checkType(id as string) === "userId 형식") {
-			sendDmChatMessage(id as string, message);
+			console.log("dm 실행")
+			const chatId = selectId(id as string);
+			sendDmChatMessage(chatId, message);
 		} else {
 			sendGroupChatMessage(id as string, message);
 		}

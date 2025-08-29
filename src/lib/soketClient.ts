@@ -36,11 +36,15 @@ export const sendDmChatMessage = (userId: string, message: string) => {
 		console.error("❌ 소켓 연결 안 됨");
 		return;
 	}
+	console.log("userId : ", userId)
 	if (!userId || !message) return;
-	const payload: Omit<ChatRecordRequestDto, "roomId"> = {
+	const payload: ChatRecordRequestDto = {
+		roomId: userId,
 		contents: message,
 		replyChat: null,
 	};
+	console.log("payload : ", payload)
+	console.log(`/chat/${userId}`)
 	client.publish({
 		destination: `/chat/${userId}`,
 		body: JSON.stringify(payload),

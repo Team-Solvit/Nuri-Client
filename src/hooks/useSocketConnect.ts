@@ -24,7 +24,7 @@ export default function useSocketConnect() {
 		};
 		
 		client.onConnect = () => {
-			
+			console.log("✅ 연결완료")
 			client.subscribe(`/user/${id}/messages`, (message) => {
 				const messageData = JSON.parse(message.body);
 				setMessage(messageData)
