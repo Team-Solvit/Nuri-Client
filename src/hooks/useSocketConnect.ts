@@ -7,10 +7,14 @@ import {useQuery} from "@apollo/client";
 import {MessageQueries} from "@/services/message";
 import {useMessageReflectStore} from "@/store/messageReflect";
 import {ChatMessageResponse} from "@/containers/message/message-content/type";
+import {useMessageAlertStore} from "@/store/messageAlert";
 
 export default function useSocketConnect() {
 	const {id, accessToken} = useUserStore();
 	const {setMessage} = useMessageReflectStore();
+	const {
+		fadeIn
+	} = useMessageAlertStore();
 	const isLoggedIn = typeof accessToken === "string" || false;
 	
 	const {data} = useQuery(MessageQueries.GET_CONNECT_MESSAGES_LIST, {
@@ -28,6 +32,7 @@ export default function useSocketConnect() {
 			console.log("✅ 연결완료")
 			client.subscribe(`/user/${id}/messages`, (message) => {
 				const messageData: ChatMessageResponse = JSON.parse(message.body);
+				fadeIn("https://storage.googleapis.com/ploytechcourse-version3/391b0b82-c522-4fd5-9a75-5a1488c21b7e", messageData.userId, messageData.contents, messageData.sendAt)
 				setMessage(messageData)
 			});
 			
@@ -46,6 +51,7 @@ export default function useSocketConnect() {
 				client.subscribe(`/messages/${roomId}`, (message) => {
 					const messageData = JSON.parse(message.body);
 					setMessage(messageData)
+					fadeIn("https://storage.googleapis.com/ploytechcourse-version3/391b0b82-c522-4fd5-9a75-5a1488c21b7e", messageData.userId, messageData.contents, messageData.sendAt)
 					console.log("messageData2 : ", messageData)
 				});
 			});

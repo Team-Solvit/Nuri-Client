@@ -16,7 +16,7 @@ export default function MessageSideBar() {
 	const [size, setSize] = useState(10);
 	
 	const {data} = useQuery(MessageQueries.GET_ROOMS_CHAT_LIST, {
-		variables: {page: 1, size},
+		variables: {page: 0, size},
 	});
 	const [roomDataList, setRoomDataList] = useState<RoomReadResponseDto[]>(data?.getRooms || []);
 	
