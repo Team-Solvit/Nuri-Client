@@ -52,11 +52,17 @@ export default function MessageSideBar() {
 	const {chatRoomId, chatRoomName, chatProfile, isOpen, setValues} = useMessageDmManageStore();
 	
 	useEffect(() => {
-		if (roomDataList.length === 0) {
-			setRoomDataList(data?.getRooms)
+		if (roomDataList.length === 0 && data?.getRooms) {
+			setRoomDataList(data?.getRooms);
 		}
-		if (isOpen && roomDataList?.length > 0) {
+		if (isOpen && chatRoomId) {
 			setRoomDataList((prev) => {
+				// Check if room with chatRoomId already exists
+				const roomExists = prev.some(room => room.roomDto.id === chatRoomId);
+				
+				if (roomExists) {
+					return prev; // Return previous state if room already exists
+				}
 				return [
 					...prev,
 					{
@@ -71,21 +77,8 @@ export default function MessageSideBar() {
 				];
 			});
 			setValues("", "", "", false);
-		} else if (isOpen && roomDataList?.length === 0) {
-			setRoomDataList([
-				{
-					latestMessage: "",
-					latestCreatedAt: "",
-					roomDto: {
-						name: chatRoomName,
-						id: chatRoomId,
-						profile: chatProfile,
-					}
-				}
-			]);
-			setValues("", "", "", false);
 		}
-	}, []);
+	}, [data?.getRooms, isOpen, chatRoomId, chatRoomName, chatProfile]);
 	const changeParamsId = (id: string) => {
 		const decoded = decodeURIComponent(id);
 		const idx = decoded.lastIndexOf(":");

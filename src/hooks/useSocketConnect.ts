@@ -6,6 +6,7 @@ import {useUserStore} from "@/store/user";
 import {useQuery} from "@apollo/client";
 import {MessageQueries} from "@/services/message";
 import {useMessageReflectStore} from "@/store/messageReflect";
+import {ChatMessageResponse} from "@/containers/message/message-content/type";
 
 export default function useSocketConnect() {
 	const {id, accessToken} = useUserStore();
@@ -26,13 +27,13 @@ export default function useSocketConnect() {
 		client.onConnect = () => {
 			console.log("✅ 연결완료")
 			client.subscribe(`/user/${id}/messages`, (message) => {
-				const messageData = JSON.parse(message.body);
+				const messageData: ChatMessageResponse = JSON.parse(message.body);
 				setMessage(messageData)
 			});
 			
 			client.subscribe(`/user/${id}/notify`, (message) => {
 				const messageData = JSON.parse(message.body);
-				setMessage(messageData)
+				alert("notify 발동", messageData)
 			});
 			
 			client.subscribe(`/user/${id}/exceptions`, (message) => {
@@ -45,6 +46,7 @@ export default function useSocketConnect() {
 				client.subscribe(`/messages/${roomId}`, (message) => {
 					const messageData = JSON.parse(message.body);
 					setMessage(messageData)
+					console.log("messageData2 : ", messageData)
 				});
 			});
 		};

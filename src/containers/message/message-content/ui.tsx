@@ -65,6 +65,7 @@ export default function MessageContent() {
 		};
 		newMessage(newSetMessage)
 	}, [newMessageReflect]);
+	
 	let lastDate: string | null = null;
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [replyInfo, setReplyInfo] = useState<null | { name: string, text: string }>(null);

@@ -7,6 +7,7 @@ import Plus from "@/assets/icon/plus.svg"
 import React, {useRef, useState} from "react";
 import {sendDmChatMessage, sendGroupChatMessage} from "@/lib/soketClient";
 import {useParams} from "next/navigation";
+import {useAlertStore} from "@/store/alert";
 
 export default function MessageSendBar() {
 	const {id} = useParams();
@@ -14,6 +15,7 @@ export default function MessageSendBar() {
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const [isComposing, setIsComposing] = useState(false);
 	
+	// 이미지 전송 관련
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
 		if (file) {
@@ -21,7 +23,6 @@ export default function MessageSendBar() {
 				alert('이미지 파일만 업로드 가능합니다.');
 				return;
 			}
-			
 			console.log('Selected file:', file.name);
 		}
 	};
@@ -30,6 +31,52 @@ export default function MessageSendBar() {
 		fileInputRef.current?.click();
 	};
 	
+	function checkType(str: string) {
+		const decoded = decodeURIComponent(str);
+		const userIdRegex = /^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$/;
+		const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+		
+		if (userIdRegex.test(decoded)) {
+			return decoded.split(":");
+		} else if (uuidRegex.test(decoded)) {
+			return "UUID 형식";
+		} else {
+			return "알 수 없음";
+		}
+	}
+	
+	// 메시지 로딩표시
+	// const {setLoading, isLoading} = useMessageReflectStore();
+	// const setIsMessageLoading = (message: string) => {
+	// 	const time = new Date();
+	// 	const isoMillis = time.toISOString();
+	// 	setLoading({
+	// 		...isLoading,
+	// 		[isoMillis + message]: {
+	// 			status: true,
+	// 			content: message,
+	// 			createAt: isoMillis
+	// 		},
+	// 	});
+	// }
+	
+	
+	// 메시지 전송 버튼
+	const {error} = useAlertStore();
+	const handleSendMessage = () => {
+		if (!message.trim()) return;
+		const type = checkType(id as string);
+		if (type?.length === 2) {
+			sendDmChatMessage(type[2], message);
+		} else if (type === "UUID 형식") {
+			sendGroupChatMessage(id as string, message);
+		} else {
+			error("메시지 전송실패")
+		}
+		setMessage("");
+	};
+	
+	// 엔터 시 메시지 전송
 	const [isSending, setIsSending] = useState(false);
 	const handleKeyDownSendMessage = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 		if (isComposing) return;
@@ -37,49 +84,18 @@ export default function MessageSendBar() {
 			e.preventDefault();
 			if (!message.trim() || isSending) return;
 			setIsSending(true);
-			if (checkType(id as string)) {
-				const chatId = selectId(id as string);
-				await sendDmChatMessage(chatId, message);
-			} else {
+			const type = checkType(id as string);
+			if (type?.length === 2) {
+				await sendDmChatMessage(type[2], message);
+			} else if (type === "UUID 형식") {
 				await sendGroupChatMessage(id as string, message);
+			} else {
+				error("메시지 전송에 실패")
 			}
 			setMessage("");
 			setIsSending(false);
 		}
 	};
-	
-	function checkType(str: string) {
-		const userIdRegex = /^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$/;
-		const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-		
-		if (userIdRegex.test(str)) {
-			return "userId 형식";
-		} else if (uuidRegex.test(str)) {
-			return "UUID 형식";
-		} else {
-			return "알 수 없음";
-		}
-	}
-	
-	const selectId = (id: string) => {
-		const value = Array.isArray(id) ? id[0] : id;
-		const decoded = decodeURIComponent(value);
-		return decoded.split(":")[1];
-	};
-	
-	
-	const handleSendMessage = () => {
-		if (!message.trim()) return;
-		if (checkType(id as string) === "userId 형식") {
-			console.log("dm 실행")
-			const chatId = selectId(id as string);
-			sendDmChatMessage(chatId, message);
-		} else {
-			sendGroupChatMessage(id as string, message);
-		}
-		setMessage("");
-	};
-	
 	return (
 		<S.MessageSendBarContainer>
 			<S.ContentBox>

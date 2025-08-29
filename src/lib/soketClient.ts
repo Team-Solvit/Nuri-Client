@@ -36,7 +36,6 @@ export const sendDmChatMessage = (userId: string, message: string) => {
 		console.error("❌ 소켓 연결 안 됨");
 		return;
 	}
-	console.log("userId : ", userId)
 	if (!userId || !message) return;
 	const payload: ChatRecordRequestDto = {
 		roomId: userId,
