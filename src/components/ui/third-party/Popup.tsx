@@ -8,8 +8,10 @@ import RoomDetail from '@/components/ui/third-party/RoomDetail'
 import { useModalStore } from '@/store/modal'
 import Alert from '@/components/ui/alert'
 import { mq } from '@/styles/media'
+import { useAlertStore } from '@/store/alert'
 
 interface Room {
+  roomId: string
   number: string
   names: string
 }
@@ -19,14 +21,14 @@ interface PopupProps {
   title: string
   address: string
   rooms: Room[]
+  loading?: boolean
 }
 
-export default function Popup({ id, title, address, rooms }: PopupProps) {
-  const [showAlertKey, setShowAlertKey] = useState<number | null>(null);
+export default function Popup({ id, title, address, rooms, loading }: PopupProps) {
+  const { success } = useAlertStore();
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(address);
-    setShowAlertKey(Date.now());
-  }, [address]);
+    navigator.clipboard.writeText(address).then(() => success('주소가 복사되었습니다.'));
+  }, [address, success]);
 
   const { isOpen, open, close } = useModalStore();
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
@@ -45,21 +47,29 @@ export default function Popup({ id, title, address, rooms }: PopupProps) {
       <Subtitle>{address}</Subtitle>
 
       <RoomList>
-        {rooms.map((r) => (
-          <RoomItem key={r.number} onClick={() => handleClickRoom(r)}>
-            <RoomNumber>{r.number}</RoomNumber>
-            <RoomNames>{r.names}</RoomNames>
+        {loading ? (
+          <RoomItem style={{ background: '#999' }}>
+            <RoomNumber>불러오는 중...</RoomNumber>
           </RoomItem>
-        ))}
+        ) : rooms.length === 0 ? (
+          <RoomItem style={{ background: '#666' }}>
+            <RoomNumber>호실 정보 없음</RoomNumber>
+          </RoomItem>
+        ) : (
+          rooms.map((r) => (
+            <RoomItem key={r.roomId} onClick={() => handleClickRoom(r)}>
+              <RoomNumber>{r.number}</RoomNumber>
+              <RoomNames>{r.names}</RoomNames>
+            </RoomItem>
+          ))
+        )}
       </RoomList>
       {isOpen && (
         <Modal>
           <RoomDetail id={id} room={selectedRoom} title={title} address={address} close={close} />
         </Modal>
       )}
-      {showAlertKey && (
-        <Alert key={showAlertKey} description="주소가 복사되었습니다." success={true} />
-      )}
+      <Alert />
     </PopupContainer>
   )
 }

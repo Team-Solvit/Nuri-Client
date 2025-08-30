@@ -7,7 +7,6 @@ import {
   BoardingManageWorkFileUploadInput
 } from '@/types/boarding';
 
-// GraphQL 문
 export const BoardingGQL = {
   QUERIES: {
     GET_MANAGE_HOUSE_LIST: gql`
@@ -16,6 +15,8 @@ export const BoardingGQL = {
           houseId
           name
           location
+          lat
+          lon
           host { user { id name } }
         }
       }
@@ -44,7 +45,7 @@ export const BoardingGQL = {
           contractInfo {
             status
             expiryDate
-            boarder { user { id name } }
+            boarder { user { id name } callNumber }
           }
           room {
             roomId
@@ -112,13 +113,13 @@ export const BoardingService = {
     });
     return data?.getManageBoardingRoomList ?? [];
   },
-  getRoomContractList: async (client: ApolloClient<any>, roomId: string) => {
-    const { data } = await client.query<{ getRoomContractList: RoomContract[] }>({
+  getRoomContractList: async (client: ApolloClient<any>, roomId: string): Promise<RoomContract | null> => {
+    const { data } = await client.query<{ getRoomContractList: RoomContract }>({
       query: BoardingGQL.QUERIES.GET_ROOM_CONTRACT_LIST,
       variables: { roomId },
       fetchPolicy: 'no-cache'
     });
-    return data?.getRoomContractList ?? [];
+    return data?.getRoomContractList ?? null;
   },
   getBoardingManageWork: async (client: ApolloClient<any>, input: BoardingManageWorkReadInput): Promise<BoardingManageWork[]> => {
     const { data } = await client.query<{ getBoardingManageWork: BoardingManageWork[] }>({

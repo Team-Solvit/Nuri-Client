@@ -1,7 +1,7 @@
 export interface BoardingUserRef {
   id: string;
   name: string;
-  userId?: string; // 일부 쿼리에서 추가로 내려옴
+  userId?: string;
 }
 
 export interface BoardingHost {
@@ -27,17 +27,17 @@ export interface BoardingRoom {
   monthlyRent?: number;
   boardingRoomFile?: BoardingRoomFile[];
   boardingHouse?: BoardingHouse;
-  contractPeriod?: ContractPeriod; // 단건일 수도 있어 구조 유연성 확보
+  contractPeriod?: ContractPeriod;
 }
 
 export interface RoomContractInfo {
-  status: string; // Boolean/Enum 추후 스키마 보고 좁힐 수 있음
+  status: string;
   expiryDate?: string;
   boarder?: { user: BoardingUserRef; callNumber?: string };
 }
 
 export interface RoomContract {
-  contractInfo?: RoomContractInfo; // 스키마 상 배열 가능성 있으면 조정 필요
+  contractInfo?: RoomContractInfo[];
   room: BoardingRoom;
 }
 
@@ -61,13 +61,12 @@ export interface BoardingManageWork {
   status?: boolean;
 }
 
-// 입력 타입
 export interface BoardingManageWorkReadInput {
-  date: string; // YYYY-MM-DD
+  date: string;
   houseId?: string;
 }
 
 export interface BoardingManageWorkFileUploadInput {
   workId: string;
-  file: string; // URL 또는 업로드된 파일 식별자
+  file: string;
 }
