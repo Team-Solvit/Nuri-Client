@@ -50,8 +50,9 @@ export default function OAuthCallbackPage() {
         }
 
         if (response.isNewUser && response.oauthId) {
-          alertStore.error('신규 사용자입니다. 추가 정보를 입력해주세요.');
-          router.push('/register?oauthId=' + encodeURIComponent(response.oauthId));
+          alertStore.success('신규 사용자입니다. 추가 정보를 입력해주세요.');
+          sessionStorage.setItem('pending_oauth_id', response.oauthId);
+          router.push('/register');
           return;
         }
 

@@ -45,7 +45,7 @@ export const ProgressLine = styled.div<{ progress: number }>`
   border-radius: 2px;
   z-index: 2;
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  width: ${({ progress }) => (progress / 4) * (100-40)}%;
+  width: ${({ progress }) => (progress / 4) * (100 - 40)}%;
 `;
 
 export const Step = styled.div`
@@ -244,4 +244,16 @@ export const ErrorMessage = styled.div`
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
   text-align: left;
+`;
+
+export const HelperSuccess = styled.div`
+  margin-top: 0.4rem;
+  font-size: .85rem;
+  color: #0a7d32;
+`;
+
+export const HelperInfo = styled.div`
+  margin-top: 0.4rem;
+  font-size: .8rem;
+  color: #555;
 `;

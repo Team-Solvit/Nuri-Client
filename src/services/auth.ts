@@ -1,5 +1,5 @@
 import { gql, ApolloClient } from '@apollo/client';
-import { LocalLoginInput, LocalSignUpInput, LoginOAuthCodeInput, OAuthLoginResponse, TokenString } from '@/types/auth';
+import { LocalLoginInput, LocalSignUpInput, LoginOAuthCodeInput, OAuthLoginResponse, TokenString, OAuthSignUpInput } from '@/types/auth';
 import { headersToObject } from '@/utils/headers';
 
 export const AuthGQL = {
@@ -17,6 +17,12 @@ export const AuthGQL = {
         getOAuth2Link(provider: $provider)
       }
     `,
+    VALIDATE_USER_ID: gql`
+      query ValidateUserId($userId: String!) {
+        validateUserId(userId: $userId)
+      }
+    `,
+
   },
   MUTATIONS: {
     LOCAL_LOGIN: gql`
@@ -36,11 +42,26 @@ export const AuthGQL = {
       mutation Logout { logout }
     `,
     OAUTH_LOGIN: gql`
-      mutation OAuthLogin($input: OAuth2LoginInput!) {
-        oauthLogin(oauthLoginInput: $input) {
+      mutation OAuth2Login($input: OAuth2LoginInput!) {
+        oauth2Login(oauth2LoginInput: $input) {
           oauthId
           isNewUser
         }
+      }
+    `,
+    SEND_MAIL_CODE: gql`
+      mutation SendMailCode($email: String!) {
+        sendMailCode(email: $email)
+      }
+    `,
+    VERIFY_MAIL_CODE: gql`
+      mutation VerifyMailCode($input: MailCodeVerifyInput!) {
+        verifyMailCode(mailCodeVerifyInput: $input)
+      }
+    `,
+    OAUTH_SIGN_UP: gql`
+      mutation OAuth2SignUp($input: OAuth2SignUpInput!) {
+        oauth2SignUp(oauth2SignUpInput: $input)
       }
     `,
   }
@@ -85,7 +106,7 @@ export const AuthService = {
     return data?.logout ?? '';
   },
   oauthLogin: async (client: ApolloClient<any>, input: LoginOAuthCodeInput) => {
-    const res = await client.mutate<{ oauthLogin: OAuthLoginResponse }>({
+    const res = await client.mutate<{ oauth2Login: OAuthLoginResponse }>({
       mutation: AuthGQL.MUTATIONS.OAUTH_LOGIN,
       variables: { input },
       fetchPolicy: 'no-cache',
@@ -95,9 +116,40 @@ export const AuthService = {
     const status = (res as any).__status as number | undefined;
 
     return {
-      response: res.data?.oauthLogin,
+      response: res.data?.oauth2Login,
       headers,
       status,
     };
+  },
+  validateUserId: async (client: ApolloClient<any>, userId: string): Promise<boolean> => {
+    const { data } = await client.query<{ validateUserId: boolean }>({
+      query: AuthGQL.QUERIES.VALIDATE_USER_ID,
+      variables: { userId },
+      fetchPolicy: 'no-cache'
+    });
+    return !!data?.validateUserId;
+  },
+  sendMailCode: async (client: ApolloClient<any>, email: string): Promise<string> => {
+    const { data } = await client.mutate<{ sendMailCode: string }>({
+      mutation: AuthGQL.MUTATIONS.SEND_MAIL_CODE,
+      variables: { email },
+      fetchPolicy: 'no-cache'
+    });
+    return data?.sendMailCode ?? '';
+  },
+  verifyMailCode: async (client: ApolloClient<any>, email: string, code: string): Promise<string> => {
+    const { data } = await client.mutate<{ verifyMailCode: string }>({
+      mutation: AuthGQL.MUTATIONS.VERIFY_MAIL_CODE,
+      variables: { input: { email, code } },
+      fetchPolicy: 'no-cache'
+    });
+    return data?.verifyMailCode ?? '';
+  },
+  oauthSignUp: async (client: ApolloClient<any>, input: OAuthSignUpInput): Promise<TokenString> => {
+    const { data } = await client.mutate<{ oauthSignUp: TokenString }>({
+      mutation: AuthGQL.MUTATIONS.OAUTH_SIGN_UP,
+      variables: { input },
+    });
+    return data?.oauthSignUp ?? '';
   },
 };
