@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
 				protocol: "https",
 				hostname: "**",
 			},
+			{
+				protocol: "http",
+				hostname: "localhost",
+				port: "1010",
+				pathname: "/**",
+			},
 		],
 	},
 	compiler: {
