@@ -34,12 +34,12 @@ export const NavArea = styled.div`
 `
 
 export const Container = styled.div`
-  width: 70%;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 35px;
-  padding: 4rem;
+  gap: 1.9rem;
+  padding: 4rem 4.95rem 0rem 4.95rem;
 
   ${mq.mobile} {
     width: 100%;
@@ -60,7 +60,7 @@ export const Home = styled.div`
 `;
 
 export const Con = styled.div`
-  width: 100%;
+  width: 80%;
   display: flex;
 
   ${mq.mobile} {

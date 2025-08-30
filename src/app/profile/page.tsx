@@ -195,7 +195,7 @@ export default function ProfilePage() {
                 )}
             </S.PostList>
             {showFollowModal && <Follow onClose={() => setShowFollowModal(false)} userId={profile.userid} />}
-            {showFollowerModal && <FollowerList onClose={() => setShowFollowerModal(false)} />}
+            {showFollowerModal && <FollowerList onClose={() => setShowFollowerModal(false)}/>}
         </S.ProfileWrapper>
     );
 }

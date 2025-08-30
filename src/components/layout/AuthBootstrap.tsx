@@ -16,11 +16,11 @@ export default function AuthBootstrap() {
     (async () => {
       try {
         let token = getAccessToken();
-        if (!token) {
-          const r = await client.mutate({ mutation: AuthGQL.MUTATIONS.REISSUE, fetchPolicy: 'no-cache' });
-          token = extractTokenFromApolloResult(r);
-          if (token) saveAccessToken(token);
-        }
+        // if (!token) {
+        //   const r = await client.mutate({ mutation: AuthGQL.MUTATIONS.REISSUE, fetchPolicy: 'no-cache' });
+        //   token = extractTokenFromApolloResult(r);
+        //   if (token) saveAccessToken(token);
+        // }
 
         if (token && !cancelled) {
           const d = decodeJWT(token);

@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import Leave from "@/components/ui/leave";
 import SettingHeader from "@/components/ui/settingHeader";
 import AddressInput from "@/components/ui/addressInput/AddressInput";
+import Square from "@/components/ui/button/square";
 
 export default function Host() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -45,10 +46,6 @@ export default function Host() {
           <S.Home>
             <S.InputRow>
               <S.Input placeholder="하숙집 이름을 입력해주세요." />
-              <S.Input placeholder="전화번호를 입력해주세요." />
-            </S.InputRow>
-            <S.InputRow>
-              <S.Input placeholder="하숙집 소개를 입력해주세요." />
               <AddressInput
                 onSelectAddress={(address, lat, lng) => {
                   console.log("선택된 주소:", address, lat, lng);
@@ -56,16 +53,20 @@ export default function Host() {
                 }}
               />
             </S.InputRow>
+            <S.InputRow>
+              <S.Input placeholder="하숙집 소개를 입력해주세요." />
+              <S.Input placeholder="상세정보를 입력해주세요. (ex 301동 1103호)" />
+            </S.InputRow>
           </S.Home>
         </S.Section>
 
         <S.Section>
           <S.SectionTitle>지역</S.SectionTitle>
           <S.InputRow>
-            <S.Input placeholder="가까운 역을 입력해주세요." />
-            <S.Input placeholder="가까운 학교를 입력해주세요" />
+            <S.Input placeholder="가까운 역을 입력해주세요. (ex 대연역)" />
+            <S.Input placeholder="가까운 대학교를 입력해주세요. (ex 부경대학교)" />
           </S.InputRow>
-          <S.Guide>* 하나씩만 작성해주세요. </S.Guide>
+          <S.Guide>* 하나씩만 정확히 작성해주세요. </S.Guide>
         </S.Section>
 
         <S.Section>
@@ -99,6 +100,7 @@ export default function Host() {
             </S.RadioLabel>
           </S.RadioRow>
         </S.Section>
+        <Square text="저장하기" status={true} onClick={() => {}} width="50vw" />
       </S.Container>
       {showLogoutModal && <Logout
         onLogout={handleLogout}

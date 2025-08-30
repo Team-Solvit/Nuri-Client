@@ -129,7 +129,7 @@ export default function ProfilePage() {
                 />
             )}
             {showFollowerModal && (
-                <Follow onClose={() => setShowFollowerModal(false)} />
+                <Follow onClose={() => setShowFollowerModal(false)} userId={userid} />
             )}
 
         </S.Container>

@@ -52,25 +52,10 @@ export type GenericResultString = string; // logout, saveOAuthUserInfo 등
 export interface LocalLoginRequest extends LocalLoginInput {}
 export interface LocalSignUpRequest extends LocalSignUpInput {}
 
-// 팔로워/팔로우 관련 타입들
-export interface FollowUserInfo {
-  id: string;
-  userId: string;
-  profile?: string;
-}
-
 export interface UserProfile {
   postCount: number;
   followerCount: number;
   followingCount: number;
   profile: string;
   userId: string;
-}
-
-export interface FollowStatus {
-  isFollowing: boolean;
-}
-
-export interface FollowResponse {
-  success: boolean;
 }

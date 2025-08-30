@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState } from "react"
 import styled from "@emotion/styled";
-import { useJsApiLoader } from "@react-google-maps/api";
 import { colors, radius } from "@/styles/theme";
 import { mq } from "@/styles/media";
 
@@ -15,16 +14,17 @@ export default function AddressInput({ onSelectAddress }: Props) {
   const [predictions, setPredictions] = useState<google.maps.places.AutocompletePrediction[]>([])
   const [service, setService] = useState<google.maps.places.AutocompleteService | null>(null)
 
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-    libraries: ["places"],
-  })
-
   useEffect(() => {
-    if (isLoaded && !service) {
-      setService(new window.google.maps.places.AutocompleteService())
+    const script = document.createElement("script")
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places&language=ko`
+    script.async = true
+    script.onload = () => {
+      if (!service) {
+        setService(new window.google.maps.places.AutocompleteService())
+      }
     }
-  }, [isLoaded])
+    document.head.appendChild(script)
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value

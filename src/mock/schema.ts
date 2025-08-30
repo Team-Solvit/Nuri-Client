@@ -1,4 +1,4 @@
-import {gql} from 'apollo-server';
+import { gql } from 'apollo-server';
 
 export const typeDefs = gql`
   # --- User 관련 타입 ---
@@ -74,11 +74,13 @@ export const typeDefs = gql`
     getFollowStatus(followerId: ID!, followingId: ID!): Boolean!
     getFollowerInfo(userId: String!): [FollowUserInfoResponseDto!]!
     getFollowingInfo(userId: String!): [FollowUserInfoResponseDto!]!
+    getUserProfile(userId: String!): UserProfileResponseDto!
   }
 
   # --- Mutation ---
   type Mutation {
     follow(userId: String!): Boolean
     unfollow(userId: String!): Boolean
+    changeProfile(profile: String!): Boolean!
   }
 `;

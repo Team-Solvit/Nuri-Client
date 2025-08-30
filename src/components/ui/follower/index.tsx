@@ -2,47 +2,33 @@ import React, { useState } from 'react';
 import * as S from './style';
 import Image from 'next/image';
 import Square from '../button/square';
-import { FollowUserInfo } from '@/types/auth';
+import { useQuery } from '@apollo/client';
+import { ProfileGQL } from '../../../../../Nuri_Web/src/services/profile';
+import { FollowerUserInfo } from '@/types/profile';
 
 interface FollowerListProps {
   onClose: () => void;
+  userId: string;
 }
 
-const mockFollowers: FollowUserInfo[] = [
-  {
-    id: '1',
-    userId: 'xx._un8',
-    profile: '/profile/profile.svg',
-  },
-  {
-    id: '2',
-    userId: 'xx._un8',
-    profile: '/profile/profile.svg',
-  },
-  {
-    id: '3',
-    userId: 'xx._un8',
-    profile: '/profile/profile.svg',
-  },
-  {
-    id: '4',
-    userId: 'xx._un8',
-    profile: '/profile/profile.svg',
-  },
-];
+export default function FollowerList({ onClose, userId }: FollowerListProps) {
+  // const [search, setSearch] = useState('');
+  
+  const { data: followerData } = useQuery(ProfileGQL.QUERIES.GET_FOLLOWERS, {
+    variables: { userId },
+  });
 
-export default function FollowerList({ onClose }: FollowerListProps) {
-  const [search, setSearch] = useState('');
-  const filtered = mockFollowers.filter(f =>
-    f.userId.includes(search)
-  );
+  const followers = followerData?.getFollowerInfo ?? [];
+  // const filtered = followers.filter((f: FollowerUserInfo) =>
+  //   f.userId.includes(search)
+  // );
 
   return (
     <S.Overlay onClick={onClose}>
       <S.ModalWrapper onClick={(e) => e.stopPropagation()}>
         <S.Container>
           <S.Title>팔로워</S.Title>
-          <S.SearchBox>
+          {/* <S.SearchBox>
             <Image
               src='/icons/search.svg'
               alt="search"
@@ -54,9 +40,9 @@ export default function FollowerList({ onClose }: FollowerListProps) {
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
-          </S.SearchBox>
+          </S.SearchBox> */}
           <S.List>
-            {filtered.map((f: FollowUserInfo) => (
+            {followers.map((f: FollowerUserInfo) => (
               <S.Item key={f.id}>
                 <S.ProfileImg>
                   <Image src={f.profile || '/profile/profile.svg'} alt="프로필" width={55} height={55} />

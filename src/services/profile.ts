@@ -1,8 +1,19 @@
 import { gql, ApolloClient } from '@apollo/client';
-import { FollowUserInfo, FollowResponse } from '@/types/auth';
+import { UserProfileResponseDto, ChangeProfileRequest, FollowUserInfo, FollowerUserInfo } from '@/types/profile';
 
-export const FollowGQL = {
+export const ProfileGQL = {
   QUERIES: {
+    GET_USER_PROFILE: gql`
+      query GetUserProfile($userId: String!) {
+        getUserProfile(userId: $userId) {
+          postCount
+          followerCount
+          followingCount
+          profile
+          userId
+        }
+      }
+    `,
     GET_FOLLOWERS: gql`
       query GetFollowerInfo($userId: String!) {
         getFollowerInfo(userId: $userId) {
@@ -21,8 +32,14 @@ export const FollowGQL = {
         }
       }
     `,
+
   },
   MUTATIONS: {
+    CHANGE_PROFILE: gql`
+      mutation ChangeProfile($profile: String!) {
+        changeProfile(profile: $profile)
+      }
+    `,
     FOLLOW: gql`
       mutation Follow($userId: String!) {
         follow(userId: $userId)
@@ -36,29 +53,46 @@ export const FollowGQL = {
   },
 };
 
-
-export const getFollowers = async (client: ApolloClient<any>, userId: string): Promise<FollowUserInfo[]> => {
+export const getUserProfile = async (client: ApolloClient<any>, userId: string): Promise<UserProfileResponseDto> => {
   const { data } = await client.query({
-    query: FollowGQL.QUERIES.GET_FOLLOWERS,
+    query: ProfileGQL.QUERIES.GET_USER_PROFILE,
+    variables: { userId },
+    fetchPolicy: 'network-only',
+  });
+  return data.getUserProfile;
+};
+
+export const changeProfile = async (client: ApolloClient<any>, profile: string): Promise<boolean> => {
+  const { data } = await client.mutate({
+    mutation: ProfileGQL.MUTATIONS.CHANGE_PROFILE,
+    variables: { profile },
+  });
+  return data.changeProfile;
+};
+
+export const getFollowers = async (client: ApolloClient<any>, userId: string): Promise<FollowerUserInfo[]> => {
+  const { data } = await client.query({
+    query: ProfileGQL.QUERIES.GET_FOLLOWERS,
     variables: { userId },
     fetchPolicy: 'network-only',
   });
   return data.getFollowerInfo;
 };
 
-
 export const getFollowing = async (client: ApolloClient<any>, userId: string): Promise<FollowUserInfo[]> => {
   const { data } = await client.query({
-    query: FollowGQL.QUERIES.GET_FOLLOWING,
+    query: ProfileGQL.QUERIES.GET_FOLLOWING,
     variables: { userId },
     fetchPolicy: 'network-only',
   });
   return data.getFollowingInfo;
 };
 
+
+
 export const followUser = async (client: ApolloClient<any>, userId: string): Promise<boolean> => {
   const { data } = await client.mutate({
-    mutation: FollowGQL.MUTATIONS.FOLLOW,
+    mutation: ProfileGQL.MUTATIONS.FOLLOW,
     variables: { userId },
   });
   return data.follow;
@@ -66,7 +100,7 @@ export const followUser = async (client: ApolloClient<any>, userId: string): Pro
 
 export const unfollowUser = async (client: ApolloClient<any>, userId: string): Promise<boolean> => {
   const { data } = await client.mutate({
-    mutation: FollowGQL.MUTATIONS.UNFOLLOW,
+    mutation: ProfileGQL.MUTATIONS.UNFOLLOW,
     variables: { userId },
   });
   return data.unfollow;

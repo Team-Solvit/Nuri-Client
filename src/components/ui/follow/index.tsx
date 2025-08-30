@@ -3,8 +3,8 @@ import * as S from './style';
 import Image from 'next/image';
 import Square from '../button/square';
 import { useQuery, useMutation } from '@apollo/client';
-import { FollowGQL } from '../../../../../Nuri_Web/src/services/follow';
-import { FollowUserInfo } from '@/types/auth';
+import { ProfileGQL } from '../../../../../Nuri_Web/src/services/profile';
+import { FollowUserInfo } from '@/types/profile';
 
 interface FollowProps {
     onClose: () => void;
@@ -14,12 +14,12 @@ interface FollowProps {
 export default function Follow({ onClose, userId }: FollowProps) {
     // const [search, setSearch] = useState('');
 
-    const { data: followingData, refetch: refetchFollowing } = useQuery(FollowGQL.QUERIES.GET_FOLLOWING, {
+    const { data: followingData, refetch: refetchFollowing } = useQuery(ProfileGQL.QUERIES.GET_FOLLOWING, {
         variables: { userId },
     });
 
-    const [followUser] = useMutation(FollowGQL.MUTATIONS.FOLLOW);
-    const [unfollowUser] = useMutation(FollowGQL.MUTATIONS.UNFOLLOW);
+    const [followUser] = useMutation(ProfileGQL.MUTATIONS.FOLLOW);
+    const [unfollowUser] = useMutation(ProfileGQL.MUTATIONS.UNFOLLOW);
 
     const following = followingData?.getFollowingInfo ?? [];
 
@@ -33,14 +33,14 @@ export default function Follow({ onClose, userId }: FollowProps) {
             await unfollowUser({
                 variables: { userId: targetId },
                 refetchQueries: [
-                  { query: FollowGQL.QUERIES.GET_FOLLOWING, variables: { userId } },
+                  { query: ProfileGQL.QUERIES.GET_FOLLOWING, variables: { userId } },
                 ],
               });
         } else {
             await followUser({
                 variables: { userId: targetId },
                 refetchQueries: [
-                  { query: FollowGQL.QUERIES.GET_FOLLOWING, variables: { userId } },
+                  { query: ProfileGQL.QUERIES.GET_FOLLOWING, variables: { userId } },
                 ],
               });
         }
