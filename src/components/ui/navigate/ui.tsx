@@ -87,7 +87,7 @@ export default function Navigate() {
 						>
 							<S.IconBox>
 								<Image src={item.icon} alt={item.label} width={32} height={32}/>
-								{item.label === "알림" && data.alertCount > 0 && <S.Count>{data.alertCount}</S.Count>}
+								{item.label === "알림" && data?.alertCount > 0 && <S.Count>{data.alertCount}</S.Count>}
 							</S.IconBox>
 							<p>{item.label}</p>
 						</S.NavigateBtn>
