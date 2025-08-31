@@ -66,15 +66,16 @@ export const BoardingGQL = {
           manageWorkId
           name
           date
-            file
-            type
-            status
-            relationship {
-              relationshipId
-              thirdParty { user { id name } }
-              boarder { user { id name } callNumber }
-            }
+          file
+          type
+          status
+          relationship {
+            relationshipId
+            thirdParty { user { id name } }
+            boarder { user { id name } callNumber }
+            boarderHouse { houseId name }
           }
+        }
       }
     `,
   },

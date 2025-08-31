@@ -7,4 +7,5 @@ export interface Todo {
   checked: boolean;
   file: File | null;
   date: string;
+  manageWorkId?: string;
 }

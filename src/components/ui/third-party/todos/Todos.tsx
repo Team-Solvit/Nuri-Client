@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import * as S from "./style";
 import Section from "./Section";
 import { Todo } from "@/types/todo";
+import { useApollo } from '@/lib/apolloClient';
+import { BoardingService } from '@/services/boarding';
+import { useLoadingEffect } from '@/hooks/useLoading';
 
 const imgIcon = "/icons/todo-dropdown.svg";
 
@@ -9,54 +12,102 @@ function formatDate(date: Date) {
   return date.toLocaleDateString('sv-SE');
 }
 
-const todosData: Todo[] = [
-  { id: 1, house: "레이쉐어하우스", section: "방문", title: "레이쉐어하우스 방문", sub: "PM 5:00", checked: false, file: null, date: "2025-07-17" },
-  { id: 2, house: "더샵쉐어하우스", section: "방문", title: "더샵쉐어하우스 방문", sub: "PM 5:00", checked: false, file: null, date: "2025-07-17" },
-  { id: 3, house: "레이쉐어하우스", section: "전화", title: "레이쉐어하우스 통화", sub: "PM 3:00", checked: false, file: null, date: "2025-07-18" },
-  { id: 4, house: "더샵쉐어하우스", section: "전화", title: "더샵쉐어하우스 통화", sub: "PM 5:00", checked: false, file: null, date: "2025-07-18" },
-];
-
-const houseOptions = ["전체", ...Array.from(new Set(todosData.map(todo => todo.house)))];
-
 interface TodosProps {
   selectedDate: Date;
+  houseId?: string;
 }
 
-export default function Todos({ selectedDate }: TodosProps) {
+export default function Todos({ selectedDate, houseId }: TodosProps) {
+  const client = useApollo();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selected, setSelected] = useState("전체");
-  const [todos, setTodos] = useState(todosData);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [loading, setLoading] = useState(false);
   const [uploadingId, setUploadingId] = useState<number | null>(null);
 
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      try {
+        const works = await BoardingService.getBoardingManageWork(client, { date: formatDate(selectedDate), houseId });
+        if (cancelled) return;
+        const mapped: Todo[] = works.map(w => ({
+          id: Number(w.manageWorkId) || Math.random(),
+          house: w.relationship?.boarderHouse?.name || '미지정',
+          section: w.type === 'VISIT' ? '방문' : '전화',
+          title: w.name,
+          sub: w.date,
+          checked: !!w.status,
+          file: null,
+          date: w.date,
+          manageWorkId: w.manageWorkId,
+        }));
+        setTodos(mapped);
+        if (selected !== '전체' && !mapped.some(t => t.house === selected)) setSelected('전체');
+      } catch (e) {
+        if (!cancelled) console.error('Failed to load manage work', e);
+        setTodos([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [client, selectedDate, houseId]);
+
+  useLoadingEffect(loading);
+
+  const houseOptions = useMemo(() => ['전체', ...Array.from(new Set(todos.map(t => t.house)))], [todos]);
+
   const handleDropdown = () => setDropdownOpen((v) => !v);
-  const handleSelect = (option: string) => {
-    setSelected(option);
-    setDropdownOpen(false);
-  };
+  const handleSelect = (option: string) => { setSelected(option); setDropdownOpen(false); };
   const handleCheck = (id: number) => {
-    setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id ? { ...todo, checked: !todo.checked } : todo
-      )
-    );
+    const target = todos.find(t => t.id === id);
+    if (!target) return;
+    const prevChecked = target.checked;
+    const nextChecked = !prevChecked;
+
+    setTodos(prev => prev.map(t => t.id === id ? { ...t, checked: nextChecked } : t));
     setUploadingId(id);
+
+    (async () => {
+      if (!target.manageWorkId) return;
+      try {
+        if (nextChecked) await BoardingService.completeWork(client, target.manageWorkId as any);
+        else await BoardingService.inCompleteWork(client, target.manageWorkId as any);
+      } catch (e) {
+        setTodos(prev => prev.map(t => t.id === id ? { ...t, checked: prevChecked } : t));
+      } finally {
+        setUploadingId(null);
+      }
+    })();
   };
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
     const file = e.target.files?.[0];
     if (file) {
-      setTodos((prev) =>
-        prev.map((todo) =>
-          todo.id === id ? { ...todo, file } : todo
-        )
-      );
-      setUploadingId(null);
+      const target = todos.find(t => t.id === id);
+      setTodos(prev => prev.map(t => t.id === id ? { ...t, file } : t));
+      setUploadingId(id);
+      (async () => {
+        try {
+          if (target?.manageWorkId) {
+            const url = "https://cdn.solvit-nuri.com/file/뭐시기뭐시기"; // 요청 하는 코드 작성
+            await BoardingService.uploadWorkFile(client, { workId: target.manageWorkId, file: url });
+          }
+        } catch (err) {
+          console.error('File upload failed', err);
+          setTodos(prev => prev.map(t => t.id === id ? { ...t, file: null } : t));
+        } finally {
+          setUploadingId(null);
+        }
+      })();
     }
   };
 
-  const todosForDate = todos.filter(todo => todo.date === formatDate(selectedDate));
-
-  const visitTodos = todosForDate.filter(todo => todo.section === "방문" && (selected === "전체" || todo.house === selected));
-  const callTodos = todosForDate.filter(todo => todo.section === "전화" && (selected === "전체" || todo.house === selected));
+  const currentDateStr = formatDate(selectedDate);
+  const todosForDate = todos.filter(t => t.date === currentDateStr);
+  const visitTodos = todosForDate.filter(t => t.section === '방문' && (selected === '전체' || t.house === selected));
+  const callTodos = todosForDate.filter(t => t.section === '전화' && (selected === '전체' || t.house === selected));
 
   return (
     <S.Wrapper>
@@ -68,29 +119,15 @@ export default function Todos({ selectedDate }: TodosProps) {
         {dropdownOpen && (
           <S.DropdownList>
             {houseOptions.map((opt) => (
-              <S.DropdownItem
-                key={opt}
-                onClick={() => handleSelect(opt)}
-                selected={selected === opt}
-              >
+              <S.DropdownItem key={opt} onClick={() => handleSelect(opt)} selected={selected === opt}>
                 {opt}
               </S.DropdownItem>
             ))}
           </S.DropdownList>
         )}
       </S.SectionBox>
-      <Section
-        sectionName="방문"
-        todos={visitTodos}
-        handleCheck={handleCheck}
-        handleFileChange={handleFileChange}
-      />
-      <Section
-        sectionName="전화"
-        todos={callTodos}
-        handleCheck={handleCheck}
-        handleFileChange={handleFileChange}
-      />
+      <Section sectionName="방문" todos={visitTodos} handleCheck={handleCheck} handleFileChange={handleFileChange} />
+      <Section sectionName="전화" todos={callTodos} handleCheck={handleCheck} handleFileChange={handleFileChange} />
     </S.Wrapper>
   );
 }

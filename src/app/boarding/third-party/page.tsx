@@ -8,7 +8,8 @@ import {useEffect, useMemo, useState, useCallback, useRef} from 'react';
 import {useApollo} from '@/lib/apolloClient';
 import {BoardingService} from '@/services/boarding';
 import type {RoomContract} from '@/types/boarding';
-import { geocode } from '@/utils/geocode';
+import type { RoomContractInfo } from '@/types/boarding';
+import {useLoadingEffect} from '@/hooks/useLoading';
 
 interface MarkerData {
   houseId: string;
@@ -23,40 +24,44 @@ export default function BoardingThirdPartyPage() {
   const navigate = useNavigationWithProgress();
   const client = useApollo();
   const [markers, setMarkers] = useState<MarkerData[]>([]);
+  const [initialLoading, setInitialLoading] = useState(true);
   const initializedRef = useRef(false);
 
   const handleSquareClick = () => navigate('/boarding/third-party/home');
 
   useEffect(() => {
-    if (initializedRef.current) return;
-    initializedRef.current = true;
-    let cancelled = false;
-    (async () => {
-      try {
-        const list = await BoardingService.getManageBoardingHouseList(client);
-        if (cancelled) return;
-        setMarkers(list.map(h => ({
+  if (initializedRef.current) return;
+
+  let alive = true;
+  setInitialLoading(true);
+
+  (async () => {
+    try {
+      const list = await BoardingService.getManageBoardingHouseList(client);
+      if (!alive) return;
+
+      setMarkers(list.map(h => {
+        const hasCoords = h.lat != null && h.lon != null;
+        return {
           houseId: h.houseId,
           title: h.name,
           address: h.location || '',
-          loading: true,
-        })));
-        for (const h of list) {
-          if (cancelled) break;
-          if (!h.location) {
-            setMarkers(prev => prev.map(m => m.houseId === h.houseId ? { ...m, loading: false } : m));
-            continue;
-          }
-          const pos = await geocode(h.location);
-          if (cancelled) break;
-          setMarkers(prev => prev.map(m => m.houseId === h.houseId ? { ...m, position: pos || m.position, loading: false } : m));
-        }
-      } catch (e) {
-        if (!cancelled) console.error('Failed to load houses', e);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [client]);
+          position: hasCoords ? { lat: Number(h.lat), lng: Number(h.lon) } : undefined,
+          loading: false,
+        };
+      }));
+      initializedRef.current = true;
+    } catch (e) {
+      if (alive) console.error('Failed to load houses', e);
+    } finally {
+      if (alive) setInitialLoading(false);
+    }
+  })();
+
+  return () => { alive = false; };
+}, [client]);
+
+  useLoadingEffect(initialLoading);
 
   const loadRooms = useCallback((houseId: string) => {
     setMarkers(prev => {
@@ -67,6 +72,7 @@ export default function BoardingThirdPartyPage() {
           const rooms = await BoardingService.getManageBoardingRoomList(client, houseId);
           setMarkers(p => p.map(m => m.houseId === houseId ? { ...m, rooms, loading: false } : m));
         } catch (e) {
+          console.error('Failed to load rooms', e);
           setMarkers(p => p.map(m => m.houseId === houseId ? { ...m, loading: false } : m));
         }
       })();
@@ -75,11 +81,11 @@ export default function BoardingThirdPartyPage() {
   }, [client]);
 
   const mapMarkers = useMemo(() => markers.filter(m => m.position).map((m, i) => ({ id: i + 1, position: m.position!, houseId: m.houseId })), [markers]);
-  const isReady = mapMarkers.length > 0;
+  const isReady = !initialLoading && mapMarkers.length > 0;
 
   return (
     <div style={{ position: 'relative', width: '100%' }}>
-      {isReady ? (
+      {isReady && (
         <Map
           markers={mapMarkers}
           label={(marker) => {
@@ -98,7 +104,7 @@ export default function BoardingThirdPartyPage() {
             const roomList = (data.rooms || []).map(r => ({
               roomId: r.room?.roomId || '',
               number: r.room?.name || '',
-              names: (r.contractInfo || []).map(ci => ci?.boarder?.user?.name).filter(Boolean).join(', ')
+              names: (r.contractInfo as RoomContractInfo[] | undefined)?.map((ci: RoomContractInfo) => ci?.boarder?.user?.name).filter(Boolean).join(', ') || ''
             }));
             return (
               <Popup
@@ -111,8 +117,6 @@ export default function BoardingThirdPartyPage() {
             );
           }}
         />
-      ) : (
-        <div style={{ padding: '2rem', textAlign: 'center' }}>주소를 좌표로 변환 중...</div>
       )}
       <div style={{ position: 'absolute', top: 16, right: 16 }}>
         <Square text="하숙관리" onClick={handleSquareClick} status={true} width="max-content" />

@@ -13,6 +13,8 @@ export interface BoardingHouse {
   houseId: string;
   name: string;
   location?: string;
+  lat?: number;
+  lon?: number;
   host?: BoardingHost;
 }
 
@@ -25,7 +27,7 @@ export interface BoardingRoom {
   name: string;
   description?: string;
   monthlyRent?: number;
-  boardingRoomFile?: BoardingRoomFile[];
+  boardingRoomFile?: BoardingRoomFile;
   boardingHouse?: BoardingHouse;
   contractPeriod?: ContractPeriod;
 }
@@ -37,7 +39,7 @@ export interface RoomContractInfo {
 }
 
 export interface RoomContract {
-  contractInfo?: RoomContractInfo[];
+  contractInfo?: RoomContractInfo;
   room: BoardingRoom;
 }
 
