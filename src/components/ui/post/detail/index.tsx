@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Image from 'next/image';
 import Arrow from '@/assets/post/arrow-right.svg';
 import Square from '@/components/ui/button/square';
 import RoomTourModal from './RoomTourModal';
-import { fakeData } from '@/containers/home/post-scroll/data';
 import HeartIcon from '@/assets/post/heart.svg';
 import CommentIcon from '@/assets/post/comment.svg';
 import EllipsisIcon from '@/assets/post/ellipsis.svg';
@@ -13,11 +12,11 @@ import SendIconSvg from '@/assets/post/send.svg';
 import * as S from './style';
 import { radius } from '@/styles/theme';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@apollo/client';
+import { PostDetailQueries } from '@/services/postDetail';
+import type { GetPostListLightResponse, GetPostListLightVars, PostDetailUnion, BoardingPostDetail, SnsPostDetail } from '@/types/postDetail';
 
-interface PostDetailProps {
-  id: string;
-  isModal?: boolean;
-}
+interface PostDetailProps { id: string; isModal?: boolean; }
 
 const mockComments = [
   { id: 1, author: 'huhon123', avatar: '/avatars/user1.png', text: '첫 번째 댓글입니다!' },
@@ -27,66 +26,71 @@ const mockComments = [
 
 export default function PostDetail({ id, isModal }: PostDetailProps) {
   const router = useRouter();
-  const post = fakeData.find((p) => p.id.toString() === id);
-  const isHousePost = post?.subject === "하숙집";
+  const { data } = useQuery<GetPostListLightResponse, GetPostListLightVars>(PostDetailQueries.GET_POST_LIST_LIGHT, { variables: { start: 0 } });
+
+  const postInfo: PostDetailUnion | undefined = useMemo(() => {
+    if (!data?.getPostList) return undefined;
+    return data.getPostList.find(p => {
+      if (p.postInfo.__typename === 'SnsPost') return (p.postInfo as SnsPostDetail).postId === id;
+      if (p.postInfo.__typename === 'BoardingPost') return (p.postInfo as BoardingPostDetail).room.roomId === id;
+      return false;
+    })?.postInfo as PostDetailUnion | undefined;
+  }, [data, id]);
+
+  const isHousePost = postInfo?.__typename === 'BoardingPost';
+
+  const images = useMemo(() => {
+    if (!postInfo) return [] as string[];
+    if (postInfo.__typename === 'SnsPost') return postInfo.files.map(f => f.url);
+    return postInfo.room.boardingRoomFile.map(f => f.url);
+  }, [postInfo]);
+
   const [current, setCurrent] = useState(0);
+  useEffect(() => { setCurrent(0); }, [id]);
+  const max = images.length - 1;
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [showRoomTour, setShowRoomTour] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [openCommentMenuId, setOpenCommentMenuId] = useState<number | null>(null);
-
   const roomTourRef = useRef<HTMLDivElement | null>(null);
   const actionMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
       const target = e.target as Node;
-      if (showRoomTour && roomTourRef.current && !roomTourRef.current.contains(target)) {
-        setShowRoomTour(false);
-      }
-      if (menuOpen && actionMenuRef.current && !actionMenuRef.current.contains(target)) {
-        setMenuOpen(false);
-      }
-
-      if (openCommentMenuId !== null) {
-        setOpenCommentMenuId(null);
-      }
+      if (showRoomTour && roomTourRef.current && !roomTourRef.current.contains(target)) setShowRoomTour(false);
+      if (menuOpen && actionMenuRef.current && !actionMenuRef.current.contains(target)) setMenuOpen(false);
+      if (openCommentMenuId !== null) setOpenCommentMenuId(null);
     };
-
     document.addEventListener('click', onDocClick);
     return () => document.removeEventListener('click', onDocClick);
   }, [menuOpen, showRoomTour, openCommentMenuId]);
 
-  if (!post) return <div>게시물을 불러올수 없습니다.</div>
+  if (!postInfo) return <div>게시물을 불러올수 없습니다.</div>;
 
-  const comments = mockComments;
-  const images = post.thumbnail || [];
-  const max = images.length - 1;
+  const handleSlide = (direction: 'next' | 'prev') => setCurrent(prev => direction === 'next' ? (prev < max ? prev + 1 : 0) : (prev > 0 ? prev - 1 : max));
+  const submitComment = () => { if (!commentText.trim()) return; console.log('새 댓글 전송:', commentText); setCommentText(''); };
+  const handleKeyPress = (e: React.KeyboardEvent) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitComment(); } };
 
-  const handleSlide = (direction: 'next' | 'prev') => {
-    setCurrent(prev => {
-      if (direction === 'next') {
-        return prev < max ? prev + 1 : 0;
-      } else {
-        return prev > 0 ? prev - 1 : max;
-      }
-    });
-  };
+  const likeCount = postInfo.likeCount;
+  const commentCount = postInfo.commentCount;
+  const date = postInfo.__typename === 'SnsPost' ? postInfo.day : postInfo.room.day;
+  const userProfile = postInfo.__typename === 'SnsPost' ? postInfo.author.profile : postInfo.room.boardingHouse.host.user.profile;
+  const userId = postInfo.__typename === 'SnsPost' ? postInfo.author.userId : postInfo.room.boardingHouse.host.user.userId;
+  const desc = postInfo.__typename === 'SnsPost' ? postInfo.contents : postInfo.room.description;
 
-  const submitComment = () => {
-    if (!commentText.trim()) return;
-    console.log('새 댓글 전송:', commentText);
-    // TODO: 실제 전송 로직
-    setCommentText('');
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      submitComment();
-    }
-  };
+  // Boarding specific
+  const roomName = isHousePost ? postInfo.room.name : undefined;
+  const monthlyRent = isHousePost ? postInfo.room.monthlyRent : undefined;
+  const periods = isHousePost ? postInfo.room.contractPeriod.map(p => p.contractPeriod) : [];
+  const options = isHousePost ? postInfo.room.boardingRoomOption : [];
+  const location = isHousePost ? postInfo.room.boardingHouse.location : undefined;
+  const nearestStation = isHousePost ? postInfo.room.boardingHouse.nearestStation : undefined;
+  const nearestSchool = isHousePost ? postInfo.room.boardingHouse.nearestSchool : undefined;
+  const gender = isHousePost ? postInfo.room.boardingHouse.gender : undefined;
+  const isMealProvided = isHousePost ? postInfo.room.boardingHouse.isMealProvided : undefined;
 
   return (
     <S.Wrapper>
@@ -101,7 +105,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
           <S.SliderTrack index={current} count={images.length}>
             {images.map((src, i) => (
               <S.Slide key={i}>
-                <Image src={src} alt={`slide-${i}`} fill style={{ objectFit: 'cover' }} />
+                <Image src={src.startsWith('http') ? src : `https://cdn.solvit-nuri.com/file/${src}`} alt={`slide-${i}`} fill style={{ objectFit: 'cover' }} />
               </S.Slide>
             ))}
           </S.SliderTrack>
@@ -113,176 +117,121 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
         </S.SliderWrapper>
         <S.Footer>
           <S.Profile>
-            <Image src={post.user.thumbnail} alt="user thumbnail" width={40} height={40} style={{ borderRadius: radius.full }} />
+            <Image src={userProfile || '/post/default.png'} alt="user thumbnail" width={40} height={40} style={{ borderRadius: radius.full }} />
             <div>
-              <p>{post.user.userId}</p>
-              <p>{post.date}</p>
+              <p>{userId}</p>
+              <p>{date}</p>
             </div>
           </S.Profile>
           {isHousePost && (
             <S.Buttons>
               <S.RoomTourWrapper ref={roomTourRef}>
-                <Square
-                  text="룸투어"
-                  onClick={() =>
-                    setShowRoomTour((prev) => {
-                      const next = !prev;
-                      if (next) {
-                        setMenuOpen(false);
-                        setOpenCommentMenuId(null);
-                      }
-                      return next;
-                    })
-                  }
-                  status={true}
-                  width="max-content"
-                />
-                {showRoomTour && (
-                  <RoomTourModal />
-                )}
+                <Square text="룸투어" onClick={() => setShowRoomTour(prev => { const next = !prev; if (next) { setMenuOpen(false); setOpenCommentMenuId(null); } return next; })} status={true} width="max-content" />
+                {showRoomTour && (<RoomTourModal />)}
               </S.RoomTourWrapper>
               <Square text="계약" onClick={() => { }} status={true} width="max-content" />
             </S.Buttons>
           )}
         </S.Footer>
       </S.Left>
-
       <S.Right>
         <S.RightContent showComments={showComments} isModal={isModal}>
           {isHousePost ? (
             <>
               <S.RightTopRow>
                 <S.RightPeriodTags>
-                  <S.RightPeriodTag>6개월</S.RightPeriodTag>
-                  <S.RightPeriodTag>2개월</S.RightPeriodTag>
-                  <S.RightPeriodTag>자유</S.RightPeriodTag>
+                  {periods.map(p => <S.RightPeriodTag key={p}>{p}개월</S.RightPeriodTag>)}
                 </S.RightPeriodTags>
               </S.RightTopRow>
-
               <S.RightTitle>
-                <span>그랜마 하우스 301호</span>
-                <S.RightRoomType>1인실</S.RightRoomType>
+                <span>{roomName}</span>
+                <S.RightRoomType>{postInfo.room.status === 'EMPTY_ROOM' ? '빈방' : postInfo.room.status}</S.RightRoomType>
               </S.RightTitle>
-              <S.RightSub>부산광역시 남구</S.RightSub>
-              <S.RightDesc>
-                그랜마 하우스 3호은 슈퍼싱글 사이즈 침대, 책상, 에어컨, 냉장고, 수납장이 준비된 1인 실 입니다. 큰 창이 있어서 밝고 환기가 잘되며 조용하고 포근한 방입니다.
-              </S.RightDesc>
-
+              <S.RightSub>{location}</S.RightSub>
+              <S.RightDesc>{desc}</S.RightDesc>
               <S.RightDivider />
-
               <S.RightLabelRow>
                 <S.RightLabel>요금</S.RightLabel>
                 <S.RightPriceRow>
                   <S.RightPriceUnit>월</S.RightPriceUnit>
-                  <S.RightPriceValue>₩ 300,000</S.RightPriceValue>
+                  <S.RightPriceValue>₩ {monthlyRent?.toLocaleString()}</S.RightPriceValue>
                 </S.RightPriceRow>
               </S.RightLabelRow>
-
               <S.RightDivider />
-
               <S.RightFeatureList>
-                <S.RightFeature>
-                  <S.RightFeatureIcon>
-                    <Image src="/icons/post-detail/language.svg" alt="language" width={20} height={20} />
-                  </S.RightFeatureIcon>
-                  <S.RightFeatureContent>
-                    <S.RightFeatureTitle>영어</S.RightFeatureTitle>
-                    <S.RightFeatureDesc>호스트의 영어로 소통이 가능해요</S.RightFeatureDesc>
-                  </S.RightFeatureContent>
-                </S.RightFeature>
-                <S.RightFeature>
-                  <S.RightFeatureIcon>
-                    <Image src="/icons/post-detail/station.svg" alt="station" width={20} height={20} />
-                  </S.RightFeatureIcon>
-                  <S.RightFeatureContent>
-                    <S.RightFeatureTitle>연제역</S.RightFeatureTitle>
-                    <S.RightFeatureDesc>연제역과 가까워요</S.RightFeatureDesc>
-                  </S.RightFeatureContent>
-                </S.RightFeature>
-                <S.RightFeature>
-                  <S.RightFeatureIcon>
-                    <Image src="/icons/post-detail/school.svg" alt="school" width={20} height={20} />
-                  </S.RightFeatureIcon>
-                  <S.RightFeatureContent>
-                    <S.RightFeatureTitle>부산대학교</S.RightFeatureTitle>
-                    <S.RightFeatureDesc>부산대학교와 가까워요</S.RightFeatureDesc>
-                  </S.RightFeatureContent>
-                </S.RightFeature>
-                <S.RightFeature>
-                  <S.RightFeatureIcon>
-                    <Image src="/icons/post-detail/gender-female.svg" alt="female" width={20} height={20} />
-                  </S.RightFeatureIcon>
-                  <S.RightFeatureContent>
-                    <S.RightFeatureTitle>여성전용</S.RightFeatureTitle>
-                    <S.RightFeatureDesc>여성전용으로 운영되고 있어요</S.RightFeatureDesc>
-                  </S.RightFeatureContent>
-                </S.RightFeature>
+                {nearestStation && (
+                  <S.RightFeature>
+                    <S.RightFeatureIcon>
+                      <Image src="/icons/post-detail/station.svg" alt="station" width={20} height={20} />
+                    </S.RightFeatureIcon>
+                    <S.RightFeatureContent>
+                      <S.RightFeatureTitle>{nearestStation}</S.RightFeatureTitle>
+                      <S.RightFeatureDesc>가까운 역</S.RightFeatureDesc>
+                    </S.RightFeatureContent>
+                  </S.RightFeature>
+                )}
+                {nearestSchool && (
+                  <S.RightFeature>
+                    <S.RightFeatureIcon>
+                      <Image src="/icons/post-detail/school.svg" alt="school" width={20} height={20} />
+                    </S.RightFeatureIcon>
+                    <S.RightFeatureContent>
+                      <S.RightFeatureTitle>{nearestSchool}</S.RightFeatureTitle>
+                      <S.RightFeatureDesc>가까운 학교</S.RightFeatureDesc>
+                    </S.RightFeatureContent>
+                  </S.RightFeature>
+                )}
+                {gender && (
+                  <S.RightFeature>
+                    <S.RightFeatureIcon>
+                      <Image src="/icons/post-detail/gender-female.svg" alt="gender" width={20} height={20} />
+                    </S.RightFeatureIcon>
+                    <S.RightFeatureContent>
+                      <S.RightFeatureTitle>{gender === 'MALE' ? '남성전용' : gender === 'FEMALE' ? '여성전용' : gender}</S.RightFeatureTitle>
+                      <S.RightFeatureDesc>{gender === 'MALE' ? '남성전용' : gender === 'FEMALE' ? '여성전용' : ''}</S.RightFeatureDesc>
+                    </S.RightFeatureContent>
+                  </S.RightFeature>
+                )}
+                {isMealProvided && (
+                  <S.RightFeature>
+                    <S.RightFeatureIcon>
+                      <Image src="/icons/post-detail/meal.svg" alt="meal" width={20} height={20} />
+                    </S.RightFeatureIcon>
+                    <S.RightFeatureContent>
+                      <S.RightFeatureTitle>식사 제공</S.RightFeatureTitle>
+                      <S.RightFeatureDesc>식사 포함</S.RightFeatureDesc>
+                    </S.RightFeatureContent>
+                  </S.RightFeature>
+                )}
               </S.RightFeatureList>
-
-              {/* <S.RightDivider />
-
-              <S.RightLabel>식사</S.RightLabel>
-              <S.RightImageBox>
-                <S.RightImage src="/post/meal.png" alt="meal" />
-              </S.RightImageBox> */}
-
               <S.RightDivider />
-
               <S.RightLabel>시설</S.RightLabel>
               <S.RightFacilityGrid>
-                <S.RightFacility>
-                  <S.RightFacilityIcon>
-                    <Image src="/icons/bed.svg" alt="bed" width={32} height={32} />
-                  </S.RightFacilityIcon>
-                  <S.RightFacilityText>침대</S.RightFacilityText>
-                </S.RightFacility>
-                <S.RightFacility>
-                  <S.RightFacilityIcon>
-                    <Image src="/icons/cabinet.svg" alt="cabinet" width={32} height={32} />
-                  </S.RightFacilityIcon>
-                  <S.RightFacilityText>수납장</S.RightFacilityText>
-                </S.RightFacility>
-                <S.RightFacility>
-                  <S.RightFacilityIcon>
-                    <Image src="/icons/fridge.svg" alt="fridge" width={32} height={32} />
-                  </S.RightFacilityIcon>
-                  <S.RightFacilityText>개별 냉장고</S.RightFacilityText>
-                </S.RightFacility>
-                <S.RightFacility>
-                  <S.RightFacilityIcon>
-                    <Image src="/icons/mirror.svg" alt="mirror" width={32} height={32} />
-                  </S.RightFacilityIcon>
-                  <S.RightFacilityText>전신 거울</S.RightFacilityText>
-                </S.RightFacility>
+                {options.map(opt => (
+                  <S.RightFacility key={opt.optionId}>
+                    <S.RightFacilityIcon>
+                      <Image src={`/icons/${opt.name === '침대' ? 'bed' : opt.name === '책상' ? 'cabinet' : 'home'}.svg`} alt={opt.name} width={32} height={32} />
+                    </S.RightFacilityIcon>
+                    <S.RightFacilityText>{opt.name}</S.RightFacilityText>
+                  </S.RightFacility>
+                ))}
               </S.RightFacilityGrid>
             </>
           ) : (
             <>
-              <S.RightTopRow>
-                <S.RightPeriodTags>
-                  <S.RightPeriodTag>6개월</S.RightPeriodTag>
-                  <S.RightPeriodTag>2개월</S.RightPeriodTag>
-                  <S.RightPeriodTag>자유</S.RightPeriodTag>
-                </S.RightPeriodTags>
-              </S.RightTopRow>
-              <S.RightSub>부산광역시 남구</S.RightSub>
-              <S.RightDesc>
-                그랜마 하우스 3호은 슈퍼싱글 사이즈 침대, 책상, 에어컨, 냉장고, 수납장이 준비된 1인 실 입니다. 큰 창이 있어서 밝고 환기가 잘되며 조용하고 포근한 방입니다.
-              </S.RightDesc>
+              <S.RightTopRow><S.RightPeriodTags /></S.RightTopRow>
+              <S.RightSub>{date}</S.RightSub>
+              <S.RightDesc>{desc}</S.RightDesc>
             </>
           )}
         </S.RightContent>
-
-        {/* 댓글 섹션 */}
         <S.CommentsSection show={showComments} isModal={isModal}>
           <S.CommentsHeader>
-            <S.CommentsTitle>댓글 {comments.length}개</S.CommentsTitle>
-            <S.CommentsCloseButton onClick={() => setShowComments(false)}>
-              ×
-            </S.CommentsCloseButton>
+            <S.CommentsTitle>댓글 {mockComments.length}개</S.CommentsTitle>
+            <S.CommentsCloseButton onClick={() => setShowComments(false)}>×</S.CommentsCloseButton>
           </S.CommentsHeader>
           <S.CommentsList>
-            {comments.map((comment) => (
+            {mockComments.map(comment => (
               <S.CommentItem key={comment.id}>
                 <S.CommentAvatar>
                   <Image src={comment.avatar} alt={comment.author} fill style={{ objectFit: 'cover' }} />
@@ -292,42 +241,13 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
                   <S.CommentText>{comment.text}</S.CommentText>
                 </S.CommentContent>
                 <S.MenuButton onClick={(e) => e.stopPropagation()}>
-                  <S.CommentMenu
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setOpenCommentMenuId((prev) => {
-                        const opening = prev !== comment.id;
-                        if (opening) {
-                          setMenuOpen(false);
-                          setShowRoomTour(false);
-                        }
-                        return opening ? comment.id : null;
-                      });
-                    }}
-                  >
+                  <S.CommentMenu onClick={(e) => { e.stopPropagation(); setOpenCommentMenuId(prev => { const opening = prev !== comment.id; if (opening) { setMenuOpen(false); setShowRoomTour(false); } return opening ? comment.id : null; }); }}>
                     <Image src={EllipsisIcon} alt="메뉴" width={16} height={16} />
                   </S.CommentMenu>
                   {openCommentMenuId === comment.id && (
                     <S.MenuDropdown placement="down">
-                      <S.MenuItem
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          console.log('댓글 수정', comment.id);
-                          setOpenCommentMenuId(null);
-                        }}
-                      >
-                        수정
-                      </S.MenuItem>
-                      <S.MenuItem
-                        red
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          console.log('댓글 삭제', comment.id);
-                          setOpenCommentMenuId(null);
-                        }}
-                      >
-                        삭제
-                      </S.MenuItem>
+                      <S.MenuItem onClick={(e) => { e.stopPropagation(); console.log('댓글 수정', comment.id); setOpenCommentMenuId(null); }}>수정</S.MenuItem>
+                      <S.MenuItem red onClick={(e) => { e.stopPropagation(); console.log('댓글 삭제', comment.id); setOpenCommentMenuId(null); }}>삭제</S.MenuItem>
                     </S.MenuDropdown>
                   )}
                 </S.MenuButton>
@@ -335,17 +255,10 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
             ))}
           </S.CommentsList>
         </S.CommentsSection>
-
         <S.InteractionBar isModal={isModal}>
           {showComments ? (
             <S.CommentInputContainer>
-              <S.CommentInput
-                placeholder="댓글을 입력하세요..."
-                value={commentText}
-                onChange={e => setCommentText(e.target.value)}
-                onKeyPress={handleKeyPress}
-                rows={1}
-              />
+              <S.CommentInput placeholder="댓글을 입력하세요..." value={commentText} onChange={e => setCommentText(e.target.value)} onKeyPress={handleKeyPress} rows={1} />
               <S.SendButton onClick={submitComment} disabled={!commentText.trim()}>
                 <Image src={SendIconSvg} alt="send" width={20} height={20} />
               </S.SendButton>
@@ -354,22 +267,13 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
             <S.InteractionButtons>
               <S.ActionButton onClick={() => console.log('좋아요!')}>
                 <Image src={HeartIcon} alt="like" width={24} height={24} />
-                <S.ActionCount>{post.likes ?? 3}</S.ActionCount>
+                <S.ActionCount>{likeCount}</S.ActionCount>
               </S.ActionButton>
               <S.ActionButton onClick={() => setShowComments(true)}>
                 <Image src={CommentIcon} alt="comment" width={22} height={22} />
-                <S.ActionCount>{post.comments ?? 3}</S.ActionCount>
+                <S.ActionCount>{commentCount}</S.ActionCount>
               </S.ActionButton>
-              <S.MenuButton ref={actionMenuRef} onClick={() =>
-                setMenuOpen((prev) => {
-                  const next = !prev;
-                  if (next) {
-                    setShowRoomTour(false);
-                    setOpenCommentMenuId(null);
-                  }
-                  return next;
-                })
-              }>
+              <S.MenuButton ref={actionMenuRef} onClick={() => setMenuOpen(prev => { const next = !prev; if (next) { setShowRoomTour(false); setOpenCommentMenuId(null); } return next; })}>
                 <Image src={EllipsisIcon} alt="menu" width={24} height={24} />
                 {menuOpen && (
                   <S.MenuDropdown>

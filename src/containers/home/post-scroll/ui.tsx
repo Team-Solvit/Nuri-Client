@@ -149,7 +149,7 @@ export default function PostScroll() {
 									{postData?.thumbnail.map((src, i) => (
 										<S.Slide key={i}>
 											<Image
-												src={src ? src : "/post/default.png"}
+												src={src ? "https://cdn.solvit-nuri.com/file/"+src : "/post/default.png"}
 												alt={`slide-${i}`}
 												fill
 												style={{objectFit: "cover"}}
