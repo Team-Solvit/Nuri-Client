@@ -2,7 +2,8 @@
 
 import * as S from './style';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+
 interface DropdownProps {
     text: string;
     list: string[];
@@ -13,6 +14,23 @@ interface DropdownProps {
 
 export default function Dropdown({ text, list, isOpen, onOpen, onClose }: DropdownProps) {
     const [selected, setSelected] = useState<string>(text);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                onClose();
+            }
+        };
+
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen, onClose]);
 
     const toggleDropdown = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -29,7 +47,7 @@ export default function Dropdown({ text, list, isOpen, onOpen, onClose }: Dropdo
     };
 
     return (
-        <S.DropdownContainer onClick={(e) => e.stopPropagation()}>
+        <S.DropdownContainer ref={dropdownRef}>
             <S.Dropdown onClick={toggleDropdown} selected={selected !== text}>
                 {selected}
                 <Image
@@ -42,7 +60,7 @@ export default function Dropdown({ text, list, isOpen, onOpen, onClose }: Dropdo
 
             {isOpen && (
                 <S.Container>
-                    <S.Input type="text" placeholder={`${text}을(를) 검색`} />
+                    <S.Input type="text" placeholder="반경 입력(m)" />
                     <S.List>
                         {list.map((item, idx) => (
                             <S.ListItem
