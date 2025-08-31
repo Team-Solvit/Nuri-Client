@@ -5,7 +5,8 @@ export interface Todo {
   title: string;
   sub: string;
   checked: boolean;
-  file: File | null;
+  file: File | string | null;
   date: string;
   manageWorkId?: string;
+  uploading?: boolean;
 }

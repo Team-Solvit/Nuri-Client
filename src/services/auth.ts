@@ -3,8 +3,8 @@ import { LocalLoginInput, LocalSignUpInput, LoginOAuthCodeInput, OAuthLoginRespo
 import { headersToObject } from '@/utils/headers';
 
 export const AuthGQL = {
-  QUERIES: {
-    ME: gql`
+	QUERIES: {
+		ME: gql`
       query Me {
         me {
           id
@@ -35,10 +35,10 @@ export const AuthGQL = {
         localSignUp(localSignUpInput: $input)
       }
     `,
-    REISSUE: gql`
+		REISSUE: gql`
       mutation Reissue { reissue }
     `,
-    LOGOUT: gql`
+		LOGOUT: gql`
       mutation Logout { logout }
     `,
     OAUTH_LOGIN: gql`

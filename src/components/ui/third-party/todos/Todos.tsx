@@ -5,6 +5,7 @@ import { Todo } from "@/types/todo";
 import { useApollo } from '@/lib/apolloClient';
 import { BoardingService } from '@/services/boarding';
 import { useLoadingEffect } from '@/hooks/useLoading';
+import { useFileUpload } from '@/hooks/useFileUpload';
 
 const imgIcon = "/icons/todo-dropdown.svg";
 
@@ -24,6 +25,7 @@ export default function Todos({ selectedDate, houseId }: TodosProps) {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploadingId, setUploadingId] = useState<number | null>(null);
+  const { upload: uploadFiles } = useFileUpload();
 
   useEffect(() => {
     let cancelled = false;
@@ -38,8 +40,8 @@ export default function Todos({ selectedDate, houseId }: TodosProps) {
           section: w.type === 'VISIT' ? '방문' : '전화',
           title: w.name,
           sub: w.date,
-          checked: !!w.status,
-          file: null,
+          checked: !!w.status || !!w.file,
+          file: w.file ?? null,
           date: w.date,
           manageWorkId: w.manageWorkId,
         }));
@@ -86,17 +88,23 @@ export default function Todos({ selectedDate, houseId }: TodosProps) {
     const file = e.target.files?.[0];
     if (file) {
       const target = todos.find(t => t.id === id);
-      setTodos(prev => prev.map(t => t.id === id ? { ...t, file } : t));
+      setTodos(prev => prev.map(t => t.id === id ? { ...t, file, uploading: true } : t));
       setUploadingId(id);
       (async () => {
         try {
           if (target?.manageWorkId) {
-            const url = "https://cdn.solvit-nuri.com/file/뭐시기뭐시기"; // 요청 하는 코드 작성
-            await BoardingService.uploadWorkFile(client, { workId: target.manageWorkId, file: url });
+            const uploaded = await uploadFiles([file]);
+            const uploadedId = uploaded?.[0];
+            if (uploadedId) {
+              await BoardingService.uploadWorkFile(client, { workId: target.manageWorkId, file: uploadedId });
+              setTodos(prev => prev.map(t => t.id === id ? { ...t, file: uploadedId, uploading: false } : t));
+            } else {
+              throw new Error('업로드 ID 없음');
+            }
           }
         } catch (err) {
           console.error('File upload failed', err);
-          setTodos(prev => prev.map(t => t.id === id ? { ...t, file: null } : t));
+          setTodos(prev => prev.map(t => t.id === id ? { ...t, file: null, uploading: false } : t));
         } finally {
           setUploadingId(null);
         }

@@ -48,27 +48,29 @@ export default function Section({ sectionName, todos, handleCheck, handleFileCha
                     <S.UploadWrap>
                       {todo.file ? (
                         <>
-                          <S.FileName>{todo.file.name}</S.FileName>
-                          <S.ReUploadButton as="label">
-                            다시 올리기
+                          <S.FileName>{typeof todo.file === 'string' ? todo.file : todo.file.name}</S.FileName>
+                          <S.ReUploadButton as="label" disabled={todo.uploading}>
+                            {todo.uploading ? '업로드 중...' : '다시 올리기'}
                             <input
                               type="file"
                               accept={acceptDoc}
                               style={{ display: "none" }}
                               onChange={(e) => handleFileChange(e, todo.id)}
+                              disabled={todo.uploading}
                             />
                           </S.ReUploadButton>
                         </>
                       ) : (
                         <>
-                          파일을 업로드 해주세요.
-                          <S.PlusButton as="label">
+                          {todo.uploading ? '업로드 중...' : '파일을 업로드 해주세요.'}
+                          <S.PlusButton as="label" disabled={todo.uploading}>
                             +
                             <input
                               type="file"
                               accept={acceptDoc}
                               style={{ display: "none" }}
                               onChange={(e) => handleFileChange(e, todo.id)}
+                              disabled={todo.uploading}
                             />
                           </S.PlusButton>
                         </>
