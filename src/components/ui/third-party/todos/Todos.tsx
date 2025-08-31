@@ -134,8 +134,8 @@ export default function Todos({ selectedDate, houseId }: TodosProps) {
           </S.DropdownList>
         )}
       </S.SectionBox>
-      <Section sectionName="방문" todos={visitTodos} handleCheck={handleCheck} handleFileChange={handleFileChange} />
-      <Section sectionName="전화" todos={callTodos} handleCheck={handleCheck} handleFileChange={handleFileChange} />
+      <Section loading={loading} sectionName="방문" todos={visitTodos} handleCheck={handleCheck} handleFileChange={handleFileChange} />
+      <Section loading={loading} sectionName="전화" todos={callTodos} handleCheck={handleCheck} handleFileChange={handleFileChange} />
     </S.Wrapper>
   );
 }
