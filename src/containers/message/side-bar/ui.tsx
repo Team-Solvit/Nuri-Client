@@ -59,7 +59,12 @@ export default function MessageSideBar() {
 	
 	useEffect(() => {
 		if (data?.getRooms) {
-			console.log("data로부터 초기화됨");
+			setRoomDataList(data.getRooms);
+		}
+	}, []);
+	
+	useEffect(() => {
+		if (data?.getRooms && data.getRooms.length > 0) {
 			setRoomDataList(data.getRooms);
 		}
 	}, [data?.getRooms]);
