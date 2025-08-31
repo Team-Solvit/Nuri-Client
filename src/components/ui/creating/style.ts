@@ -404,12 +404,12 @@ export const AddMoreText = styled.span`
 // 제목 입력 필드
 export const TitleInput = styled.input`
   width: 100%;
-  padding: 12px;
-  border: 1px solid ${colors.line2};
+  border: none;
   border-radius: 8px;
   font-size: ${fontSizes.Body};
   outline: none;
   margin-bottom: 1rem;
+  margin-top: 1rem;
 
   &::placeholder {
     color: ${colors.gray};

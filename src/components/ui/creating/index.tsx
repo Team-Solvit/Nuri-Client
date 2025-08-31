@@ -264,7 +264,6 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                             <S.Title>새 게시물 만들기</S.Title>
                         </S.Header>
                     )}
-                    {/* 제목 입력 */}
                     <S.TitleInput
                         placeholder="제목을 입력하세요"
                         value={title}
@@ -273,7 +272,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                     />
                     
                     <S.Textarea
-                        placeholder="글을 작성하세요. #을 사용하여 해시태그를 추가할 수 있습니다."
+                        placeholder="글을 작성하세요. (#을 사용하여 해시태그를 추가할 수 있습니다.)"
                         value={content}
                         onChange={e => setContent(e.target.value)}
                         maxLength={9999}

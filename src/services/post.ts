@@ -5,8 +5,8 @@ import { PostCreateInput, CreatePostResponse } from '@/types/post';
 export const PostGQL = {
   MUTATIONS: {
     CREATE_POST: gql`
-      mutation CreatePost($createPostInput: CreatePostInput!) {
-        createPost(createPostInput: $createPostInput)
+      mutation CreatePost($postCreateInput: PostCreateInput!) {
+        createPost(postCreateInput: $postCreateInput)
       }
     `,
   },
@@ -14,11 +14,11 @@ export const PostGQL = {
 
 export const createPost = async (
   client: ApolloClient<any>, 
-  createPostInput: PostCreateInput
+  postCreateInput: PostCreateInput
 ): Promise<boolean> => {
   const { data } = await client.mutate<CreatePostResponse>({
     mutation: PostGQL.MUTATIONS.CREATE_POST,
-    variables: { createPostInput },
+    variables: { postCreateInput },
   });
   
   return data?.createPost ?? false;

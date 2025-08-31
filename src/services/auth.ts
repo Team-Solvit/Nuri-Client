@@ -15,12 +15,12 @@ export const AuthGQL = {
   },
   MUTATIONS: {
     LOCAL_LOGIN: gql`
-      mutation LocalLogin($input: localLoginRequest!) {
+      mutation LocalLogin($input: LocalLoginInput!) {
         localLogin(localLoginInput: $input)
       }
     `,
     LOCAL_SIGN_UP: gql`
-      mutation LocalSignUp($input: localSignUpRequest!) {
+      mutation LocalSignUp($input: LocalSignUpInput!) {
         localSignUp(localSignUpInput: $input)
       }
     `,
