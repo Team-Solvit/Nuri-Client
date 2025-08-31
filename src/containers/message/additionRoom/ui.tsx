@@ -109,26 +109,31 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 		}
 	}
 	
+	const [loading, setLoading] = useState(false);
 	const {id} = useUserStore()
 	const handleCreateRoom = async () => {
 		const inputData: RoomCreateRequestDto = {
 			roomDto: {
-				name: "test",
+				name: roomName,
 				profile: "profile.png"
 			},
 			users: [...selectedUsers.map(user => user.userId), id || ""],
 			isTeam: false
 		}
 		try {
-			await MessageService.createChatRoom(
-				apolloClient,
-				inputData
-			);
-			success("채팅방 생성에 성공하였습니다.")
-			handleClose();
+			setLoading(true)
+			const res = await MessageService.createChatRoom(apolloClient, inputData);
+			if (res?.data?.createRoom?.id) {
+				success("채팅방 생성에 성공하였습니다.");
+				handleClose();
+			} else {
+				error("채팅방 생성에 실패하였습니다.");
+			}
 		} catch (e) {
-			console.log(e)
-			error("채팅방 생성에 실패하였습니다.")
+			console.error(e);
+			error("채팅방 생성 중 오류가 발생하였습니다.");
+		} finally {
+			setLoading(false);
 		}
 	};
 	
@@ -182,6 +187,8 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 			}
 		});
 	};
+	const [roomName, setRoomName] = useState<string>("");
+	
 	if (!isAddition) return null;
 	
 	return (
@@ -192,6 +199,14 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 			ref={dropdownRef}
 		>
 			<S.Content>
+				{type === "add" && <S.SearchBar>
+          <S.SearchInput
+            type="text"
+            placeholder="채팅방 이름을 입력해주세요"
+            value={roomName}
+            onChange={(e) => setRoomName(e.target.value)}
+          />
+        </S.SearchBar>}
 				<S.SearchBar>
 					<S.SearchInput
 						type="text"

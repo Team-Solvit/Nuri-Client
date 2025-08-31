@@ -5,7 +5,12 @@ interface MessageDmManageState {
 	chatRoomId: string;
 	chatProfile: string;
 	chatRoomName: string;
-	setValues: (chatRoomId: string, chatProfile: string, chatRoomName: string, isOpen: boolean) => void;
+	setValues: (params: {
+		chatRoomId: string;
+		chatProfile: string;
+		chatRoomName: string;
+		isOpen: boolean;
+	}) => void;
 }
 
 export const useMessageDmManageStore = create<MessageDmManageState>((set) => ({
@@ -13,7 +18,7 @@ export const useMessageDmManageStore = create<MessageDmManageState>((set) => ({
 	chatRoomId: '',
 	chatProfile: '',
 	chatRoomName: '',
-	setValues: (chatRoomId, chatProfile, chatRoomName, isOpen) => set({
+	setValues: ({chatRoomId, chatProfile, chatRoomName, isOpen}) => set({
 		isOpen: isOpen,
 		chatRoomId,
 		chatProfile,

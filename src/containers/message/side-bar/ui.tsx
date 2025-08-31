@@ -11,17 +11,24 @@ import {useQuery} from "@apollo/client";
 import {MessageQueries} from "@/services/message";
 import {RoomReadResponseDto} from "@/types/message";
 import {useMessageDmManageStore} from "@/store/messageDmManage";
+import {useMessageHeaderStore} from "@/store/messageHeader";
 
 export default function MessageSideBar() {
 	const [size, setSize] = useState(10);
 	
 	const {data} = useQuery(MessageQueries.GET_ROOMS_CHAT_LIST, {
-		variables: {page: 0, size},
+		variables: {page: 1, size},
 	});
 	const [roomDataList, setRoomDataList] = useState<RoomReadResponseDto[]>(data?.getRooms || []);
 	
 	const router = useRouter();
-	const handleRouter = (id: string) => {
+	const {setValues: setHeader} = useMessageHeaderStore()
+	const handleRouter = (id: string, name: string, profile: string) => {
+		console.log(profile)
+		setHeader({
+			chatProfile: profile,
+			chatRoomName: name,
+		})
 		NProgress.start()
 		router.push(`/message/${id}`, {scroll: false});
 	}
@@ -49,20 +56,17 @@ export default function MessageSideBar() {
 		return () => container?.removeEventListener("scroll", handleScroll);
 	}, []);
 	
-	const {chatRoomId, chatRoomName, chatProfile, isOpen, setValues} = useMessageDmManageStore();
+	const {chatRoomId, chatRoomName, chatProfile, isOpen, setValues: setDmRoom} = useMessageDmManageStore();
 	
 	useEffect(() => {
-		if (roomDataList.length === 0 && data?.getRooms) {
-			setRoomDataList(data?.getRooms);
+		if (data?.getRooms) {
+			setRoomDataList(data.getRooms);
 		}
 		if (isOpen && chatRoomId) {
 			setRoomDataList((prev) => {
-				// Check if room with chatRoomId already exists
 				const roomExists = prev.some(room => room.roomDto.id === chatRoomId);
+				if (roomExists) return prev;
 				
-				if (roomExists) {
-					return prev; // Return previous state if room already exists
-				}
 				return [
 					...prev,
 					{
@@ -72,13 +76,19 @@ export default function MessageSideBar() {
 							name: chatRoomName,
 							id: chatRoomId,
 							profile: chatProfile,
-						}
-					}
+						},
+					},
 				];
 			});
-			setValues("", "", "", false);
+			
+			setDmRoom({
+				isOpen: false,
+				chatRoomId: "",
+				chatProfile: "",
+				chatRoomName: "",
+			});
 		}
-	}, [data?.getRooms, isOpen, chatRoomId, chatRoomName, chatProfile]);
+	}, [data?.getRooms?.length, isOpen, chatRoomId, chatRoomName, chatProfile]);
 	const changeParamsId = (id: string) => {
 		const decoded = decodeURIComponent(id);
 		const idx = decoded.lastIndexOf(":");
@@ -112,7 +122,7 @@ export default function MessageSideBar() {
 						<S.ChatBox
 							ref={targetRef}
 							key={room.roomDto.id}
-							onClick={() => handleRouter(room.roomDto.id)}
+							onClick={() => handleRouter(room.roomDto.id, room.roomDto.name, room.roomDto.profile ?? "")}
 							isRead={params.id === room.roomDto.id || changeParamsId(params.id as string) === room.roomDto.id}
 						>
 							<S.Profile>

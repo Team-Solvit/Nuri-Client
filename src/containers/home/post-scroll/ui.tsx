@@ -44,7 +44,12 @@ export default function PostScroll() {
 	const moveChatRoom = (opponent: string) => {
 		const chatRoomId = id + ":" + opponent
 		navigate(`/message/${chatRoomId}`)
-		setValues(opponent, opponent, opponent, true);
+		setValues({
+			chatProfile: opponent,
+			chatRoomId: chatRoomId,
+			chatRoomName: opponent,
+			isOpen: true,
+		});
 	}
 	return (
 		<S.PostScrollContainer>

@@ -12,6 +12,7 @@ import AdditionRoom from "@/containers/message/additionRoom/ui";
 import {MessageService} from "@/services/message";
 import {useApollo} from "@/lib/apolloClient";
 import {useAlertStore} from "@/store/alert";
+import {useMessageHeaderStore} from "@/store/messageHeader";
 
 interface FadeBoxProps {
 	onClose: () => void;
@@ -85,13 +86,15 @@ export default function MessageHeaderUI() {
 	};
 	const [isAddition, setIsAddition] = useState(false);
 	const iconRef = useRef<HTMLImageElement>(null);
+	
+	const {chatProfile, chatRoomName} = useMessageHeaderStore()
 	return (
 		<S.MessageHeaderContainer className="message-header">
 			<S.ProfileBox>
 				<S.Profile>
 					<Image src={Message} alt="message" fill priority/>
 				</S.Profile>
-				<p>huhon123</p>
+				<p>{chatRoomName}</p>
 			</S.ProfileBox>
 			<S.EllipsisIconBox ref={iconRef} onClick={handleEllipsisClick}>
 				<Image
