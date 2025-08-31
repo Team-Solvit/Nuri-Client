@@ -4,11 +4,17 @@ import * as S from './style';
 import Circle from '@/components/ui/button/circle';
 import Square from '@/components/ui/button/square';
 import {DEFAULT_CONTRACT_OPTIONS, FACILITY_CATEGORIES} from "./data"
-import {useRouter} from 'next/navigation';
+import {useParams} from 'next/navigation';
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import {useAlertStore} from "@/store/alert";
+import {useQuery} from "@apollo/client";
+import {BoardingHouseQueries, BoardingHouseService} from "@/services/boardingHouse";
+import {useApollo} from "@/lib/apolloClient";
 
 const Addition = () => {
 	const [contractOptions, setContractOptions] = useState<string[]>(DEFAULT_CONTRACT_OPTIONS);
+	const [name, setName] = useState('');
+	const [description, setDescription] = useState('');
 	const [selectedContracts, setSelectedContracts] = useState<string[]>([]);
 	const [yearInput, setYearInput] = useState('');
 	const [monthInput, setMonthInput] = useState('');
@@ -80,7 +86,59 @@ const Addition = () => {
 		);
 	};
 	
+	const params = useParams();
+	const roomId = Array.isArray(params.roomId) ? params.roomId[0] : params.roomId;
+	
+	const {data} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOM_INFO, {
+		variables: {
+			roomId: roomId
+		}
+	});
+	
+	console.log(data)
+	
+	
 	const {error, success} = useAlertStore();
+	
+	const client = useApollo();
+	const checkValue = async () => {
+		
+		if (!images.length) return error('사진을 추가해주세요');
+		if (!name) return error('방의 이름을 추가해주세요');
+		if (!description) return error('방의 내용을 추가해주세요');
+		if (!contractOptions.length) return error('가격을 추가해주세요');
+		if (!selectedContracts.length) return error('계약 기간을 선택해주세요');
+		
+		try {
+			if (roomId) {
+				// 방 수정
+				const result = await BoardingHouseService.patchBoardingRoom(client, {
+					roomId,
+					name,
+					description,
+					images,
+					contracts: selectedContracts,
+					facilities: selectedFacilities,
+				});
+				success("방 수정 성공");
+				console.log(result);
+			} else {
+				// 방 생성
+				const result = await BoardingHouseService.createBoardingRoom(client, {
+					name,
+					description,
+					images,
+					contracts: selectedContracts,
+					facilities: selectedFacilities
+				});
+				success("방 생성 성공");
+				console.log(result);
+			}
+		} catch (e) {
+			console.error(e);
+			error(roomId ? "방 수정 실패" : "방 생성 실패");
+		}
+	};
 	return (
 		<S.Container style={{position: 'relative'}}>
 			<S.Title>방추가</S.Title>
@@ -110,11 +168,19 @@ const Addition = () => {
 			</S.Section>
 			<S.Section>
 				<S.Label>이름</S.Label>
-				<S.Input placeholder="이름을 입력해주세요"/>
+				<S.Input
+					value={name}
+					onChange={e => setName(e.target.value)}
+					placeholder="이름을 입력해주세요"
+				/>
 			</S.Section>
 			<S.Section>
 				<S.Label>자세한 설명</S.Label>
-				<S.Textarea placeholder="설명을 입력해주세요"/>
+				<S.Textarea
+					value={description}
+					onChange={e => setDescription(e.target.value)}
+					placeholder="설명을 입력해주세요"
+				/>
 			</S.Section>
 			<S.SectionRow>
 				<S.InputWithAddonRow>
@@ -205,7 +271,7 @@ const Addition = () => {
 					<S.Name>취소</S.Name>
 				</S.CancelBtn>
 				<Square text="등록" onClick={() => {
-					error("등록 완료");
+					checkValue();
 				}} status={true} width="100%"/>
 			</S.FixedFooter>
 		</S.Container>
