@@ -9,6 +9,7 @@ import Arrow from "@/assets/post/arrow-right.svg";
 import { useApollo } from '@/lib/apolloClient';
 import { createPost } from '@/services/post';
 import { ShareRange } from '@/types/post';
+import { imageService } from '@/services/image';
 
 interface CreatingModalProps {
     onClose: () => void;
@@ -34,7 +35,6 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
         setCurrentIndex(prev => (prev === previewImages.length - 1 ? 0 : prev + 1));
     };
 
-    // 공개 대상에 따른 ShareRange 매핑
     const getShareRange = (target: string): ShareRange => {
         switch (target) {
             case '전체':
@@ -48,15 +48,16 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
         }
     };
 
-    // 내용에서 해시태그 추출
-    const extractHashTags = (text: string): string[] => {
-        const hashtagRegex = /#(\w+)/g;
-        const matches = text.match(hashtagRegex);
-        if (matches) {
-            return matches.map(tag => tag.substring(1)); // # 제거
-        }
-        return [];
+    const extractHashTags = (text: string): { hashtags: string[], cleanedContent: string } => {
+        const hashtagRegex = /#([^\s#]+)/g;
+        const matches = [...text.matchAll(hashtagRegex)];
+        const hashtags = matches.map(match => match[1]);
+        
+        const cleanedContent = text.replace(hashtagRegex, '').trim();
+        
+        return { hashtags, cleanedContent };
     };
+    
 
     // 게시물 생성
     const handleSubmit = async () => {
@@ -73,22 +74,29 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
         setIsSubmitting(true);
 
         try {
-            // 실제 구현에서는 이미지를 서버에 업로드하고 URL을 받아와야 합니다
-            // 여기서는 임시로 base64 데이터를 사용합니다
-            const imageUrls = previewImages; // 실제로는 업로드된 이미지 URL들
+            const imageFiles: File[] = [];
+            for (const base64Image of previewImages) {
+                const response = await fetch(base64Image);
+                const blob = await response.blob();
+                const file = new File([blob], `image-${Date.now()}.png`, { type: 'image/png' });
+                imageFiles.push(file);
+            }
+
+            const uploadResult = await imageService.upload(imageFiles);
             
-            // 내용에서 해시태그 추출
-            const extractedHashTags = extractHashTags(content);
+            const imageUrls = uploadResult.data?.files || uploadResult.files || uploadResult.urls || uploadResult || [];
+
+            const { hashtags, cleanedContent } = extractHashTags(content);
 
             const result = await createPost(apolloClient, {
                 postInfo: {
                     title: title,
-                    contents: content,
+                    contents: cleanedContent,
                     shareRange: getShareRange(publicTarget),
                     isGroup: publicTarget === '모임'
                 },
                 files: imageUrls,
-                hashTags: extractedHashTags
+                hashTags: hashtags
             });
 
             if (result) {
@@ -98,7 +106,6 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                 alert('게시물 생성에 실패했습니다.');
             }
         } catch (error) {
-            console.error('게시물 생성 오류:', error);
             alert('게시물 생성 중 오류가 발생했습니다.');
         } finally {
             setIsSubmitting(false);
