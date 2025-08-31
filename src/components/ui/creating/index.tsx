@@ -6,6 +6,9 @@ import Image from 'next/image';
 import Square from '../button/square';
 import Header from '../header';
 import Arrow from "@/assets/post/arrow-right.svg";
+import { useApollo } from '@/lib/apolloClient';
+import { createPost } from '@/services/post';
+import { ShareRange } from '@/types/post';
 
 interface CreatingModalProps {
     onClose: () => void;
@@ -13,11 +16,15 @@ interface CreatingModalProps {
 
 export default function CreatingModal({ onClose }: CreatingModalProps) {
     const [content, setContent] = useState('');
+    const [title, setTitle] = useState('');
     const [previewImages, setPreviewImages] = useState<string[]>([]);
-    const [publicTarget, setPublicTarget] = useState('공개대상');
+    const [publicTarget, setPublicTarget] = useState('전체');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const apolloClient = useApollo();
 
     const prevImage = () => {
         setCurrentIndex(prev => (prev === 0 ? previewImages.length - 1 : prev - 1));
@@ -25,6 +32,77 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
 
     const nextImage = () => {
         setCurrentIndex(prev => (prev === previewImages.length - 1 ? 0 : prev + 1));
+    };
+
+    // 공개 대상에 따른 ShareRange 매핑
+    const getShareRange = (target: string): ShareRange => {
+        switch (target) {
+            case '전체':
+                return ShareRange.ALL;
+            case '팔로워':
+                return ShareRange.FRIENDS;
+            case '모임':
+                return ShareRange.PRIVATE;
+            default:
+                return ShareRange.ALL;
+        }
+    };
+
+    // 내용에서 해시태그 추출
+    const extractHashTags = (text: string): string[] => {
+        const hashtagRegex = /#(\w+)/g;
+        const matches = text.match(hashtagRegex);
+        if (matches) {
+            return matches.map(tag => tag.substring(1)); // # 제거
+        }
+        return [];
+    };
+
+    // 게시물 생성
+    const handleSubmit = async () => {
+        if (!content.trim() || !title.trim()) {
+            alert('제목과 내용을 입력해주세요.');
+            return;
+        }
+
+        if (previewImages.length === 0) {
+            alert('최소 한 장의 이미지를 선택해주세요.');
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            // 실제 구현에서는 이미지를 서버에 업로드하고 URL을 받아와야 합니다
+            // 여기서는 임시로 base64 데이터를 사용합니다
+            const imageUrls = previewImages; // 실제로는 업로드된 이미지 URL들
+            
+            // 내용에서 해시태그 추출
+            const extractedHashTags = extractHashTags(content);
+
+            const result = await createPost(apolloClient, {
+                postInfo: {
+                    title: title,
+                    contents: content,
+                    shareRange: getShareRange(publicTarget),
+                    isGroup: publicTarget === '모임'
+                },
+                files: imageUrls,
+                hashTags: extractedHashTags
+            });
+
+            if (result) {
+                alert('게시물이 성공적으로 생성되었습니다!');
+                onClose();
+            } else {
+                alert('게시물 생성에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('게시물 생성 오류:', error);
+            alert('게시물 생성 중 오류가 발생했습니다.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
 
@@ -96,7 +174,19 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                     <S.HeaderM>
                         <S.Title>새 게시물 만들기</S.Title>
                         <button onClick={onClose} style={{ backgroundColor: 'white', border: 'none', color: 'gray', fontSize: '15px', marginLeft: 'auto' }}>취소</button>
-                        <button onClick={onClose} style={{ backgroundColor: 'white', border: 'none', color: '#FF4C61', fontSize: '15px' }}>업로드</button>
+                        <button 
+                            onClick={handleSubmit} 
+                            disabled={isSubmitting}
+                            style={{ 
+                                backgroundColor: 'white', 
+                                border: 'none', 
+                                color: '#FF4C61', 
+                                fontSize: '15px',
+                                opacity: isSubmitting ? 0.6 : 1
+                            }}
+                        >
+                            {isSubmitting ? '업로드 중...' : '업로드'}
+                        </button>
                     </S.HeaderM>
                 )}
                 <S.Left>
@@ -174,8 +264,16 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                             <S.Title>새 게시물 만들기</S.Title>
                         </S.Header>
                     )}
+                    {/* 제목 입력 */}
+                    <S.TitleInput
+                        placeholder="제목을 입력하세요"
+                        value={title}
+                        onChange={e => setTitle(e.target.value)}
+                        maxLength={100}
+                    />
+                    
                     <S.Textarea
-                        placeholder="글을 작성하세요."
+                        placeholder="글을 작성하세요. #을 사용하여 해시태그를 추가할 수 있습니다."
                         value={content}
                         onChange={e => setContent(e.target.value)}
                         maxLength={9999}
@@ -219,8 +317,8 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                             status={false}
                         />
                         <Square
-                            onClick={onClose}
-                            text='업로드'
+                            onClick={handleSubmit}
+                            text={isSubmitting ? '업로드 중...' : '업로드'}
                             width='8vw'
                             status={true}
                         />
