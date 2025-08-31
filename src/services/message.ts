@@ -89,7 +89,7 @@ export const MessageService = {
 				input: roomCreateInput,
 			},
 			refetchQueries: [
-				{query: MessageQueries.GET_ROOMS_CHAT_LIST, variables: {page: 1, size: 10}}
+				{query: MessageQueries.GET_ROOMS_CHAT_LIST, variables: {page: 0, size: 10}}
 			],
 			awaitRefetchQueries: true,
 			fetchPolicy: 'no-cache',
@@ -110,7 +110,7 @@ export const MessageService = {
 				roomId: roomId,
 			},
 			refetchQueries: [
-				{query: MessageQueries.GET_ROOMS_CHAT_LIST, variables: {page: 1, size: 10}}
+				{query: MessageQueries.GET_ROOMS_CHAT_LIST, variables: {page: 0, size: 10}}
 			],
 			awaitRefetchQueries: true,
 		})

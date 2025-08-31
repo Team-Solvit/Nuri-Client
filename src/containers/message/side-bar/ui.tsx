@@ -17,14 +17,13 @@ export default function MessageSideBar() {
 	const [size, setSize] = useState(10);
 	
 	const {data} = useQuery(MessageQueries.GET_ROOMS_CHAT_LIST, {
-		variables: {page: 1, size},
+		variables: {page: 0, size},
 	});
 	const [roomDataList, setRoomDataList] = useState<RoomReadResponseDto[]>(data?.getRooms || []);
 	
 	const router = useRouter();
 	const {setValues: setHeader} = useMessageHeaderStore()
 	const handleRouter = (id: string, name: string, profile: string) => {
-		console.log(profile)
 		setHeader({
 			chatProfile: profile,
 			chatRoomName: name,
@@ -60,13 +59,16 @@ export default function MessageSideBar() {
 	
 	useEffect(() => {
 		if (data?.getRooms) {
+			console.log("data로부터 초기화됨");
 			setRoomDataList(data.getRooms);
 		}
+	}, [data?.getRooms]);
+	
+	useEffect(() => {
 		if (isOpen && chatRoomId) {
 			setRoomDataList((prev) => {
 				const roomExists = prev.some(room => room.roomDto.id === chatRoomId);
 				if (roomExists) return prev;
-				
 				return [
 					...prev,
 					{
@@ -88,7 +90,8 @@ export default function MessageSideBar() {
 				chatRoomName: "",
 			});
 		}
-	}, [data?.getRooms?.length, isOpen, chatRoomId, chatRoomName, chatProfile]);
+	}, [isOpen, chatRoomId]);
+	console.log(data?.getRooms, roomDataList)
 	const changeParamsId = (id: string) => {
 		const decoded = decodeURIComponent(id);
 		const idx = decoded.lastIndexOf(":");

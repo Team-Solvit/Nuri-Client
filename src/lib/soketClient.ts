@@ -31,21 +31,21 @@ export const sendGroupChatMessage = (roomId: string, message: string) => {
 	});
 };
 
-export const sendDmChatMessage = (userId: string, message: string) => {
+export const sendDmChatMessage = (userId: string[], message: string) => {
 	if (!client.active) {
 		console.error("❌ 소켓 연결 안 됨");
 		return;
 	}
 	if (!userId || !message) return;
 	const payload: ChatRecordRequestDto = {
-		roomId: userId,
+		roomId: userId[0] + ":" + userId[1],
 		contents: message,
 		replyChat: null,
 	};
 	console.log("payload : ", payload)
-	console.log(`/chat/${userId}`)
+	console.log(`/chat/${userId[0] + ":" + userId[1]}`)
 	client.publish({
-		destination: `/chat/${userId}`,
+		destination: `/chat/${userId[0] + ":" + userId[1]}`,
 		body: JSON.stringify(payload),
 	});
 };

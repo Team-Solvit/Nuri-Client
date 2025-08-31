@@ -309,9 +309,12 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 				
 				<S.ActionButton
 					onClick={handleAddition}
-					disabled={selectedUsers.length === 0}
+					disabled={selectedUsers.length === 0 || loading}
 				>
-					{selectedUsers.length}{type === "add" ? "명의 대화상대와 채팅방 만들기" : "명의 대화상대 초대하기"}
+					{loading ?
+						"로딩중입니다" :
+						selectedUsers.length + type === "add" ? "명의 대화상대와 채팅방 만들기" : "명의 대화상대 초대하기"
+					}
 				</S.ActionButton>
 			</S.Content>
 		</S.DropdownContainer>

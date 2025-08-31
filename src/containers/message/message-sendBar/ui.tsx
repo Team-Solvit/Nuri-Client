@@ -66,8 +66,8 @@ export default function MessageSendBar() {
 	const handleSendMessage = () => {
 		if (!message.trim()) return;
 		const type = checkType(id as string);
-		if (type?.length === 2) {
-			sendDmChatMessage(type[2], message);
+		if (Array.isArray(type)) {
+			sendDmChatMessage(type, message);
 		} else if (type === "UUID 형식") {
 			sendGroupChatMessage(id as string, message);
 		} else {
@@ -85,8 +85,8 @@ export default function MessageSendBar() {
 			if (!message.trim() || isSending) return;
 			setIsSending(true);
 			const type = checkType(id as string);
-			if (type?.length === 2) {
-				await sendDmChatMessage(type[2], message);
+			if (Array.isArray(type)) {
+				await sendDmChatMessage(type, message);
 			} else if (type === "UUID 형식") {
 				await sendGroupChatMessage(id as string, message);
 			} else {

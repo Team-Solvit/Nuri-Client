@@ -11,6 +11,7 @@ import {useState} from "react";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import {useUserStore} from "@/store/user";
 import {useMessageDmManageStore} from "@/store/messageDmManage";
+import {useMessageHeaderStore} from "@/store/messageHeader";
 
 export default function PostScroll() {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null);
@@ -39,14 +40,18 @@ export default function PostScroll() {
 	};
 	
 	const {setValues} = useMessageDmManageStore();
-	
+	const {setValues: setMessageHeader} = useMessageHeaderStore();
 	const {id} = useUserStore();
 	const moveChatRoom = (opponent: string) => {
 		const chatRoomId = id + ":" + opponent
 		navigate(`/message/${chatRoomId}`)
+		setMessageHeader({
+			chatProfile: opponent,
+			chatRoomName: opponent,
+		})
 		setValues({
 			chatProfile: opponent,
-			chatRoomId: chatRoomId,
+			chatRoomId: opponent,
 			chatRoomName: opponent,
 			isOpen: true,
 		});

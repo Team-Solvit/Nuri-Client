@@ -28,11 +28,24 @@ import {scrollToBottom} from "@/utils/scrollToBottom";
 export default function MessageContent() {
 	const {message: newMessageReflect} = useMessageReflectStore();
 	const {id} = useParams();
-	const {data} = useQuery(MessageQueries.READ_MESSAGES, {
-		variables: {
-			roomId: id,
+	const [roomId, setRoomId] = useState<string | null>(null);
+	
+	useEffect(() => {
+		if (!id) return;
+		if (id === roomId) return;
+		if (typeof id === "string" && !id.includes("%3A")) {
+			setRoomId(id);
+			return;
 		}
-	})
+		
+		const newRoomId = decodeURIComponent(id as string);
+		setRoomId(newRoomId);
+	}, [id]);
+	
+	const {data} = useQuery(MessageQueries.READ_MESSAGES, {
+		variables: {roomId: roomId as string},
+		skip: !roomId,
+	});
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	useEffect(() => {
 		const newMessage = data?.readMessages.map((message: ChatReadMessageResponse) => {
@@ -46,7 +59,7 @@ export default function MessageContent() {
 	
 	useEffect(() => {
 		if (!newMessageReflect) return;
-		if (newMessageReflect.roomId !== id) return;
+		if (newMessageReflect.roomId !== roomId) return;
 		const newSetMessage: ChatMessage = {
 			roomId: newMessageReflect.roomId,
 			contents: newMessageReflect.contents,
