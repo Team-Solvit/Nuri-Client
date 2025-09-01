@@ -14,7 +14,7 @@ export const fakeData = [
 		thumbnail: ['/post/post-example2.png'],
 		title: '봄 나들이',
 		desc: '봄 나들이 떠나기~',
-		user: {userId: 'huhon123', thumbnail: '/post/post-example.png'},
+		user: {userId: 'zuu3', thumbnail: '/post/post-example.png'},
 		date: '2025-07-13',
 	},
 ]

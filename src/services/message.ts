@@ -10,6 +10,7 @@ export const MessageQueries = {
           name
           profile
         }
+        newMessageCount
         latestMessage
         latestCreatedAt
       }

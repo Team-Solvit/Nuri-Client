@@ -10,6 +10,7 @@ import {useParams} from "next/navigation";
 import {useAlertStore} from "@/store/alert";
 import {useQuery} from "@apollo/client";
 import {useUserStore} from "@/store/user";
+import {useMessageDmManageStore} from "@/store/messageDmManage";
 
 interface User {
 	userId: string;
@@ -126,6 +127,12 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 			if (res?.data?.createRoom?.id) {
 				success("채팅방 생성에 성공하였습니다.");
 				handleClose();
+				setValues({
+					chatProfile: profilePreview ?? "",
+					chatRoomId: res?.data?.createRoom?.id,
+					chatRoomName: roomName,
+					isOpen: true,
+				});
 			} else {
 				error("채팅방 생성에 실패하였습니다.");
 			}
@@ -188,7 +195,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 		});
 	};
 	const [roomName, setRoomName] = useState<string>("");
-	
+	const {setValues} = useMessageDmManageStore();
 	if (!isAddition) return null;
 	
 	return (

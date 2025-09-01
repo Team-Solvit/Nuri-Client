@@ -15,15 +15,15 @@ export default function MessageSendBar() {
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const [isComposing, setIsComposing] = useState(false);
 	
+	
 	// 이미지 전송 관련
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
 		if (file) {
 			if (!file.type.startsWith('image/')) {
-				alert('이미지 파일만 업로드 가능합니다.');
+				
 				return;
 			}
-			console.log('Selected file:', file.name);
 		}
 	};
 	
