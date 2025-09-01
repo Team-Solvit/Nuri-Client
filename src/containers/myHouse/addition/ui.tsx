@@ -1,11 +1,11 @@
 "use client"
-import React, {useRef, useState} from 'react';
+import React, { useRef, useState } from 'react';
 import * as S from './style';
 import Circle from '@/components/ui/button/circle';
 import Square from '@/components/ui/button/square';
-import {DEFAULT_CONTRACT_OPTIONS, FACILITY_CATEGORIES} from "./data"
-import {useAlertStore} from "@/store/alert";
-import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import { DEFAULT_CONTRACT_OPTIONS, FACILITY_CATEGORIES } from "./data"
+import { useAlertStore } from "@/store/alert";
+import { useNavigationWithProgress } from '@/hooks/useNavigationWithProgress';
 
 const Addition = () => {
 	const [contractOptions, setContractOptions] = useState<string[]>(DEFAULT_CONTRACT_OPTIONS);
@@ -14,7 +14,7 @@ const Addition = () => {
 	const [monthInput, setMonthInput] = useState('');
 	const [images, setImages] = useState<string[]>([]);
 	const fileInputRef = useRef<HTMLInputElement>(null);
-	
+
 	const handleContractClick = (option: string) => {
 		setSelectedContracts(prev =>
 			prev.includes(option)
@@ -22,12 +22,12 @@ const Addition = () => {
 				: [...prev, option]
 		);
 	};
-	
+
 	const handleAddPeriod = () => {
 		if (!yearInput && !monthInput) return;
 		const month = Number(monthInput) % 12;
 		const year = Math.floor(Number(monthInput) / 12) + Number(yearInput);
-		
+
 		let label = '';
 		if (year && month) {
 			label = `${year}년 ${month}개월`;
@@ -42,11 +42,11 @@ const Addition = () => {
 		setYearInput('');
 		setMonthInput('');
 	};
-	
+
 	const handleAddImageClick = () => {
 		fileInputRef.current?.click();
 	};
-	
+
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const files = e.target.files;
 		if (!files) return;
@@ -62,37 +62,37 @@ const Addition = () => {
 		});
 		e.target.value = '';
 	};
-	
+
 	const handleRemoveImage = (idx: number) => {
 		setImages(prev => prev.filter((_, i) => i !== idx));
 	};
-	
+
 	const navigate = useNavigationWithProgress();
 	const handleRoute = (path: string) => {
 		navigate(path);
 	}
-	
+
 	const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);
-	
+
 	const handleFacilityChange = (facility: string, checked: boolean) => {
 		setSelectedFacilities((prev) =>
 			checked ? [...prev, facility] : prev.filter((f) => f !== facility)
 		);
 	};
-	
-	const {error, success} = useAlertStore();
+
+	const { error, success } = useAlertStore();
 	return (
-		<S.Container style={{position: 'relative'}}>
+		<S.Container style={{ position: 'relative' }}>
 			<S.Title>방추가</S.Title>
 			<S.Section>
 				<S.Label>사진 추가</S.Label>
 				<S.PhotoUploadList>
 					{images.map((img, idx) => (
-						<S.PhotoThumb key={idx} onClick={() => handleRemoveImage(idx)} style={{cursor: 'pointer'}}>
-							<img src={img} alt={`추가된 사진${idx + 1}`}/>
+						<S.PhotoThumb key={idx} onClick={() => handleRemoveImage(idx)} style={{ cursor: 'pointer' }}>
+							<img src={img} alt={`추가된 사진${idx + 1}`} />
 						</S.PhotoThumb>
 					))}
-					<S.PhotoUploadBox onClick={handleAddImageClick} style={{cursor: 'pointer'}}>
+					<S.PhotoUploadBox onClick={handleAddImageClick} style={{ cursor: 'pointer' }}>
 						<S.PhotoAddGroup>
 							<S.PhotoAddIcon>+</S.PhotoAddIcon>
 							<S.PhotoAddText>추가하기</S.PhotoAddText>
@@ -110,25 +110,25 @@ const Addition = () => {
 			</S.Section>
 			<S.Section>
 				<S.Label>이름</S.Label>
-				<S.Input placeholder="이름을 입력해주세요"/>
+				<S.Input placeholder="이름을 입력해주세요" />
 			</S.Section>
 			<S.Section>
 				<S.Label>자세한 설명</S.Label>
-				<S.Textarea placeholder="설명을 입력해주세요"/>
+				<S.Textarea placeholder="설명을 입력해주세요" />
 			</S.Section>
 			<S.SectionRow>
 				<S.InputWithAddonRow>
 					<S.Label>가격</S.Label>
 					<div className="input-row">
 						<span className="addon">₩</span>
-						<input placeholder="가격을 입력해 주세요"/>
+						<input placeholder="가격을 입력해 주세요" />
 						<span className="addon">/ 월</span>
 					</div>
 				</S.InputWithAddonRow>
 				<S.InputWithAddonRow>
 					<S.Label>인원수</S.Label>
 					<div className="input-row">
-						<input placeholder="인원수를 입력해 주세요"/>
+						<input placeholder="인원수를 입력해 주세요" />
 						<span className="addon">/ 인실</span>
 					</div>
 				</S.InputWithAddonRow>
@@ -155,7 +155,7 @@ const Addition = () => {
 							type="text"
 							inputMode={"numeric"}
 							min={0}
-							style={{width: '100%'}}
+							style={{ width: '100%' }}
 						/>
 						<span className="addon">년</span>
 					</S.ContractInputWrap>
@@ -167,28 +167,28 @@ const Addition = () => {
 							type="text"
 							inputMode={"numeric"}
 							min={0}
-							style={{width: '100%'}}
+							style={{ width: '100%' }}
 						/>
 						<span className="addon">개월</span>
 					</S.ContractInputWrap>
-					<Circle text="추가" onClick={handleAddPeriod} status={1}/>
+					<Circle text="추가" onClick={handleAddPeriod} status={1} />
 				</S.ContractPeriodRow>
 			</S.Section>
 			<S.Section>
 				<S.Label>시설</S.Label>
 				<S.FacilityWrap>
 					{FACILITY_CATEGORIES.map((cat, idx) => (
-						<div key={cat.label} style={{width: '100%', marginTop: idx !== 0 ? 24 : 0}}>
+						<div key={cat.label} style={{ width: '100%', marginTop: idx !== 0 ? 24 : 0 }}>
 							<S.FacilityCategory>
 								<label htmlFor={`cat-${idx}`}>{cat.label}</label>
 							</S.FacilityCategory>
-							<div style={{display: 'flex', flexWrap: 'wrap', gap: '16px 24px', marginTop: 8}}>
+							<div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px 24px', marginTop: 8 }}>
 								{cat.items.map((item, i) => (
 									<S.FacilityCheckbox key={item}>
 										<input
 											type="checkbox"
 											id={`item-${idx}-${i}`}
-											style={{marginRight: 6}}
+											style={{ marginRight: 6 }}
 											checked={selectedFacilities.includes(item)}
 											onChange={(e) => handleFacilityChange(item, e.target.checked)}
 										/>
@@ -206,7 +206,7 @@ const Addition = () => {
 				</S.CancelBtn>
 				<Square text="등록" onClick={() => {
 					error("등록 완료");
-				}} status={true} width="100%"/>
+				}} status={true} width="100%" />
 			</S.FixedFooter>
 		</S.Container>
 	);

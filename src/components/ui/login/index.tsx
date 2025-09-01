@@ -9,10 +9,9 @@ import {useApollo} from '@/lib/apolloClient';
 import {useAlertStore} from '@/store/alert';
 import {useLoginModalStore} from '@/store/loginModal';
 import {useUserStore} from '@/store/user';
-import {AuthService} from '@/services/auth';
+import {AuthGQL, AuthService} from '@/services/auth';
 import {decodeJWT} from '@/utils/jwt';
 import {useMessageRoomListConnectStore} from "@/store/messageRoomListConnect";
-
 
 export default function Login() {
 	const router = useRouter();
@@ -67,7 +66,29 @@ export default function Login() {
 			setLoading(false);
 		}
 	}, [id, password, client, alertStore, loginModal, loading, setAuth]);
-	
+
+	const handleSocialLogin = useCallback(async (provider: 'kakao' | 'google' | 'facebook' | 'tiktok') => {
+		try {
+			sessionStorage.setItem('oauth_provider', provider);
+
+			const { data } = await client.query({
+				query: AuthGQL.QUERIES.GET_SOCIAL_URL,
+				variables: { provider },
+				fetchPolicy: 'no-cache'
+			});
+
+			if (data?.getOAuth2Link) {
+				window.location.href = data.getOAuth2Link;
+			} else {
+				alertStore.error('소셜 로그인 URL을 가져올 수 없습니다.');
+				sessionStorage.removeItem('oauth_provider');
+			}
+		} catch (error: any) {
+			alertStore.error(error?.message || '소셜 로그인 연결에 실패했습니다.');
+			sessionStorage.removeItem('oauth_provider');
+		}
+	}, [client, alertStore]);
+
 	return (
 		<Wrapper>
 			<Image src="/logo.svg" alt="로고" width={80} height={80} priority/>
@@ -114,10 +135,10 @@ export default function Login() {
 					/>
 					<SocialOther>또는</SocialOther>
 					<SocialList>
-						<Image src="/login/kakao.svg" alt="카카오 로그인" width={56} height={56}/>
-						<Image src="/login/tiktok.svg" alt="틱톡 로그인" width={56} height={56}/>
-						<Image src="/login/facebook.svg" alt="페이스북 로그인" width={56} height={56}/>
-						<Image src="/login/google.svg" alt="구글 로그인" width={56} height={56}/>
+						<Image src="/login/kakao.svg" alt="카카오 로그인" width={56} height={56} onClick={() => handleSocialLogin('kakao')} />
+						<Image src="/login/tiktok.svg" alt="틱톡 로그인" width={56} height={56} onClick={() => handleSocialLogin('tiktok')} />
+						<Image src="/login/facebook.svg" alt="페이스북 로그인" width={56} height={56} onClick={() => handleSocialLogin('facebook')} />
+						<Image src="/login/google.svg" alt="구글 로그인" width={56} height={56} onClick={() => handleSocialLogin('google')} />
 					</SocialList>
 				</>
 			)}

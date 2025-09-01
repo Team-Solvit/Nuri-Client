@@ -8,6 +8,7 @@ import ChatComponent from "@/components/layout/chatConnect";
 import Alert from "@/components/ui/alert";
 import MessageAlert from "@/components/ui/messageAlert";
 import AuthBootstrap from "@/components/layout/AuthBootstrap";
+import Loading from "@/components/ui/loading";
 
 
 export const metadata: Metadata = {
@@ -30,6 +31,7 @@ export default function RootLayout({children, modal}: { children: React.ReactNod
 		<Providers>
 			<AuthBootstrap/>
 			<ChatComponent/>
+			<Loading/>
 			<Header/>
 			<main className="main-container">
 				{children}
