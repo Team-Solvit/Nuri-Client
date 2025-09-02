@@ -22,6 +22,7 @@ export interface LocalSignUpInput {
   country: string;   // !
   language: string;  // !
   userAgreement: UserAgreement; // !
+  emailVerifyTicket?: string;
 }
 
 export interface LoginOAuthCodeInput {
@@ -40,6 +41,7 @@ export interface OAuthSignUpInput {
   email: string;     // !
   country: string;   // !
   language: string;  // !
+  emailVerifyTicket?: string;
   userAgreement: UserAgreement; // !
 }
 
@@ -47,5 +49,5 @@ export interface OAuthSignUpInput {
 export type TokenString = string;      // localLogin, reissue 등
 export type GenericResultString = string; // logout, saveOAuthUserInfo 등
 
-export interface LocalLoginRequest extends LocalLoginInput {}
-export interface LocalSignUpRequest extends LocalSignUpInput {}
+export interface LocalLoginRequest extends LocalLoginInput { }
+export interface LocalSignUpRequest extends LocalSignUpInput { }
