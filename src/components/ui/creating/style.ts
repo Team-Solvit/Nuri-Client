@@ -71,7 +71,9 @@ export const Left = styled.div`
 export const Main = styled.div`
   display: flex;
   flex-direction: column;
-  padding:  1.5rem 0.5rem;
+  padding:  1.5rem 0rem;
+  margin-right: 1rem;
+  width: 100%;
 `
 
 export const Modal = styled.div`
@@ -120,6 +122,7 @@ export const PublicIconWrap = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
+  margin-left: -0.5rem;
 
   ${mq.mobile} {
     margin-left: -0.1rem;
@@ -184,6 +187,18 @@ export const Row = styled.div`
   gap: 1rem;
 `
 
+export const PublicSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`
+
+export const PublicTitle = styled.span`
+  font-size: ${fontSizes.Small};
+  color: ${colors.gray};
+  font-weight: 400;
+`
+
 
 export const ImageWrapper = styled.div`
   position: relative;
@@ -242,7 +257,7 @@ export const NextBtn = styled.button`
 export const CharCount = styled.div`
   font-size: ${fontSizes.Small};
   color: ${colors.gray};
-  margin-left: 19rem;
+  text-align: right;
 
   ${mq.mobile} {
     margin-left:  19rem;
@@ -300,8 +315,6 @@ export const ToggleButton = styled.button`
 export const Dropdown = styled.div`
   position: absolute;
   top: 2rem;
-  left: 0.5rem;
-  width: 100px;
   background: white;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -332,6 +345,7 @@ export const PublicWrap = styled.div`
 export const PublicLabel = styled.span`
   white-space: nowrap;
   font-size: 14px;
+  color: ${colors.gray};
 `
 
 
@@ -347,7 +361,8 @@ export const ButtonRow = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 10rem;
+  margin-top: 6.7rem;
+  margin-right: 1.2rem;
 
   ${mq.mobile} {
     display: none;
@@ -405,11 +420,9 @@ export const AddMoreText = styled.span`
 export const TitleInput = styled.input`
   width: 100%;
   border: none;
-  border-radius: 8px;
   font-size: ${fontSizes.Body};
   outline: none;
-  margin-bottom: 1rem;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 
   &::placeholder {
     color: ${colors.gray};
@@ -418,5 +431,11 @@ export const TitleInput = styled.input`
 
   &:focus {
     border-color: ${colors.primary};
+  }
+
+  ${mq.mobile} {
+    margin-left: 0.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
   }
 `

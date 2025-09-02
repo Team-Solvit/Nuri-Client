@@ -19,7 +19,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
     const [content, setContent] = useState('');
     const [title, setTitle] = useState('');
     const [previewImages, setPreviewImages] = useState<string[]>([]);
-    const [publicTarget, setPublicTarget] = useState('전체');
+    const [publicTarget, setPublicTarget] = useState('공개범위');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -287,32 +287,34 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                     <S.CharCount>{content.length}/10000</S.CharCount>
 
                     <S.Row>
-                        <S.PublicWrap
-                            onClick={e => {
-                                e.stopPropagation();
-                                handleToggleDropdown();
-                            }}
-                        >
-                            <S.PublicIconWrap>
-                                <Image
-                                    src="/icons/eyes.svg"
-                                    alt="공개대상"
-                                    width={18}
-                                    height={16}
-                                />
-                                <S.PublicLabel>{publicTarget}</S.PublicLabel>
-                            </S.PublicIconWrap>
+                        <S.PublicSection>
+                            <S.PublicWrap
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    handleToggleDropdown();
+                                }}
+                            >
+                                <S.PublicIconWrap>
+                                    <Image
+                                        src="/icons/eyes.svg"
+                                        alt="공개대상"
+                                        width={18}
+                                        height={16}
+                                    />
+                                    <S.PublicLabel>{publicTarget}</S.PublicLabel>
+                                </S.PublicIconWrap>
 
-                            {isDropdownOpen && (
-                                <S.Dropdown
-                                    onClick={e => e.stopPropagation()}
-                                >
-                                    <S.DropdownItem onClick={() => handleSelectTarget('전체')}>전체</S.DropdownItem>
-                                    <S.DropdownItem onClick={() => handleSelectTarget('팔로워')}>팔로워</S.DropdownItem>
-                                    <S.DropdownItem onClick={() => handleSelectTarget('모임')}>모임</S.DropdownItem>
-                                </S.Dropdown>
-                            )}
-                        </S.PublicWrap>
+                                {isDropdownOpen && (
+                                    <S.Dropdown
+                                        onClick={e => e.stopPropagation()}
+                                    >
+                                        <S.DropdownItem onClick={() => handleSelectTarget('전체')}>전체공개</S.DropdownItem>
+                                        <S.DropdownItem onClick={() => handleSelectTarget('팔로워')}>팔로워만</S.DropdownItem>
+                                        <S.DropdownItem onClick={() => handleSelectTarget('모임')}>모임원만</S.DropdownItem>
+                                    </S.Dropdown>
+                                )}
+                            </S.PublicWrap>
+                        </S.PublicSection>
                     </S.Row>
 
                     <S.ButtonRow>
