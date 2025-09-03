@@ -1,11 +1,13 @@
-import { gql } from '@apollo/client';
+import { gql, ApolloClient } from '@apollo/client';
+import type { GetPostListLightResponse, GetPostListLightVars, PostDetailUnion, BoardingPostDetail, SnsPostDetail } from '@/types/postDetail';
 
-export const PostDetailQueries = {
-  GET_POST_LIST_LIGHT: gql`
-    query GetPostListLight($start: Int!) {
-      getPostList(start: $start) {
-        postType
-        postInfo {
+export const PostDetailGQL = {
+  QUERIES: {
+    GET_POST_LIST_LIGHT: gql`
+      query GetPostListLight($start: Int!) {
+        getPostList(start: $start) {
+          postType
+          postInfo {
           ... on SnsPost {
             __typename
             postId
@@ -47,5 +49,65 @@ export const PostDetailQueries = {
         }
       }
     }
-  `
+  `,
+  },
+  MUTATIONS: {
+    LIKE_POST: gql`
+      mutation LikePost($postId: String!) {
+        likePost(postId: $postId)
+      }
+    `,
+    UNLIKE_POST: gql`
+      mutation UnlikePost($postId: String!) {
+        unlikePost(postId: $postId)
+      }
+    `
+  }
 };
+
+export const PostDetailService = {
+  getPostList: async (client: ApolloClient<any>, start: number = 0) => {
+    const { data } = await client.query<GetPostListLightResponse, GetPostListLightVars>({
+      query: PostDetailGQL.QUERIES.GET_POST_LIST_LIGHT,
+      variables: { start },
+      fetchPolicy: 'no-cache'
+    });
+    return data?.getPostList ?? [];
+  },
+
+  getPostById: async (client: ApolloClient<any>, id: string): Promise<PostDetailUnion | null> => {
+    const posts = await PostDetailService.getPostList(client, 0);
+    const found = posts.find(p => {
+      if (p.postInfo.__typename === 'SnsPost') return (p.postInfo as SnsPostDetail).postId === id;
+      if (p.postInfo.__typename === 'BoardingPost') return (p.postInfo as BoardingPostDetail).room.roomId === id;
+      return false;
+    });
+    return found?.postInfo as PostDetailUnion || null;
+  },
+
+  likePost: async (client: ApolloClient<any>, postId: string): Promise<boolean> => {
+    try {
+      const { data } = await client.mutate({
+        mutation: PostDetailGQL.MUTATIONS.LIKE_POST,
+        variables: { postId }
+      });
+      return !!data?.likePost;
+    } catch (error) {
+      console.error('좋아요 처리 오류:', error);
+      throw error;
+    }
+  },
+
+  unlikePost: async (client: ApolloClient<any>, postId: string): Promise<boolean> => {
+    try {
+      const { data } = await client.mutate({
+        mutation: PostDetailGQL.MUTATIONS.UNLIKE_POST,
+        variables: { postId }
+      });
+      return !!data?.unlikePost;
+    } catch (error) {
+      console.error('좋아요 취소 처리 오류:', error);
+      throw error;
+    }
+  }
+};;

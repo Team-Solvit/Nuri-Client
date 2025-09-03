@@ -12,9 +12,9 @@ import SendIconSvg from '@/assets/post/send.svg';
 import * as S from './style';
 import { radius } from '@/styles/theme';
 import { useRouter } from 'next/navigation';
-import { useQuery } from '@apollo/client';
-import { PostDetailQueries } from '@/services/postDetail';
-import type { GetPostListLightResponse, GetPostListLightVars, PostDetailUnion, BoardingPostDetail, SnsPostDetail } from '@/types/postDetail';
+import { useApollo } from '@/lib/apolloClient';
+import { PostDetailService } from '@/services/postDetail';
+import type { PostDetailUnion, BoardingPostDetail, SnsPostDetail } from '@/types/postDetail';
 
 interface PostDetailProps { id: string; isModal?: boolean; }
 
@@ -26,16 +26,31 @@ const mockComments = [
 
 export default function PostDetail({ id, isModal }: PostDetailProps) {
   const router = useRouter();
-  const { data } = useQuery<GetPostListLightResponse, GetPostListLightVars>(PostDetailQueries.GET_POST_LIST_LIGHT, { variables: { start: 0 } });
+  const client = useApollo();
+  const [postInfo, setPostInfo] = useState<PostDetailUnion | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
 
-  const postInfo: PostDetailUnion | undefined = useMemo(() => {
-    if (!data?.getPostList) return undefined;
-    return data.getPostList.find(p => {
-      if (p.postInfo.__typename === 'SnsPost') return (p.postInfo as SnsPostDetail).postId === id;
-      if (p.postInfo.__typename === 'BoardingPost') return (p.postInfo as BoardingPostDetail).room.roomId === id;
-      return false;
-    })?.postInfo as PostDetailUnion | undefined;
-  }, [data, id]);
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        setLoading(true);
+        const post = await PostDetailService.getPostById(client, id);
+        setPostInfo(post);
+        if (post) {
+          setLikeCount(post.likeCount);
+          // TODO: 실제 좋아요 상태는 서버에서 받아와야 함
+          setIsLiked(false); 
+        }
+      } catch (error) {
+        console.error('Failed to fetch post:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPost();
+  }, [client, id]);
 
   const isHousePost = postInfo?.__typename === 'BoardingPost';
 
@@ -68,13 +83,36 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
     return () => document.removeEventListener('click', onDocClick);
   }, [menuOpen, showRoomTour, openCommentMenuId]);
 
-  if (!postInfo) return <div>게시물을 불러올수 없습니다.</div>;
+  if (loading) return <div>불러오는 중...</div>;
+  if (!postInfo) return <div>게시물을 불러올 수 없습니다.</div>;
 
   const handleSlide = (direction: 'next' | 'prev') => setCurrent(prev => direction === 'next' ? (prev < max ? prev + 1 : 0) : (prev > 0 ? prev - 1 : max));
   const submitComment = () => { if (!commentText.trim()) return; console.log('새 댓글 전송:', commentText); setCommentText(''); };
   const handleKeyPress = (e: React.KeyboardEvent) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitComment(); } };
 
-  const likeCount = postInfo.likeCount;
+  // 좋아요 토글 핸들러
+  const handleLikeToggle = async () => {
+    if (!postInfo) return;
+    
+    try {
+      const postId = postInfo.__typename === 'SnsPost' 
+        ? postInfo.postId 
+        : postInfo.room.roomId;
+      
+      if (isLiked) {
+        await PostDetailService.unlikePost(client, postId);
+        setLikeCount(prev => prev - 1);
+        setIsLiked(false);
+      } else {
+        await PostDetailService.likePost(client, postId);
+        setLikeCount(prev => prev + 1);
+        setIsLiked(true);
+      }
+    } catch (error) {
+      console.error('좋아요 처리 중 오류:', error);
+    }
+  };
+
   const commentCount = postInfo.commentCount;
   const date = postInfo.__typename === 'SnsPost' ? postInfo.day : postInfo.room.day;
   const userProfile = postInfo.__typename === 'SnsPost' ? postInfo.author.profile : postInfo.room.boardingHouse.host.user.profile;
@@ -265,8 +303,16 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
             </S.CommentInputContainer>
           ) : (
             <S.InteractionButtons>
-              <S.ActionButton onClick={() => console.log('좋아요!')}>
-                <Image src={HeartIcon} alt="like" width={24} height={24} />
+              <S.ActionButton onClick={handleLikeToggle}>
+                <Image 
+                  src={HeartIcon} 
+                  alt="like" 
+                  width={24} 
+                  height={24} 
+                  style={{ 
+                    filter: isLiked ? 'brightness(0) saturate(100%) invert(30%) sepia(74%) saturate(4662%) hue-rotate(344deg) brightness(94%) contrast(93%)' : 'none'
+                  }}
+                />
                 <S.ActionCount>{likeCount}</S.ActionCount>
               </S.ActionButton>
               <S.ActionButton onClick={() => setShowComments(true)}>
