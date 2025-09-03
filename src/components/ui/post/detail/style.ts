@@ -647,3 +647,39 @@ export const MobileClose = styled.button`
   display: none;
   ${mq.mobile} { display: flex; align-items: center; justify-content: center; }
 `;
+
+
+// -------------------------------------------------
+export const ConfirmBox = styled.div`
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #eee;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  border-radius: 12px;
+  padding: 16px 16px 14px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+export const ConfirmText = styled.p`
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: nowrap;
+`;
+
+export const ConfirmButtons = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+`;
+
+export const ContractWrapper = styled.div`
+  position: relative;
+  display: inline-block;
+`;
