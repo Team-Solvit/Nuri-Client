@@ -13,8 +13,9 @@ import {MeetingProps} from "./type";
 import {Nav} from "@/containers/meetings/MeetingModal/ui";
 import {useOtherMeetingFind} from "@/store/otherMeetingFind";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {useMeetingStore} from "@/store/meetingData";
 
-export default function Meeting(meeting: MeetingProps) {
+export default function Meeting() {
 	const [selected, setSelected] = useState(1);
 	const {setFind} = useOtherMeetingFind();
 	const navigate = useNavigationWithProgress();
@@ -22,6 +23,7 @@ export default function Meeting(meeting: MeetingProps) {
 		navigate("/meetings");
 		setFind(true);
 	}
+	const {meeting} = useMeetingStore();
 	return (
 		<S.ModalContainer>
 			<S.Banner>
@@ -38,13 +40,13 @@ export default function Meeting(meeting: MeetingProps) {
 							<Image src={MeetingProfile} alt="meeting" fill/>
 						</S.ImgBox>
 						<S.Name>
-							<h3>{meeting.title}</h3>
-							<p>{meeting.location}</p>
+							<h3>{meeting?.title}</h3>
+							<p>{meeting?.location}</p>
 						</S.Name>
 					</S.Info>
 				</S.TitleBox>
 				<S.Description>
-					{meeting.description || "모임 설명이 없습니다."}
+					{meeting?.content || "모임 설명이 없습니다."}
 				</S.Description>
 			</S.Content>
 			<Nav selected={selected} setSelected={setSelected}/>

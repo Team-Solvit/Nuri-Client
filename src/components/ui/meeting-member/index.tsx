@@ -5,14 +5,10 @@ import Square from "@/components/ui/button/square";
 import React from "react";
 import {useModalStore} from "@/store/modal";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {useMeetingStore} from "@/store/meetingData";
 
 export const MeetingMember = ({isMember}: { isMember: boolean }) => {
-	const fakeData = [
-		{id: 1, name: "test1", "게시물": 0, "팔로워": 0, "팔로우": 0},
-		{id: 2, name: "test2", "게시물": 0, "팔로워": 0, "팔로우": 0},
-		{id: 3, name: "test3", "게시물": 0, "팔로워": 0, "팔로우": 0},
-		{id: 4, name: "test4", "게시물": 0, "팔로워": 0, "팔로우": 0},
-	]
+	const {meeting} = useMeetingStore()
 	const navigate = useNavigationWithProgress();
 	const memberClick = (id: number) => {
 		navigate(`/profile/${id}`)
@@ -24,7 +20,7 @@ export const MeetingMember = ({isMember}: { isMember: boolean }) => {
 	}
 	return (
 		<S.MeetingMemberContainer>
-			{fakeData.map(member => (
+			{meeting?.member?.map(member => (
 				<S.Member
 					key={member.id}
 					onClick={() => memberClick(member.id)}

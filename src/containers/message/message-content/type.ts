@@ -31,5 +31,5 @@ export interface ChatMessage {
     name : string,
     contractId : number,
     thumbnail : string,
-    master : boolean
+	  date : string
   }

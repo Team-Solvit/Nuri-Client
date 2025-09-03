@@ -4,13 +4,16 @@ import * as S from "./style";
 import Image from "next/image";
 import Arrow from "@/assets/meeting/arrow.svg";
 import ArrowBottom from "@/assets/meeting/arrow-bottom.svg";
-import {meetings} from "./data"
 import {breakpoints} from "@/styles/media";
 import Flag from "@/assets/icon/flag.svg";
+import {useMeetingStore} from "@/store/meetingData";
 
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
 export default function MeetingCalender() {
+	const {meeting} = useMeetingStore()
+	const meetings = meeting?.event
+	console.log(meetings)
 	const today = new Date();
 	const [year, setYear] = useState(today.getFullYear());
 	const [month, setMonth] = useState(today.getMonth());
@@ -29,6 +32,7 @@ export default function MeetingCalender() {
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
 	
+	if(!meetings) return
 	const handleClick = (i: number, e: React.MouseEvent) => {
 		e.stopPropagation(); // 외부 클릭 방지
 		setSelectedIndex(i);
@@ -69,7 +73,13 @@ export default function MeetingCalender() {
 	// 이번달 날짜
 	for (let day = 1; day <= daysInMonth; day++) {
 		const currentIndex = cellIndex;
-		const date = new Date(year, month, day).toLocaleDateString("ko-KR");
+		let date = new Date(year, month, day).toLocaleDateString("ko-KR");
+		date = date
+			.replace(/\s+/g, "")
+			.replace(/\.$/, "")
+			.split(".")
+			.map((part, idx) => (idx === 0 ? part : part.padStart(2, "0")))
+			.join(".");
 		
 		cells.push(
 			<S.DateCell
