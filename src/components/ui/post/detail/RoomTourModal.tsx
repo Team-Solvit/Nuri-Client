@@ -1,7 +1,8 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import Image from 'next/image';
-import {colors, fontSizes, zIndex} from '@/styles/theme';
+import { useRouter } from 'next/navigation';
+import { colors, fontSizes, zIndex } from '@/styles/theme';
 import {
 	startOfMonth,
 	endOfMonth,
@@ -14,39 +15,53 @@ import {
 } from 'date-fns';
 import ArrowLeft from '@/assets/post/arrow/left.svg';
 import ArrowRight from '@/assets/post/arrow/right.svg';
-import {mq} from '@/styles/media';
-import {useAlertStore} from "@/store/alert";
+import { mq } from '@/styles/media';
+import { useAlertStore } from "@/store/alert";
 
-export default function RoomTourModal() {
+interface RoomTourModalProps {
+	onComplete?: () => void;
+}
+
+export default function RoomTourModal({ onComplete }: RoomTourModalProps) {
+	const router = useRouter();
 	const now = new Date();
 	const rawHour = now.getHours();
 	const initialPeriod = rawHour >= 12 ? 'PM' : 'AM';
 	const initialHour12 = ((rawHour + 11) % 12) + 1;
 	const initialMinute = now.getMinutes();
-	
+
 	const [viewMonth, setViewMonth] = useState(new Date());
 	const [selectedDate, setSelectedDate] = useState(new Date());
 	const [hour, setHour] = useState<number>(initialHour12);
 	const [minute, setMinute] = useState<number>(initialMinute);
 	const [period, setPeriod] = useState<'AM' | 'PM'>(initialPeriod);
-	
+
 	const monthStart = startOfMonth(viewMonth);
 	const monthEnd = endOfMonth(viewMonth);
 	const startDate = startOfWeek(monthStart);
 	const endDate = endOfWeek(monthEnd);
-	
-	const days = eachDayOfInterval({start: startDate, end: endDate});
-	
-	const formatTime = (h: number, m: number) =>
-		`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-	
-	const {error} = useAlertStore();
-	
+
+	const days = eachDayOfInterval({ start: startDate, end: endDate });
+
+	const { error, success } = useAlertStore();
+
+	useEffect(() => {
+		router.prefetch('/message/1');
+	}, [])
+
+	const handleSend = () => {
+		success("룸투어 요청이 전송되었습니다!");
+		onComplete?.();
+		setTimeout(() => {
+			router.push('/message/1');
+		}, 0);
+	};
+
 	const handleDateClick = (day: Date, isCurrentMonth: boolean) => {
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
 		if (!isCurrentMonth || day < today) {
-			
+
 			setTimeout(() => {
 				error("과거 날짜는 선택할 수 없습니다.")
 			}, 0);
@@ -54,7 +69,7 @@ export default function RoomTourModal() {
 		}
 		setSelectedDate(day);
 	};
-	
+
 	return (
 		<Popover>
 			<Title>룸투어 날짜를 선택해주세요</Title>
@@ -63,14 +78,14 @@ export default function RoomTourModal() {
 					<MonthTitle>{format(viewMonth, 'yyyy년 M월')}</MonthTitle>
 					<NavButtons>
 						<NavButton onClick={() => setViewMonth(addMonths(viewMonth, -1))}>
-							<Image src={ArrowLeft} alt="이전 달" width={16} height={16}/>
+							<Image src={ArrowLeft} alt="이전 달" width={16} height={16} />
 						</NavButton>
 						<NavButton onClick={() => setViewMonth(addMonths(viewMonth, 1))}>
-							<Image src={ArrowRight} alt="다음 달" width={16} height={16}/>
+							<Image src={ArrowRight} alt="다음 달" width={16} height={16} />
 						</NavButton>
 					</NavButtons>
 				</CalendarHeader>
-				
+
 				<WeekdaysHeader>
 					{['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => (
 						<WeekdayCell
@@ -82,7 +97,7 @@ export default function RoomTourModal() {
 						</WeekdayCell>
 					))}
 				</WeekdaysHeader>
-				
+
 				<DatesGrid>
 					{days.map((day) => {
 						const isCurrentMonth = format(day, 'M') === format(viewMonth, 'M');
@@ -91,7 +106,7 @@ export default function RoomTourModal() {
 						const weekday = day.getDay();
 						const isWeekend = weekday === 0 || weekday === 6;
 						const isSaturday = weekday === 6;
-						
+
 						return (
 							<DateCell
 								key={day.toISOString()}
@@ -108,12 +123,12 @@ export default function RoomTourModal() {
 					})}
 				</DatesGrid>
 			</Calendar>
-			
+
 			<TimeRow>
 				<TimeLabel>시간</TimeLabel>
 				<TimeSelector>
 					<Select value={hour} onChange={(e) => setHour(+e.target.value)}>
-						{Array.from({length: 12}, (_, i) => i + 1).map((h) => (
+						{Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
 							<option key={h} value={h}>
 								{h.toString().padStart(2, '0')}
 							</option>
@@ -121,7 +136,7 @@ export default function RoomTourModal() {
 					</Select>
 					<Span>:</Span>
 					<Select value={minute} onChange={(e) => setMinute(+e.target.value)}>
-						{Array.from({length: 60}, (_, i) => i).map((m) => (
+						{Array.from({ length: 60 }, (_, i) => i).map((m) => (
 							<option key={m} value={m}>
 								{m.toString().padStart(2, '0')}
 							</option>
@@ -137,23 +152,14 @@ export default function RoomTourModal() {
 					</PeriodButtons>
 				</TimeSelector>
 			</TimeRow>
-			
-			<SendButton
-				onClick={() =>
-					console.log(
-						'전송:',
-						format(selectedDate, 'yyyy-MM-dd'),
-						formatTime(hour, minute),
-						period
-					)
-				}
-			>
-				<Image src={'/icons/post-detail/send.svg'} alt="Send" width={20} height={20}/>
+
+			<SendButton onClick={handleSend}>
+				<Image src={'/icons/post-detail/send.svg'} alt="Send" width={20} height={20} />
 				전송
 			</SendButton>
-			
+
 			<Arrow>
-				<img src="/icons/roomtour-popover-arrow.svg" alt="arrow" width={20} height={10}/>
+				<img src="/icons/roomtour-popover-arrow.svg" alt="arrow" width={20} height={10} />
 			</Arrow>
 		</Popover>
 	);
@@ -228,12 +234,12 @@ const WeekdayCell = styled.div<{ isWeekend: boolean; isSaturday?: boolean }>`
   padding: 0.5rem 0;
   font-size: ${fontSizes.Caption};
   font-weight: 500;
-  color: ${({isWeekend, isSaturday}) =>
-    isSaturday
-      ? '#3B82F6'
-      : isWeekend
-        ? colors.primary
-        : colors.gray};
+  color: ${({ isWeekend, isSaturday }) =>
+		isSaturday
+			? '#3B82F6'
+			: isWeekend
+				? colors.primary
+				: colors.gray};
 `;
 const DatesGrid = styled.div`
   display: grid;
@@ -252,25 +258,25 @@ const DateCell = styled.button<{
   height: 2.25rem;
   border: none;
   border-radius: 50%;
-  background: ${({isSelected}) => (isSelected ? '#FFEDEF' : 'transparent')};
-  color: ${({isCurrentMonth, isSelected, isToday, isWeekend, isSaturday}) => {
-    if (!isCurrentMonth) return colors.gray;
-    if (isSelected) return colors.primary;
-    if (isSaturday) return '#3B82F6';
-    if (isWeekend) return colors.primary;
-    if (isToday) return colors.primary;
-    return colors.text;
-  }};
-  font-weight: ${({isSelected}) => (isSelected ? 700 : 400)};
-  cursor: ${({isCurrentMonth}) => (isCurrentMonth ? 'pointer' : 'default')};
+  background: ${({ isSelected }) => (isSelected ? '#FFEDEF' : 'transparent')};
+  color: ${({ isCurrentMonth, isSelected, isToday, isWeekend, isSaturday }) => {
+		if (!isCurrentMonth) return colors.gray;
+		if (isSelected) return colors.primary;
+		if (isSaturday) return '#3B82F6';
+		if (isWeekend) return colors.primary;
+		if (isToday) return colors.primary;
+		return colors.text;
+	}};
+  font-weight: ${({ isSelected }) => (isSelected ? 700 : 400)};
+  cursor: ${({ isCurrentMonth }) => (isCurrentMonth ? 'pointer' : 'default')};
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: ${fontSizes.Small};
 
   &:hover {
-    background: ${({isCurrentMonth, isSelected}) =>
-      isCurrentMonth && !isSelected ? colors.line2 : isSelected ? '#FFEDEF' : 'transparent'};
+    background: ${({ isCurrentMonth, isSelected }) =>
+		isCurrentMonth && !isSelected ? colors.line2 : isSelected ? '#FFEDEF' : 'transparent'};
   }
 `;
 
@@ -304,17 +310,16 @@ const PeriodButtons = styled.div`
   gap: 0.25rem;
 `;
 const PeriodButton = styled.button<{ active?: boolean }>`
-  background: ${({active}) => (active ? '#FFEDEF' : 'transparent')};
-  border: 1.5px solid ${({active}) => (active ? colors.primary : colors.line)};
+  background: ${({ active }) => (active ? '#FFEDEF' : 'transparent')};
+  border: 1.5px solid ${({ active }) => (active ? colors.primary : colors.line)};
   border-radius: 0.5rem;
   padding: 0.1rem 0.7rem;
   font-size: ${fontSizes.Caption};
   font-weight: 600;
-  color: ${({active}) => (active ? colors.primary : colors.gray)};
+  color: ${({ active }) => (active ? colors.primary : colors.gray)};
   cursor: pointer;
-
   &:hover {
-    background: ${({active}) => (active ? '#FFEDEF' : colors.line2)};
+    background: ${({ active }) => (active ? '#FFEDEF' : colors.line2)};
   }
 `;
 
@@ -342,11 +347,4 @@ const Arrow = styled.div`
   bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
-
-  ${mq.mobile} {
-    top: 10px;
-    left: 63%;
-    bottom: auto;
-    transform: translate(-50%, -100%) rotate(180deg);
-  }
 `;

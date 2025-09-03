@@ -13,6 +13,7 @@ import SendIconSvg from '@/assets/post/send.svg';
 import * as S from './style';
 import { radius } from '@/styles/theme';
 import { useRouter } from 'next/navigation';
+import { useAlertStore } from '@/store/alert';
 
 interface PostDetailProps {
   id: string;
@@ -27,6 +28,7 @@ const mockComments = [
 
 export default function PostDetail({ id, isModal }: PostDetailProps) {
   const router = useRouter();
+  const { success } = useAlertStore();
   const post = fakeData.find((p) => p.id.toString() === id);
   const isHousePost = post?.subject === "하숙집";
   const [current, setCurrent] = useState(0);
@@ -35,9 +37,16 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
   const [showRoomTour, setShowRoomTour] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [openCommentMenuId, setOpenCommentMenuId] = useState<number | null>(null);
+  const [showContractConfirm, setShowContractConfirm] = useState(false);
+
+  // 좋아요 상태 관리
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(3); // 기본값
+  const [commentCount, setCommentCount] = useState(3); // 기본값
 
   const roomTourRef = useRef<HTMLDivElement | null>(null);
   const actionMenuRef = useRef<HTMLDivElement | null>(null);
+  const contractConfirmRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
@@ -52,6 +61,9 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
       if (openCommentMenuId !== null) {
         setOpenCommentMenuId(null);
       }
+      if (showContractConfirm && contractConfirmRef.current && !contractConfirmRef.current.contains(target)) {
+        setShowContractConfirm(false);
+      }
     };
 
     document.addEventListener('click', onDocClick);
@@ -63,6 +75,32 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
   const comments = mockComments;
   const images = post.thumbnail || [];
   const max = images.length - 1;
+
+  // 좋아요 토글 핸들러
+  const handleLikeToggle = () => {
+    setIsLiked(prev => !prev);
+    setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+  };
+
+  const handleContractProceed = () => {
+    success('계약 요청이 전송되었습니다!');
+    setShowContractConfirm(false);
+    if (isModal) {
+      router.back();
+      setTimeout(() => router.push('/message/1'), 0);
+    } else {
+      router.push('/message/1');
+    }
+  };
+
+  const handleContractClick = () => {
+    // 이미 열려있다면 닫기
+    setShowContractConfirm(prev => !prev);
+    // 다른 오버레이 닫기
+    setMenuOpen(false);
+    setShowRoomTour(false);
+    setOpenCommentMenuId(null);
+  };
 
   const handleSlide = (direction: 'next' | 'prev') => {
     setCurrent(prev => {
@@ -138,10 +176,27 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
                   width="max-content"
                 />
                 {showRoomTour && (
-                  <RoomTourModal />
+                  <RoomTourModal
+                    onComplete={() => {
+                      if (isModal) {
+                        router.back();
+                      }
+                    }}
+                  />
                 )}
               </S.RoomTourWrapper>
-              <Square text="계약" onClick={() => { }} status={true} width="max-content" />
+              <S.ContractWrapper ref={contractConfirmRef}>
+                <Square text="계약" onClick={handleContractClick} status={true} width="max-content" />
+                {showContractConfirm && (
+                  <S.ConfirmBox>
+                    <S.ConfirmText>계약 요청을 보내시겠습니까?</S.ConfirmText>
+                    <S.ConfirmButtons>
+                      <Square text="취소" status={false} width="auto" onClick={() => setShowContractConfirm(false)} />
+                      <Square text="확인" status={true} width="auto" onClick={handleContractProceed} />
+                    </S.ConfirmButtons>
+                  </S.ConfirmBox>
+                )}
+              </S.ContractWrapper>
             </S.Buttons>
           )}
         </S.Footer>
@@ -352,13 +407,21 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
             </S.CommentInputContainer>
           ) : (
             <S.InteractionButtons>
-              <S.ActionButton onClick={() => console.log('좋아요!')}>
-                <Image src={HeartIcon} alt="like" width={24} height={24} />
-                <S.ActionCount>{post.likes ?? 3}</S.ActionCount>
+              <S.ActionButton onClick={handleLikeToggle}>
+                <Image
+                  src={HeartIcon}
+                  alt="like"
+                  width={24}
+                  height={24}
+                  style={{
+                    filter: isLiked ? 'brightness(0) saturate(100%) invert(30%) sepia(74%) saturate(4662%) hue-rotate(344deg) brightness(94%) contrast(93%)' : 'none'
+                  }}
+                />
+                <S.ActionCount>{likeCount}</S.ActionCount>
               </S.ActionButton>
               <S.ActionButton onClick={() => setShowComments(true)}>
                 <Image src={CommentIcon} alt="comment" width={22} height={22} />
-                <S.ActionCount>{post.comments ?? 3}</S.ActionCount>
+                <S.ActionCount>{commentCount}</S.ActionCount>
               </S.ActionButton>
               <S.MenuButton ref={actionMenuRef} onClick={() =>
                 setMenuOpen((prev) => {
