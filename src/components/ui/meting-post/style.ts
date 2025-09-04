@@ -14,5 +14,6 @@ export const MetingPostContainer = styled.div<{ isModal: boolean }>`
     width: calc(100% - 2rem);
     gap: 0.25rem;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+	  max-width: 100px;
   }
 `

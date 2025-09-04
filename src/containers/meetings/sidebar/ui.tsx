@@ -2,30 +2,27 @@
 import * as S from './style';
 import {createPortal} from 'react-dom'
 import Image from 'next/image';
-import Meeting from "@/assets/meeting/profile.png"
+import type {Meeting} from "@/containers/meetings/accession/type";
 import Arrow from "@/assets/meeting/arrow.svg"
 import {useModalStore} from "@/store/modal";
 import {useRouter} from "next/navigation";
+import {useMeetingStore} from "@/store/meetingData";
 
 
 interface MeetingsSidebarProps {
 	rooms: string;
-	meetings: {
-		id: number;
-		title: string;
-		content: string;
-		personnel: number;
-		maxPersonnel: number;
-	}[]
+	meetings: Meeting[]
 }
 
 export default function MeetingsSidebar({rooms, meetings}: MeetingsSidebarProps) {
 	const {open} = useModalStore();
+	const {select} = useMeetingStore()
 	const router = useRouter();
 	const openModal = (id: number) => {
 		open();
 		router.push(`?id=${id}`, {scroll: false});
-		
+		console.log(meetings[Number(id)])
+		select(meetings[Number(id)-1])
 	}
 	
 	return createPortal(
@@ -37,7 +34,7 @@ export default function MeetingsSidebar({rooms, meetings}: MeetingsSidebarProps)
 				{meetings.map(meeting => (
 					<S.Meeting key={meeting.id} onClick={() => openModal(meeting.id)}>
 						<S.ImgBox>
-							<Image src={Meeting} alt="meeting" fill/>
+							<Image src={meeting.img} alt="meeting" fill/>
 						</S.ImgBox>
 						<S.Info>
 							<S.Sub>

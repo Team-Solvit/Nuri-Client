@@ -72,12 +72,12 @@ const HouseScroll = () => {
 				{fakeData.roomList.map((room, idx) => (
 					<S.RoomCard key={room.roomName + idx}>
 						<S.RoomImage>
-							<Image src={Profile} alt={"profile"} fill style={{objectFit: "cover"}}/>
+							<Image src={room.profile} alt={"profile"} fill style={{objectFit: "cover"}}/>
 						</S.RoomImage>
 						<S.RoomHeader>
 							<S.RoomInfo>
 								<S.RoomName>{room.roomName}</S.RoomName>
-								{room.profile && (
+								{!room.empty && (
 									<S.ProfileWrap>
 										<S.ProfileImg>
 											<Image src={Profile} alt={"profile"} fill style={{objectFit: "cover"}}/>
