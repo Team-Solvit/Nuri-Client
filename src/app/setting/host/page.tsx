@@ -7,6 +7,9 @@ import Logout from "@/components/ui/logout";
 import { useState, useEffect } from "react";
 import Leave from "@/components/ui/leave";
 import SettingHeader from "@/components/ui/settingHeader";
+import Square from "@/components/ui/button/square";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {useAlertStore} from "@/store/alert";
 
 export default function Host() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -26,6 +29,13 @@ export default function Host() {
     console.log('로그아웃 처리 완료')
     setShowLogoutModal(false)
   }
+	
+	const {success} = useAlertStore()
+	const navigate = useNavigationWithProgress()
+	const handleSave = () =>{
+		navigate("/myHouse");
+		success("하숙집 생성이 완료되었습니다.")
+	}
   return (
     <S.Con>
       {isMobile && <SettingHeader />}
@@ -92,6 +102,9 @@ export default function Host() {
             </S.RadioLabel>
           </S.RadioRow>
         </S.Section>
+	      <S.Section style={{width:'100%' , display:'flex', alignItems:'flex-end', }}>
+		      <Square onClick={handleSave} text={"저장"} status={true} width={"max-content"} />
+	      </S.Section>
       </S.Container>
       {showLogoutModal && <Logout
         onLogout={handleLogout}

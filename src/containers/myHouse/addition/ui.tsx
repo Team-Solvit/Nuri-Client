@@ -4,8 +4,8 @@ import * as S from './style';
 import Circle from '@/components/ui/button/circle';
 import Square from '@/components/ui/button/square';
 import {DEFAULT_CONTRACT_OPTIONS, FACILITY_CATEGORIES} from "./data"
-import {useRouter} from 'next/navigation';
 import {useAlertStore} from "@/store/alert";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 
 const Addition = () => {
 	const [contractOptions, setContractOptions] = useState<string[]>(DEFAULT_CONTRACT_OPTIONS);
