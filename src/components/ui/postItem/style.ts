@@ -4,38 +4,48 @@ import { mq } from '@/styles/media';
 
 
 export const PostItem = styled.div`
-    display: flex;
-    padding: 12px;
-    gap: 42rem;
-    width: 73vw;
-    border: 1px solid ${colors.line};
-    border-radius: ${radius.md};
-    background-color: ${colors.background};
-    cursor: pointer;
+  display: flex;
+  padding: 12px;
+  width: 73vw;
+  border: 1px solid ${colors.line};
+  border-radius: ${radius.md};
+  background-color: ${colors.background};
+  cursor: pointer;
+  align-items: center;
+  justify-content: space-between; /* 왼쪽(Post) / 오른쪽(Profile) */
 
-    ${mq.mobile} {
-        width: 87.5vw;
-        height: 12vh;
-        gap: 4rem;
-    }
-`
-
-export const PostMain = styled.div`
-    display: flex;
-    flex-direction: column;
-    color: ${colors.gray};
-    gap: 2px;
-
-    ${mq.mobile} {
-        width: 20vw;
-    }
+  ${mq.mobile} {
+    width: 87.5vw;
+    height: 12vh;
+  }
 `
 
 export const Profile = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0; /* 줄어들지 않음 */
+  /* width 제거 → 내용 크기에 맞게 딱 붙음 */
+`
+
+
+export const Post = styled.div`
+  display: flex;
+  align-items: center;
+  flex: 1; /* 남는 공간 다 차지 */
+  gap: 10px;
+`
+
+export const PostMain = styled.div`
+  display: flex;
+  flex-direction: column;
+  color: ${colors.gray};
+  gap: 2px;
+  flex: 1; /* 제목/지역/가격 영역도 가변 */
+
+  ${mq.mobile} {
+        width: 20vw;
+    }
 `
 
 export const PostUser = styled.span`
@@ -54,12 +64,6 @@ export const PostRegion = styled.span`
         font-size: ${fontSizes.Caption};
         margin-top: 0.5rem;
   }
-`
-
-export const Post = styled.div`
-    display: flex;
-    gap: 10px;
-    align-items: center;
 `
 
 export const PostThumbnail = styled.div`
