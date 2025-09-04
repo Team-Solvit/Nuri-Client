@@ -8,6 +8,7 @@ import * as S from "./style";
 import Square from '@/components/ui/button/square';
 
 export default function MeetingThirdPartyDetailContainer() {
+  const TEMPLATE_URL = "https://cdn.solvit-nuri.com/file/30a6aa26-e242-4633-b2fb-2f3b61bad124";
   const meeting = useMeetingStore((s) => s.selected);
 
   const parsedTime = useMemo(() => {
@@ -106,7 +107,16 @@ export default function MeetingThirdPartyDetailContainer() {
         <S.RecordHeader>
           <S.RecordTitle>모임 기록</S.RecordTitle>
           <Square text="업로드" onClick={() => fileInputRef.current?.click()} status={true} width="max-content" />
-          <Square text="형식 받기" onClick={() => { }} status={true} width="max-content" />
+          <Square
+            text="형식 받기"
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                window.open(TEMPLATE_URL, '_blank', 'noopener,noreferrer');
+              }
+            }}
+            status={true}
+            width="max-content"
+          />
           <input
             ref={fileInputRef}
             type="file"
