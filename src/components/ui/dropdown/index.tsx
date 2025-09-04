@@ -9,9 +9,11 @@ interface DropdownProps {
     isOpen: boolean;
     onOpen: () => void;
     onClose: () => void;
+    onSelect?: (value: string) => void;
+    selectedValue?: string | null;
 }
 
-export default function Dropdown({ text, list, isOpen, onOpen, onClose }: DropdownProps) {
+export default function Dropdown({ text, list, isOpen, onOpen, onClose, onSelect, selectedValue }: DropdownProps) {
     const [selected, setSelected] = useState<string>(text);
 
     const toggleDropdown = (e: React.MouseEvent) => {
@@ -25,15 +27,16 @@ export default function Dropdown({ text, list, isOpen, onOpen, onClose }: Dropdo
       
     const handleSelect = (item: string) => {
         setSelected(item);
+        onSelect?.(item);
         onClose();
     };
 
     return (
         <S.DropdownContainer onClick={(e) => e.stopPropagation()}>
-            <S.Dropdown onClick={toggleDropdown} selected={selected !== text}>
-                {selected}
+            <S.Dropdown onClick={toggleDropdown} selected={!!selectedValue}>
+                {selectedValue || text}
                 <Image
-                    src={selected !== text ? '/icons/dropdown2.svg' : '/icons/dropdown.svg'}
+                    src={!!selectedValue ? '/icons/dropdown2.svg' : '/icons/dropdown.svg'}
                     alt="dropdown"
                     width={12}
                     height={12}
