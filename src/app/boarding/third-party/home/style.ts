@@ -7,9 +7,25 @@ export const Wrapper = styled.div`
     justify-content: space-between;
     align-items: center;
     padding: 8px 100px;
+        position: relative;
 
     ${mq.mobile} {
         flex-direction: column;
         padding: 16px;
+    }
+`;
+
+export const HeaderActions = styled.div`
+    position: absolute;
+    top: 16px;
+    right: 100px;
+    display: flex;
+    gap: 0.75rem;
+    ${mq.mobile} {
+        position: static;
+        align-self: flex-end;
+        margin-bottom: 8px;
+        right: auto;
+        top: auto;
     }
 `;
