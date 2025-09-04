@@ -344,7 +344,10 @@ interface FilterState {
 
 interface ExplorePostListProps {
   filters: FilterState;
-}
+        thumbnail: '/post/post-example.png',
+        userProfile: '/profile/profile.svg',
+    }
+];
 
 export default function ExplorePostList({ filters }: ExplorePostListProps) {
     const router = useRouter();

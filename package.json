@@ -2,17 +2,20 @@
   "name": "nuri-fe",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "mock-server": "node --loader ts-node/esm src/mock/server.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.13.9",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@react-google-maps/api": "^2.20.7",
+    "apollo-server": "^3.13.0",
     "date-fns": "^4.1.0",
     "graphql": "^16.11.0",
     "next": "15.3.4",
@@ -30,6 +33,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

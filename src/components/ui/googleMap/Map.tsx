@@ -23,9 +23,10 @@ interface MapProps {
   markers: MarkerItem[]
   label: (m: MarkerItem) => string
   renderPopup: (m: MarkerItem) => React.ReactNode
+  onMarkerSelect?: (m: MarkerItem | null) => void
 }
 
-export default function Map({ markers, label, renderPopup }: MapProps) {
+export default function Map({ markers, label, renderPopup, onMarkerSelect }: MapProps) {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
@@ -58,7 +59,14 @@ export default function Map({ markers, label, renderPopup }: MapProps) {
                 anchor: new window.google.maps.Point(size / 2, size),
               }}
               onClick={() =>
-                setSelectedId((prev) => (prev === m.id ? null : m.id))
+                setSelectedId((prev) => {
+                  const next = prev === m.id ? null : m.id
+                  const sel = next ? markers.find(mm => mm.id === next) || null : null
+                  if (onMarkerSelect) {
+                    requestAnimationFrame(() => onMarkerSelect(sel))
+                  }
+                  return next
+                })
               }
               onMouseOver={() => setHoveredId(m.id)}
               onMouseOut={() => setHoveredId(null)}

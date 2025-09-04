@@ -6,10 +6,10 @@ import {useState, useEffect} from 'react';
 import { useRouter } from 'next/navigation';
 
 interface PostProps {
-    post: {
-        id: number;
-        thumbnail: string;
-    };
+	post: {
+		id: number;
+		thumbnail: string;
+	};
 }
 
 export default function Post({post}: PostProps) {

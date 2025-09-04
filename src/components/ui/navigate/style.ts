@@ -15,11 +15,13 @@ export const NavigateContainer = styled.section`
   ${mq.mobile} {
     justify-content: space-between;
     flex-direction: row;
+    align-items: center;
     background: rgba(255, 255, 255, 0.90);
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
+    padding: 0.6rem 1rem;
     box-shadow: 0 4.57px 7.312px 0 rgba(0, 0, 0, 0.03), 0 10.967px 36.558px 0 rgba(0, 0, 0, 0.04);
     backdrop-filter: blur(2px);
     z-index: ${zIndex.dropdown}
@@ -52,6 +54,52 @@ export const NavigateBtn = styled.button<{ isActive: boolean }>`
     }
   }
 `
+export const TextBtn = styled.p`
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:nth-of-type(2) {
+    color: ${colors.primary};
+  }
+
+  margin: 0.5rem 0;
+
+  ${mq.mobile} {
+    cursor: pointer;
+    margin: 0 1rem 0 0;
+
+    &:active {
+      text-decoration: underline;
+    }
+  }
+`
+export const Or = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  color: ${colors.gray};
+  font-size: ${fontSizes.Caption};
+
+  & > p {
+    width: 80%;
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  ${mq.mobile} {
+    display: none;
+  }
+`
+export const Line = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: ${colors.line};
+`
 export const IconBox = styled.div`
   display: flex;
   justify-content: center;
@@ -80,8 +128,8 @@ export const Logo = styled.div`
 
   ${mq.mobile} {
     position: relative;
-    width: 3.4rem;
-    height: 3.4rem;
+    width: 4rem;
+    height: 4rem;
     display: flex;
     align-items: center;
     cursor: pointer;
@@ -93,9 +141,11 @@ export const BtnBox = styled.div`
   align-items: center;
   gap: 1rem;
   flex-direction: column;
+  width: 100%;
 
   ${mq.mobile} {
     flex-direction: row;
     gap: 0.2rem;
+    justify-content: flex-end;
   }
 `
