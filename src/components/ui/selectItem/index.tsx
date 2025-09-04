@@ -8,35 +8,38 @@ import Square from '../button/square';
 
 interface SelectItemProps {
     text: string;
+    type?: 'price' | 'period';
     isOpen: boolean;
     onOpen: () => void;
     onClose: () => void;
     onChangeRange?: (values: [number, number]) => void;
 }
 
-export default function SelectItem({ text, isOpen, onOpen, onClose, onChangeRange }: SelectItemProps) {
+export default function SelectItem({ text, type, isOpen, onOpen, onClose, onChangeRange }: SelectItemProps) {
     const [selected, setSelected] = useState<string>(text);
-    const unit = text === '가격' ? '원' : text === '기간' ? '개월' : '';
+    const unit = type === 'price' ? '원' : type === 'period' ? '개월' : '';
 
     const toggleDropdown = (e: React.MouseEvent) => {
         e.stopPropagation();
         isOpen ? onClose() : onOpen();
     };
 
-    const STEP = text === '가격' ? 10000 : 1;
-    const MAX = text === '가격' ? 2000000 : 100;
-    const MIN = text === '가격' ? 0 : 1;
-    const [values, setValues] = useState<[number, number]>([MIN, MAX]);
+    const STEP = type === 'price' ? 10000 : 1;
+    const MAX = type === 'price' ? 600000 : 12; // 목데이터 기반: 가격 최대 510,000원, 기간 최대 12개월
+    const MIN = type === 'price' ? 200000 : 3; // 목데이터 기반: 가격 최소 200,000원, 기간 최소 3개월
+    const [values, setValues] = useState<[number, number]>(
+        type === 'price' ? [200000, 600000] : [3, 12]
+    );
 
     const formatNumber = (num: number) => {
-        if (text === '가격') {
+        if (type === 'price') {
             return num.toLocaleString('ko-KR');
         }
         return num.toString();
     };
 
     const parseNumber = (str: string) => {
-        if (text === '가격') {
+        if (type === 'price') {
             const cleaned = str.replace(/,/g, '');
             return cleaned === '' ? 0 : Number(cleaned);
         }
@@ -72,7 +75,7 @@ export default function SelectItem({ text, isOpen, onOpen, onClose, onChangeRang
 
             {isOpen && (
                 <S.Main>
-                    <S.Title>{text}</S.Title>
+                    <S.Title>{type === 'price' ? '가격' : '기간'}</S.Title>
                     <S.Input>
                         <S.Input1
                             type="text"
@@ -97,8 +100,9 @@ export default function SelectItem({ text, isOpen, onOpen, onClose, onChangeRang
                         renderTrack={({ props, children }) => {
                             const { key, ...restProps } = props as any;
                             const [minVal, maxVal] = values;
-                            const left = ((minVal - MIN) / (MAX - MIN)) * 100;
-                            const right = ((maxVal - MIN) / (MAX - MIN)) * 100;
+                            const currentMax = MAX;
+                            const left = ((minVal - MIN) / (currentMax - MIN)) * 100;
+                            const right = ((maxVal - MIN) / (currentMax - MIN)) * 100;
 
                             return (
                                 <div

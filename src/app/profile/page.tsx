@@ -3,13 +3,13 @@
 import Image from 'next/image';
 import * as S from './style';
 import PostItem from '@/components/ui/postItem';
-import { useRouter } from 'next/navigation'
 import Square from '@/components/ui/button/square';
-import { useState, useRef } from 'react';
+import {useState, useRef} from 'react';
 import Post from '@/components/ui/post';
 import Follow from '@/components/ui/follow';
 import FollowerList from '@/components/ui/follower';
-import NProgress from "nprogress";
+import {useRouter} from 'next/navigation';
+import NProgress from 'nprogress';
 
 export default function ProfilePage() {
     const router = useRouter()
@@ -30,55 +30,82 @@ export default function ProfilePage() {
         {
             id: 1,
             user: '해ㅠ피',
-            title: '해피해피하숙',
+            title: '모던 원룸 하숙',
             region: '강서구',
             price: '30',
-            thumbnail: '/post/room.svg',
+            thumbnail: '/post/post-example.png',
             userProfile: '/profile/profile.svg',
         },
         {
             id: 2,
             user: '해ㅠ피',
-            title: '해피해피하숙',
-            region: '강서구',
-            price: '30',
-            thumbnail: '/post/room.svg',
+            title: '깔끔한 투룸',
+            region: '마포구',
+            price: '45',
+            thumbnail: '/post/post-example10.png',
             userProfile: '/profile/profile.svg',
         },
         {
             id: 3,
             user: '해ㅠ피',
-            title: '해피해피하숙',
-            region: '강서구',
-            price: '30',
-            thumbnail: '/post/room.svg',
+            title: '아늑한 고시원',
+            region: '서초구',
+            price: '25',
+            thumbnail: '/post/post-example3.png',
             userProfile: '/profile/profile.svg',
         },
         {
             id: 4,
             user: '해ㅠ피',
-            title: '해피해피하숙',
-            region: '강서구',
-            price: '30',
-            thumbnail: '/post/room.svg',
+            title: '넓은 원룸',
+            region: '송파구',
+            price: '50',
+            thumbnail: '/post/post-example4.png',
             userProfile: '/profile/profile.svg',
         },
         {
             id: 5,
             user: '해ㅠ피',
-            title: '해피해피하숙',
-            region: '강서구',
-            price: '30',
-            thumbnail: '/post/room.svg',
+            title: '신축 하숙집',
+            region: '강남구',
+            price: '60',
+            thumbnail: '/post/post-example5.png',
             userProfile: '/profile/profile.svg',
         },
         {
             id: 6,
             user: '해ㅠ피',
-            title: '해피해피하숙',
-            region: '강서구',
-            price: '30',
-            thumbnail: '/post/room.svg',
+            title: '조용한 원룸',
+            region: '영등포구',
+            price: '35',
+            thumbnail: '/post/post-example6.png',
+            userProfile: '/profile/profile.svg',
+        },
+        {
+            id: 7,
+            user: '해ㅠ피',
+            title: '펜트하우스 뷰',
+            region: '용산구',
+            price: '80',
+            thumbnail: '/post/post-example7.png',
+            userProfile: '/profile/profile.svg',
+        },
+        {
+            id: 8,
+            user: '해ㅠ피',
+            title: '복층 원룸',
+            region: '성동구',
+            price: '55',
+            thumbnail: '/post/post-example8.png',
+            userProfile: '/profile/profile.svg',
+        },
+        {
+            id: 9,
+            user: '해ㅠ피',
+            title: '미니멀 원룸',
+            region: '동대문구',
+            price: '28',
+            thumbnail: '/post/post-example9.png',
             userProfile: '/profile/profile.svg',
         }
     ];
