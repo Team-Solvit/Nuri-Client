@@ -2,6 +2,34 @@ import styled from "@emotion/styled";
 import {colors, fontSizes, radius, zIndex} from "@/styles/theme";
 import {mq} from "@/styles/media";
 
+export const NavigateCon = styled.div`
+	display: flex;
+	gap: 30px;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+`
+
+export const BoardingHouseButton = styled.button`
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 16px;
+	background-color: #FF5B5B;
+	color: white;
+	border: none;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background-color 0.2s;
+
+	&:hover {
+		background-color: #E04E4E;
+	}
+`;
+
 export const NavigateContainer = styled.section`
   display: inline-flex;
   padding: 1rem;

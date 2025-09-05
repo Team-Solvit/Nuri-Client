@@ -61,63 +61,75 @@ export default function Navigate() {
 		},
 	] as const
 	return (
-		<S.NavigateContainer>
-			<S.Logo onClick={() => navigate("/")}>
-				<Image
-					src={"/logo.svg"}
-					alt="로고"
-					fill
-					priority
-				/>
-			</S.Logo>
-			<S.BtnBox>
-				{id ? NAVIGATE_ITEMS.map(item => {
-					return (
-						<S.NavigateBtn
-							key={item.path}
-							isActive={pathname === item.path}
-							onClick={() => navigate(item.path)}
-							role="button"
-							aria-label={item.aria_label}
-							aria-current={item.active}
-						>
-							<S.IconBox>
-								<Image src={item.icon} alt={item.label} width={32} height={32}/>
-								{/*<S.Count>1</S.Count>*/}
-							</S.IconBox>
-							<p>{item.label}</p>
-						</S.NavigateBtn>
-					)
-				}) : NAVIGATE_AUTH_ITEMS.map(item => {
-					if (item.label === "또는") {
+		<S.NavigateCon>
+			<S.NavigateContainer>
+				<S.Logo onClick={() => navigate("/")}>
+					<Image
+						src={"/logo.svg"}
+						alt="로고"
+						fill
+						priority
+					/>
+				</S.Logo>
+				<S.BtnBox>
+					{id ? NAVIGATE_ITEMS.map(item => {
 						return (
-							<S.Or key={item.label}>
-								<S.Line
-									onClick={item.onClick}
-								/>
+							<S.NavigateBtn
+								key={item.path}
+								isActive={pathname === item.path}
+								onClick={() => navigate(item.path)}
+								role="button"
+								aria-label={item.aria_label}
+								aria-current={item.active}
+							>
+								<S.IconBox>
+									<Image src={item.icon} alt={item.label} width={32} height={32}/>
+									{/*<S.Count>1</S.Count>*/}
+								</S.IconBox>
 								<p>{item.label}</p>
-								<S.Line
-									onClick={item.onClick}
-								/>
-							</S.Or>
-						
+							</S.NavigateBtn>
 						)
-					}
-					return (
-						<S.TextBtn
-							key={item.label}
-							onClick={item.onClick}
-						>
-							{item.label}
-						</S.TextBtn>
-					)
-				})}
-			</S.BtnBox>
-			{isOpen && (
-				<LoginModal>
-					<Login/>
-				</LoginModal>
-			)}
-		</S.NavigateContainer>
+					}) : NAVIGATE_AUTH_ITEMS.map(item => {
+						if (item.label === "또는") {
+							return (
+								<S.Or key={item.label}>
+									<S.Line
+										onClick={item.onClick}
+									/>
+									<p>{item.label}</p>
+									<S.Line
+										onClick={item.onClick}
+									/>
+								</S.Or>
+							
+							)
+						}
+						return (
+							<S.TextBtn
+								key={item.label}
+								onClick={item.onClick}
+							>
+								{item.label}
+							</S.TextBtn>
+						)
+					})}
+				</S.BtnBox>
+				{isOpen && (
+					<LoginModal>
+						<Login/>
+					</LoginModal>
+				)}
+			</S.NavigateContainer>
+			<S.BoardingHouseButton onClick={()=>navigate("/setting/host")}>
+				<Image 
+					src="/icons/home.svg" 
+					alt="하숙집 설정" 
+					width={20} 
+					height={20}
+					style={{ filter: 'brightness(0) invert(1)' }}
+				/>
+				하숙집 설정하기
+			</S.BoardingHouseButton>
+		</S.NavigateCon>
 	)
 }
