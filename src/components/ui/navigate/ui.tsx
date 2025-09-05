@@ -17,7 +17,7 @@ export default function Navigate() {
 	const pathname = usePathname();
 	const {id} = useUserStore();
 	const {isOpen, open} = useLoginModalStore();
-	
+	const isHome = pathname === "/";
 	const NAVIGATE_ITEMS = [
 		{
 			label: "알림",
@@ -120,16 +120,16 @@ export default function Navigate() {
 					</LoginModal>
 				)}
   			</S.NavigateContainer>
-			<S.HostCard>
+			{isHome && <S.HostCard>
 				<S.HostTextBox>
 					<strong>하숙집</strong>
 					<strong>호스트라면?</strong>
 					<span>간편하게 하숙 정보를 등록하고 관리해보세요</span>
 				</S.HostTextBox>
-				<S.HostCTAButton onClick={()=>navigate("/setting/host")}>
+				<S.HostCTAButton onClick={() => navigate("/setting/host")}>
 					하숙집 설정하기
 				</S.HostCTAButton>
-			</S.HostCard>
+			</S.HostCard>}
   		</S.NavigateCon>
 	)
 }

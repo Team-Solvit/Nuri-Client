@@ -1,10 +1,15 @@
 "use client";
 import { useRouter } from "next/navigation";
 import CreatingModal from "@/components/ui/creating";
+import {useAlertStore} from "@/store/alert";
 
 export default function CreatingModalPage() {
   const router = useRouter();
-  const handleClose = () => router.back();
+	const {success} = useAlertStore()
+  const handleClose = () => {
+		success("게시물을 업로드 하였습니다.")
+	  router.back();
+  }
 
   return (
     <div

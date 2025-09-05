@@ -47,7 +47,7 @@ export default function MeetingList({title, meetingList}: MeetingListProps) {
 									                 height={16}/> {meeting.location}</Location>
 								</Meta>
 							</Info>
-							<Square text="모임 관리" onClick={() => {
+							<Square text="일정 관리" onClick={() => {
 								selectMeeting(meeting);
 								navigate(`/meeting/third-party/detail/${meeting.id}`);
 							}} status={true} width="max-content"/>

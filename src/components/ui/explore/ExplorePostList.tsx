@@ -8,8 +8,8 @@ import { useMemo } from 'react';
 const allPostList = [
     {
         id: 1,
-        user: '해피하숙',
-        title: '해피해피하숙',
+        user: '김경숙',
+        title: '그랜마하우스 301호',
         region: '남구',
         school: '부경대학교',
         station: '못골역',

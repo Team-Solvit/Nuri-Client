@@ -8,11 +8,13 @@ import {breakpoints} from "@/styles/media";
 import Flag from "@/assets/icon/flag.svg";
 import {useMeetingStore} from "@/store/meetingData";
 import {useOtherMeetingFind} from "@/store/otherMeetingFind";
+import {useAlertStore} from "@/store/alert";
 
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
 export default function MeetingCalender() {
 	const {meeting} = useMeetingStore()
+	const {success} = useAlertStore()
 	const meetings = meeting?.event
 	console.log(meetings)
 	const today = new Date();
@@ -143,6 +145,7 @@ export default function MeetingCalender() {
 											<S.JoinButton onClick={(e) => {
 												e.stopPropagation();
 												setComplete(true)
+												success("일정에 참가하였습니다.")
 											}}>참가하기</S.JoinButton>
 										</> :
 										<S.CompleteButton>참가완료</S.CompleteButton>

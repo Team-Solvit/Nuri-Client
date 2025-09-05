@@ -8,6 +8,7 @@ import {useOtherMeetingFind} from '@/store/otherMeetingFind';
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import { useSearchParams} from "next/navigation";
 import {useMeetingStore} from "@/store/meetingData";
+import {useAlertStore} from "@/store/alert";
 
 export default function Accession({isAccession, setIsAccession, accessions}: AccessionProps) {
 	const modalClose = () => {
@@ -21,6 +22,7 @@ export default function Accession({isAccession, setIsAccession, accessions}: Acc
 	const handelRouter = (id: number) => {
 		navigate(`/meetings/${id}`)
 		if (!isAccession?.idx) return;
+		success("모임가입에 성공하였습니다.")
 		select(accessions[Number(id)-2])
 		setIsAccession({
 			status : false,
@@ -30,6 +32,7 @@ export default function Accession({isAccession, setIsAccession, accessions}: Acc
 		setFind(false);
 		close()
 	}
+	const {success} = useAlertStore()
 	if (!isAccession.status || !id) return null
 	return (
 		<S.Black

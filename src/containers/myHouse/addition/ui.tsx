@@ -205,7 +205,8 @@ const Addition = () => {
 					<S.Name>취소</S.Name>
 				</S.CancelBtn>
 				<Square text="등록" onClick={() => {
-					error("등록 완료");
+					success("등록 완료");
+					navigate("/myHouse");
 				}} status={true} width="100%"/>
 			</S.FixedFooter>
 		</S.Container>

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import * as S from "./style";
 import Square from "@/components/ui/button/square";
+import {useModalStore} from "@/store/modal";
+import {useAlertStore} from "@/store/alert";
 
 export default function CreateModal({ onDone }: { onDone?: () => void }) {
   const [name, setName] = useState("");
@@ -15,20 +17,20 @@ export default function CreateModal({ onDone }: { onDone?: () => void }) {
 
   return (
     <S.Wrapper>
-      <S.Title>모임 생성</S.Title>
+      <S.Title>일정 생성</S.Title>
       <S.Section>
-        <S.Label htmlFor="meeting-name">모임 이름</S.Label>
+        <S.Label htmlFor="meeting-name">일정 이름</S.Label>
         <S.InputBox>
           <S.Input
             id="meeting-name"
-            placeholder="모임 이름을 입력해주세요."
+            placeholder="일정 이름을 입력해주세요."
             value={name}
             onChange={e => setName(e.target.value)}
           />
         </S.InputBox>
       </S.Section>
       <S.Section>
-        <S.Label>모임 시간 설정</S.Label>
+        <S.Label>일정 시간 설정</S.Label>
         <S.DateRow>
           <S.InputBox>
             <S.Input
@@ -61,17 +63,17 @@ export default function CreateModal({ onDone }: { onDone?: () => void }) {
         </S.TimeGrid>
       </S.Section>
       <S.Section>
-        <S.Label htmlFor="meeting-place">모임 장소</S.Label>
+        <S.Label htmlFor="meeting-place">일정 장소</S.Label>
         <S.InputBox>
           <S.Input
             id="meeting-place"
-            placeholder="모임 장소를 입력해주세요."
+            placeholder="일정 장소를 입력해주세요."
             value={place}
             onChange={e => setPlace(e.target.value)}
           />
         </S.InputBox>
       </S.Section>
-      <Square text="완료" onClick={onDone || (() => { })} status={true} width="100%" />
+      <Square text="완료" onClick={onDone} status={true} width="100%" />
     </S.Wrapper>
   );
 }

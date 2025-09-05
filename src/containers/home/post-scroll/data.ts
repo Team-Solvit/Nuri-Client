@@ -6,8 +6,8 @@ export const fakeData = [
 		desc: '그랜마 하우스에서 함께살기',
 		price: '300,000',
 		subject: '하숙집',
-		user: {userId: 'huhon123', thumbnail: '/post/post-example.png'},
-		date: '2025-07-13',
+		user: {userId: 'rudtnr123', thumbnail: '/profile/profile.svg'},
+		date: '2025-08-31',
 	},
 	{
 		id: 2,

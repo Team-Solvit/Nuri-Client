@@ -9,6 +9,7 @@ import MemberModal from "./MemberModal";
 import CreateModal from "./CreateModal";
 import { useState } from "react";
 import StateModal from "@/components/layout/stateModal";
+import {useAlertStore} from "@/store/alert";
 
 export default function MeetingThirdPartyContainer() {
 
@@ -23,6 +24,7 @@ export default function MeetingThirdPartyContainer() {
 
   const { isOpen: isOpenList, open: openListStore, close: closeListStore } = useModalStore();
   const [isOpenCreate, setIsOpenCreate] = useState(false);
+	const { success } = useAlertStore();
 
   const handleOpenList = () => {
     setIsOpenCreate(false);
@@ -42,7 +44,7 @@ export default function MeetingThirdPartyContainer() {
         </S.HeaderLeft>
         <S.HeaderRight>
           <Square text="모임원 목록" onClick={handleOpenList} status={false} width="max-content" />
-          <Square text="모임 생성" onClick={handleOpenCreate} status={false} width="max-content" />
+          <Square text="일정 생성" onClick={handleOpenCreate} status={false} width="max-content" />
         </S.HeaderRight>
       </S.Header>
       <S.Section>
@@ -56,7 +58,10 @@ export default function MeetingThirdPartyContainer() {
       )}
       {isOpenCreate && (
         <StateModal isOpen={isOpenCreate} close={() => setIsOpenCreate(false)}>
-          <CreateModal onDone={() => setIsOpenCreate(false)} />
+          <CreateModal onDone={() => {
+						success("일정 생성이 완료되었습니다.");
+	          setIsOpenCreate(false)
+          }} />
         </StateModal>
       )}
     </S.Wrapper>
