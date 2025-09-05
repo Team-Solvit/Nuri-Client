@@ -21,7 +21,7 @@ export default function MeetingsSidebar({rooms, meetings}: MeetingsSidebarProps)
 	const openModal = (id: number) => {
 		open();
 		router.push(`?id=${id}`, {scroll: false});
-		console.log(meetings[Number(id)])
+		console.log(meetings[Number(id)-1])
 		select(meetings[Number(id)-1])
 	}
 	

@@ -6,7 +6,7 @@ import NProgress from "nprogress";
 import {useModalStore} from "@/store/modal";
 import {useOtherMeetingFind} from '@/store/otherMeetingFind';
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
-import {useParams, useSearchParams} from "next/navigation";
+import { useSearchParams} from "next/navigation";
 import {useMeetingStore} from "@/store/meetingData";
 
 export default function Accession({isAccession, setIsAccession, accessions}: AccessionProps) {
@@ -21,7 +21,7 @@ export default function Accession({isAccession, setIsAccession, accessions}: Acc
 	const handelRouter = (id: number) => {
 		navigate(`/meetings/${id}`)
 		if (!isAccession?.idx) return;
-		select(accessions[Number(id)-1])
+		select(accessions[Number(id)-2])
 		setIsAccession({
 			status : false,
 			idx : null

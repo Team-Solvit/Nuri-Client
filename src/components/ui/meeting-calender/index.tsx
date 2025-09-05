@@ -1,5 +1,5 @@
 'use client';
-import {useState, useEffect} from "react";
+import {useState, useEffect, useRef} from "react";
 import * as S from "./style";
 import Image from "next/image";
 import Arrow from "@/assets/meeting/arrow.svg";
@@ -7,6 +7,7 @@ import ArrowBottom from "@/assets/meeting/arrow-bottom.svg";
 import {breakpoints} from "@/styles/media";
 import Flag from "@/assets/icon/flag.svg";
 import {useMeetingStore} from "@/store/meetingData";
+import {useOtherMeetingFind} from "@/store/otherMeetingFind";
 
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -22,11 +23,16 @@ export default function MeetingCalender() {
 	const firstDay = new Date(year, month, 1).getDay();
 	const daysInMonth = new Date(year, month + 1, 0).getDate();
 	const prevLastDay = new Date(year, month, 0).getDate();
-	
+	const {find} = useOtherMeetingFind()
+	const [complete, setComplete] = useState(false)
+	const popupRef = useRef<HTMLDivElement>(null);
+
 	// 팝업 외부 클릭 감지
 	useEffect(() => {
-		const handleClickOutside = () => {
-			setSelectedIndex(null);
+		const handleClickOutside = (event: MouseEvent) => {
+			if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+				setSelectedIndex(null);
+			}
 		};
 		document.addEventListener("mousedown", handleClickOutside);
 		return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -101,7 +107,7 @@ export default function MeetingCalender() {
 				}
 				
 				{date in meetings && selectedIndex === currentIndex && (
-					<S.Popup onClick={(e) => e.stopPropagation()}>
+					<S.Popup ref={popupRef} onClick={(e) => e.stopPropagation()}>
 						<h3>{meetings[date].title}</h3>
 						<S.PopupContentBox>
 							<p>날짜</p>
@@ -125,6 +131,27 @@ export default function MeetingCalender() {
                 <Image src={ArrowBottom} alt="arrow" fill/>
               </S.ImgBox>
 						}
+						{!find ?
+							<S.ButtonContainer>
+								{
+									!complete ?
+										<>
+											<S.LeaveButton onClick={(e) => {
+												e.stopPropagation();
+												setComplete(true)
+											}}>불참가하기</S.LeaveButton>
+											<S.JoinButton onClick={(e) => {
+												e.stopPropagation();
+												setComplete(true)
+											}}>참가하기</S.JoinButton>
+										</> :
+										<S.CompleteButton>참가완료</S.CompleteButton>
+								}
+								
+						</S.ButtonContainer>
+							: null
+						}
+						
 					</S.Popup>
 				)}
 			</S.DateCell>
