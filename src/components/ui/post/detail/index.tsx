@@ -198,7 +198,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
               </S.RightTopRow>
               <S.RightTitle>
                 <span>{roomName}</span>
-                <S.RightRoomType>{postInfo.room.status === 'EMPTY_ROOM' ? '빈방' : postInfo.room.status}</S.RightRoomType>
+                <S.RightRoomType>{postInfo.room.headCount}인실</S.RightRoomType>
               </S.RightTitle>
               <S.RightSub>{location}</S.RightSub>
               <S.RightDesc>{desc}</S.RightDesc>
@@ -237,11 +237,16 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
                 {gender && (
                   <S.RightFeature>
                     <S.RightFeatureIcon>
-                      <Image src="/icons/post-detail/gender-female.svg" alt="gender" width={20} height={20} />
+                      <Image
+                        src={gender === 'MALE' ? '/icons/post-detail/gender-male.svg' : '/icons/post-detail/gender-female.svg'}
+                        alt={gender === 'MALE' ? 'male' : 'female'}
+                        width={20}
+                        height={20}
+                      />
                     </S.RightFeatureIcon>
                     <S.RightFeatureContent>
                       <S.RightFeatureTitle>{gender === 'MALE' ? '남성전용' : gender === 'FEMALE' ? '여성전용' : gender}</S.RightFeatureTitle>
-                      <S.RightFeatureDesc>{gender === 'MALE' ? '남성전용' : gender === 'FEMALE' ? '여성전용' : ''}</S.RightFeatureDesc>
+                      <S.RightFeatureDesc>성별 제한</S.RightFeatureDesc>
                     </S.RightFeatureContent>
                   </S.RightFeature>
                 )}

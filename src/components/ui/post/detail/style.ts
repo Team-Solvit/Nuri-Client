@@ -196,6 +196,7 @@ export const RightTitle = styled.h2`
   font-size: 1.5rem;
   font-weight: 700;
   margin: 0.5rem 0;
+  gap: 0.5rem;
   ${mq.mobile} {
     font-size: 1.125rem;
     flex-wrap: wrap;
