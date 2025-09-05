@@ -119,17 +119,17 @@ export default function Navigate() {
 						<Login/>
 					</LoginModal>
 				)}
-			</S.NavigateContainer>
-			<S.BoardingHouseButton onClick={()=>navigate("/setting/host")}>
-				<Image 
-					src="/icons/home.svg" 
-					alt="하숙집 설정" 
-					width={20} 
-					height={20}
-					style={{ filter: 'brightness(0) invert(1)' }}
-				/>
-				하숙집 설정하기
-			</S.BoardingHouseButton>
-		</S.NavigateCon>
+  			</S.NavigateContainer>
+			<S.HostCard>
+				<S.HostTextBox>
+					<strong>하숙집</strong>
+					<strong>호스트라면?</strong>
+					<span>간편하게 하숙 정보를 등록하고 관리해보세요</span>
+				</S.HostTextBox>
+				<S.HostCTAButton onClick={()=>navigate("/setting/host")}>
+					하숙집 설정하기
+				</S.HostCTAButton>
+			</S.HostCard>
+  		</S.NavigateCon>
 	)
 }

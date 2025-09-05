@@ -30,6 +30,53 @@ export const BoardingHouseButton = styled.button`
 	}
 `;
 
+export const HostCard = styled.div`
+  display: flex;
+  align-items: center;
+	flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem;
+  border-radius: ${radius.md};
+  border: 1px solid ${colors.line};
+  background: linear-gradient(0deg, rgba(255,91,91,0.08) 0%, rgba(255,91,91,0.02) 100%);
+`;
+
+export const HostTextBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  & > strong {
+    font-size: ${fontSizes.Body};
+    color: ${colors.text};
+  }
+  & > span {
+    font-size: ${fontSizes.Caption};
+    color: ${colors.gray};
+  }
+`;
+
+export const HostCTAButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background-color: ${colors.primary};
+  color: ${colors.background};
+  border: none;
+  border-radius: ${radius.sm};
+  font-size: ${fontSizes.Caption};
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
 export const NavigateContainer = styled.section`
   display: inline-flex;
   padding: 1rem;

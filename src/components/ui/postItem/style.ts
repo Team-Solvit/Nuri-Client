@@ -50,7 +50,7 @@ export const PostMain = styled.div`
 
 export const PostUser = styled.span`
     font-size: ${fontSizes.Body};
-
+	width: 90px;
     ${mq.mobile} {
         font-size: ${fontSizes.Caption};
     }

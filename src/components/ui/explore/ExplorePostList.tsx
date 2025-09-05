@@ -10,7 +10,7 @@ const allPostList = [
         id: 1,
         user: '해피하숙',
         title: '해피해피하숙',
-        region: '강서구',
+        region: '남구',
         school: '부경대학교',
         station: '못골역',
         price: 300000,
@@ -30,7 +30,7 @@ const allPostList = [
         period: 12,
         gender: 'F',
         thumbnail: '/post/post-example2.png',
-        userProfile: '/profile/profile3.png',
+        userProfile: '/profile/profile3.jpg',
     },
     {
         id: 3,
@@ -55,8 +55,8 @@ const allPostList = [
         price: 350000,
         period: 9,
         gender: 'F',
-        thumbnail: '/post/post-example4.png',
-        userProfile: '/profile/profile2.png',
+        thumbnail: '/post/post-example4.jpeg',
+        userProfile: '/profile/profile2.jpeg',
     },
     {
         id: 5,
@@ -68,7 +68,7 @@ const allPostList = [
         price: 500000,
         period: 6,
         gender: 'M',
-        thumbnail: '/post/post-example5.png',
+        thumbnail: '/post/post-example5.jpeg',
         userProfile: '/profile/profile7.png',
     },
     {
