@@ -5,6 +5,7 @@ export type SnsPostDetail = {
   contents: string;
   day: string;
   likeCount: number;
+  isLiked: boolean;
   commentCount: number;
   author: { userId: string; profile: string | null };
   files: { fileId: string; url: string }[];
@@ -17,6 +18,7 @@ export type BoardingRoomFile = { fileId: string; url: string };
 export type BoardingPostDetail = {
   __typename: 'BoardingPost';
   likeCount: number;
+  isLiked: boolean;
   commentCount: number;
   room: {
     roomId: string;

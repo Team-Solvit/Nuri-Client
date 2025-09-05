@@ -15,6 +15,56 @@ export const PostDetailGQL = {
             contents
             day
             likeCount
+            isLiked
+            commentCount
+            author { userId profile }
+            files { fileId url }
+          }
+          ... on BoardingPost {
+            __typename
+            likeCount
+            isLiked
+            commentCount
+            room {
+              roomId
+              name
+              description
+              monthlyRent
+              day
+              status
+              headCount
+              boardingHouse {
+                houseId
+                name
+                location
+                nearestStation
+                nearestSchool
+                gender
+                isMealProvided
+                host { user { userId profile } callNumber }
+              }
+              contractPeriod { contractPeriod contractPeriodId }
+              boardingRoomFile { fileId url }
+              boardingRoomOption { optionId name }
+            }
+          }
+        }
+      }
+    }
+  `,
+    // 백엔드 isLiked 미구현 환경을 위한 fallback 쿼리
+    GET_POST_LIST_LIGHT_LEGACY: gql`
+      query GetPostListLightLegacy($start: Int!) {
+        getPostList(start: $start) {
+          postType
+          postInfo {
+          ... on SnsPost {
+            __typename
+            postId
+            title
+            contents
+            day
+            likeCount
             commentCount
             author { userId profile }
             files { fileId url }
@@ -67,12 +117,30 @@ export const PostDetailGQL = {
 
 export const PostDetailService = {
   getPostList: async (client: ApolloClient<any>, start: number = 0) => {
-    const { data } = await client.query<GetPostListLightResponse, GetPostListLightVars>({
-      query: PostDetailGQL.QUERIES.GET_POST_LIST_LIGHT,
-      variables: { start },
-      fetchPolicy: 'no-cache'
-    });
-    return data?.getPostList ?? [];
+    try {
+      const { data } = await client.query<GetPostListLightResponse, GetPostListLightVars>({
+        query: PostDetailGQL.QUERIES.GET_POST_LIST_LIGHT,
+        variables: { start },
+        fetchPolicy: 'no-cache'
+      });
+      return data?.getPostList ?? [];
+    } catch (err: any) {
+      const needsFallback = Array.isArray(err?.graphQLErrors) && err.graphQLErrors.some((e: any) => typeof e?.message === 'string' && e.message.includes('isLiked'));
+      if (!needsFallback) throw err;
+      // fallback 재시도
+      const { data } = await client.query<GetPostListLightResponse, GetPostListLightVars>({
+        query: PostDetailGQL.QUERIES.GET_POST_LIST_LIGHT_LEGACY,
+        variables: { start },
+        fetchPolicy: 'no-cache'
+      });
+      const list = data?.getPostList ?? [];
+      // isLiked 필드 주입 (기본 false)
+      return list.map(item => {
+        const p: any = item.postInfo;
+        if (!('isLiked' in p)) p.isLiked = false;
+        return { ...item, postInfo: p };
+      });
+    }
   },
 
   getPostById: async (client: ApolloClient<any>, id: string): Promise<PostDetailUnion | null> => {

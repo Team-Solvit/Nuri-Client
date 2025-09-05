@@ -21,28 +21,31 @@ export const Wrapper = styled.div`
 `;
 
 export const Left = styled.div`
-  flex: 3;
+  flex: none;
+  width: 640px;
+  max-width: calc(100vw - 2rem);
   display: flex;
   flex-direction: column;
   ${mq.mobile} {
-    flex: none;
     width: 100%;
+    max-width: 100%;
   }
 `;
 
 export const SliderWrapper = styled.div`
   position: relative;
   width: 100%;
-  aspect-ratio: 4/3;
-  background: ${colors.line2};
+  height: 640px;
+  background: #000;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: ${radius.sm};
   ${mq.mobile} {
-    max-height: none;
+    height: auto;
+    aspect-ratio:
     border-radius: ${radius.md};
-    box-shadow: none;
   }
 `;
 
@@ -59,6 +62,9 @@ export const Slide = styled.div`
   height: 100%;
   flex: 0 0 100%;
   position: relative;
+  & > span, & img {
+    object-fit: cover;
+  }
 `;
 
 export const ArrowBtn = styled.button<{ left?: boolean }>`

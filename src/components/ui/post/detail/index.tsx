@@ -41,7 +41,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
         if (post) {
           setLikeCount(post.likeCount);
           // TODO: 실제 좋아요 상태는 서버에서 받아와야 함
-          setIsLiked(false); 
+          setIsLiked(false);
         }
       } catch (error) {
         console.error('Failed to fetch post:', error);
@@ -61,6 +61,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
   }, [postInfo]);
 
   const [current, setCurrent] = useState(0);
+  const [fitMode, setFitMode] = useState<'cover' | 'contain'>('cover');
   useEffect(() => { setCurrent(0); }, [id]);
   const max = images.length - 1;
 
@@ -83,22 +84,25 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
     return () => document.removeEventListener('click', onDocClick);
   }, [menuOpen, showRoomTour, openCommentMenuId]);
 
+  useEffect(() => { setFitMode('cover'); }, [current, images]);
+
   if (loading) return <div>불러오는 중...</div>;
   if (!postInfo) return <div>게시물을 불러올 수 없습니다.</div>;
 
   const handleSlide = (direction: 'next' | 'prev') => setCurrent(prev => direction === 'next' ? (prev < max ? prev + 1 : 0) : (prev > 0 ? prev - 1 : max));
+  const leftStyle: React.CSSProperties = { width: 640 };
   const submitComment = () => { if (!commentText.trim()) return; console.log('새 댓글 전송:', commentText); setCommentText(''); };
   const handleKeyPress = (e: React.KeyboardEvent) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitComment(); } };
 
   // 좋아요 토글 핸들러
   const handleLikeToggle = async () => {
     if (!postInfo) return;
-    
+
     try {
-      const postId = postInfo.__typename === 'SnsPost' 
-        ? postInfo.postId 
+      const postId = postInfo.__typename === 'SnsPost'
+        ? postInfo.postId
         : postInfo.room.roomId;
-      
+
       if (isLiked) {
         await PostDetailService.unlikePost(client, postId);
         setLikeCount(prev => prev - 1);
@@ -119,7 +123,6 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
   const userId = postInfo.__typename === 'SnsPost' ? postInfo.author.userId : postInfo.room.boardingHouse.host.user.userId;
   const desc = postInfo.__typename === 'SnsPost' ? postInfo.contents : postInfo.room.description;
 
-  // Boarding specific
   const roomName = isHousePost ? postInfo.room.name : undefined;
   const monthlyRent = isHousePost ? postInfo.room.monthlyRent : undefined;
   const periods = isHousePost ? postInfo.room.contractPeriod.map(p => p.contractPeriod) : [];
@@ -143,7 +146,19 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
           <S.SliderTrack index={current} count={images.length}>
             {images.map((src, i) => (
               <S.Slide key={i}>
-                <Image src={src.startsWith('http') ? src : `https://cdn.solvit-nuri.com/file/${src}`} alt={`slide-${i}`} fill style={{ objectFit: 'cover' }} />
+                <Image
+                  src={src.startsWith('http') ? src : `https://cdn.solvit-nuri.com/file/${src}`}
+                  alt={`slide-${i}`}
+                  fill
+                  priority={i === 0}
+                  sizes="(max-width: 768px) 100vw, 640px"
+                  onLoadingComplete={(img) => {
+                    if (i !== current) return;
+                    const ratio = img.naturalWidth / img.naturalHeight;
+                    if (ratio > 1.35 || ratio < 0.74) setFitMode('contain'); else setFitMode('cover');
+                  }}
+                  style={{ objectFit: fitMode, backgroundColor: '#000', transition: 'object-fit 0.25s' }}
+                />
               </S.Slide>
             ))}
           </S.SliderTrack>
@@ -304,12 +319,12 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
           ) : (
             <S.InteractionButtons>
               <S.ActionButton onClick={handleLikeToggle}>
-                <Image 
-                  src={HeartIcon} 
-                  alt="like" 
-                  width={24} 
-                  height={24} 
-                  style={{ 
+                <Image
+                  src={HeartIcon}
+                  alt="like"
+                  width={24}
+                  height={24}
+                  style={{
                     filter: isLiked ? 'brightness(0) saturate(100%) invert(30%) sepia(74%) saturate(4662%) hue-rotate(344deg) brightness(94%) contrast(93%)' : 'none'
                   }}
                 />
