@@ -18,6 +18,7 @@ import type { PostDetailUnion, PostComment } from '@/types/postDetail';
 import { useUserStore } from '@/store/user';
 import { useAlertStore } from '@/store/alert';
 import { useModalStore } from '@/store/modal';
+import { useFileUpload } from '@/hooks/useFileUpload';
 import Modal from '@/components/layout/modal';
 
 interface PostDetailProps { id: string; isModal?: boolean; }
@@ -28,6 +29,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
   const { id: currentUserId } = useUserStore();
   const { success, error } = useAlertStore();
   const { open: openModal, close: closeModal, isOpen } = useModalStore();
+  const { upload: uploadFiles, loading: uploading } = useFileUpload();
   const [postInfo, setPostInfo] = useState<PostDetailUnion | null>(null);
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
@@ -208,25 +210,32 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
     if (!postInfo || postInfo.__typename !== 'SnsPost' || !editingPostContent.trim()) return;
     
     try {
-      // 해시태그 추출
+      let uploadedImageIds: string[] = [];
+      if (newImages.length > 0) {
+        uploadedImageIds = await uploadFiles(newImages);
+      }
+      
+      const allImageIds = [...editingImages, ...uploadedImageIds];
+      
       const hashTagMatches = editingPostContent.match(/#[^\s#]+/g) || [];
-      const hashTags = hashTagMatches.map(tag => tag.substring(1)); // # 제거
+      const hashTags = hashTagMatches.map(tag => tag.substring(1));
       
       const postUpdateInput = {
         postId: postInfo.postId,
         postInfo: {
           title: postInfo.title || '',
           contents: editingPostContent,
-          shareRange: 'ALL' as const, // 기본값
-          isGroup: false // 기본값
+          shareRange: 'ALL' as const,
+          isGroup: false
         },
-        files: editingImages, // 기존 이미지들
+        files: allImageIds,
         hashTags: hashTags
       };
       
       await PostDetailService.updatePost(client, postUpdateInput);
       
-      setPostInfo(prev => prev ? { ...prev, contents: editingPostContent } : null);
+      const updatedPost = await PostDetailService.getPostById(client, id);
+      setPostInfo(updatedPost);
       
       setIsEditingPost(false);
       setEditingPostContent('');
@@ -545,9 +554,9 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
                       width="max-content"
                     />
                     <Square 
-                      text="저장" 
+                      text={uploading ? "업로드 중..." : "저장"} 
                       onClick={saveEditPost}
-                      status={true}
+                      status={!uploading}
                       width="max-content"
                     />
                   </S.EditPostButtons>
