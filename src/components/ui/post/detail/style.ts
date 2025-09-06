@@ -44,7 +44,7 @@ export const SliderWrapper = styled.div`
   border-radius: ${radius.sm};
   ${mq.mobile} {
     height: auto;
-    aspect-ratio:
+    aspect-ratio: 1;
     border-radius: ${radius.md};
   }
 `;
@@ -55,6 +55,9 @@ export const SliderTrack = styled.div<{ index: number; count: number }>`
   height: 100%;
   transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
   transform: ${({ index }) => `translateX(-${index * 100}%)`};
+  ${mq.mobile} {
+    height: 100%;
+  }
 `;
 
 export const Slide = styled.div`
@@ -64,6 +67,9 @@ export const Slide = styled.div`
   position: relative;
   & > span, & img {
     object-fit: cover;
+  }
+  ${mq.mobile} {
+    height: 100%;
   }
 `;
 
@@ -642,6 +648,7 @@ export const SendButton = styled.button<{ disabled?: boolean }>`
 
 export const MobileClose = styled.button`
   position: fixed;
+  top: 1rem;
   right: 0.75rem;
   width: 36px;
   height: 36px;
