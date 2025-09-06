@@ -48,3 +48,17 @@ export type PostDetailUnion = SnsPostDetail | BoardingPostDetail;
 
 export type GetPostListLightResponse = { getPostList: { postType: string; postInfo: PostDetailUnion }[] };
 export type GetPostListLightVars = { start: number };
+
+export type PostComment = {
+  commentId: string;
+  commenter: {
+    id: string;
+    name: string;
+    userId: string;
+  };
+  content: string;
+  postId: string;
+};
+
+export type PostCommentListResponse = { getPostCommentList: PostComment[] };
+export type PostCommentListVars = { start: number; postId: string };

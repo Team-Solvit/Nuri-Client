@@ -111,6 +111,60 @@ export const PostDetailGQL = {
       mutation UnlikePost($postId: String!) {
         unlikePost(postId: $postId)
       }
+    `,
+    CREATE_POST_COMMENT: gql`
+      mutation CreatePostComment($postId: String!, $contents: String!) {
+        createPostComment(
+          postCommentCreateInput: {
+            postId: $postId
+            contents: $contents
+          }
+        )
+      }
+    `,
+    UPDATE_POST_COMMENT: gql`
+      mutation UpdatePostComment($commentId: String!, $content: String!) {
+        updatePostComment(
+          postCommentUpdateInput: {
+            commentId: $commentId
+            content: $content
+          }
+        )
+      }
+    `,
+    DELETE_POST_COMMENT: gql`
+      mutation DeletePostComment($commentId: String!) {
+        deletePostComment(commentId: $commentId)
+      }
+    `,
+    UPDATE_POST: gql`
+      mutation UpdatePost($postUpdateInput: PostUpdateInput!) {
+        updatePost(postUpdateInput: $postUpdateInput)
+      }
+    `,
+    DELETE_POST: gql`
+      mutation DeletePost($postId: String!) {
+        deletePost(postId: $postId)
+      }
+    `,
+    GET_POST_COMMENT_LIST: gql`
+      query GetPostCommentList($start: Int!, $postId: String!) {
+        getPostCommentList(
+          postCommentListReadInput: {
+            start: $start
+            postId: $postId
+          }
+        ) {
+          commentId
+          commenter {
+            id
+            name
+            userId
+          }
+          content
+          postId
+        }
+      }
     `
   }
 };
@@ -175,6 +229,85 @@ export const PostDetailService = {
       return !!data?.unlikePost;
     } catch (error) {
       console.error('좋아요 취소 처리 오류:', error);
+      throw error;
+    }
+  },
+
+  getComments: async (client: ApolloClient<any>, postId: string, start: number = 0) => {
+    try {
+      const { data } = await client.query({
+        query: PostDetailGQL.MUTATIONS.GET_POST_COMMENT_LIST,
+        variables: { start, postId },
+        fetchPolicy: 'no-cache'
+      });
+      return data?.getPostCommentList || [];
+    } catch (error) {
+      console.error('댓글 조회 오류:', error);
+      throw error;
+    }
+  },
+
+  createComment: async (client: ApolloClient<any>, postId: string, contents: string): Promise<string> => {
+    try {
+      const { data } = await client.mutate({
+        mutation: PostDetailGQL.MUTATIONS.CREATE_POST_COMMENT,
+        variables: { postId, contents }
+      });
+      return data?.createPostComment || '';
+    } catch (error) {
+      console.error('댓글 작성 오류:', error);
+      throw error;
+    }
+  },
+
+  updateComment: async (client: ApolloClient<any>, commentId: string, content: string): Promise<string> => {
+    try {
+      const { data } = await client.mutate({
+        mutation: PostDetailGQL.MUTATIONS.UPDATE_POST_COMMENT,
+        variables: { commentId, content }
+      });
+      return data?.updatePostComment || '';
+    } catch (error) {
+      console.error('댓글 수정 오류:', error);
+      throw error;
+    }
+  },
+
+  deleteComment: async (client: ApolloClient<any>, commentId: string): Promise<string> => {
+    try {
+      const { data } = await client.mutate({
+        mutation: PostDetailGQL.MUTATIONS.DELETE_POST_COMMENT,
+        variables: { commentId }
+      });
+      return data?.deletePostComment || '';
+    } catch (error) {
+      console.error('댓글 삭제 오류:', error);
+      throw error;
+    }
+  },
+
+  updatePost: async (client: ApolloClient<any>, postUpdateInput: any): Promise<string> => {
+    try {
+      const { data } = await client.mutate({
+        mutation: PostDetailGQL.MUTATIONS.UPDATE_POST,
+        variables: { postUpdateInput }
+      });
+      return data?.updatePost || '';
+    } catch (error) {
+      console.error('게시물 수정 오류:', error);
+      throw error;
+    }
+  },
+
+  deletePost: async (client: ApolloClient<any>, postId: string): Promise<string> => {
+    try {
+      const { data } = await client.mutate({
+        mutation: PostDetailGQL.MUTATIONS.DELETE_POST,
+        variables: { postId }
+      });
+      return data?.deletePost || '';
+    } catch (error) {
+      console.error('게시물 삭제 오류:', error);
       throw error;
     }
   }

@@ -14,23 +14,35 @@ import { radius } from '@/styles/theme';
 import { useRouter } from 'next/navigation';
 import { useApollo } from '@/lib/apolloClient';
 import { PostDetailService } from '@/services/postDetail';
-import type { PostDetailUnion, BoardingPostDetail, SnsPostDetail } from '@/types/postDetail';
+import type { PostDetailUnion, PostComment } from '@/types/postDetail';
+import { useUserStore } from '@/store/user';
+import { useAlertStore } from '@/store/alert';
+import { useModalStore } from '@/store/modal';
+import Modal from '@/components/layout/modal';
 
 interface PostDetailProps { id: string; isModal?: boolean; }
-
-const mockComments = [
-  { id: 1, author: 'huhon123', avatar: '/avatars/user1.png', text: '첫 번째 댓글입니다!' },
-  { id: 2, author: 'fooBar', avatar: '/avatars/user2.png', text: '두 번째 댓글이여~' },
-  { id: 3, author: 'bazQux', avatar: '/avatars/user3.png', text: '마지막 댓글입니다 :)' },
-];
 
 export default function PostDetail({ id, isModal }: PostDetailProps) {
   const router = useRouter();
   const client = useApollo();
+  const { id: currentUserId } = useUserStore();
+  const { success, error } = useAlertStore();
+  const { open: openModal, close: closeModal, isOpen } = useModalStore();
   const [postInfo, setPostInfo] = useState<PostDetailUnion | null>(null);
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [comments, setComments] = useState<PostComment[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState('');
+  const [showComments, setShowComments] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
+  const [postToDelete, setPostToDelete] = useState<string | null>(null);
+  const [isEditingPost, setIsEditingPost] = useState(false);
+  const [editingPostContent, setEditingPostContent] = useState('');
+  const [editingImages, setEditingImages] = useState<string[]>([]);
+  const [newImages, setNewImages] = useState<File[]>([]);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -40,8 +52,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
         setPostInfo(post);
         if (post) {
           setLikeCount(post.likeCount);
-          // TODO: 실제 좋아요 상태는 서버에서 받아와야 함
-          setIsLiked(false);
+          setIsLiked(post.isLiked || false);
         }
       } catch (error) {
         console.error('Failed to fetch post:', error);
@@ -51,6 +62,27 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
     };
     fetchPost();
   }, [client, id]);
+
+  const loadComments = async () => {
+    if (!postInfo) return;
+    
+    try {
+      setCommentsLoading(true);
+      const postId = postInfo.__typename === 'SnsPost' ? postInfo.postId : postInfo.room.roomId;
+      const commentList = await PostDetailService.getComments(client, postId);
+      setComments(commentList);
+    } catch (error) {
+      console.error('댓글 로드 실패:', error);
+    } finally {
+      setCommentsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (postInfo && showComments) {
+      loadComments();
+    }
+  }, [postInfo, showComments]);
 
   const isHousePost = postInfo?.__typename === 'BoardingPost';
 
@@ -66,10 +98,9 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
   const max = images.length - 1;
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showComments, setShowComments] = useState(false);
   const [showRoomTour, setShowRoomTour] = useState(false);
   const [commentText, setCommentText] = useState('');
-  const [openCommentMenuId, setOpenCommentMenuId] = useState<number | null>(null);
+  const [openCommentMenuId, setOpenCommentMenuId] = useState<string | null>(null);
   const roomTourRef = useRef<HTMLDivElement | null>(null);
   const actionMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -90,11 +121,186 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
   if (!postInfo) return <div>게시물을 불러올 수 없습니다.</div>;
 
   const handleSlide = (direction: 'next' | 'prev') => setCurrent(prev => direction === 'next' ? (prev < max ? prev + 1 : 0) : (prev > 0 ? prev - 1 : max));
-  const leftStyle: React.CSSProperties = { width: 640 };
-  const submitComment = () => { if (!commentText.trim()) return; console.log('새 댓글 전송:', commentText); setCommentText(''); };
-  const handleKeyPress = (e: React.KeyboardEvent) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitComment(); } };
+  
+  const submitComment = async () => {
+    if (!commentText.trim() || !postInfo) return;
+    
+    try {
+      const postId = postInfo.__typename === 'SnsPost' ? postInfo.postId : postInfo.room.roomId;
+      await PostDetailService.createComment(client, postId, commentText);
+      setCommentText('');
+      await loadComments();
+      success('댓글이 작성되었습니다.');
+    } catch (err) {
+      console.error('댓글 작성 실패:', err);
+      error('댓글 작성에 실패했습니다.');
+    }
+  };
+  
+  const handleKeyPress = (e: React.KeyboardEvent) => { 
+    if (e.key === 'Enter' && !e.shiftKey) { 
+      e.preventDefault(); 
+      submitComment(); 
+    } 
+  };
 
-  // 좋아요 토글 핸들러
+  const handleEditComment = (commentId: string, currentContent: string) => {
+    setEditingCommentId(commentId);
+    setEditingText(currentContent);
+  };
+
+  const saveEditComment = async () => {
+    if (!editingCommentId || !editingText.trim()) return;
+    
+    try {
+      await PostDetailService.updateComment(client, editingCommentId, editingText);
+      setEditingCommentId(null);
+      setEditingText('');
+      await loadComments();
+      success('댓글이 수정되었습니다.');
+    } catch (err) {
+      console.error('댓글 수정 실패:', err);
+      error('댓글 수정에 실패했습니다.');
+    }
+  };
+
+  const cancelEditComment = () => {
+    setEditingCommentId(null);
+    setEditingText('');
+  };
+
+  const deleteComment = async (commentId: string) => {
+    setCommentToDelete(commentId);
+    openModal();
+  };
+
+  const confirmDeleteComment = async () => {
+    if (!commentToDelete) return;
+    
+    try {
+      await PostDetailService.deleteComment(client, commentToDelete);
+      await loadComments();
+      success('댓글이 삭제되었습니다.');
+    } catch (err) {
+      console.error('댓글 삭제 실패:', err);
+      error('댓글 삭제에 실패했습니다.');
+    } finally {
+      setCommentToDelete(null);
+      closeModal();
+    }
+  };
+
+  const cancelDeleteComment = () => {
+    setCommentToDelete(null);
+    closeModal();
+  };
+
+  const handleEditPost = () => {
+    if (!postInfo || postInfo.__typename !== 'SnsPost') return;
+    
+    setEditingPostContent(postInfo.contents);
+    setEditingImages(postInfo.files.map(f => f.url));
+    setNewImages([]);
+    setIsEditingPost(true);
+  };
+
+  const saveEditPost = async () => {
+    if (!postInfo || postInfo.__typename !== 'SnsPost' || !editingPostContent.trim()) return;
+    
+    try {
+      // 해시태그 추출
+      const hashTagMatches = editingPostContent.match(/#[^\s#]+/g) || [];
+      const hashTags = hashTagMatches.map(tag => tag.substring(1)); // # 제거
+      
+      const postUpdateInput = {
+        postId: postInfo.postId,
+        postInfo: {
+          title: postInfo.title || '',
+          contents: editingPostContent,
+          shareRange: 'ALL' as const, // 기본값
+          isGroup: false // 기본값
+        },
+        files: editingImages, // 기존 이미지들
+        hashTags: hashTags
+      };
+      
+      await PostDetailService.updatePost(client, postUpdateInput);
+      
+      setPostInfo(prev => prev ? { ...prev, contents: editingPostContent } : null);
+      
+      setIsEditingPost(false);
+      setEditingPostContent('');
+      setEditingImages([]);
+      setNewImages([]);
+      success('게시물이 수정되었습니다.');
+    } catch (err) {
+      console.error('게시물 수정 실패:', err);
+      error('게시물 수정에 실패했습니다.');
+    }
+  };
+
+  const cancelEditPost = () => {
+    setIsEditingPost(false);
+    setEditingPostContent('');
+    setEditingImages([]);
+    setNewImages([]);
+  };
+
+  const removeImage = (index: number) => {
+    setEditingImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setNewImages(prev => [...prev, ...files]);
+  };
+
+  const removeNewImage = (index: number) => {
+    setNewImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const parseContentWithHashtags = (content: string) => {
+    const parts = content.split(/(#[^\s#]+)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('#') && part.length > 1) {
+        return (
+          <span key={index} style={{ color: '#007AFF', fontWeight: '500' }}>
+            {part}
+          </span>
+        );
+      }
+      return part;
+    });
+  };
+
+  const deletePost = () => {
+    if (!postInfo) return;
+    const postId = postInfo.__typename === 'SnsPost' ? postInfo.postId : postInfo.room.roomId;
+    setPostToDelete(postId);
+    openModal();
+  };
+
+  const confirmDeletePost = async () => {
+    if (!postToDelete) return;
+    
+    try {
+      await PostDetailService.deletePost(client, postToDelete);
+      success('게시물이 삭제되었습니다.');
+      router.back();
+    } catch (err) {
+      console.error('게시물 삭제 실패:', err);
+      error('게시물 삭제에 실패했습니다.');
+    } finally {
+      setPostToDelete(null);
+      closeModal();
+    }
+  };
+
+  const cancelDeletePost = () => {
+    setPostToDelete(null);
+    closeModal();
+  };
+
   const handleLikeToggle = async () => {
     if (!postInfo) return;
 
@@ -122,6 +328,8 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
   const userProfile = postInfo.__typename === 'SnsPost' ? postInfo.author.profile : postInfo.room.boardingHouse.host.user.profile;
   const userId = postInfo.__typename === 'SnsPost' ? postInfo.author.userId : postInfo.room.boardingHouse.host.user.userId;
   const desc = postInfo.__typename === 'SnsPost' ? postInfo.contents : postInfo.room.description;
+
+  const isPostOwner = currentUserId === userId;
 
   const roomName = isHousePost ? postInfo.room.name : undefined;
   const monthlyRent = isHousePost ? postInfo.room.monthlyRent : undefined;
@@ -279,38 +487,125 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
             <>
               <S.RightTopRow><S.RightPeriodTags /></S.RightTopRow>
               <S.RightSub>{date}</S.RightSub>
-              <S.RightDesc>{desc}</S.RightDesc>
+              {isEditingPost && postInfo.__typename === 'SnsPost' ? (
+                <S.EditPostContainer>
+                  <S.EditPostInlineTextarea
+                    value={editingPostContent}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setEditingPostContent(e.target.value)}
+                    placeholder="게시물 내용을 입력하세요... (#태그 사용 가능)"
+                  />
+                  
+                  <S.EditImageSection>
+                    <S.EditImageTitle>이미지</S.EditImageTitle>
+                    <S.EditImageGrid>
+                      {editingImages.map((src, index) => (
+                        <S.EditImageItem key={`existing-${index}`}>
+                          <Image
+                            src={src.startsWith('http') ? src : `https://cdn.solvit-nuri.com/file/${src}`}
+                            alt={`기존 이미지 ${index + 1}`}
+                            fill
+                            style={{ objectFit: 'cover' }}
+                          />
+                          <S.EditImageRemoveBtn onClick={() => removeImage(index)}>×</S.EditImageRemoveBtn>
+                        </S.EditImageItem>
+                      ))}
+                      {newImages.map((file, index) => (
+                        <S.EditImageItem key={`new-${index}`}>
+                          <Image
+                            src={URL.createObjectURL(file)}
+                            alt={`새 이미지 ${index + 1}`}
+                            fill
+                            style={{ objectFit: 'cover' }}
+                          />
+                          <S.EditImageRemoveBtn onClick={() => removeNewImage(index)}>×</S.EditImageRemoveBtn>
+                        </S.EditImageItem>
+                      ))}
+                      <S.EditImageUploadBtn>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={handleImageUpload}
+                          style={{ display: 'none' }}
+                          id="image-upload"
+                        />
+                        <label htmlFor="image-upload">
+                          <S.EditImageUploadIcon>+</S.EditImageUploadIcon>
+                          <span>이미지 추가</span>
+                        </label>
+                      </S.EditImageUploadBtn>
+                    </S.EditImageGrid>
+                  </S.EditImageSection>
+                  
+                  <S.EditPostButtons>
+                    <Square 
+                      text="취소" 
+                      onClick={cancelEditPost}
+                      status={false}
+                      width="max-content"
+                    />
+                    <Square 
+                      text="저장" 
+                      onClick={saveEditPost}
+                      status={true}
+                      width="max-content"
+                    />
+                  </S.EditPostButtons>
+                </S.EditPostContainer>
+              ) : (
+                <S.RightDesc>{parseContentWithHashtags(desc)}</S.RightDesc>
+              )}
             </>
           )}
         </S.RightContent>
         <S.CommentsSection show={showComments} isModal={isModal}>
           <S.CommentsHeader>
-            <S.CommentsTitle>댓글 {mockComments.length}개</S.CommentsTitle>
+            <S.CommentsTitle>댓글 {comments.length}개</S.CommentsTitle>
             <S.CommentsCloseButton onClick={() => setShowComments(false)}>×</S.CommentsCloseButton>
           </S.CommentsHeader>
           <S.CommentsList>
-            {mockComments.map(comment => (
-              <S.CommentItem key={comment.id}>
-                <S.CommentAvatar>
-                  <Image src={comment.avatar} alt={comment.author} fill style={{ objectFit: 'cover' }} />
-                </S.CommentAvatar>
-                <S.CommentContent>
-                  <S.CommentAuthor>{comment.author}</S.CommentAuthor>
-                  <S.CommentText>{comment.text}</S.CommentText>
-                </S.CommentContent>
-                <S.MenuButton onClick={(e) => e.stopPropagation()}>
-                  <S.CommentMenu onClick={(e) => { e.stopPropagation(); setOpenCommentMenuId(prev => { const opening = prev !== comment.id; if (opening) { setMenuOpen(false); setShowRoomTour(false); } return opening ? comment.id : null; }); }}>
-                    <Image src={EllipsisIcon} alt="메뉴" width={16} height={16} />
-                  </S.CommentMenu>
-                  {openCommentMenuId === comment.id && (
-                    <S.MenuDropdown placement="down">
-                      <S.MenuItem onClick={(e) => { e.stopPropagation(); console.log('댓글 수정', comment.id); setOpenCommentMenuId(null); }}>수정</S.MenuItem>
-                      <S.MenuItem red onClick={(e) => { e.stopPropagation(); console.log('댓글 삭제', comment.id); setOpenCommentMenuId(null); }}>삭제</S.MenuItem>
-                    </S.MenuDropdown>
+            {commentsLoading ? (
+              <div style={{ padding: '20px', textAlign: 'center' }}>댓글을 불러오는 중...</div>
+            ) : (
+              comments.map((comment: PostComment) => (
+                <S.CommentItem key={comment.commentId}>
+                  <S.CommentAvatar>
+                    <Image src="/avatars/default.png" alt={comment.commenter.userId} fill style={{ objectFit: 'cover' }} />
+                  </S.CommentAvatar>
+                  <S.CommentContent>
+                    <S.CommentAuthor>{comment.commenter.userId}</S.CommentAuthor>
+                    {editingCommentId === comment.commentId ? (
+                      <S.CommentEditContainer>
+                        <S.CommentEditTextarea
+                          value={editingText}
+                          onChange={(e) => setEditingText(e.target.value)}
+                          placeholder="댓글을 수정하세요..."
+                        />
+                        <S.CommentEditButtons>
+                          <S.CommentEditSaveButton onClick={saveEditComment}>저장</S.CommentEditSaveButton>
+                          <S.CommentEditCancelButton onClick={cancelEditComment}>취소</S.CommentEditCancelButton>
+                        </S.CommentEditButtons>
+                      </S.CommentEditContainer>
+                    ) : (
+                      <S.CommentText>{comment.content}</S.CommentText>
+                    )}
+                  </S.CommentContent>
+                  {currentUserId === comment.commenter.userId && (
+                    <S.MenuButton onClick={(e) => e.stopPropagation()}>
+                      <S.CommentMenu onClick={(e) => { e.stopPropagation(); setOpenCommentMenuId(prev => { const opening = prev !== comment.commentId; if (opening) { setMenuOpen(false); setShowRoomTour(false); } return opening ? comment.commentId : null; }); }}>
+                        <Image src={EllipsisIcon} alt="메뉴" width={16} height={16} />
+                      </S.CommentMenu>
+                      {openCommentMenuId === comment.commentId && (
+                        <S.MenuDropdown placement="down">
+                          <S.MenuItem onClick={(e) => { e.stopPropagation(); handleEditComment(comment.commentId, comment.content); setOpenCommentMenuId(null); }}>수정</S.MenuItem>
+                          <S.MenuItem red onClick={(e) => { e.stopPropagation(); deleteComment(comment.commentId); setOpenCommentMenuId(null); }}>삭제</S.MenuItem>
+                        </S.MenuDropdown>
+                      )}
+                    </S.MenuButton>
                   )}
-                </S.MenuButton>
-              </S.CommentItem>
-            ))}
+                </S.CommentItem>
+              ))
+            )}
           </S.CommentsList>
         </S.CommentsSection>
         <S.InteractionBar isModal={isModal}>
@@ -343,8 +638,15 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
                 <Image src={EllipsisIcon} alt="menu" width={24} height={24} />
                 {menuOpen && (
                   <S.MenuDropdown>
-                    <S.MenuItem onClick={() => { console.log('수정'); setMenuOpen(false); }}>수정</S.MenuItem>
-                    <S.MenuItem onClick={() => { console.log('삭제'); setMenuOpen(false); }} red>삭제</S.MenuItem>
+                    {isPostOwner && postInfo.__typename === 'SnsPost' && (
+                      <S.MenuItem onClick={() => { handleEditPost(); setMenuOpen(false); }}>수정</S.MenuItem>
+                    )}
+                    {isPostOwner && (
+                      <S.MenuItem onClick={() => { deletePost(); setMenuOpen(false); }} red>삭제</S.MenuItem>
+                    )}
+                    {!isPostOwner && (
+                      <S.MenuItem onClick={() => { console.log('신고'); setMenuOpen(false); }}>신고</S.MenuItem>
+                    )}
                   </S.MenuDropdown>
                 )}
               </S.MenuButton>
@@ -352,6 +654,56 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
           )}
         </S.InteractionBar>
       </S.Right>
+      
+      {isOpen && commentToDelete && (
+        <Modal>
+          <div style={{zIndex: 1200}}>
+            <S.ConfirmModalContent>
+              <S.ConfirmModalTitle>댓글 삭제</S.ConfirmModalTitle>
+              <S.ConfirmModalMessage>정말 댓글을 삭제하시겠습니까?</S.ConfirmModalMessage>
+              <S.ConfirmModalButtons>
+                <Square 
+                  text="취소" 
+                  onClick={cancelDeleteComment}
+                  status={false}
+                  width="max-content"
+                />
+                <Square 
+                  text="삭제" 
+                  onClick={confirmDeleteComment}
+                  status={true}
+                  width="max-content"
+                />
+              </S.ConfirmModalButtons>
+            </S.ConfirmModalContent>
+          </div>
+        </Modal>
+      )}
+      
+      {isOpen && postToDelete && (
+        <Modal>
+          <div style={{zIndex: 1200}}>
+            <S.ConfirmModalContent>
+              <S.ConfirmModalTitle>게시물 삭제</S.ConfirmModalTitle>
+              <S.ConfirmModalMessage>정말 게시물을 삭제하시겠습니까?<br/>삭제된 게시물은 복구할 수 없습니다.</S.ConfirmModalMessage>
+              <S.ConfirmModalButtons>
+                <Square 
+                  text="취소" 
+                  onClick={cancelDeletePost}
+                  status={false}
+                  width="max-content"
+                />
+                <Square 
+                  text="삭제" 
+                  onClick={confirmDeletePost}
+                  status={true}
+                  width="max-content"
+                />
+              </S.ConfirmModalButtons>
+            </S.ConfirmModalContent>
+          </div>
+        </Modal>
+      )}
     </S.Wrapper>
   );
 }
