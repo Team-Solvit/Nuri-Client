@@ -18,3 +18,11 @@ export const AlertQueries = {
 		}
 	`
 }
+
+export const AlertMutations = {
+	READ_ALERT: gql`
+		mutation checkNotification($notificationId: String!) {
+		  checkNotification(notificationId: $notificationId)
+		}
+	`
+}

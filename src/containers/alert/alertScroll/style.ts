@@ -20,20 +20,21 @@ export const AlertScrollContainer = styled.section`
     padding: 0 1rem;
   }
 `
-export const Alert = styled.article`
+export const Alert = styled.article<{ isRead: boolean }>`
   display: flex;
   gap: 0.5rem;
   padding: 2rem 1rem;
   width: 100%;
   align-items: center;
   border-bottom: 1px solid ${colors.line};
-
+  background-color: ${(props) => props.isRead ? colors.line2 : colors.background};
+  transition: 0.2s;
   border-radius: ${radius.md};
   cursor: pointer;
   transition: 0.2s;
 
   &:hover {
-    background-color: ${colors.line2};
+    background-color: ${(props) => props.isRead ? colors.line : "#f8f8f8"};
   }
 
   &:first-of-type {
