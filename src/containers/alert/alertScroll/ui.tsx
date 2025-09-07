@@ -7,24 +7,31 @@ import {AlertType} from "@/types/alert";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 
 export default function AlertScroll() {
-	const {data} = useQuery(AlertQueries.GET_ALERT_LIST)
+	const {data, loading} = useQuery(AlertQueries.GET_ALERT_LIST, {
+		variables: {
+			start : 0
+		}
+	})
 	const navigate = useNavigationWithProgress()
 	
 	return (
 		<S.AlertScrollContainer>
-			{data && data.getAlertList.map((alert: AlertType) => (
-				<S.Alert
-					key={alert.alertId}
-					onClick={() => navigate(alert.alertNavigate)}
-				>
-					<S.Profile>
-						<Image src={Profile} alt="profile" fill/>
-					</S.Profile>
-					<S.Info>
-						<S.Title>{alert.alertContent}</S.Title>
-					</S.Info>
-				</S.Alert>
-			))}
+			{!loading && data?.getNotificationList.length === 0 ?
+				<>알림이 존재하지 않습니다.</> :
+			  data?.getNotificationList.map((alert: AlertType) => (
+					<S.Alert
+						key={alert.notificationId}
+						onClick={() => navigate(alert.link)}
+					>
+						<S.Profile>
+							<Image src={Profile} alt="profile" fill/>
+						</S.Profile>
+						<S.Info>
+							<S.Title>{alert.content}</S.Title>
+						</S.Info>
+					</S.Alert>
+				))
+			}
 		</S.AlertScrollContainer>
 	)
 }

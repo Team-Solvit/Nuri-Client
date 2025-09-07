@@ -1,5 +1,7 @@
 export interface AlertType {
-	alertId: string,
-	alertContent: string,
-	alertNavigate: string
+	notificationId : string
+	content : string
+	checked : boolean
+	link : string
+	createAt : string
 }
