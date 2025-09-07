@@ -5,6 +5,7 @@ import {useQuery} from "@apollo/client";
 import {AlertQueries} from "@/services/alert";
 import {AlertType} from "@/types/alert";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {useLoadingEffect} from "@/hooks/useLoading";
 
 export default function AlertScroll() {
 	const {data, loading} = useQuery(AlertQueries.GET_ALERT_LIST, {
@@ -13,7 +14,7 @@ export default function AlertScroll() {
 		}
 	})
 	const navigate = useNavigationWithProgress()
-	
+	useLoadingEffect(loading);
 	return (
 		<S.AlertScrollContainer>
 			{!loading && data?.getNotificationList.length === 0 ?
