@@ -17,9 +17,6 @@ export type BoardingRoomFile = { fileId: string; url: string };
 
 export type BoardingPostDetail = {
   __typename: 'BoardingPost';
-  likeCount: number;
-  isLiked: boolean;
-  commentCount: number;
   room: {
     roomId: string;
     name: string;
@@ -28,6 +25,9 @@ export type BoardingPostDetail = {
     day: string;
     status: string;
     headCount: number;
+    likeCount: number;
+    isLiked: boolean;
+    commentCount: number;
     boardingHouse: {
       houseId: string;
       name: string;

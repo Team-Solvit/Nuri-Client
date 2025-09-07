@@ -53,8 +53,10 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
         const post = await PostDetailService.getPostById(client, id);
         setPostInfo(post);
         if (post) {
-          setLikeCount(post.likeCount);
-          setIsLiked(post.isLiked || false);
+          const currentLikeCount = post.__typename === 'SnsPost' ? post.likeCount : post.room.likeCount;
+          const currentIsLiked = post.__typename === 'SnsPost' ? post.isLiked : post.room.isLiked;
+          setLikeCount(currentLikeCount);
+          setIsLiked(currentIsLiked || false);
         }
       } catch (error) {
         console.error('Failed to fetch post:', error);
@@ -332,7 +334,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
     }
   };
 
-  const commentCount = postInfo.commentCount;
+  const commentCount = postInfo.__typename === 'SnsPost' ? postInfo.commentCount : postInfo.room.commentCount;
   const date = postInfo.__typename === 'SnsPost' ? postInfo.day : postInfo.room.day;
   const userProfile = postInfo.__typename === 'SnsPost' ? postInfo.author.profile : postInfo.room.boardingHouse.host.user.profile;
   const userId = postInfo.__typename === 'SnsPost' ? postInfo.author.userId : postInfo.room.boardingHouse.host.user.userId;
