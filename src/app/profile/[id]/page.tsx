@@ -1,131 +1,126 @@
 'use client'
 
 import Image from 'next/image';
-import * as S from './[id]/style';
+import * as S from './style';
 import PostItem from '@/components/ui/postItem';
 import Square from '@/components/ui/button/square';
-import {useState, useRef} from 'react';
+import {useState, useRef, useEffect} from 'react';
 import Post from '@/components/ui/post';
 import Follow from '@/components/ui/follow';
 import FollowerList from '@/components/ui/follower';
-import {useRouter} from 'next/navigation';
+import {useRouter, useParams} from 'next/navigation';
 import NProgress from 'nprogress';
 
-export default function MyProfilePage() {
-    const router = useRouter()
+interface UserProfile {
+    userid: string;
+    userProfile: string;
+    introduction: string;
+    followers: number;
+    follow: number;
+    post: number;
+    isFollowing?: boolean;
+}
+
+export default function UserProfilePage() {
+    const router = useRouter();
+    const params = useParams();
+    const userId = params.id as string;
+    
     const [selected, setSelected] = useState(1);
     const [showFollowerModal, setShowFollowerModal] = useState(false);
     const [showFollowModal, setShowFollowModal] = useState(false);
+    const [isFollowing, setIsFollowing] = useState(false);
 
-    const profile = {
-        userid: 'Happy_y',
+    const [profile, setProfile] = useState<UserProfile>({
+        userid: userId || 'Unknown_User',
         userProfile: '/profile/profile.svg',
-        introduction: '아주엄청매우항상매일너무겁나 행복하다.',
-        followers: 400,
-        follow: 400,
-        post: 10,
-    }
+        introduction: '',
+        followers: 0,
+        follow: 0,
+        post: 0,
+        isFollowing: false
+    });
+
 
     const postList = [
         {
             id: 1,
-            user: '해ㅠ피',
-            title: '해피해피하숙',
+            user: profile.userid,
+            title: '하숙집 소개',
             region: '강서구',
             price: '30',
             thumbnail: '/post/post-example.png',
-            userProfile: '/profile/profile.svg',
+            userProfile: profile.userProfile,
         },
         {
             id: 2,
-            user: '해ㅠ피',
-            title: '해피해피하숙',
+            user: profile.userid,
+            title: '하숙집 소개',
             region: '강서구',
             price: '30',
             thumbnail: '/post/post-example.png',
-            userProfile: '/profile/profile.svg',
+            userProfile: profile.userProfile,
         },
         {
             id: 3,
-            user: '해ㅠ피',
-            title: '해피해피하숙',
+            user: profile.userid,
+            title: '하숙집 소개',
             region: '강서구',
             price: '30',
             thumbnail: '/post/post-example.png',
-            userProfile: '/profile/profile.svg',
+            userProfile: profile.userProfile,
         },
         {
             id: 4,
-            user: '해ㅠ피',
-            title: '해피해피하숙',
+            user: profile.userid,
+            title: '하숙집 소개',
             region: '강서구',
             price: '30',
             thumbnail: '/post/post-example.png',
-            userProfile: '/profile/profile.svg',
+            userProfile: profile.userProfile,
         },
         {
             id: 5,
-            user: '해ㅠ피',
-            title: '해피해피하숙',
+            user: profile.userid,
+            title: '하숙집 소개',
             region: '강서구',
             price: '30',
             thumbnail: '/post/post-example.png',
-            userProfile: '/profile/profile.svg',
+            userProfile: profile.userProfile,
         },
         {
             id: 6,
-            user: '해ㅠ피',
-            title: '해피해피하숙',
+            user: profile.userid,
+            title: '하숙집 소개',
             region: '강서구',
             price: '30',
             thumbnail: '/post/post-example.png',
-            userProfile: '/profile/profile.svg',
+            userProfile: profile.userProfile,
         }
     ];
-
-    const [imageUrl, setImageUrl] = useState(profile.userProfile);
-    const inputRef = useRef<HTMLInputElement | null>(null);
 
     const handleClick = (id: number) => {
         router.push(`/post/${id}`)
     }
-
-    const imageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setImageUrl(imageUrl);
-        }
-    };
-
-    const fileInput = () => {
-        inputRef.current?.click();
-    };
 
     const handleBtnClick = (path: string) => {
         NProgress.start()
         router.push(path)
     }
 
+    const handleFollowToggle = () => {
+        setIsFollowing(!isFollowing);
+    }
+
     return (
         <S.ProfileWrapper>
             <S.Profile>
-                <S.ProfileImage onClick={fileInput}>
+                <S.ProfileImage>
                     <Image
-                        src={imageUrl}
+                        src={profile.userProfile}
                         alt="프로필"
                         fill
                         style={{ objectFit: 'cover', zIndex: 0 }}
-                    />
-                    <S.PlusIcon>
-                        <Image src="/icons/plus.svg" alt="추가 아이콘" width={65} height={57} />
-                    </S.PlusIcon>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={imageChange}
-                        ref={inputRef}
-                        hidden
                     />
                 </S.ProfileImage>
 
@@ -134,15 +129,15 @@ export default function MyProfilePage() {
                         <S.Nickname>{profile.userid}</S.Nickname>
                         <S.Button>
                             <Square
-                                text="프로필 편집"
-                                status={true}
-                                onClick={() => handleBtnClick('/setting/profile')}
+                                text={isFollowing ? "언팔로우" : "팔로우"}
+                                status={!isFollowing}
+                                onClick={handleFollowToggle}
                                 width="120px"
                             />
                             <Square
-                                text="설정"
+                                text="메시지"
                                 status={true}
-                                onClick={() => handleBtnClick('/setting')}
+                                onClick={() => handleBtnClick(`/message/${userId}`)}
                                 width="120px"
                             />
                         </S.Button>
@@ -183,7 +178,6 @@ export default function MyProfilePage() {
                                 hideProfile
                             />
                         ))}
-
                     </S.List1>
                 )}
                 {selected === 2 && (

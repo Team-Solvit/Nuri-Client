@@ -26,7 +26,6 @@ export const ProfileWrapper = styled.div`
   }
 `
 
-
 export const ProfileImage = styled.div`
   position: relative;
   width: 10vw;
@@ -59,16 +58,14 @@ export const ProfileImage = styled.div`
   }
 `
 
-
 export const PlusIcon = styled.div`
   position: absolute;
   z-index: 2;
 `
 
-
 export const Nickname = styled.div`
   font-size: ${fontSizes.H3};
-  margin-bottom: 1rem;
+  margin-top: 0.3rem;
 
   ${mq.mobile} {
     font-size: 20px;
@@ -161,8 +158,6 @@ export const List2 = styled.div`
 }
 `
 
-
-
 export const PostItem = styled.div`
   display: flex;
   padding: 12px;
@@ -221,6 +216,7 @@ export const Side = styled.div<{ isSelected: number }>`
     height: 40px;
   }
 `
+
 export const Tab = styled.div`
   position: absolute;
   top: -1px;
@@ -248,6 +244,7 @@ export const Tab = styled.div`
     }
   }
 `
+
 export const Tab2 = styled.div`
   position: absolute;
   top: -1px;
@@ -329,6 +326,7 @@ export const StatLabelF = styled.div`
     color: #8C8C8C;
   }
 `
+
 export const StatLabelF2 = styled.div`
   font-size: ${fontSizes.H4};
   color: ${colors.gray};
@@ -366,6 +364,7 @@ export const StatValue1 = styled.div`
     color: ${colors.text};
   }
 `
+
 export const StatValue2 = styled.div`
   font-size: ${fontSizes.H3};
   font-weight: 500;
