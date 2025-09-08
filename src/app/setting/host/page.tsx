@@ -7,11 +7,13 @@ import Logout from "@/components/ui/logout";
 import { useState, useEffect } from "react";
 import Leave from "@/components/ui/leave";
 import SettingHeader from "@/components/ui/settingHeader";
+import AddressInput from "@/components/ui/addressInput/AddressInput";
 
 export default function Host() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [selectedPosition, setSelectedPosition] = useState<{lat: number, lng: number} | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -47,7 +49,12 @@ export default function Host() {
             </S.InputRow>
             <S.InputRow>
               <S.Input placeholder="하숙집 소개를 입력해주세요." />
-              <S.Input placeholder="하숙집 위치를 입력해주세요" />
+              <AddressInput
+                onSelectAddress={(address, lat, lng) => {
+                  console.log("선택된 주소:", address, lat, lng);
+                  setSelectedPosition({ lat, lng });
+                }}
+              />
             </S.InputRow>
           </S.Home>
         </S.Section>

@@ -23,7 +23,7 @@ export const ContentArea = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 4rem 6rem;
+  padding: 4.1rem 4.95rem;
   margin: 0 auto;
 
   ${mq.mobile} {
@@ -37,10 +37,11 @@ export const RadioGroup = styled.div`
   flex-direction: column;
   gap: 1.2rem;
   width: 100%;
+  margin-bottom: 32.5rem;
 
   ${mq.mobile} {
     gap: 1rem;
-    width: 100%;
+    //width: 100%;
   }
 `
 

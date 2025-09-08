@@ -2,34 +2,31 @@ import React, { useState } from 'react';
 import * as S from './style';
 import Image from 'next/image';
 import Square from '../button/square';
+import { FollowUserInfo } from '@/types/auth';
 
 interface FollowerListProps {
   onClose: () => void;
 }
 
-const mockFollowers = [
+const mockFollowers: FollowUserInfo[] = [
   {
-    id: 1,
-    username: 'xx._un8',
-    name: '오주현',
+    id: '1',
+    userId: 'xx._un8',
     profile: '/profile/profile.svg',
   },
   {
-    id: 2,
-    username: 'xx._un8',
-    name: '오주현',
+    id: '2',
+    userId: 'xx._un8',
     profile: '/profile/profile.svg',
   },
   {
-    id: 3,
-    username: 'xx._un8',
-    name: '오주현',
+    id: '3',
+    userId: 'xx._un8',
     profile: '/profile/profile.svg',
   },
   {
-    id: 4,
-    username: 'xx._un8',
-    name: '오주현',
+    id: '4',
+    userId: 'xx._un8',
     profile: '/profile/profile.svg',
   },
 ];
@@ -37,7 +34,7 @@ const mockFollowers = [
 export default function FollowerList({ onClose }: FollowerListProps) {
   const [search, setSearch] = useState('');
   const filtered = mockFollowers.filter(f =>
-    f.username.includes(search) || f.name.includes(search)
+    f.userId.includes(search)
   );
 
   return (
@@ -59,14 +56,14 @@ export default function FollowerList({ onClose }: FollowerListProps) {
             />
           </S.SearchBox>
           <S.List>
-            {filtered.map(f => (
+            {filtered.map((f: FollowUserInfo) => (
               <S.Item key={f.id}>
                 <S.ProfileImg>
-                  <Image src={f.profile} alt="프로필" width={55} height={55} />
+                  <Image src={f.profile || '/profile/profile.svg'} alt="프로필" width={55} height={55} />
                 </S.ProfileImg>
                 <S.Info>
-                  <S.Username>{f.username}</S.Username>
-                  <S.Name>{f.name}</S.Name>
+                  <S.Username>{f.userId}</S.Username>
+                  <S.Name>{f.userId}</S.Name>
                 </S.Info>
                 <S.DeleteBtn>삭제</S.DeleteBtn>
               </S.Item>

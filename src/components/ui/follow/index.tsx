@@ -2,25 +2,49 @@ import React, { useState } from 'react';
 import * as S from './style';
 import Image from 'next/image';
 import Square from '../button/square';
-
-const mockFollowers = [
-    { id: 1, username: 'xx._un8', name: '오주현', profile: '/profile/profile.svg' },
-    { id: 2, username: 'xx._un8', name: '오주현', profile: '/profile/profile.svg' },
-    { id: 3, username: 'xx._un8', name: '오주현', profile: '/profile/profile.svg' },
-    { id: 4, username: 'xx._un8', name: '오주현', profile: '/profile/profile.svg' },
-    { id: 5, username: 'xx._un8', name: '오주현', profile: '/profile/profile.svg' },
-    { id: 6, username: 'xx._un8', name: '오주현', profile: '/profile/profile.svg' },
-];
+import { useQuery, useMutation } from '@apollo/client';
+import { FollowGQL } from '../../../../../Nuri_Web/src/services/follow';
+import { FollowUserInfo } from '@/types/auth';
 
 interface FollowProps {
     onClose: () => void;
+    userId: string;
 }
 
-export default function Follow({ onClose }: FollowProps) {
-    const [search, setSearch] = useState('');
-    const filtered = mockFollowers.filter(f =>
-        f.username.includes(search) || f.name.includes(search)
-    );
+export default function Follow({ onClose, userId }: FollowProps) {
+    // const [search, setSearch] = useState('');
+
+    const { data: followingData, refetch: refetchFollowing } = useQuery(FollowGQL.QUERIES.GET_FOLLOWING, {
+        variables: { userId },
+    });
+
+    const [followUser] = useMutation(FollowGQL.MUTATIONS.FOLLOW);
+    const [unfollowUser] = useMutation(FollowGQL.MUTATIONS.UNFOLLOW);
+
+    const following = followingData?.getFollowingInfo ?? [];
+
+    // const filtered = followers.filter(f => f.userId.includes(search));
+    const filtered: FollowUserInfo[] = following;
+
+    const isFollowing = (targetId: string) => following.some((f: FollowUserInfo) => f.userId === targetId);
+
+    const handleFollowToggle = async (targetId: string) => {
+        if (isFollowing(targetId)) {
+            await unfollowUser({
+                variables: { userId: targetId },
+                refetchQueries: [
+                  { query: FollowGQL.QUERIES.GET_FOLLOWING, variables: { userId } },
+                ],
+              });
+        } else {
+            await followUser({
+                variables: { userId: targetId },
+                refetchQueries: [
+                  { query: FollowGQL.QUERIES.GET_FOLLOWING, variables: { userId } },
+                ],
+              });
+        }
+    };
 
     return (
         <S.Overlay onClick={onClose}>
@@ -28,7 +52,7 @@ export default function Follow({ onClose }: FollowProps) {
                 <S.Container>
                     <S.Title>팔로잉</S.Title>
 
-                    <S.SearchBox>
+                    {/* <S.SearchBox>
                         <Image
                             src='/icons/search.svg'
                             alt="search"
@@ -40,19 +64,21 @@ export default function Follow({ onClose }: FollowProps) {
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                         />
-                    </S.SearchBox>
+                    </S.SearchBox> */}
 
                     <S.List>
-                        {filtered.map(f => (
+                        {filtered.map((f: FollowUserInfo) => (
                             <S.Item key={f.id}>
                                 <S.ProfileImg>
-                                    <Image src={f.profile} alt="프로필" width={55} height={55} />
+                                    <Image src={f.profile || '/profile/profile.svg'} alt='프로필' width={55} height={55} />
                                 </S.ProfileImg>
                                 <S.Info>
-                                    <S.Username>{f.username}</S.Username>
-                                    <S.Name>{f.name}</S.Name>
+                                    <S.Username>{f.userId}</S.Username>
+                                    <S.Name>{f.userId}</S.Name>
                                 </S.Info>
-                                <S.DeleteBtn>팔로잉</S.DeleteBtn>
+                                <S.DeleteBtn onClick={() => handleFollowToggle(f.userId)}>
+                                    {isFollowing(f.userId) ? '팔로잉' : '팔로우'}
+                                </S.DeleteBtn>
                             </S.Item>
                         ))}
                     </S.List>

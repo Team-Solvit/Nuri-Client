@@ -6,6 +6,7 @@ import SettingNav from '@/components/ui/settingNav'
 import Logout from '@/components/ui/logout'
 import Leave from '@/components/ui/leave'
 import SettingHeader from '@/components/ui/settingHeader'
+import Square from '@/components/ui/button/square'
 
 export default function LanguagePage() {
     const [selectedLang, setSelectedLang] = useState<'ko' | 'en'>('ko')
@@ -38,13 +39,13 @@ export default function LanguagePage() {
             </S.NavArea>
             <S.ContentArea>
                 <S.Title>언어 설정</S.Title>
-                <S.SearchBox>
+                {/* <S.SearchBox>
                     <S.SearchText
                         type="text"
                         placeholder='검색'
                     />
-                </S.SearchBox>
-
+                </S.SearchBox> */}
+                
                 <S.RadioGroup>
                     <S.RadioLabel>
                         <S.LangName>한국어</S.LangName>
@@ -68,6 +69,12 @@ export default function LanguagePage() {
                         />
                     </S.RadioLabel>
                 </S.RadioGroup>
+
+                <Square
+                    text="저장하기"
+                    status={true}
+                    width={isMobile ? '91.5vw' : '50vw'}
+                />
             </S.ContentArea>
             {showLogoutModal && <Logout
                 onLogout={handleLogout}

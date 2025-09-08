@@ -8,6 +8,7 @@ import Logout from '@/components/ui/logout'
 import Leave from '@/components/ui/leave'
 import Follow from '@/components/ui/follow'
 import SettingHeader from '@/components/ui/settingHeader'
+import Square from '@/components/ui/button/square'
 
 const initialUser = {
     userid: 'Happy_y',
@@ -112,6 +113,7 @@ export default function ProfilePage() {
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setIntroduction(e.target.value)}
                     />
                 </S.BioSection>
+                <Square text='저장하기' status={true} width='50vw'/>
             </S.MainContent>
             {showLogoutModal && <Logout
                 onLogout={handleLogout}

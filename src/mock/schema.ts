@@ -1,6 +1,16 @@
 import {gql} from 'apollo-server';
 
 export const typeDefs = gql`
+  # --- User 관련 타입 ---
+  type User {
+    id: ID!
+    name: String!
+    profileImage: String
+    bio: String
+    followerCount: Int!
+    followingCount: Int!
+  }
+
   # --- Post 관련 타입 ---
   type Author {
     id: ID!
@@ -41,10 +51,34 @@ export const typeDefs = gql`
     alertNavigate: String
   }
 
+  type FollowUserInfoResponseDto {
+    id: ID!
+    userId: String!
+    profile: String
+  }
+
+  type UserProfileResponseDto {
+    postCount: Int!
+    followerCount: Int!
+    followingCount: Int!
+    profile: String!
+    userId: String!
+  }
+
   # --- Query ---
   type Query {
     getPostList(start: Int!): [Post]!
     getAlertList: [Alert]!
     getAlertCount: Int!
+    getUser(id: ID!): User
+    getFollowStatus(followerId: ID!, followingId: ID!): Boolean!
+    getFollowerInfo(userId: String!): [FollowUserInfoResponseDto!]!
+    getFollowingInfo(userId: String!): [FollowUserInfoResponseDto!]!
+  }
+
+  # --- Mutation ---
+  type Mutation {
+    follow(userId: String!): Boolean
+    unfollow(userId: String!): Boolean
   }
 `;

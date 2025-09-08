@@ -35,7 +35,7 @@ export const MainContent = styled.div`
   margin: 0 auto;
 
   ${mq.mobile} {
-    padding: 1rem;
+    //padding: 1rem;
     margin: 0;
   }
 `
@@ -185,6 +185,7 @@ export const BioSection = styled.div`
   gap: 1rem;
   width: 100%;
   margin-top: 2rem;
+  margin-bottom: 10rem;
 
   ${mq.mobile} {
     width: 93vw;
