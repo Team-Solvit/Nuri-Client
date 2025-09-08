@@ -10,8 +10,12 @@ import {useAlertStore} from "@/store/alert";
 import {useQuery} from "@apollo/client";
 import {BoardingHouseQueries, BoardingHouseService} from "@/services/boardingHouse";
 import {useApollo} from "@/lib/apolloClient";
+import {CreateBoardingHouseType} from "@/types/boardinghouse";
+import {useFileUpload} from "@/hooks/useFileUpload";
+import {useLoadingEffect} from "@/hooks/useLoading";
+import {useUpdateRoomNumber} from "@/store/updateRoomNumber";
 
-const Addition = () => {
+export default function Addition(){
 	const [contractOptions, setContractOptions] = useState<string[]>(DEFAULT_CONTRACT_OPTIONS);
 	const [name, setName] = useState('');
 	const [description, setDescription] = useState('');
@@ -20,7 +24,10 @@ const Addition = () => {
 	const [monthInput, setMonthInput] = useState('');
 	const [images, setImages] = useState<string[]>([]);
 	const fileInputRef = useRef<HTMLInputElement>(null);
-
+	const { upload, loading } = useFileUpload();
+	const [isLoading, setIsLoading] = useState(false);
+	useLoadingEffect(loading || isLoading)
+	
 	const handleContractClick = (option: string) => {
 		setSelectedContracts(prev =>
 			prev.includes(option)
@@ -53,20 +60,18 @@ const Addition = () => {
 		fileInputRef.current?.click();
 	};
 
-	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const files = e.target.files;
 		if (!files) return;
 		const fileArr = Array.from(files);
-		fileArr.forEach(file => {
-			const reader = new FileReader();
-			reader.onload = (ev) => {
-				if (typeof ev.target?.result === 'string') {
-					setImages(prev => [...prev, ev.target!.result as string]);
-				}
-			};
-			reader.readAsDataURL(file);
-		});
-		e.target.value = '';
+		try {
+			const uploaded = await upload(fileArr);
+			setImages(prev => [...prev, ...uploaded]);
+		} catch (err) {
+			console.error("이미지 업로드 실패", err);
+		} finally {
+			e.target.value = '';
+		}
 	};
 	
 	const handleRemoveImage = (idx: number) => {
@@ -88,13 +93,12 @@ const Addition = () => {
 
 	const { error, success } = useAlertStore();
 	
-	const params = useParams();
-	const roomId = Array.isArray(params.roomId) ? params.roomId[0] : params.roomId;
-	
+	const {roomNumber : roomId} = useUpdateRoomNumber();
 	const {data} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOM_INFO, {
 		variables: {
 			roomId: roomId
-		}
+		},
+		skip: !roomId
 	});
 	
 	console.log(data)
@@ -106,35 +110,47 @@ const Addition = () => {
 		if (!description) return error('방의 내용을 추가해주세요');
 		if (!contractOptions.length) return error('가격을 추가해주세요');
 		if (!selectedContracts.length) return error('계약 기간을 선택해주세요');
-		
+		setIsLoading(true)
+		const contractPeriod = selectedContracts.map((item) => {
+			const num = parseInt(item.replace(/[^0-9]/g, ""), 10);
+			if (item.includes("년")) {
+				return num * 12;
+			}
+			return num;
+		});
+		const roomInput : CreateBoardingHouseType = {
+			boardingRoomInfo :{
+				name,
+				monthlyRent: 0,
+				headCount: 0,
+				description:description
+			},
+			files : images,
+			contractPeriod : contractPeriod,
+			options:selectedFacilities
+		}
 		try {
 			if (roomId) {
 				// 방 수정
 				const result = await BoardingHouseService.patchBoardingRoom(client, {
 					roomId,
-					name,
-					description,
-					images,
-					contracts: selectedContracts,
-					facilities: selectedFacilities,
+					...roomInput
 				});
 				success("방 수정 성공");
 				console.log(result);
+				navigate("/myHouse");
 			} else {
 				// 방 생성
-				const result = await BoardingHouseService.createBoardingRoom(client, {
-					name,
-					description,
-					images,
-					contracts: selectedContracts,
-					facilities: selectedFacilities
-				});
+				const result = await BoardingHouseService.createBoardingRoom(client, roomInput);
 				success("방 생성 성공");
+				navigate("/myHouse");
 				console.log(result);
 			}
 		} catch (e) {
 			console.error(e);
 			error(roomId ? "방 수정 실패" : "방 생성 실패");
+		}finally {
+			setIsLoading(false)
 		}
 	};
 	return (
@@ -145,7 +161,7 @@ const Addition = () => {
 				<S.PhotoUploadList>
 					{images.map((img, idx) => (
 						<S.PhotoThumb key={idx} onClick={() => handleRemoveImage(idx)} style={{ cursor: 'pointer' }}>
-							<img src={img} alt={`추가된 사진${idx + 1}`} />
+							<img src={process.env.NEXT_PUBLIC_IMAGE_URL + img} alt={`추가된 사진${idx + 1}`} />
 						</S.PhotoThumb>
 					))}
 					<S.PhotoUploadBox onClick={handleAddImageClick} style={{ cursor: 'pointer' }}>
@@ -276,4 +292,3 @@ const Addition = () => {
 	);
 };
 
-export default Addition;

@@ -40,7 +40,7 @@ export default function Alert() {
 						<Image src="/icons/X.svg" alt="X" fill/>
 					</S.Close>
 					<S.Emotion>
-						<Image src={isStatus === "success" ? Smile : Lose} alt="emotion" />
+						<Image src={isStatus === "success" ? Smile : Lose} alt="emotion" width={40} height={40} />
 					</S.Emotion>
 					<S.TextBox success={isStatus === "success"}>
 						<h3>{isStatus === "success" ? "Success" : "Error"}</h3>

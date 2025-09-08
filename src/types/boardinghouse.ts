@@ -81,9 +81,13 @@ export interface BoardingRoomAndBoardersType {
 }
 
 export interface CreateBoardingHouseType {
-	name: string,
-	description: string,
-	images: string[],
-	contracts: string[],
-	facilities: string[],
+	boardingRoomInfo : {
+		name: string
+		monthlyRent: number
+		headCount: number
+		description: string
+	}
+	files : string[]
+	contractPeriod : number[]
+	options:string[]
 }

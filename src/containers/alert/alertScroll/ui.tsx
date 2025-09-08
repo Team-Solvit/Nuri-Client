@@ -53,9 +53,9 @@ export default function AlertScroll() {
 	useLoadingEffect(loading);
 	return (
 		<S.AlertScrollContainer>
-			{!loading && data?.getNotificationList.length === 0 ?
+			{!loading && data?.getNotificationList?.length === 0 ?
 				<>알림이 존재하지 않습니다.</> :
-			  data?.getNotificationList.map((alert: AlertType) => (
+			  data?.getNotificationList?.map((alert: AlertType) => (
 					<AlertBox key={alert.notificationId} alert={alert}/>
 				))
 			}

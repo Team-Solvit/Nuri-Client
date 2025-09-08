@@ -7,9 +7,18 @@ export const BoardingHouseQueries = {
 		  getMyBoardingHouse {
 		    houseId
 		    host {
-		      id
-		      name
-		      email
+		     callNumber
+         user {
+          id
+			    userId
+			    country
+			    language
+			    name
+			    email
+			    introduce
+			    profile
+			    role
+         }
 		    }
 		    name
 		    location
@@ -23,8 +32,8 @@ export const BoardingHouseQueries = {
 		}
 	`,
 	GET_BOARDING_HOUSE_ROOMS: gql`
-		query GetRoomsAndBoarders($userId: String) {
-		  getBoardingRoomAndBoardersInfoList(userId: $userId) {
+		query getBoardingRoomAndBoardersInfoList {
+		  getBoardingRoomAndBoardersInfoList {
 		    room {
 		      roomId
 		      name
@@ -34,11 +43,18 @@ export const BoardingHouseQueries = {
 		        url
 		      }
 		    }
-		    boarders {
-		      id
-		      name
-		      profile
-		    }
+        contractInfo {
+          boarder{
+             callNumber
+				     gender
+				     user{
+						    id
+					      userId
+					      name
+					      profile
+				     }
+          }
+        }
 		  }
 		}
 	`,
@@ -70,8 +86,8 @@ export const BoardingHouseQueries = {
 
 export const BoardingHouseMutations = {
 	CREATE_BOARDING_ROOM: gql`
-		mutation CreateBoardingRoom($input: CreateBoardingRoomRequest!) {
-		  createBoardingRoom(createBoardingRoomInput: $input)
+		mutation CreateBoardingRoom($input: BoardingRoomCreateInput!) {
+		  createBoardingRoom(boardingRoomCreateInput: $input)
 		}
 	`,
 	DELETE_BOARDING_ROOM: gql`
