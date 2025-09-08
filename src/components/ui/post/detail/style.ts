@@ -452,6 +452,18 @@ export const CommentAvatar = styled.div`
   flex-shrink: 0;
 `;
 
+export const CommentAvatarFallback = styled.div`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: ${colors.text};
+  background: ${colors.line2};
+`;
+
 export const CommentContent = styled.div`
   flex: 1;
   min-width: 0;

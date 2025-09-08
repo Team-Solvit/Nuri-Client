@@ -55,6 +55,7 @@ export type PostComment = {
     id: string;
     name: string;
     userId: string;
+    profile: string | null;
   };
   content: string;
   postId: string;

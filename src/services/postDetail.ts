@@ -112,6 +112,7 @@ export const PostDetailGQL = {
             id
             name
             userId
+            profile
           }
           content
           postId
@@ -250,4 +251,4 @@ export const PostDetailService = {
       throw error;
     }
   }
-};;
+};

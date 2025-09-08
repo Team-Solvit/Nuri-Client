@@ -69,7 +69,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
 
   const loadComments = async () => {
     if (!postInfo) return;
-    
+
     try {
       setCommentsLoading(true);
       const postId = postInfo.__typename === 'SnsPost' ? postInfo.postId : postInfo.room.roomId;
@@ -125,10 +125,10 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
   if (!postInfo) return <div>게시물을 불러올 수 없습니다.</div>;
 
   const handleSlide = (direction: 'next' | 'prev') => setCurrent(prev => direction === 'next' ? (prev < max ? prev + 1 : 0) : (prev > 0 ? prev - 1 : max));
-  
+
   const submitComment = async () => {
     if (!commentText.trim() || !postInfo) return;
-    
+
     try {
       const postId = postInfo.__typename === 'SnsPost' ? postInfo.postId : postInfo.room.roomId;
       await PostDetailService.createComment(client, postId, commentText);
@@ -140,12 +140,12 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
       error('댓글 작성에 실패했습니다.');
     }
   };
-  
-  const handleKeyPress = (e: React.KeyboardEvent) => { 
-    if (e.key === 'Enter' && !e.shiftKey) { 
-      e.preventDefault(); 
-      submitComment(); 
-    } 
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      submitComment();
+    }
   };
 
   const handleEditComment = (commentId: string, currentContent: string) => {
@@ -155,7 +155,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
 
   const saveEditComment = async () => {
     if (!editingCommentId || !editingText.trim()) return;
-    
+
     try {
       await PostDetailService.updateComment(client, editingCommentId, editingText);
       setEditingCommentId(null);
@@ -180,7 +180,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
 
   const confirmDeleteComment = async () => {
     if (!commentToDelete) return;
-    
+
     try {
       await PostDetailService.deleteComment(client, commentToDelete);
       await loadComments();
@@ -201,7 +201,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
 
   const handleEditPost = () => {
     if (!postInfo || postInfo.__typename !== 'SnsPost') return;
-    
+
     setEditingPostContent(postInfo.contents);
     setEditingImages(postInfo.files.map(f => f.url));
     setNewImages([]);
@@ -210,18 +210,18 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
 
   const saveEditPost = async () => {
     if (!postInfo || postInfo.__typename !== 'SnsPost' || !editingPostContent.trim()) return;
-    
+
     try {
       let uploadedImageIds: string[] = [];
       if (newImages.length > 0) {
         uploadedImageIds = await uploadFiles(newImages);
       }
-      
+
       const allImageIds = [...editingImages, ...uploadedImageIds];
-      
+
       const hashTagMatches = editingPostContent.match(/#[^\s#]+/g) || [];
       const hashTags = hashTagMatches.map(tag => tag.substring(1));
-      
+
       const postUpdateInput = {
         postId: postInfo.postId,
         postInfo: {
@@ -233,12 +233,12 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
         files: allImageIds,
         hashTags: hashTags
       };
-      
+
       await PostDetailService.updatePost(client, postUpdateInput);
-      
+
       const updatedPost = await PostDetailService.getPostById(client, id);
       setPostInfo(updatedPost);
-      
+
       setIsEditingPost(false);
       setEditingPostContent('');
       setEditingImages([]);
@@ -293,7 +293,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
 
   const confirmDeletePost = async () => {
     if (!postToDelete) return;
-    
+
     try {
       await PostDetailService.deletePost(client, postToDelete);
       success('게시물이 삭제되었습니다.');
@@ -505,7 +505,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setEditingPostContent(e.target.value)}
                     placeholder="게시물 내용을 입력하세요... (#태그 사용 가능)"
                   />
-                  
+
                   <S.EditImageSection>
                     <S.EditImageTitle>이미지</S.EditImageTitle>
                     <S.EditImageGrid>
@@ -547,16 +547,16 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
                       </S.EditImageUploadBtn>
                     </S.EditImageGrid>
                   </S.EditImageSection>
-                  
+
                   <S.EditPostButtons>
-                    <Square 
-                      text="취소" 
+                    <Square
+                      text="취소"
                       onClick={cancelEditPost}
                       status={false}
                       width="max-content"
                     />
-                    <Square 
-                      text={uploading ? "업로드 중..." : "저장"} 
+                    <Square
+                      text={uploading ? "업로드 중..." : "저장"}
                       onClick={saveEditPost}
                       status={!uploading}
                       width="max-content"
@@ -581,7 +581,13 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
               comments.map((comment: PostComment) => (
                 <S.CommentItem key={comment.commentId}>
                   <S.CommentAvatar>
-                    <Image src="/avatars/default.png" alt={comment.commenter.userId} fill style={{ objectFit: 'cover' }} />
+                    {comment.commenter.profile ? (
+                      <Image src={comment.commenter.profile} alt={comment.commenter.userId} fill style={{ objectFit: 'cover' }} />
+                    ) : (
+                      <S.CommentAvatarFallback>
+                        {(comment.commenter.name || comment.commenter.userId || '?').charAt(0)}
+                      </S.CommentAvatarFallback>
+                    )}
                   </S.CommentAvatar>
                   <S.CommentContent>
                     <S.CommentAuthor>{comment.commenter.userId}</S.CommentAuthor>
@@ -665,22 +671,22 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
           )}
         </S.InteractionBar>
       </S.Right>
-      
+
       {isOpen && commentToDelete && (
         <Modal>
-          <div style={{zIndex: 1200}}>
+          <div style={{ zIndex: 1200 }}>
             <S.ConfirmModalContent>
               <S.ConfirmModalTitle>댓글 삭제</S.ConfirmModalTitle>
               <S.ConfirmModalMessage>정말 댓글을 삭제하시겠습니까?</S.ConfirmModalMessage>
               <S.ConfirmModalButtons>
-                <Square 
-                  text="취소" 
+                <Square
+                  text="취소"
                   onClick={cancelDeleteComment}
                   status={false}
                   width="max-content"
                 />
-                <Square 
-                  text="삭제" 
+                <Square
+                  text="삭제"
                   onClick={confirmDeleteComment}
                   status={true}
                   width="max-content"
@@ -690,22 +696,22 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
           </div>
         </Modal>
       )}
-      
+
       {isOpen && postToDelete && (
         <Modal>
-          <div style={{zIndex: 1200}}>
+          <div style={{ zIndex: 1200 }}>
             <S.ConfirmModalContent>
               <S.ConfirmModalTitle>게시물 삭제</S.ConfirmModalTitle>
-              <S.ConfirmModalMessage>정말 게시물을 삭제하시겠습니까?<br/>삭제된 게시물은 복구할 수 없습니다.</S.ConfirmModalMessage>
+              <S.ConfirmModalMessage>정말 게시물을 삭제하시겠습니까?<br />삭제된 게시물은 복구할 수 없습니다.</S.ConfirmModalMessage>
               <S.ConfirmModalButtons>
-                <Square 
-                  text="취소" 
+                <Square
+                  text="취소"
                   onClick={cancelDeletePost}
                   status={false}
                   width="max-content"
                 />
-                <Square 
-                  text="삭제" 
+                <Square
+                  text="삭제"
                   onClick={confirmDeletePost}
                   status={true}
                   width="max-content"

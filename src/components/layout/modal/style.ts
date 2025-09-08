@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import {zIndex, radius} from "@/styles/theme";
+import { zIndex, radius } from "@/styles/theme";
 
 export const Black = styled.div`
   position: fixed;
@@ -17,4 +17,5 @@ export const Content = styled.div`
   background-color: white;
   position: relative;
   border-radius: ${radius.md};
+  width: 100%;
 `
