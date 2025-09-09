@@ -4,8 +4,10 @@ import Header from "@/components/ui/header";
 import TopLoadingBar from "@/components/layout/loadingbar";
 import React from "react";
 import {Providers} from "@/components/layout/provider";
-import MessageAlert from "@/components/ui/messageAlert";
 import Alert from "@/components/ui/alert";
+import MessageAlert from "@/components/ui/messageAlert";
+import AuthBootstrap from "@/components/layout/AuthBootstrap";
+import Loading from "@/components/ui/loading";
 
 
 export const metadata: Metadata = {
@@ -18,14 +20,16 @@ export default function RootLayout({children, modal}: { children: React.ReactNod
 	return (
 		<html lang="ko">
 		<TopLoadingBar/>
-		<MessageAlert/>
 		<Alert/>
+		<MessageAlert/>
 		<head>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		</head>
 		<GlobalStyles/>
 		<body style={{display: 'flex'}}>
 		<Providers>
+			<AuthBootstrap/>
+			<Loading/>
 			<Header/>
 			<main className="main-container">
 				{children}

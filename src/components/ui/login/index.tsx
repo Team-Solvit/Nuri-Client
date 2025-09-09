@@ -1,10 +1,18 @@
 import styled from '@emotion/styled';
-import {useState} from 'react';
-import {colors, radius, fontSizes} from '@/styles/theme';
+import { useCallback, useState } from 'react';
+import { colors, radius, fontSizes } from '@/styles/theme';
 import Square from '@/components/ui/button/square';
 import Image from 'next/image';
-import {useRouter} from 'next/navigation';
-import {mq} from '@/styles/media';
+import { useRouter } from 'next/navigation';
+import { mq } from '@/styles/media';
+import { useApollo } from '@/lib/apolloClient';
+import { useAlertStore } from '@/store/alert';
+import { useLoginModalStore } from '@/store/loginModal';
+import { useUserStore } from '@/store/user';
+import { AuthGQL, AuthService } from '@/services/auth';
+import { decodeJWT } from '@/utils/jwt';
+import { useQuery } from '@apollo/client';
+
 
 export default function Login() {
 	const router = useRouter();
@@ -13,41 +21,122 @@ export default function Login() {
 	const [code, setCode] = useState("");
 	const [pw, setPw] = useState("");
 	const [pw2, setPw2] = useState("");
-	
+	const [id, setId] = useState("");
+	const [password, setPassword] = useState("");
+	const [loading, setLoading] = useState(false);
+
+	const client = useApollo();
+	const alertStore = useAlertStore();
+	const loginModal = useLoginModalStore();
+	const setAuth = useUserStore(s => s.setAuth);
+
+	const handleLogin = useCallback(async () => {
+		if (loading) return;
+		if (!id.trim() || !password.trim()) {
+			alertStore.error('아이디와 비밀번호를 입력해주세요.');
+			return;
+		}
+		setLoading(true);
+		try {
+			const { headers, status } = await AuthService.localLogin(
+				client,
+				{ id: id.trim(), password }
+			);
+
+			const headerTokenRaw =
+				headers['authorization'] || headers['x-access-token'] || '';
+			const headerToken = headerTokenRaw.replace(/^Bearer\s+/i, '');
+
+			if (!headerToken) {
+				throw new Error(`토큰이 응답에 없습니다. status=${status ?? 'N/A'}`);
+			}
+
+			const decodedToken = decodeJWT(headerToken);
+			const role = decodedToken?.role || 'USER';
+
+			localStorage.setItem('AT', headerToken);
+			setAuth(id.trim(), role);
+			alertStore.success('로그인 성공');
+			loginModal.close();
+		} catch (e: any) {
+			alertStore.error(e?.message || '로그인 실패');
+		} finally {
+			setLoading(false);
+		}
+	}, [id, password, client, alertStore, loginModal, loading, setAuth]);
+
+	const handleSocialLogin = useCallback(async (provider: 'kakao' | 'google' | 'facebook' | 'tiktok') => {
+		try {
+			sessionStorage.setItem('oauth_provider', provider);
+
+			const { data } = await client.query({
+				query: AuthGQL.QUERIES.GET_SOCIAL_URL,
+				variables: { provider },
+				fetchPolicy: 'no-cache'
+			});
+
+			if (data?.getOAuth2Link) {
+				window.location.href = data.getOAuth2Link;
+			} else {
+				alertStore.error('소셜 로그인 URL을 가져올 수 없습니다.');
+				sessionStorage.removeItem('oauth_provider');
+			}
+		} catch (error: any) {
+			alertStore.error(error?.message || '소셜 로그인 연결에 실패했습니다.');
+			sessionStorage.removeItem('oauth_provider');
+		}
+	}, [client, alertStore]);
+
 	return (
 		<Wrapper>
-			<Image src="/logo.svg" alt="로고" width={80} height={80} priority/>
-			
+			<Image src="/logo.svg" alt="로고" width={80} height={80} priority />
+
 			{step === 'login' && (
 				<>
 					<FormGroup>
 						<Label>아이디</Label>
-						<Input type="text" placeholder="아이디 또는 이메일을 입력해주세요."/>
+						<Input
+							type="text"
+							placeholder="아이디 또는 이메일을 입력해주세요."
+							value={id}
+							onChange={e => setId(e.target.value)}
+							onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(); }}
+						/>
 					</FormGroup>
 					<FormGroup>
 						<Label>비밀번호</Label>
-						<Input type="password" placeholder="비밀번호를 입력해주세요."/>
+						<Input
+							type="password"
+							placeholder="비밀번호를 입력해주세요."
+							value={password}
+							onChange={e => setPassword(e.target.value)}
+							onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(); }}
+						/>
 						<Hint>
 							<Left>
 								계정이 없으신가요? <SignUp onClick={() => {
-								router.push('/register');
-							}}>회원가입 하기</SignUp>
+									router.push('/register');
+								}}>회원가입 하기</SignUp>
 							</Left>
 							<Right onClick={() => setStep('find-email')}>비밀번호를 잊으셨나요?</Right>
 						</Hint>
 					</FormGroup>
-					<Square text='로그인' onClick={() => {
-					}} status={true} width='100%'/>
+					<Square
+						text={loading ? '로그인 중...' : '로그인'}
+						onClick={handleLogin}
+						status={!!id && !!password && !loading}
+						width='100%'
+					/>
 					<SocialOther>또는</SocialOther>
 					<SocialList>
-						<Image src="/login/kakao.svg" alt="카카오 로그인" width={56} height={56}/>
-						<Image src="/login/tiktok.svg" alt="틱톡 로그인" width={56} height={56}/>
-						<Image src="/login/facebook.svg" alt="페이스북 로그인" width={56} height={56}/>
-						<Image src="/login/google.svg" alt="구글 로그인" width={56} height={56}/>
+						<Image src="/login/kakao.svg" alt="카카오 로그인" width={56} height={56} onClick={() => handleSocialLogin('kakao')} />
+						<Image src="/login/tiktok.svg" alt="틱톡 로그인" width={56} height={56} onClick={() => handleSocialLogin('tiktok')} />
+						<Image src="/login/facebook.svg" alt="페이스북 로그인" width={56} height={56} onClick={() => handleSocialLogin('facebook')} />
+						<Image src="/login/google.svg" alt="구글 로그인" width={56} height={56} onClick={() => handleSocialLogin('google')} />
 					</SocialList>
 				</>
 			)}
-			
+
 			{step === 'find-email' && (
 				<>
 					<FormGroup>
@@ -67,16 +156,16 @@ export default function Login() {
 								placeholder="인증 번호를 입력해주세요."
 								value={code}
 								onChange={e => setCode(e.target.value)}
-								style={{flex: 1}}
+								style={{ flex: 1 }}
 							/>
 							<Square text='인증' onClick={() => {
-							}} status={true} width='6vw'/>
+							}} status={true} width='6vw' />
 						</InputRow>
 					</FormGroup>
-					<Square text='다음' onClick={() => setStep('find-reset')} status={true} width='100%'/>
+					<Square text='다음' onClick={() => setStep('find-reset')} status={true} width='100%' />
 				</>
 			)}
-			
+
 			{step === 'find-reset' && (
 				<>
 					<FormGroup>
@@ -97,7 +186,7 @@ export default function Login() {
 							onChange={e => setPw2(e.target.value)}
 						/>
 					</FormGroup>
-					<Square text='비밀번호 재설정' onClick={() => setStep('login')} status={true} width='100%'/>
+					<Square text='비밀번호 재설정' onClick={() => setStep('login')} status={true} width='100%' />
 				</>
 			)}
 		</Wrapper>
@@ -141,10 +230,12 @@ const Input = styled.input`
   background: #fff;
   transition: border-color 0.2s;
 
+
   &:focus {
     outline: none;
     border-color: ${colors.primary};
   }
+
 
   &::placeholder {
     color: ${colors.gray};

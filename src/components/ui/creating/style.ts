@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import { colors, fontSizes, radius } from '@/styles/theme';
+import { mq } from '@/styles/media';
 
 export const Overlay = styled.div`
   position: fixed;
@@ -20,6 +21,11 @@ export const Image = styled.div`
   position: relative;
   overflow: hidden;
   background: ${colors.line2};
+
+  ${mq.mobile} {
+    height: 38vh;
+    width: 100%;
+  }
 `
 
 export const InputImage = styled.div`
@@ -76,6 +82,23 @@ export const Modal = styled.div`
   display: flex;
   gap: 1.5rem;
   position: relative;
+
+  ${mq.mobile} {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    display: flex;
+    gap: 0;
+    flex-direction: column;
+  }
+`
+
+export const HeaderM = styled.div`
+  ${mq.mobile} {
+    display: flex;
+    padding: 1rem;
+    gap: 1rem;
+  }
 `
 
 export const Header = styled.div`
@@ -97,6 +120,11 @@ export const PublicIconWrap = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
+
+  ${mq.mobile} {
+    margin-left: -0.1rem;
+    margin-top: 0.5rem;
+  }
 `
 
 export const ProfileRow = styled.div`
@@ -104,6 +132,10 @@ export const ProfileRow = styled.div`
   gap: 1rem;
   padding: 1.5rem;
   align-items: center;
+
+  ${mq.mobile} {
+    display: none;
+  }
 `
 
 export const ProfileImg = styled.div`
@@ -137,6 +169,12 @@ export const Textarea = styled.textarea`
     font-family: "SCoreDream", sans-serif;
     font-size: 15px;
   }
+
+  ${mq.mobile} {
+    min-height: 15vh;
+    margin-top: -0.5rem;
+    margin-left: 0.5rem;
+  }
 `
 
 export const Row = styled.div`
@@ -146,10 +184,69 @@ export const Row = styled.div`
   gap: 1rem;
 `
 
+
+export const ImageWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 4;
+  overflow: hidden;
+  background-color: #f0f0f0;
+`;
+
+export const SlideImages = styled.div<{ currentIndex: number }>`
+  display: flex;
+  height: 100%;
+  transition: transform 0.4s ease-in-out;
+  transform: ${({ currentIndex }) => `translateX(-${currentIndex * 100}%)`};
+`;
+
+
+export const PrevBtn = styled.button`
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+  font-size: 18px;
+  z-index: 2;
+
+  img {
+    transform: rotate(180deg);
+    object-fit: cover;
+  }
+`;
+
+
+export const NextBtn = styled.button`
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+  font-size: 18px;
+  z-index: 2;
+`;
+
 export const CharCount = styled.div`
   font-size: ${fontSizes.Small};
   color: ${colors.gray};
   margin-left: 19rem;
+
+  ${mq.mobile} {
+    margin-left:  19rem;
+  }
 `
 
 export const ToggleWrap = styled.div`
@@ -161,6 +258,10 @@ export const ToggleLabel = styled.span`
   font-size: 14px;
   font-weight: 400;
   margin-top: 2px;
+
+  ${mq.mobile} {
+    margin-left: 0.5rem;
+  }
 `
 
 export const ToggleButton = styled.button`
@@ -247,4 +348,55 @@ export const ButtonRow = styled.div`
   justify-content: flex-end;
   gap: 1rem;
   margin-top: 10rem;
+
+  ${mq.mobile} {
+    display: none;
+  }
+`
+
+export const AddMoreImageBtn = styled.label`
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border-radius: 8px;
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.8);
+  }
+
+  ${mq.mobile} {
+    bottom: 15px;
+    right: 15px;
+    padding: 10px 14px;
+  }
+`
+
+export const AddMoreIcon = styled.span`
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+
+  ${mq.mobile} {
+    font-size: 16px;
+  }
+`
+
+export const AddMoreText = styled.span`
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  white-space: nowrap;
+
+  ${mq.mobile} {
+    font-size: 12px;
+  }
 `
