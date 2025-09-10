@@ -85,10 +85,11 @@ export default function RegisterContainer() {
 							agreedTermsOfService: formData.terms1,
 							agreedPrivacyCollection: formData.terms2,
 							agreedPrivacyThirdParty: formData.terms3,
-							agreedIdentityAgencyTerms: formData.terms4,
-							agreedIdentityPrivacyDelegate: formData.terms5,
-							agreedIdentityUniqueInfo: formData.terms6,
-							agreedIdentityProviderTerms: formData.terms7
+							// 외부 본인인증 비사용: 서버 변경되면 지우기
+							agreedIdentityAgencyTerms: false,
+							agreedIdentityPrivacyDelegate: false,
+							agreedIdentityUniqueInfo: false,
+							agreedIdentityProviderTerms: false
 						},
 					});
 					alertStore.success('회원가입이 완료되었습니다.');
@@ -106,10 +107,11 @@ export default function RegisterContainer() {
 							agreedTermsOfService: formData.terms1,
 							agreedPrivacyCollection: formData.terms2,
 							agreedPrivacyThirdParty: formData.terms3,
-							agreedIdentityAgencyTerms: formData.terms4,
-							agreedIdentityPrivacyDelegate: formData.terms5,
-							agreedIdentityUniqueInfo: formData.terms6,
-							agreedIdentityProviderTerms: formData.terms7
+							// 외부 본인인증 비사용: 서버 변경되면 지우기
+							agreedIdentityAgencyTerms: false,
+							agreedIdentityPrivacyDelegate: false,
+							agreedIdentityUniqueInfo: false,
+							agreedIdentityProviderTerms: false
 						},
 					});
 					alertStore.success('회원가입이 완료되었습니다.');

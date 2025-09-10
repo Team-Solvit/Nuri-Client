@@ -1,13 +1,13 @@
 import { USERNAME_PATTERN, EMAIL_PATTERN } from '@/constants/register';
 
-export interface TermsData { terms1: boolean; terms2: boolean; terms3: boolean; terms4: boolean; terms5: boolean; terms6: boolean; terms7: boolean; }
+export interface TermsData { terms1: boolean; terms2: boolean; terms3: boolean; }
 export interface AccountData { name: string; username: string; usernameChecked: boolean; usernameAvailable: boolean; }
 export interface EmailData { email: string; code: string; verified: boolean; }
 export interface PasswordData { password: string; confirmPassword: string; }
 export interface ProfileData { nationality: string; language: string; }
 
 export const validateTerms = (d: TermsData) => (
-  d.terms1 && d.terms2 && d.terms3 && d.terms4 && d.terms5 && d.terms6 && d.terms7 ? null : '모든 약관에 동의해야 합니다.'
+  d.terms1 && d.terms2 && d.terms3 ? null : '모든 약관에 동의해야 합니다.'
 );
 
 export const validateAccount = (d: AccountData) => {
