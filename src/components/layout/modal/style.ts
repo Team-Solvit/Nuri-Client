@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { zIndex, radius } from "@/styles/theme";
+import { mq } from "@/styles/media";
 
 export const Black = styled.div`
   position: fixed;
@@ -17,5 +18,8 @@ export const Content = styled.div`
   background-color: white;
   position: relative;
   border-radius: ${radius.md};
-  width: 100%;
+  
+  ${mq.mobile} {
+    width: 100%;
+  }
 `
