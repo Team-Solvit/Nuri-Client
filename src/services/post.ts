@@ -2,8 +2,8 @@ import {gql} from "@apollo/client";
 
 export const PostQueries = {
 	GET_POST_LIST: gql`
-		 query MyQuery {
-		  getPostList(start: 0) {
+		 query MyQuery($start: Int!){
+		  getPostList(start: $start) {
 		    postInfo {
 		      ... on SnsPost {
 		        postId
@@ -24,33 +24,45 @@ export const PostQueries = {
 		        likeCount
 		      }
 		      ... on BoardingPost {
-			        likeCount
-			        commentCount
 			        room {
-			          boardingHouse {
-			            host {
-			                user {
-				                profile
-				                userId
-			                }
-			            },
-			          }
-			          boardingRoomFile {
-			            roomId
-			            fileId
-			            url
-			          }
-			          contractPeriod {
-			            contractPeriod
-			            roomId
-			            contractPeriodId
-			          }
-			          day
-			          headCount
-			          description
-			          monthlyRent
-			          name
 			          roomId
+						    boardingHouse{
+							    houseId
+							    host {
+							       callNumber
+                     user {
+                       id
+										    userId
+										    name
+                     }
+							    }
+							    name
+							    location
+						    }
+						    name
+						    description
+						    monthlyRent
+						    headCount
+						    likeCount
+						    isLiked
+						    commentCount
+						    status
+						    boardingRoomOption{
+						       optionId
+								    roomId
+								    name
+						    }
+						    boardingRoomFile{
+						      fileId
+							    roomId
+							    url
+						    }
+						    contractPeriod{
+						      contractPeriodId
+							    roomId
+							    contractPeriod
+						    }
+						    day
 			        }
 			      }
 		    }
