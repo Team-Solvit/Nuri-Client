@@ -3,6 +3,7 @@
 import * as S from './style';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
+import Square from '../button/square';
 
 interface DropdownProps {
     text: string;
@@ -10,10 +11,13 @@ interface DropdownProps {
     isOpen: boolean;
     onOpen: () => void;
     onClose: () => void;
+    onSelect?: (item: string, radius: string) => void;
 }
 
-export default function Dropdown({ text, list, isOpen, onOpen, onClose }: DropdownProps) {
+export default function Dropdown({ text, list, isOpen, onOpen, onClose, onSelect }: DropdownProps) {
     const [selected, setSelected] = useState<string>(text);
+    const [tempSelected, setTempSelected] = useState<string>(text);
+    const [radius, setRadius] = useState<string>('');
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -37,12 +41,35 @@ export default function Dropdown({ text, list, isOpen, onOpen, onClose }: Dropdo
         if (isOpen) {
           onClose();
         } else {
+          setTempSelected(selected);
+          setRadius('');
           onOpen();
         }
     };
       
     const handleSelect = (item: string) => {
-        setSelected(item);
+        setTempSelected(item);
+    };
+
+    const handleComplete = () => {
+        if (!radius.trim()) {
+            alert('반경을 입력해주세요.');
+            return;
+        }
+        if (isNaN(Number(radius)) || Number(radius) <= 0) {
+            alert('올바른 반경 값을 입력해주세요.');
+            return;
+        }
+        setSelected(`${tempSelected} (${radius}m)`);
+        if (onSelect) {
+            onSelect(tempSelected, radius);
+        }
+        onClose();
+    };
+
+    const handleCancel = () => {
+        setTempSelected(selected);
+        setRadius('');
         onClose();
     };
 
@@ -60,17 +87,37 @@ export default function Dropdown({ text, list, isOpen, onOpen, onClose }: Dropdo
 
             {isOpen && (
                 <S.Container>
-                    <S.Input type="text" placeholder="반경 입력(m)" />
+                    <S.Input 
+                        type="text" 
+                        placeholder="반경 입력(m)" 
+                        value={radius}
+                        onChange={(e) => setRadius(e.target.value)}
+                    />
                     <S.List>
                         {list.map((item, idx) => (
                             <S.ListItem
                                 key={idx}
                                 onClick={() => handleSelect(item)}
+                                selected={tempSelected === item}
                             >
                                 {item}
                             </S.ListItem>
                         ))}
                     </S.List>
+                    <S.Button>
+                        <Square
+                            text="취소"
+                            status={false}
+                            onClick={handleCancel}
+                            width='100px'
+                        />
+                        <Square
+                            text="완료"
+                            status={true}
+                            onClick={handleComplete}
+                            width='100px'
+                        />
+                    </S.Button>
                 </S.Container>
             )}
         </S.DropdownContainer >

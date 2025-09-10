@@ -41,10 +41,51 @@ export const typeDefs = gql`
     alertNavigate: String
   }
 
+  # --- 하숙집 검색 관련 타입 ---
+  type Location {
+    lat: Float!
+    lon: Float!
+    radiusMeters: String!
+  }
+
+  type ContractPeriod {
+    min: Int!
+    max: Int!
+  }
+
+  type Price {
+    min: Int!
+    max: Int!
+  }
+
+  type BoardingRoomSearchFilter {
+    school: Location
+    station: Location
+    contractPeriod: ContractPeriod
+    price: Price
+    region: String
+    start: Int
+    name: String
+  }
+
+  type BoardingRoom {
+    roomId: ID!
+    name: String!
+    description: String
+    monthlyRent: Int!
+    headCount: Int!
+    likeCount: Int!
+    isLiked: Boolean!
+    commentCount: Int!
+    status: String!
+    day: String!
+  }
+
   # --- Query ---
   type Query {
     getPostList(start: Int!): [Post]!
     getAlertList: [Alert]!
     getAlertCount: Int!
+    searchBoardingRoom(boardingRoomSearchFilter: BoardingRoomSearchFilter!): [BoardingRoom]!
   }
 `;

@@ -44,13 +44,14 @@ export const Container = styled.div`
     z-index: ${zIndex.dropdown};
     background-color: ${colors.background};
 
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
     ${mq.mobile} {
         width: 45vw;
         height: auto;
-        &::-webkit-scrollbar {
-        display: none;
     }
-  }
 `
 
 export const Input = styled.input`
@@ -75,7 +76,25 @@ export const List = styled.div`
     padding: 20px 10px;
 `
 
-export const ListItem = styled.div`
+export const ListItem = styled.div<{ selected?: boolean }>`
     display: flex;
     cursor: pointer;
+    padding: 8px 12px;
+    border-radius: ${radius.md};
+    background-color: ${({ selected }) => (selected ? colors.primary : 'transparent')};
+    color: ${({ selected }) => (selected ? colors.background : colors.text)};
+    transition: all 0.2s ease;
+
+    &:hover {
+        background-color: ${({ selected }) => (selected ? colors.primary : colors.gray + '20')};
+    }
+`
+
+export const Button = styled.div`
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid ${colors.line};
 `

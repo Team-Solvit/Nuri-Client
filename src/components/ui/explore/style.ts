@@ -24,6 +24,7 @@ export const Input = styled.input`
     font-size: 18px;
     margin-top: 2px;
     margin-left: 10px;
+    width: 100%;
 
     &::placeholder {
         color: ${colors.gray};
