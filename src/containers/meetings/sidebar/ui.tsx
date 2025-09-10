@@ -5,7 +5,8 @@ import Image from 'next/image';
 import Meeting from "@/assets/meeting/profile.png"
 import Arrow from "@/assets/meeting/arrow.svg"
 import {useModalStore} from "@/store/modal";
-import {useRouter} from "next/navigation";
+import {useSelectOtherMeetingDetailStore} from "@/store/selectOtherMeetingDetail";
+
 
 
 interface MeetingsSidebarProps {
@@ -21,11 +22,11 @@ interface MeetingsSidebarProps {
 
 export default function MeetingsSidebar({rooms, meetings}: MeetingsSidebarProps) {
 	const {open} = useModalStore();
-	const router = useRouter();
-	const openModal = (id: number) => {
+	const {setSelect, setMeetingId} = useSelectOtherMeetingDetailStore()
+	const openModal = (name: string, id : number) => {
 		open();
-		router.push(`?id=${id}`, {scroll: false});
-		
+		setMeetingId(id)
+		setSelect(name)
 	}
 	
 	return createPortal(
@@ -34,8 +35,8 @@ export default function MeetingsSidebar({rooms, meetings}: MeetingsSidebarProps)
 				<p>부산광역시 {rooms}</p>
 			</S.Head>
 			<S.Content>
-				{meetings.map(meeting => (
-					<S.Meeting key={meeting.id} onClick={() => openModal(meeting.id)}>
+				{meetings?.length > 0 ?  meetings?.map(meeting => (
+					<S.Meeting key={meeting.id} onClick={() => openModal(meeting?.title, meetings?.id)}>
 						<S.ImgBox>
 							<Image src={Meeting} alt="meeting" fill/>
 						</S.ImgBox>
@@ -48,7 +49,7 @@ export default function MeetingsSidebar({rooms, meetings}: MeetingsSidebarProps)
 							<S.Desc>{meeting.content}</S.Desc>
 						</S.Info>
 					</S.Meeting>
-				))}
+				)) : <p>해당 지역에는 모임이 존재하지 않습니다.</p>}
 			</S.Content>
 		</S.SidebarContainer>,
 		document.body

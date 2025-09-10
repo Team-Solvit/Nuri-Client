@@ -7,7 +7,7 @@ export default function MeetingPost({isModal, groupId}: { isModal: boolean, grou
 	
 	const {data: meetingPost} = useQuery(MeetingQueries.GET_MEETING_POST, {
 		variables: {
-			groupId: 1
+			groupId: groupId
 		}
 	})
 	console.log('모임 게시물(meetingPost):', meetingPost) // 모임 게시물(meetingPost) 데이터 출력

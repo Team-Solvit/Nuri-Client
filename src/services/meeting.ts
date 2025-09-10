@@ -2,34 +2,42 @@ import {gql} from '@apollo/client';
 
 export const MeetingQueries = {
 	GET_MEETING_AREAS: gql`
-		query GetMeetingAreas {
-			areas {
-		    id
-		    name
-		    lat
-		    lng
-		  }
+		query {
+		  getAreas
 		}
 	`,
 	GET_MEETINGS: gql`
-		query GetMeetings($areaId: Int!) {
-		  groups(area_id: $areaId) {
-		    id
+		query MyQuery($area: String!) {
+		  getGroupsByArea(area: $area) {
+		    groupId
 		    name
-		    picture
 		    description
-		    current_population
-		    max_population
+		    area
+		    maxParticipation
+		    currentParticipation
+		    profile
+		    banner
+		    latitude
+		    longitude
+		    createdAt
 		  }
 		}
 	`,
 	GET_MEETING_INFO: gql`
-		query GetGroup($groupId: Int!) {
-		  group(group_id: $groupId) {
-		    picture
+		query getGroupInfo($groupId: String!) {
+		  getGroupInfo(groupId: $groupId) {
+		    groupId
 		    name
-		    area
 		    description
+		    area
+		    maxParticipation
+		    currentParticipation
+		    profile
+		    banner
+		    latitude
+		    longitude
+		    thirdPartyName
+		    createdAt
 		  }
 		}	`,
 	GET_MEETING_POST: gql`
@@ -41,26 +49,23 @@ export const MeetingQueries = {
 		}
 	`,
 	GET_MEETING_SCHEDULE: gql`
-		query GetSchedules($groupId: Int!) {
-		  schedules(group_id: $groupId) {
-		    day
-		    day_of_week
-		    expense
-		    start_time
-		    end_time
-		    contents
+		query getAllGroupSchedules($groupId: String!) {
+		  getAllGroupSchedules(groupId: $groupId) {
+		    scheduleId
+		    title
+		    description
+		    location
+		    scheduledAt
+		    durationMinutes
 		  }
 		}
 	`,
 	GET_MEETING_MEMBER: gql`
-		query GetMembers($groupId: Int!) {
-		  members(group_id: $groupId) {
-		    id
+		query getGroupMembers($groupId: String!) {
+		  getGroupMembers(groupId: $groupId) {
+		    userId
 		    name
-		    picture
-		    post_count
-		    follower_count
-		    following_count
+		    email
 		  }
 		}
 	`
@@ -68,13 +73,19 @@ export const MeetingQueries = {
 
 export const MeetingMutations = {
 	SIGNUP_MEETING: gql`
-	mutation SignupMeeting($groupId: Int!) {
-		signupMeeting(group_id: $groupId)
-	}
-`,
-	LEAVE_MEETING: gql`
-  mutation LeaveMeeting {
-    leaveMeeting
-  }
-`
+		mutation SignupMeeting($groupId: Int!) {
+			signupMeeting(group_id: $groupId)
+		}
+	`,
+		LEAVE_MEETING: gql`
+	  mutation LeaveMeeting {
+	    leaveMeeting
+	  }
+	`,
+	JOIN_MEETING_REQUEST: gql`
+		mutation requestJoinGroup($groupJoinInput : GroupJoinInput!){
+			requestJoinGroup(groupJoinRequestDto : $groupJoinInput)
+		}
+	`
+	
 }

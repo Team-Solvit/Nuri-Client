@@ -2,23 +2,36 @@ import * as S from '@/styles/confirm'
 import Square from "@/components/ui/button/square";
 import {AccessionProps} from "@/containers/meetings/accession/type";
 import React from "react";
-import NProgress from "nprogress";
 import {useModalStore} from "@/store/modal";
-import {useOtherMeetingFind} from '@/store/otherMeetingFind';
-import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {useMutation} from "@apollo/client";
+import {MeetingMutations} from "@/services/meeting";
+import {useLoadingEffect} from "@/hooks/useLoading";
+import {useAlertStore} from "@/store/alert";
 
 export default function Accession({isAccession, setIsAccession, accessions}: AccessionProps) {
 	const modalClose = () => {
 		setIsAccession(false)
 	}
-	const navigate = useNavigationWithProgress();
 	const {close} = useModalStore();
-	const {setFind} = useOtherMeetingFind();
-	const handelRouter = (id: number) => {
-		navigate(`/meetings/${id}`)
+	const [mutate, {loading}] = useMutation(MeetingMutations.JOIN_MEETING_REQUEST, {
+		variables: {
+			groupJoinInput: {
+				groupId : accessions.id,
+				requestMessage : ""
+			}
+		}
+	})
+	const {error, success} = useAlertStore()
+	useLoadingEffect(loading);
+	const handelRouter = async () => {
+		try{
+			await mutate()
+			success("모임 신청에 성공하였습니다.")
+		}catch (err){
+			console.log(err)
+			error("모임 신청에 실패하였습니다.")
+		}
 		setIsAccession(false)
-		NProgress.start()
-		setFind(false);
 		close()
 	}
 	if (!isAccession) return null
@@ -38,9 +51,7 @@ export default function Accession({isAccession, setIsAccession, accessions}: Acc
 						<S.CancelBtn onClick={modalClose} $width={"100%"}>
 							<S.Name>취소</S.Name>
 						</S.CancelBtn>
-						<Square text={"가입"} onClick={() => {
-							handelRouter(accessions.id)
-						}} status={true} width={"100%"}/>
+						<Square text={"가입"} onClick={handelRouter} status={true} width={"100%"}/>
 					</S.ButtonContainer>
 				</S.Container>
 			</S.Content>

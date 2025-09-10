@@ -14,6 +14,7 @@ import {MeetingMember} from "@/components/ui/meeting-member";
 import {MeetingModalProps} from "@/containers/meetings/MeetingModal/type";
 import {useQuery} from "@apollo/client";
 import {MeetingQueries} from "@/services/meeting";
+import {useSelectOtherMeetingDetailStore} from "@/store/selectOtherMeetingDetail";
 
 export const Banner = ({bannerImage}: { bannerImage: string | StaticImageData }) => {
 	return (
@@ -83,11 +84,11 @@ export default function MeetingModal({
 		profileImage: "/meeting/profile.png"
 	}
 	const props = {...fakeData, setIsAccessionAction};
-	
+	const {meetingId} = useSelectOtherMeetingDetailStore()
 	
 	const {data: meetingInfo} = useQuery(MeetingQueries.GET_MEETING_INFO, {
 		variables: {
-			groupId: 1
+			groupId: meetingId
 		}
 	});
 	
@@ -101,9 +102,9 @@ export default function MeetingModal({
 				<Banner bannerImage={fakeData.bannerImage}/>
 				<MeetingContent {...props} />
 				<Nav selected={selected} setSelected={setSelected}/>
-				{selected === 1 && <MeetingPost isModal={true} groupId={1}/>}
-				{selected === 2 && <MeetingCalender groupId={1}/>}
-				{selected === 3 && <MeetingMember groupId={1}/>}
+				{selected === 1 && <MeetingPost isModal={true} groupId={meetingId}/>}
+				{selected === 2 && <MeetingCalender groupId={meetingId}/>}
+				{selected === 3 && <MeetingMember groupId={meetingId}/>}
 			</S.ModalContainer>
 		</Modal>
 	)

@@ -12,25 +12,24 @@ import {MeetingMember} from "@/components/ui/meeting-member";
 import {MeetingProps} from "./type";
 import {Nav} from "@/containers/meetings/MeetingModal/ui";
 import {useOtherMeetingFind} from "@/store/otherMeetingFind";
-import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import {useQuery} from "@apollo/client";
 import {MeetingQueries} from "@/services/meeting";
+import {useSelectOtherMeetingDetailStore} from "@/store/selectOtherMeetingDetail";
 
 export default function Meeting(meeting: MeetingProps) {
 	const [selected, setSelected] = useState(1);
 	const {setFind} = useOtherMeetingFind();
-	const navigate = useNavigationWithProgress();
+	
 	const handleBack = () => {
-		navigate("/meetings");
 		setFind(true);
 	}
+	const {meetingId} = useSelectOtherMeetingDetailStore()
 	const {data: meetingInfo} = useQuery(MeetingQueries.GET_MEETING_INFO, {
 		variables: {
-			groupId: 1
+			groupId: meetingId
 		}
 	})
 	console.log('모임 정보(meetingInfo):', meetingInfo)
-	
 	
 	return (
 		<S.ModalContainer>
@@ -63,8 +62,8 @@ export default function Meeting(meeting: MeetingProps) {
         <Square text={"게시물 작성"} status={true} width={"calc(84.5vw - 10rem)"} onClick={() => {
 				}}/>
       </S.BtnBox>}
-			{selected === 2 && <MeetingCalender groupId={1}/>}
-			{selected === 3 && <MeetingMember groupId={1}/>}
+			{selected === 2 && <MeetingCalender groupId={meetingId}/>}
+			{selected === 3 && <MeetingMember groupId={meetingId}/>}
 		</S.ModalContainer>
 	)
 }
