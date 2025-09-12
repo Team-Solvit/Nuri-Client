@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 
 export const Page = styled.main`
   margin: 40px auto;
-  padding: 0 20px;
+  padding: 0 52px;
   line-height: 1.7;
   max-height: 90vh;
   overflow-y: auto;
