@@ -16,7 +16,6 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
   const navigate = useNavigationWithProgress();
   const [debouncedFilter, setDebouncedFilter] = useState<BoardingRoomSearchFilter>(searchFilter);
 
-  // 디바운싱: 필터 변경 후 500ms 후에 검색 실행
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedFilter(searchFilter);
@@ -29,20 +28,19 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     variables: {
       boardingRoomSearchFilter: debouncedFilter
     },
-    skip: Object.keys(debouncedFilter).length === 0 // 필터가 없으면 쿼리 실행하지 않음
+    skip: Object.keys(debouncedFilter).length === 0
   });
 
-  // BoardingRoom을 PostItem 형식으로 변환
   const convertToPostItem = (room: BoardingRoom): PostItemData => ({
     id: parseInt(room.roomId),
-    user: '해ㅠ피', // 실제로는 room에서 가져와야 함
+    user: '해ㅠ피',
     title: room.name,
-    region: '강서구', // 실제로는 room에서 가져와야 함
+    region: '강서구',
     price: room.monthlyRent.toString(),
-    period: 6, // 실제로는 room에서 가져와야 함
-    gender: 'M', // 실제로는 room에서 가져와야 함
-    thumbnail: '/post/post-example.png', // 실제로는 room에서 가져와야 함
-    userProfile: '/profile/profile.svg', // 실제로는 room에서 가져와야 함
+    period: 6,
+    gender: 'M',
+    thumbnail: '/post/post-example.png',
+    userProfile: '/profile/profile.svg',
   });
 
   if (loading) {

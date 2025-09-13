@@ -18,18 +18,20 @@ export default function ExplorePage() {
   const handleSearchKeywordChange = (keyword: string) => {
     setSearchKeyword(keyword);
     setSearchFilter(prev => ({ ...prev, name: keyword, start: 0 }));
+  };
 
   return (
     <Container>
-        <ExploreFilter 
-          onFilterChange={handleFilterChange}
-          onSearchKeywordChange={handleSearchKeywordChange}
-          searchKeyword={searchKeyword}
-        />
-        <ExplorePostList searchFilter={searchFilter} />
+      <ExploreFilter 
+        onFilterChange={handleFilterChange}
+        onSearchKeywordChange={handleSearchKeywordChange}
+        searchKeyword={searchKeyword}
+      />
+      <ExplorePostList searchFilter={searchFilter} />
     </Container>
   );
 }
+
 
 const Container = styled.div`
     display: flex;
@@ -43,4 +45,4 @@ const Container = styled.div`
     ${mq.mobile} {
       gap: 0;
     }
-`}
+`
