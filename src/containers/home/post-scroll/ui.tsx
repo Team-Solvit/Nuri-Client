@@ -8,18 +8,19 @@ import Heart from "@/assets/post/heart.svg";
 import Comment from "@/assets/post/comment.svg";
 import Arrow from "@/assets/post/arrow-right.svg";
 import {useState, useRef, useCallback} from "react";
-import {useRouter} from "next/navigation";
 import {useQuery} from "@apollo/client";
 import {PostQueries} from "@/services/post";
 import type {GetPostListResponse, GetPostListVariables} from "@/types/post";
 import {useLoadingEffect} from "@/hooks/useLoading";
 import {useAlertStore} from "@/store/alert";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {useUserStore} from "@/store/user";
 
 export default function PostScroll() {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null);
-	const navigate = useRouter();
+	const navigate = useNavigationWithProgress();
 	const navigateClick = (path: string) => {
-		navigate.push(path);
+		navigate(path);
 	}
 	const [imageIndexMap, setImageIndexMap] = useState<Record<number, number>>({});
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
@@ -101,6 +102,11 @@ export default function PostScroll() {
 		if (node) observer.current.observe(node);
 	}, [loading, isFetchingMore, posts?.length]);
 
+	const {id : userId} = useUserStore()
+	function handleChatJoinTwoIds(id1:string, id2:string) {
+		const chatId = [id1, id2].sort().join(":");
+		navigateClick(`/chat/${chatId}`);
+	}
 	return (
 		<S.PostScrollContainer>
 			{!loading && posts?.length === 0 && <p>생성된 게시물이 없습니다.</p>}
@@ -190,6 +196,7 @@ export default function PostScroll() {
 							<S.Nav onClick={(e) => e.stopPropagation()}>
 								<p>{postData.price ? "하숙집" : ""}</p>
 								<Square text={"채팅"} onClick={() => {
+									handleChatJoinTwoIds(userId ?? "", postData?.user?.userId ?? "")
 								}} status={true} width={"100px"}/>
 							</S.Nav>
 						</S.PostTitle>

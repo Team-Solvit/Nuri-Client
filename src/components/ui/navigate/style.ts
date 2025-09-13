@@ -2,6 +2,81 @@ import styled from "@emotion/styled";
 import {colors, fontSizes, radius, zIndex} from "@/styles/theme";
 import {mq} from "@/styles/media";
 
+export const NavigateCon = styled.div`
+  display: flex;
+  gap: 30px;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+`
+
+export const BoardingHouseButton = styled.button`
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 16px;
+	background-color: #FF5B5B;
+	color: white;
+	border: none;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background-color 0.2s;
+
+	&:hover {
+		background-color: #E04E4E;
+	}
+`;
+
+export const HostCard = styled.div`
+  display: flex;
+  align-items: center;
+	flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem;
+  border-radius: ${radius.md};
+  border: 1px solid ${colors.line};
+  background: linear-gradient(0deg, rgba(255,91,91,0.08) 0%, rgba(255,91,91,0.02) 100%);
+`;
+
+export const HostTextBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  & > strong {
+    font-size: ${fontSizes.Body};
+    color: ${colors.text};
+  }
+  & > span {
+    font-size: ${fontSizes.Caption};
+    color: ${colors.gray};
+  }
+`;
+
+export const HostCTAButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background-color: ${colors.primary};
+  color: ${colors.background};
+  border: none;
+  border-radius: ${radius.sm};
+  font-size: ${fontSizes.Caption};
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
 export const NavigateContainer = styled.section`
   display: inline-flex;
   padding: 1rem;
@@ -24,7 +99,7 @@ export const NavigateContainer = styled.section`
     padding: 0.6rem 1rem;
     box-shadow: 0 4.57px 7.312px 0 rgba(0, 0, 0, 0.03), 0 10.967px 36.558px 0 rgba(0, 0, 0, 0.04);
     backdrop-filter: blur(2px);
-    z-index: ${zIndex.overlay}
+    z-index: ${zIndex.dropdown}
   }
 `
 export const NavigateBtn = styled.button<{ isActive: boolean }>`
