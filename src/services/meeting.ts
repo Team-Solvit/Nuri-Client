@@ -3,7 +3,11 @@ import {gql} from '@apollo/client';
 export const MeetingQueries = {
 	GET_MEETING_AREAS: gql`
 		query {
-		  getAreas
+		  getAreas{
+		    area
+		    longitude
+		    latitude
+		  }
 		}
 	`,
 	GET_MEETINGS: gql`
@@ -11,15 +15,10 @@ export const MeetingQueries = {
 		  getGroupsByArea(area: $area) {
 		    groupId
 		    name
-		    description
-		    area
 		    maxParticipation
 		    currentParticipation
+		    description
 		    profile
-		    banner
-		    latitude
-		    longitude
-		    createdAt
 		  }
 		}
 	`,
@@ -29,13 +28,10 @@ export const MeetingQueries = {
 		    groupId
 		    name
 		    description
-		    area
 		    maxParticipation
 		    currentParticipation
 		    profile
 		    banner
-		    latitude
-		    longitude
 		    thirdPartyName
 		    createdAt
 		  }

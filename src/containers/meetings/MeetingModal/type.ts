@@ -1,9 +1,10 @@
 import {StaticImageData} from "next/image";
 
 export interface MeetingModalProps {
-	title: string;
-	location: string;
+	groupId: string;
+	name: string;
+	// location: string;
 	description: string;
-	bannerImage: string | StaticImageData;
-	profileImage: string;
+	banner: string | StaticImageData;
+	profile: string;
 }

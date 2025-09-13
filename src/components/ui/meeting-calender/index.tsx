@@ -12,7 +12,7 @@ import {MeetingQueries} from "@/services/meeting";
 
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
-export default function MeetingCalender({groupId}: { groupId: number }) {
+export default function MeetingCalender({groupId}: { groupId: string }) {
 	
 	const {data: meetingSchedule} = useQuery(MeetingQueries.GET_MEETING_SCHEDULE, {
 		variables: {

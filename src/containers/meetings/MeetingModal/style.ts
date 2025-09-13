@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import {colors, fontSizes, radius} from "@/styles/theme";
 import {mq} from "@/styles/media";
+import {bool} from "sharp";
 
 export const ModalContainer = styled.div`
   width: 60vw;
@@ -161,9 +162,9 @@ export const Nav = styled.div<{ isSelected: number }>`
     color: ${colors.primary};
   }
 `
-export const PBox = styled.div`
+export const PBox = styled.div<{isModal : boolean}>`
   padding: 1.5rem 5rem;
-  width: 33.3%;
+  width: ${(props) => props.isModal ? '50%' : '33.3%'};
   text-align: center;
 
   ${mq.mobile} {

@@ -7,8 +7,10 @@ import {useMutation} from "@apollo/client";
 import {MeetingMutations} from "@/services/meeting";
 import {useLoadingEffect} from "@/hooks/useLoading";
 import {useAlertStore} from "@/store/alert";
+import {useIsEnteringMeetingStore} from "@/store/isEnteringMeeting";
 
 export default function Accession({isAccession, setIsAccession, accessions}: AccessionProps) {
+	const {isEnteringMeeting, isSendRequest} = useIsEnteringMeetingStore()
 	const modalClose = () => {
 		setIsAccession(false)
 	}
@@ -16,7 +18,7 @@ export default function Accession({isAccession, setIsAccession, accessions}: Acc
 	const [mutate, {loading}] = useMutation(MeetingMutations.JOIN_MEETING_REQUEST, {
 		variables: {
 			groupJoinInput: {
-				groupId : accessions.id,
+				groupId : accessions.groupId,
 				requestMessage : ""
 			}
 		}
@@ -46,7 +48,11 @@ export default function Accession({isAccession, setIsAccession, accessions}: Acc
 			<S.Content onClick={(e) => e.stopPropagation()}>
 				<S.Container>
 					<S.Title>모임 가입</S.Title>
-					<S.Text>{accessions.title} 모임에 참여하시겠습니까?</S.Text>
+					<S.Text>
+						{isEnteringMeeting ? "현재 모임에 가입중이신데, 탈퇴하시고" : ""}
+						{isSendRequest ? "현재 다른 모임에 요청을 보내신 상태입니다. 이전에 보냈던 요청을 취소하시고 " : ""}
+						{accessions.name} 모임에 참여하시겠습니까?
+					</S.Text>
 					<S.ButtonContainer>
 						<S.CancelBtn onClick={modalClose} $width={"100%"}>
 							<S.Name>취소</S.Name>

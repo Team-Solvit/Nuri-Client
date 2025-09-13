@@ -3,7 +3,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
 	output: 'standalone',
 	images: {
-		domains: ["localhost", "*"],
+		remotePatterns: [
+			{
+				protocol: 'https',
+				hostname: '**', // 모든 호스트 허용
+			},
+		],
 	},
 	compiler: {
 		emotion: true
