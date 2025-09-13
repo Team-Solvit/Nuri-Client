@@ -57,7 +57,7 @@ const HouseScroll = () => {
 				</S.InfoRow>
 				<S.InfoRow>
 					<S.InfoLabel>성별</S.InfoLabel>
-					<S.InfoValue>{boardingHouse?.gender}</S.InfoValue>
+					<S.InfoValue>{boardingHouse?.gender === "ALL" ? "상관없음" : boardingHouse?.gender === "MALE" ? "남성전용" : "여성전용"}</S.InfoValue>
 				</S.InfoRow>
 				<S.InfoRow>
 					<S.InfoLabel>식사제공여부</S.InfoLabel>
@@ -84,7 +84,7 @@ const HouseScroll = () => {
 				{boardingHouseRoomsList?.map((room, idx) => (
 					<S.RoomCard key={idx}>
 						<S.RoomImage>
-							<Image src={room?.room?.boardingRoomFile?.[0]?.url ?? ""} alt={"profile"} fill
+							<Image src={process.env.NEXT_PUBLIC_IMAGE_URL ? process.env.NEXT_PUBLIC_IMAGE_URL + room?.room?.boardingRoomFile?.[0]?.url : ""} alt={"profile"} fill
 							       style={{objectFit: "cover"}}/>
 						</S.RoomImage>
 						<S.RoomHeader>
@@ -101,11 +101,11 @@ const HouseScroll = () => {
 									)
 								})
 								}
-								{!room.room?.roomId && (
+								{room.room?.status === "EMPTY_ROOM" && (
 									<S.UserId color="#8c8c8c">비어있음</S.UserId>
 								)}
 							</S.RoomInfo>
-							{room.room?.roomId && (
+							{room.room?.status !== "EMPTY_ROOM" && (
 								<Square text={"계약 종료"}
 								        onClick={() =>
 									        openModal(

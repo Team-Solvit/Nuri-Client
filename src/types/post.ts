@@ -62,12 +62,12 @@ export type BoardingRoom = {
 	monthlyRent?: number;
 	name: string;
 	roomId: string;
+	likeCount: number;
+	commentCount: number;
 };
 
 export type BoardingPost = {
 	__typename: "BoardingPost";
-	likeCount: number;
-	commentCount: number;
 	room: BoardingRoom;
 };
 

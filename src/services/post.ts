@@ -27,40 +27,22 @@ export const PostQueries = {
 			        room {
 			          roomId
 						    boardingHouse{
-							    houseId
 							    host {
-							       callNumber
                      user {
-                       id
 										    userId
 										    name
                      }
 							    }
-							    name
-							    location
 						    }
 						    name
 						    description
 						    monthlyRent
-						    headCount
 						    likeCount
-						    isLiked
 						    commentCount
-						    status
-						    boardingRoomOption{
-						       optionId
-								    roomId
-								    name
-						    }
 						    boardingRoomFile{
 						      fileId
 							    roomId
 							    url
-						    }
-						    contractPeriod{
-						      contractPeriodId
-							    roomId
-							    contractPeriod
 						    }
 						    day
 			        }

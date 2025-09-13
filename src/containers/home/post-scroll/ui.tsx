@@ -94,7 +94,7 @@ export default function PostScroll() {
 		if (loading || isFetchingMore) return;
 		if (observer.current) observer.current.disconnect();
 		observer.current = new IntersectionObserver(entries => {
-			if (entries[0].isIntersecting) {
+			if (entries[0].isIntersecting && posts && posts?.length > 10 ) {
 				loadMore();
 			}
 		});
@@ -103,6 +103,7 @@ export default function PostScroll() {
 
 	return (
 		<S.PostScrollContainer>
+			{!loading && posts?.length === 0 && <p>생성된 게시물이 없습니다.</p>}
 			{posts && posts.map((post, index) => {
 				const postItem = post.postInfo;
 				let id: string | null = null;
@@ -131,8 +132,8 @@ export default function PostScroll() {
 				} else if (postItem.__typename === "BoardingPost") {
 					id = postItem.room.roomId;
 					title = postItem.room.name;
-					commentCount = postItem.commentCount;
-					likeCount = postItem.likeCount;
+					commentCount = postItem.room.commentCount;
+					likeCount = postItem.room.likeCount;
 					desc = postItem.room.description || null;
 					thumbnail = postItem.room.boardingRoomFile.map(f => f.url);
 					price = postItem.room.monthlyRent?.toLocaleString() || null;
