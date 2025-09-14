@@ -10,14 +10,12 @@ export interface ChangeProfileRequest {
   profile: string;
 }
 
-export interface FollowUserInfo {
+export interface FollowUserInfoResponseDto {
   id: string;
   userId: string;
-  profile?: string;
+  profile: string;
 }
 
-export interface FollowerUserInfo {
-  id: string;
-  userId: string;
-  profile?: string;
-}
+// 기존 인터페이스들을 새로운 타입으로 alias
+export type FollowUserInfo = FollowUserInfoResponseDto;
+export type FollowerUserInfo = FollowUserInfoResponseDto;

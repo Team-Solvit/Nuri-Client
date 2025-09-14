@@ -3,7 +3,7 @@ import * as S from './style';
 import Image from 'next/image';
 import Square from '../button/square';
 import { useQuery } from '@apollo/client';
-import { ProfileGQL } from '../../../../../Nuri_Web/src/services/profile';
+import { ProfileGQL } from '@/services/profile';
 import { FollowerUserInfo } from '@/types/profile';
 
 interface FollowerListProps {
@@ -45,7 +45,7 @@ export default function FollowerList({ onClose, userId }: FollowerListProps) {
             {followers.map((f: FollowerUserInfo) => (
               <S.Item key={f.id}>
                 <S.ProfileImg>
-                  <Image src={f.profile || '/profile/profile.svg'} alt="프로필" width={55} height={55} />
+                  <Image src={f.profile} alt="프로필" width={55} height={55} />
                 </S.ProfileImg>
                 <S.Info>
                   <S.Username>{f.userId}</S.Username>

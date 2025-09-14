@@ -77,10 +77,25 @@ export const typeDefs = gql`
     getUserProfile(userId: String!): UserProfileResponseDto!
   }
 
+  # --- SMS 인증 관련 타입 ---
+  type SendSmsResponse {
+    success: Boolean!
+    message: String!
+    verificationCode: String
+  }
+
+  type VerifyPhoneResponse {
+    success: Boolean!
+    message: String!
+    isVerified: Boolean!
+  }
+
   # --- Mutation ---
   type Mutation {
     follow(userId: String!): Boolean
     unfollow(userId: String!): Boolean
     changeProfile(profile: String!): Boolean!
+    sendSms(phoneNumber: String!): SendSmsResponse!
+    verifyPhone(phoneNumber: String!, verificationCode: String!): VerifyPhoneResponse!
   }
 `;

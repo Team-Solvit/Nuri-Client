@@ -1,5 +1,5 @@
 import { gql, ApolloClient } from '@apollo/client';
-import { UserProfileResponseDto, ChangeProfileRequest, FollowUserInfo, FollowerUserInfo } from '@/types/profile';
+import { UserProfileResponseDto, ChangeProfileRequest, FollowUserInfoResponseDto, FollowUserInfo, FollowerUserInfo } from '@/types/profile';
 
 export const ProfileGQL = {
   QUERIES: {
@@ -70,7 +70,7 @@ export const changeProfile = async (client: ApolloClient<any>, profile: string):
   return data.changeProfile;
 };
 
-export const getFollowers = async (client: ApolloClient<any>, userId: string): Promise<FollowerUserInfo[]> => {
+export const getFollowers = async (client: ApolloClient<any>, userId: string): Promise<FollowUserInfoResponseDto[]> => {
   const { data } = await client.query({
     query: ProfileGQL.QUERIES.GET_FOLLOWERS,
     variables: { userId },
@@ -79,7 +79,7 @@ export const getFollowers = async (client: ApolloClient<any>, userId: string): P
   return data.getFollowerInfo;
 };
 
-export const getFollowing = async (client: ApolloClient<any>, userId: string): Promise<FollowUserInfo[]> => {
+export const getFollowing = async (client: ApolloClient<any>, userId: string): Promise<FollowUserInfoResponseDto[]> => {
   const { data } = await client.query({
     query: ProfileGQL.QUERIES.GET_FOLLOWING,
     variables: { userId },

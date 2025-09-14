@@ -3,7 +3,7 @@ import * as S from './style';
 import Image from 'next/image';
 import Square from '../button/square';
 import { useQuery, useMutation } from '@apollo/client';
-import { ProfileGQL } from '../../../../../Nuri_Web/src/services/profile';
+import { ProfileGQL } from '@/services/profile';
 import { FollowUserInfo } from '@/types/profile';
 
 interface FollowProps {
@@ -70,7 +70,7 @@ export default function Follow({ onClose, userId }: FollowProps) {
                         {filtered.map((f: FollowUserInfo) => (
                             <S.Item key={f.id}>
                                 <S.ProfileImg>
-                                    <Image src={f.profile || '/profile/profile.svg'} alt='프로필' width={55} height={55} />
+                                    <Image src={f.profile} alt='프로필' width={55} height={55} />
                                 </S.ProfileImg>
                                 <S.Info>
                                     <S.Username>{f.userId}</S.Username>
