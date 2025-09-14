@@ -50,8 +50,8 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
 
     const extractHashTags = (text: string): { hashtags: string[], cleanedContent: string } => {
         const hashtagRegex = /#([^\s#]+)/g;
-        const matches = [...text.matchAll(hashtagRegex)];
-        const hashtags = matches.map(match => match[1]);
+        const matches = [...text.matchAll(hashtagRegex)].map(m => m[1]);
+        const hashtags = Array.from(new Set(matches));
 
         const cleanedContent = text.replace(hashtagRegex, '').trim();
 

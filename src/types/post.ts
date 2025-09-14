@@ -6,12 +6,7 @@ export enum ShareRange {
   }
   
   export interface PostCreateInput {
-    postInfo: {
-      title: string;
-      contents: string;
-      shareRange: ShareRange;
-      isGroup: boolean;
-    };
+    postInfo: PostInfo;
     files: string[];
     hashTags: string[];
   }
