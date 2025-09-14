@@ -87,7 +87,29 @@ export interface CreateBoardingHouseType {
 		headCount: number
 		description: string
 	}
+	roomId ?: string
 	files : string[]
 	contractPeriod : number[]
 	options:string[]
+}
+
+export interface GetBoardingRoomByRoomId{
+	roomId : string
+	name : string
+	description : string
+	monthlyRent : number
+	headCount : number
+	boardingRoomOption :{
+		optionId : string
+		name : string
+	}[]
+boardingRoomFile  : {
+	fileId : string
+	url : string
+}[]
+contractPeriod : {
+	contractPeriodId : string
+	contractPeriod : number
+}[]
+day : string
 }

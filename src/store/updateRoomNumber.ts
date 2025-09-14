@@ -1,11 +1,17 @@
-import {create} from 'zustand';
+import { create } from 'zustand';
 
 interface UpdateRoomNumber {
-	roomNumber: number | null
-	setRoomNumber: (roomNumber: number) => void
+	roomNumber: string | null;
+	setRoomNumber: (roomNumber: string) => void;
+	
+	refetch: (() => void) | null;
+	setRefetch: (fn: () => void) => void;
 }
 
 export const useUpdateRoomNumber = create<UpdateRoomNumber>((set) => ({
-	roomNumber : null,
-	setRoomNumber: (num: number) => set({roomNumber: num}),
+	roomNumber: null,
+	setRoomNumber: (num: string) => set({ roomNumber: num }),
+	
+	refetch: null,
+	setRefetch: (fn: () => void) => set({ refetch: fn }),
 }));

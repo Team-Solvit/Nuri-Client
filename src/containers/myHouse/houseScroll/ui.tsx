@@ -11,6 +11,7 @@ import LeaveModal from "@/containers/myHouse/leave-modal/ui";
 import {useQuery} from "@apollo/client";
 import {BoardingHouseQueries} from "@/services/boardingHouse";
 import {BoardingHouseType, BoardingRoomAndBoardersType} from "@/types/boardinghouse";
+import {useUpdateRoomNumber} from "@/store/updateRoomNumber";
 
 const HouseScroll = () => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -33,12 +34,23 @@ const HouseScroll = () => {
 		setLeaveInfo(newBoarders)
 	}
 	const {data: boardingHouseInfo} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_INFO);
-	const {data: boardingHouseRooms} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOMS);
+	const {data: boardingHouseRooms, refetch} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOMS);
 	
 	const boardingHouse: BoardingHouseType = boardingHouseInfo?.getMyBoardingHouse;
 	const boardingHouseRoomsList: BoardingRoomAndBoardersType[] = boardingHouseRooms?.getBoardingRoomAndBoardersInfoList;
 	
+	const {setRoomNumber, setRefetch} = useUpdateRoomNumber()
 	const [roomId, setRoomId] = useState<string>("");
+	const handleRoomAdd = () => {
+		navigate("/myHouse/addition")
+		setRefetch(refetch)
+		setRoomNumber("")
+	}
+	const handleModifyRoom = (roomId: string) => {
+		navigate(`/myHouse/addition`)
+		setRoomNumber(roomId)
+		setRefetch(refetch)
+	}
 	return (
 		<S.Container>
 			{leaveInfo && <LeaveModal boarders={leaveInfo} roomId={roomId}/>}
@@ -78,11 +90,14 @@ const HouseScroll = () => {
 			<S.More onClick={() => setIsOpen(!isOpen)}>{isOpen ? "숨기기" : "더보기"}</S.More>
 			<S.RoomInfoContainer>
 				<S.RoomInfoTitle>방 정보</S.RoomInfoTitle>
-				<Square text='방추가' status={true} width='100px' onClick={() => navigate("/myHouse/addition")}/>
+				<Square text='방추가' status={true} width='100px' onClick={handleRoomAdd}/>
 			</S.RoomInfoContainer>
 			<S.RoomList>
 				{boardingHouseRoomsList?.map((room, idx) => (
-					<S.RoomCard key={idx}>
+					<S.RoomCard
+						onClick={()=>handleModifyRoom(room.room?.roomId ?? "")}
+						key={idx}
+					>
 						<S.RoomImage>
 							<Image src={process.env.NEXT_PUBLIC_IMAGE_URL ? process.env.NEXT_PUBLIC_IMAGE_URL + room?.room?.boardingRoomFile?.[0]?.url : ""} alt={"profile"} fill
 							       style={{objectFit: "cover"}}/>

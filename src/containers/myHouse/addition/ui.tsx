@@ -1,16 +1,15 @@
 "use client"
-import React, { useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import * as S from './style';
 import Circle from '@/components/ui/button/circle';
 import Square from '@/components/ui/button/square';
 import {DEFAULT_CONTRACT_OPTIONS, FACILITY_CATEGORIES} from "./data"
-import {useParams} from 'next/navigation';
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import {useAlertStore} from "@/store/alert";
 import {useQuery} from "@apollo/client";
 import {BoardingHouseQueries, BoardingHouseService} from "@/services/boardingHouse";
 import {useApollo} from "@/lib/apolloClient";
-import {CreateBoardingHouseType} from "@/types/boardinghouse";
+import {CreateBoardingHouseType, GetBoardingRoomByRoomId} from "@/types/boardinghouse";
 import {useFileUpload} from "@/hooks/useFileUpload";
 import {useLoadingEffect} from "@/hooks/useLoading";
 import {useUpdateRoomNumber} from "@/store/updateRoomNumber";
@@ -25,6 +24,8 @@ export default function Addition(){
 	const [images, setImages] = useState<string[]>([]);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const { upload, loading } = useFileUpload();
+	const [monthlyRent, setMonthlyRent] = useState('');
+	const [headCount, setHeadCount] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
 	useLoadingEffect(loading || isLoading)
 	
@@ -93,15 +94,48 @@ export default function Addition(){
 
 	const { error, success } = useAlertStore();
 	
-	const {roomNumber : roomId} = useUpdateRoomNumber();
+	const {roomNumber : roomId, refetch} = useUpdateRoomNumber();
 	const {data} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOM_INFO, {
 		variables: {
 			roomId: roomId
 		},
 		skip: !roomId
 	});
+	function convertToContractString(periods: number[]): string[] {
+		return periods.map((num) => {
+			if (num % 12 === 0) {
+				return `${num / 12}년`;
+			}
+			return `${num}개월`;
+		});
+	}
 	
-	console.log(data)
+	useEffect(() => {
+		setName("");
+		setDescription("");
+		setMonthlyRent("");
+		setHeadCount("");
+		setSelectedFacilities([]);
+		setSelectedContracts([]);
+		setImages([]);
+		setYearInput("");
+		setMonthInput("");
+		setContractOptions(DEFAULT_CONTRACT_OPTIONS);
+	}, []);
+	useEffect(() => {
+		setImages([]);
+		if(data?.getBoardingRoom){
+			const roomInfo: GetBoardingRoomByRoomId = data.getBoardingRoom;
+			setName(roomInfo?.name);
+			setDescription(roomInfo?.description);
+			setMonthlyRent(roomInfo?.monthlyRent.toString());
+			setHeadCount(roomInfo?.headCount.toString());
+			setSelectedFacilities(roomInfo?.boardingRoomOption?.map((item) => item.name) || []);
+			setSelectedContracts(convertToContractString(roomInfo?.contractPeriod.map(item=>item.contractPeriod)));
+			setImages(roomInfo?.boardingRoomFile.map((file) => file.url));
+		}
+	}, [data?.getBoardingRoom]);
+	
 	const client = useApollo();
 	const checkValue = async () => {
 		
@@ -121,8 +155,8 @@ export default function Addition(){
 		const roomInput : CreateBoardingHouseType = {
 			boardingRoomInfo :{
 				name,
-				monthlyRent: 0,
-				headCount: 0,
+				monthlyRent: Number(monthlyRent),
+				headCount: Number(headCount),
 				description:description
 			},
 			files : images,
@@ -130,13 +164,13 @@ export default function Addition(){
 			options:selectedFacilities
 		}
 		try {
-			if (roomId) {
+			if (roomId && refetch) {
 				// 방 수정
 				const result = await BoardingHouseService.patchBoardingRoom(client, {
-					roomId,
-					...roomInput
+					...roomInput, roomId: roomId
 				});
 				success("방 수정 성공");
+				refetch();
 				console.log(result);
 				navigate("/myHouse");
 			} else {
@@ -145,6 +179,7 @@ export default function Addition(){
 				success("방 생성 성공");
 				navigate("/myHouse");
 				console.log(result);
+				if(refetch) refetch()
 			}
 		} catch (e) {
 			console.error(e);
@@ -153,13 +188,15 @@ export default function Addition(){
 			setIsLoading(false)
 		}
 	};
+	console.log(selectedFacilities)
+	console.log(selectedContracts)
 	return (
 		<S.Container style={{ position: 'relative' }}>
 			<S.Title>방추가</S.Title>
 			<S.Section>
 				<S.Label>사진 추가</S.Label>
 				<S.PhotoUploadList>
-					{images.map((img, idx) => (
+					{images?.map((img, idx) => (
 						<S.PhotoThumb key={idx} onClick={() => handleRemoveImage(idx)} style={{ cursor: 'pointer' }}>
 							<img src={process.env.NEXT_PUBLIC_IMAGE_URL + img} alt={`추가된 사진${idx + 1}`} />
 						</S.PhotoThumb>
@@ -201,14 +238,28 @@ export default function Addition(){
 					<S.Label>가격</S.Label>
 					<div className="input-row">
 						<span className="addon">₩</span>
-						<input placeholder="가격을 입력해 주세요" />
+						<input
+							type={"number"}
+							min={0}
+							max={1000000000}
+							value={monthlyRent}
+							onChange={(e) => setMonthlyRent(e.target.value.replace(/[^0-9]/g, ''))} 
+							placeholder="가격을 입력해 주세요" 
+						/>
 						<span className="addon">/ 월</span>
 					</div>
 				</S.InputWithAddonRow>
 				<S.InputWithAddonRow>
 					<S.Label>인원수</S.Label>
 					<div className="input-row">
-						<input placeholder="인원수를 입력해 주세요" />
+						<input 
+							value={headCount}
+							type={"number"}
+							min={0}
+							max={100}
+							onChange={(e) => setHeadCount(e.target.value.replace(/[^0-9]/g, ''))} 
+							placeholder="인원수를 입력해 주세요" 
+						/>
 						<span className="addon">/ 인실</span>
 					</div>
 				</S.InputWithAddonRow>
@@ -269,7 +320,7 @@ export default function Addition(){
 											type="checkbox"
 											id={`item-${idx}-${i}`}
 											style={{ marginRight: 6 }}
-											checked={selectedFacilities.includes(item)}
+											checked={selectedFacilities?.includes(item)}
 											onChange={(e) => handleFacilityChange(item, e.target.checked)}
 										/>
 										<label htmlFor={`item-${idx}-${i}`}>{item}</label>

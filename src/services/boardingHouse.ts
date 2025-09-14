@@ -101,10 +101,10 @@ export const BoardingHouseMutations = {
 		}
 	`,
 	PATCH_BOARDING_ROOM: gql`
-		mutation PatchBoardingRoom($roomId: String!, $input: PatchBoardingRoomRequest!) {
-		  patchBoardingRoom(roomId: $roomId, patchBoardingRoomInput: $input)
-		}
-	`,
+	mutation updateBoardingRoom($boardingRoomUpdateInput: BoardingRoomUpdateInput!) {
+	  updateBoardingRoom(boardingRoomUpdateInput: $boardingRoomUpdateInput)
+	}
+`,
 };
 
 export const BoardingHouseService = {
@@ -143,12 +143,12 @@ export const BoardingHouseService = {
 	
 	patchBoardingRoom: async (
 		client: ApolloClient<any>,
-		input: CreateBoardingHouseType & { roomId: string }
+		input: CreateBoardingHouseType
 	): Promise<string> => {
-		const {data} = await client.mutate<{ patchBoardingRoom: string }>({
+		const { data } = await client.mutate<{ updateBoardingRoom: string }>({
 			mutation: BoardingHouseMutations.PATCH_BOARDING_ROOM,
-			variables: {input},
+			variables: { boardingRoomUpdateInput: input },
 		});
-		return data?.patchBoardingRoom ?? "";
+		return data?.updateBoardingRoom ?? "";
 	},
 };

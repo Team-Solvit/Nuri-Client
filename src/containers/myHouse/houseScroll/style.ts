@@ -116,7 +116,11 @@ export const RoomCard = styled.div`
   border: 1px solid ${colors.line};
   width: 100%;
   padding: 16px;
-
+	transition: all 0.2s ease-in-out;
+	cursor: pointer;
+	&:hover{
+		background: ${colors.line2};
+	}
   ${mq.mobile} {
     padding: 0;
   }
