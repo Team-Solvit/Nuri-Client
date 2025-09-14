@@ -20,6 +20,7 @@ import { useAlertStore } from '@/store/alert';
 import { useModalStore } from '@/store/modal';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import Modal from '@/components/layout/modal';
+import { getFacilityIcon } from '@/utils/facilityIcons';
 
 interface PostDetailProps { id: string; isModal?: boolean; }
 
@@ -72,8 +73,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
 
     try {
       setCommentsLoading(true);
-      const postId = postInfo.__typename === 'SnsPost' ? postInfo.postId : postInfo.room.roomId;
-      const commentList = await PostDetailService.getComments(client, postId);
+      const commentList = await PostDetailService.getPostComments(client, postInfo);
       setComments(commentList);
     } catch (error) {
       console.error('댓글 로드 실패:', error);
@@ -130,8 +130,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
     if (!commentText.trim() || !postInfo) return;
 
     try {
-      const postId = postInfo.__typename === 'SnsPost' ? postInfo.postId : postInfo.room.roomId;
-      await PostDetailService.createComment(client, postId, commentText);
+      await PostDetailService.createPostComment(client, postInfo, commentText);
       setCommentText('');
       await loadComments();
       success('댓글이 작성되었습니다.');
@@ -157,7 +156,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
     if (!editingCommentId || !editingText.trim()) return;
 
     try {
-      await PostDetailService.updateComment(client, editingCommentId, editingText);
+      await PostDetailService.updatePostComment(client, postInfo!, editingCommentId, editingText);
       setEditingCommentId(null);
       setEditingText('');
       await loadComments();
@@ -182,7 +181,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
     if (!commentToDelete) return;
 
     try {
-      await PostDetailService.deleteComment(client, commentToDelete);
+      await PostDetailService.deletePostComment(client, postInfo!, commentToDelete);
       await loadComments();
       success('댓글이 삭제되었습니다.');
     } catch (err) {
@@ -270,20 +269,6 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
     setNewImages(prev => prev.filter((_, i) => i !== index));
   };
 
-  const parseContentWithHashtags = (content: string) => {
-    const parts = content.split(/(#[^\s#]+)/g);
-    return parts.map((part, index) => {
-      if (part.startsWith('#') && part.length > 1) {
-        return (
-          <span key={index} style={{ color: '#007AFF', fontWeight: '500' }}>
-            {part}
-          </span>
-        );
-      }
-      return part;
-    });
-  };
-
   const deletePost = () => {
     if (!postInfo) return;
     const postId = postInfo.__typename === 'SnsPost' ? postInfo.postId : postInfo.room.roomId;
@@ -316,16 +301,12 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
     if (!postInfo) return;
 
     try {
-      const postId = postInfo.__typename === 'SnsPost'
-        ? postInfo.postId
-        : postInfo.room.roomId;
-
+      await PostDetailService.toggleLike(client, postInfo, isLiked);
+      
       if (isLiked) {
-        await PostDetailService.unlikePost(client, postId);
         setLikeCount(prev => prev - 1);
         setIsLiked(false);
       } else {
-        await PostDetailService.likePost(client, postId);
         setLikeCount(prev => prev + 1);
         setIsLiked(true);
       }
@@ -484,19 +465,37 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
               <S.RightDivider />
               <S.RightLabel>시설</S.RightLabel>
               <S.RightFacilityGrid>
-                {options.map(opt => (
-                  <S.RightFacility key={opt.optionId}>
-                    <S.RightFacilityIcon>
-                      <Image src={`/icons/${opt.name === '침대' ? 'bed' : opt.name === '책상' ? 'cabinet' : 'home'}.svg`} alt={opt.name} width={32} height={32} />
-                    </S.RightFacilityIcon>
-                    <S.RightFacilityText>{opt.name}</S.RightFacilityText>
-                  </S.RightFacility>
-                ))}
+                {options.map(opt => {
+                  const iconName = getFacilityIcon(opt.name);
+                  return (
+                    <S.RightFacility key={opt.optionId}>
+                      {iconName && (
+                        <S.RightFacilityIcon>
+                          <Image 
+                            src={`/icons/post-detail/${iconName}.svg`} 
+                            alt={opt.name} 
+                            width={32} 
+                            height={32} 
+                          />
+                        </S.RightFacilityIcon>
+                      )}
+                      <S.RightFacilityText>{opt.name}</S.RightFacilityText>
+                    </S.RightFacility>
+                  );
+                })}
               </S.RightFacilityGrid>
             </>
           ) : (
             <>
-              <S.RightTopRow><S.RightPeriodTags /></S.RightTopRow>
+              <S.RightTopRow>
+                <S.RightPeriodTags>
+                  {postInfo.__typename === 'SnsPost' && postInfo.hashTags && postInfo.hashTags.length > 0 && 
+                    postInfo.hashTags.map(tag => (
+                      <S.RightPeriodTag key={tag}>#{tag}</S.RightPeriodTag>
+                    ))
+                  }
+                </S.RightPeriodTags>
+              </S.RightTopRow>
               <S.RightSub>{date}</S.RightSub>
               {isEditingPost && postInfo.__typename === 'SnsPost' ? (
                 <S.EditPostContainer>
@@ -564,7 +563,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
                   </S.EditPostButtons>
                 </S.EditPostContainer>
               ) : (
-                <S.RightDesc>{parseContentWithHashtags(desc)}</S.RightDesc>
+                <S.RightDesc>{desc}</S.RightDesc>
               )}
             </>
           )}

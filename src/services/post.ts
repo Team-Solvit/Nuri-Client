@@ -28,13 +28,20 @@ export const PostQueries = {
 		          roomId
 		          name
 		          description
+		          monthlyRent
 		          day
 		          headCount
-		          monthlyRent
-		          status
 		          likeCount
-		          commentCount
 		          isLiked
+		          commentCount
+		          boardingHouse {
+		            host {
+		                user {
+			                profile
+			                userId
+		                }
+		            }
+		          }
 		          boardingRoomFile {
 		            roomId
 		            fileId
@@ -44,19 +51,6 @@ export const PostQueries = {
 		            contractPeriod
 		            roomId
 		            contractPeriodId
-		          }
-		          boardingHouse {
-		            location
-		            nearestStation
-		            nearestSchool
-		            gender
-		            isMealProvided
-		            host {
-		              user {
-		                profile
-		                userId
-		              }
-		            }
 		          }
 		        }
 		      }

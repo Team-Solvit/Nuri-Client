@@ -7,6 +7,7 @@ export type SnsPostDetail = {
   likeCount: number;
   isLiked: boolean;
   commentCount: number;
+  hashTags: string[];
   author: { userId: string; profile: string | null };
   files: { fileId: string; url: string }[];
 };

@@ -17,6 +17,7 @@ export const PostDetailGQL = {
             likeCount
             isLiked
             commentCount
+            hashTags
             author { userId profile }
             files { fileId url }
           }
@@ -52,8 +53,50 @@ export const PostDetailGQL = {
       }
     }
   `,
+    // 댓글 조회 쿼리들을 QUERIES로 이동
+    GET_POST_COMMENT_LIST: gql`
+      query GetPostCommentList($start: Int!, $postId: String!) {
+        getPostCommentList(
+          postCommentListReadInput: {
+            start: $start
+            postId: $postId
+          }
+        ) {
+          commentId
+          commenter {
+            id
+            name
+            userId
+            profile
+          }
+          content
+          postId
+        }
+      }
+    `,
+    GET_BOARDING_ROOM_COMMENT_LIST: gql`
+      query GetBoardingRoomCommentList($start: Int!, $roomId: String!) {
+        getBoardingRoomCommentList(
+          boardingRoomCommentListReadInput: {
+            start: $start
+            roomId: $roomId
+          }
+        ) {
+          commentId
+          content
+          roomId
+          commenter {
+            userId
+            id
+            name
+            profile
+          }
+        }
+      }
+    `
   },
   MUTATIONS: {
+    // 일반 게시물용
     LIKE_POST: gql`
       mutation LikePost($postId: String!) {
         likePost(postId: $postId)
@@ -64,6 +107,18 @@ export const PostDetailGQL = {
         unlikePost(postId: $postId)
       }
     `,
+    // 하숙방용
+    LIKE_ROOM: gql`
+      mutation LikeRoom($roomId: String!) {
+        likeRoom(roomId: $roomId)
+      }
+    `,
+    UNLIKE_ROOM: gql`
+      mutation UnlikeRoom($roomId: String!) {
+        unlikeRoom(roomId: $roomId)
+      }
+    `,
+    // 일반 게시물 댓글
     CREATE_POST_COMMENT: gql`
       mutation CreatePostComment($postId: String!, $contents: String!) {
         createPostComment(
@@ -89,6 +144,33 @@ export const PostDetailGQL = {
         deletePostComment(commentId: $commentId)
       }
     `,
+    // 하숙방 댓글
+    CREATE_BOARDING_ROOM_COMMENT: gql`
+      mutation CreateBoardingRoomComment($roomId: String!, $contents: String!) {
+        createBoardingRoomComment(
+          boardingRoomCommentCreateInput: {
+            roomId: $roomId
+            contents: $contents
+          }
+        )
+      }
+    `,
+    UPDATE_BOARDING_ROOM_COMMENT: gql`
+      mutation UpdateBoardingRoomComment($commentId: String!, $content: String!) {
+        updateBoardingRoomComment(
+          boardingRoomCommentUpdateInput: {
+            commentId: $commentId
+            content: $content
+          }
+        )
+      }
+    `,
+    DELETE_BOARDING_ROOM_COMMENT: gql`
+      mutation DeleteBoardingRoomComment($commentId: String!) {
+        deleteBoardingRoomComment(commentId: $commentId)
+      }
+    `,
+    // 일반 게시물 수정/삭제 (하숙방은 수정 불가)
     UPDATE_POST: gql`
       mutation UpdatePost($postUpdateInput: PostUpdateInput!) {
         updatePost(postUpdateInput: $postUpdateInput)
@@ -97,26 +179,6 @@ export const PostDetailGQL = {
     DELETE_POST: gql`
       mutation DeletePost($postId: String!) {
         deletePost(postId: $postId)
-      }
-    `,
-    GET_POST_COMMENT_LIST: gql`
-      query GetPostCommentList($start: Int!, $postId: String!) {
-        getPostCommentList(
-          postCommentListReadInput: {
-            start: $start
-            postId: $postId
-          }
-        ) {
-          commentId
-          commenter {
-            id
-            name
-            userId
-            profile
-          }
-          content
-          postId
-        }
       }
     `
   }
@@ -173,10 +235,37 @@ export const PostDetailService = {
     }
   },
 
+  // 하숙방 좋아요 관련
+  likeRoom: async (client: ApolloClient<any>, roomId: string): Promise<boolean> => {
+    try {
+      const { data } = await client.mutate({
+        mutation: PostDetailGQL.MUTATIONS.LIKE_ROOM,
+        variables: { roomId }
+      });
+      return !!data?.likeRoom;
+    } catch (error) {
+      console.error('하숙방 좋아요 처리 오류:', error);
+      throw error;
+    }
+  },
+
+  unlikeRoom: async (client: ApolloClient<any>, roomId: string): Promise<boolean> => {
+    try {
+      const { data } = await client.mutate({
+        mutation: PostDetailGQL.MUTATIONS.UNLIKE_ROOM,
+        variables: { roomId }
+      });
+      return !!data?.unlikeRoom;
+    } catch (error) {
+      console.error('하숙방 좋아요 취소 처리 오류:', error);
+      throw error;
+    }
+  },
+
   getComments: async (client: ApolloClient<any>, postId: string, start: number = 0) => {
     try {
       const { data } = await client.query({
-        query: PostDetailGQL.MUTATIONS.GET_POST_COMMENT_LIST,
+        query: PostDetailGQL.QUERIES.GET_POST_COMMENT_LIST,
         variables: { start, postId },
         fetchPolicy: 'no-cache'
       });
@@ -226,6 +315,61 @@ export const PostDetailService = {
     }
   },
 
+  // 하숙방 댓글 관련
+  getRoomComments: async (client: ApolloClient<any>, roomId: string, start: number = 0) => {
+    try {
+      const { data } = await client.query({
+        query: PostDetailGQL.QUERIES.GET_BOARDING_ROOM_COMMENT_LIST,
+        variables: { start, roomId },
+        fetchPolicy: 'no-cache'
+      });
+      return data?.getBoardingRoomCommentList || [];
+    } catch (error) {
+      console.error('하숙방 댓글 조회 오류:', error);
+      throw error;
+    }
+  },
+
+  createRoomComment: async (client: ApolloClient<any>, roomId: string, contents: string): Promise<string> => {
+    try {
+      const { data } = await client.mutate({
+        mutation: PostDetailGQL.MUTATIONS.CREATE_BOARDING_ROOM_COMMENT,
+        variables: { roomId, contents }
+      });
+      return data?.createBoardingRoomComment || '';
+    } catch (error) {
+      console.error('하숙방 댓글 작성 오류:', error);
+      throw error;
+    }
+  },
+
+  updateRoomComment: async (client: ApolloClient<any>, commentId: string, content: string): Promise<string> => {
+    try {
+      const { data } = await client.mutate({
+        mutation: PostDetailGQL.MUTATIONS.UPDATE_BOARDING_ROOM_COMMENT,
+        variables: { commentId, content }
+      });
+      return data?.updateBoardingRoomComment || '';
+    } catch (error) {
+      console.error('하숙방 댓글 수정 오류:', error);
+      throw error;
+    }
+  },
+
+  deleteRoomComment: async (client: ApolloClient<any>, commentId: string): Promise<string> => {
+    try {
+      const { data } = await client.mutate({
+        mutation: PostDetailGQL.MUTATIONS.DELETE_BOARDING_ROOM_COMMENT,
+        variables: { commentId }
+      });
+      return data?.deleteBoardingRoomComment || '';
+    } catch (error) {
+      console.error('하숙방 댓글 삭제 오류:', error);
+      throw error;
+    }
+  },
+
+  // 일반 게시물 수정/삭제 (하숙방은 수정 불가)
   updatePost: async (client: ApolloClient<any>, postUpdateInput: any): Promise<string> => {
     try {
       const { data } = await client.mutate({
@@ -250,5 +394,61 @@ export const PostDetailService = {
       console.error('게시물 삭제 오류:', error);
       throw error;
     }
+  },
+
+  // 통합 함수들 - 게시물 타입에 따라 자동으로 적절한 함수 호출
+  toggleLike: async (client: ApolloClient<any>, post: PostDetailUnion, isLiked: boolean): Promise<boolean> => {
+    if (post.__typename === 'SnsPost') {
+      const snsPost = post as SnsPostDetail;
+      return isLiked 
+        ? await PostDetailService.unlikePost(client, snsPost.postId)
+        : await PostDetailService.likePost(client, snsPost.postId);
+    } else if (post.__typename === 'BoardingPost') {
+      const boardingPost = post as BoardingPostDetail;
+      return isLiked 
+        ? await PostDetailService.unlikeRoom(client, boardingPost.room.roomId)
+        : await PostDetailService.likeRoom(client, boardingPost.room.roomId);
+    }
+    throw new Error('지원하지 않는 게시물 타입입니다.');
+  },
+
+  getPostComments: async (client: ApolloClient<any>, post: PostDetailUnion, start: number = 0) => {
+    if (post.__typename === 'SnsPost') {
+      const snsPost = post as SnsPostDetail;
+      return await PostDetailService.getComments(client, snsPost.postId, start);
+    } else if (post.__typename === 'BoardingPost') {
+      const boardingPost = post as BoardingPostDetail;
+      return await PostDetailService.getRoomComments(client, boardingPost.room.roomId, start);
+    }
+    throw new Error('지원하지 않는 게시물 타입입니다.');
+  },
+
+  createPostComment: async (client: ApolloClient<any>, post: PostDetailUnion, contents: string): Promise<string> => {
+    if (post.__typename === 'SnsPost') {
+      const snsPost = post as SnsPostDetail;
+      return await PostDetailService.createComment(client, snsPost.postId, contents);
+    } else if (post.__typename === 'BoardingPost') {
+      const boardingPost = post as BoardingPostDetail;
+      return await PostDetailService.createRoomComment(client, boardingPost.room.roomId, contents);
+    }
+    throw new Error('지원하지 않는 게시물 타입입니다.');
+  },
+
+  updatePostComment: async (client: ApolloClient<any>, post: PostDetailUnion, commentId: string, content: string): Promise<string> => {
+    if (post.__typename === 'SnsPost') {
+      return await PostDetailService.updateComment(client, commentId, content);
+    } else if (post.__typename === 'BoardingPost') {
+      return await PostDetailService.updateRoomComment(client, commentId, content);
+    }
+    throw new Error('지원하지 않는 게시물 타입입니다.');
+  },
+
+  deletePostComment: async (client: ApolloClient<any>, post: PostDetailUnion, commentId: string): Promise<string> => {
+    if (post.__typename === 'SnsPost') {
+      return await PostDetailService.deleteComment(client, commentId);
+    } else if (post.__typename === 'BoardingPost') {
+      return await PostDetailService.deleteRoomComment(client, commentId);
+    }
+    throw new Error('지원하지 않는 게시물 타입입니다.');
   }
 };
