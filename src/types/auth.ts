@@ -3,10 +3,6 @@ export interface UserAgreement {
   agreedTermsOfService: boolean;          // !
   agreedPrivacyCollection: boolean;       // !
   agreedPrivacyThirdParty: boolean;       // !
-  agreedIdentityAgencyTerms: boolean;     // !
-  agreedIdentityPrivacyDelegate: boolean; // !
-  agreedIdentityUniqueInfo: boolean;      // !
-  agreedIdentityProviderTerms: boolean;   // !
 }
 
 export interface LocalLoginInput {
