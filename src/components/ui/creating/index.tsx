@@ -52,12 +52,12 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
         const hashtagRegex = /#([^\s#]+)/g;
         const matches = [...text.matchAll(hashtagRegex)];
         const hashtags = matches.map(match => match[1]);
-        
+
         const cleanedContent = text.replace(hashtagRegex, '').trim();
-        
+
         return { hashtags, cleanedContent };
     };
-    
+
 
     // 게시물 생성
     const handleSubmit = async () => {
@@ -83,7 +83,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
             }
 
             const uploadResult = await imageService.upload(imageFiles);
-            
+
             const imageUrls = uploadResult.data?.files || uploadResult.files || uploadResult.urls || uploadResult || [];
 
             const { hashtags, cleanedContent } = extractHashTags(content);
@@ -181,13 +181,13 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                     <S.HeaderM>
                         <S.Title>새 게시물 만들기</S.Title>
                         <button onClick={onClose} style={{ backgroundColor: 'white', border: 'none', color: 'gray', fontSize: '15px', marginLeft: 'auto' }}>취소</button>
-                        <button 
-                            onClick={handleSubmit} 
+                        <button
+                            onClick={handleSubmit}
                             disabled={isSubmitting}
-                            style={{ 
-                                backgroundColor: 'white', 
-                                border: 'none', 
-                                color: '#FF4C61', 
+                            style={{
+                                backgroundColor: 'white',
+                                border: 'none',
+                                color: '#FF4C61',
                                 fontSize: '15px',
                                 opacity: isSubmitting ? 0.6 : 1
                             }}
@@ -266,18 +266,51 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                 </S.Left>
 
                 <S.Main>
-                    {!isMobile && (
-                        <S.Header>
-                            <S.Title>새 게시물 만들기</S.Title>
-                        </S.Header>
-                    )}
+                    <S.Top>
+                        {!isMobile && (
+                            <S.Header>
+                                <S.Title>새 게시물 만들기</S.Title>
+                            </S.Header>
+                        )}
+                        <S.Row>
+                            <S.PublicSection>
+                                <S.PublicWrap
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        handleToggleDropdown();
+                                    }}
+                                >
+                                    <S.PublicIconWrap>
+                                        <Image
+                                            src="/icons/eyes.svg"
+                                            alt="공개대상"
+                                            width={18}
+                                            height={16}
+                                        />
+                                        <S.PublicLabel>{publicTarget}</S.PublicLabel>
+                                    </S.PublicIconWrap>
+
+                                    {isDropdownOpen && (
+                                        <S.Dropdown
+                                            onClick={e => e.stopPropagation()}
+                                        >
+                                            <S.DropdownItem onClick={() => handleSelectTarget('전체')}>전체공개</S.DropdownItem>
+                                            <S.DropdownItem onClick={() => handleSelectTarget('팔로워')}>팔로워만</S.DropdownItem>
+                                            <S.DropdownItem onClick={() => handleSelectTarget('모임')}>모임원만</S.DropdownItem>
+                                        </S.Dropdown>
+                                    )}
+                                </S.PublicWrap>
+                            </S.PublicSection>
+                        </S.Row>
+                    </S.Top>
+
                     <S.TitleInput
                         placeholder="제목을 입력하세요"
                         value={title}
                         onChange={e => setTitle(e.target.value)}
                         maxLength={100}
                     />
-                    
+
                     <S.Textarea
                         placeholder="글을 작성하세요. (#을 사용하여 해시태그를 추가할 수 있습니다.)"
                         value={content}
@@ -285,37 +318,6 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                         maxLength={9999}
                     />
                     <S.CharCount>{content.length}/10000</S.CharCount>
-
-                    <S.Row>
-                        <S.PublicSection>
-                            <S.PublicWrap
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    handleToggleDropdown();
-                                }}
-                            >
-                                <S.PublicIconWrap>
-                                    <Image
-                                        src="/icons/eyes.svg"
-                                        alt="공개대상"
-                                        width={18}
-                                        height={16}
-                                    />
-                                    <S.PublicLabel>{publicTarget}</S.PublicLabel>
-                                </S.PublicIconWrap>
-
-                                {isDropdownOpen && (
-                                    <S.Dropdown
-                                        onClick={e => e.stopPropagation()}
-                                    >
-                                        <S.DropdownItem onClick={() => handleSelectTarget('전체')}>전체공개</S.DropdownItem>
-                                        <S.DropdownItem onClick={() => handleSelectTarget('팔로워')}>팔로워만</S.DropdownItem>
-                                        <S.DropdownItem onClick={() => handleSelectTarget('모임')}>모임원만</S.DropdownItem>
-                                    </S.Dropdown>
-                                )}
-                            </S.PublicWrap>
-                        </S.PublicSection>
-                    </S.Row>
 
                     <S.ButtonRow>
                         <Square

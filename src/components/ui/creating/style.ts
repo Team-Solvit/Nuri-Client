@@ -71,15 +71,18 @@ export const Left = styled.div`
 export const Main = styled.div`
   display: flex;
   flex-direction: column;
-  padding:  1.5rem 0rem;
-  margin-right: 1rem;
+  padding:  1.5rem 1rem 1.5rem 0.6rem;
   width: 100%;
+
+  ${mq.mobile} {
+    padding:  1rem 1rem 1.5rem 0.6rem;
+  }
 `
 
 export const Modal = styled.div`
   background: #fff;
   min-width: 70vw;
-  min-height: 80vh;
+  max-height: 80vh;
   box-shadow: 0 4px 24px rgba(0,0,0,0.12);
   display: flex;
   gap: 1.5rem;
@@ -103,13 +106,18 @@ export const HeaderM = styled.div`
   }
 `
 
+export const Top = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`
+
 export const Header = styled.div`
   font-size: ${fontSizes.H3};
   font-weight: 600;
   margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
-  gap: 9rem;
 `
 
 export const Title = styled.h2`
@@ -258,9 +266,10 @@ export const CharCount = styled.div`
   font-size: ${fontSizes.Small};
   color: ${colors.gray};
   text-align: right;
+  margin-right: 1.1rem;
 
   ${mq.mobile} {
-    margin-left:  19rem;
+    margin-right: 0rem;
   }
 `
 
@@ -338,7 +347,6 @@ export const PublicWrap = styled.div`
   position: relative;
   padding: 8px 12px;
   width: fit-content;
-  min-width: 120px;
   cursor: pointer;
 `
 
@@ -361,8 +369,8 @@ export const ButtonRow = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 6.7rem;
-  margin-right: 1.2rem;
+  margin-top: 42%;
+  margin-right: 1rem;
 
   ${mq.mobile} {
     display: none;
