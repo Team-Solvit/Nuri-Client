@@ -26,7 +26,6 @@ export default function RegisterContainer() {
 	const [currentStep, setCurrentStep] = useState(0);
 	const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 	const [formData, setFormData] = useState<RegisterFormData>(createInitialRegisterForm());
-	const [error, setError] = useState<string | null>(null);
 	const [touched, setTouched] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [oauthId, setOauthId] = useState<string | null>(null);
@@ -63,7 +62,6 @@ export default function RegisterContainer() {
 			alertStore.error(validationError);
 			return;
 		}
-		setError(null);
 		if (currentStep < effectiveSteps.length - 1) {
 			setCompletedSteps([...completedSteps, currentStep]);
 			setCurrentStep(currentStep + 1);
@@ -134,10 +132,6 @@ export default function RegisterContainer() {
 			const updated = { ...prev, [key]: value };
 			if (key === 'username') { resetUsername(); }
 			if (key === 'email') { resetEmail(); }
-			if (touched) {
-				const validationError = validateCurrentStep();
-				if (!validationError) setError(null);
-			}
 			return updated;
 		});
 	};
@@ -195,7 +189,6 @@ export default function RegisterContainer() {
 
 			<S.Content>
 				{renderStepContent()}
-				{touched && error && <S.ErrorMessage>{error}</S.ErrorMessage>}
 				<S.ButtonGroup>
 					{currentStep === 0 && (
 						<Square text='돌아가기' onClick={() => router.back()} status={false} width="100%" />
