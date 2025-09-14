@@ -167,6 +167,7 @@ export const RightContent = styled.div<{ showComments: boolean; isModal?: boolea
   overflow-y: auto;
   padding: 2rem;
   transition: transform 0.3s ease;
+  min-width: 24vw;
   transform: ${({ showComments }) => showComments ? 'translateY(-100%)' : 'translateY(0)'};
   ${mq.mobile} {
     padding: 1.25rem 1rem 5.5rem;
