@@ -27,7 +27,10 @@ export const validateEmail = (d: EmailData) => {
 
 export const validatePassword = (d: PasswordData) => {
   if (!d.password.trim() || !d.confirmPassword.trim()) return '비밀번호와 비밀번호 재입력을 모두 입력해주세요.';
-  if (d.password.length < 8) return '비밀번호는 8자 이상이어야 합니다.';
+  if (d.password.length < 8) return '비밀번호는 8자 이상 입력해주세요.';
+  if (!/[a-z]/.test(d.password)) return '영어 소문자를 1개 이상 포함해주세요.';
+  if (!/\d/.test(d.password)) return '숫자를 1개 이상 포함해주세요.';
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(d.password)) return '특수문자를 1개 이상 포함해주세요.';
   if (d.password !== d.confirmPassword) return '비밀번호가 일치하지 않습니다.';
   return null;
 };

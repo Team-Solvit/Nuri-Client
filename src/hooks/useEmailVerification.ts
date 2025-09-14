@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { AuthService } from '@/services/auth';
 import { EMAIL_PATTERN } from '@/constants/register';
 import { useAlertStore } from '@/store/alert';
-import { ApolloClient } from '@apollo/client';
+import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 
-export function useEmailVerification(client: ApolloClient<any>) {
+export function useEmailVerification(client: ApolloClient<NormalizedCacheObject>) {
   const alertStore = useAlertStore();
   const [state, setState] = useState<{ phase: 'idle' | 'sending' | 'sent' | 'verifying' | 'verified'; ticket?: string; message?: string }>({ phase: 'idle' });
 

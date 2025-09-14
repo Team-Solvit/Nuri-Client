@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import * as S from './style';
 import Square from '@/components/ui/button/square';
@@ -36,19 +36,18 @@ export default function RegisterContainer() {
 	const { usernameState, checkUsername, resetUsername } = useUsernameCheck(client);
 	const { emailState, sendMailCode, verifyMailCode, resetEmail } = useEmailVerification(client);
 
-	useState(() => {
+	useEffect(() => {
 		try {
 			const stored = typeof window !== 'undefined' ? sessionStorage.getItem('pending_oauth_id') : null;
 			if (stored) setOauthId(stored);
 		} catch { }
-		return undefined;
-	});
+	}, []);
 
 	const effectiveSteps = oauthId ? steps.filter(s => s !== '비밀번호') : steps;
 
 	const validateCurrentStep = () => {
 		const stepLabel = effectiveSteps[currentStep];
-		if (stepLabel === '이용약관') return validateTerms(formData as any);
+		if (stepLabel === '이용약관') return validateTerms(formData);
 		if (stepLabel === '활동정보') return validateAccount({ name: formData.name, username: formData.username, usernameChecked: usernameState.status !== 'idle', usernameAvailable: usernameState.status === 'available' });
 		if (stepLabel === '인증') return validateEmail({ email: formData.email, code: formData.verificationCode, verified: emailState.phase === 'verified' });
 		if (stepLabel === '비밀번호') return validatePassword({ password: formData.password, confirmPassword: formData.confirmPassword });
@@ -61,7 +60,7 @@ export default function RegisterContainer() {
 		setTouched(true);
 		const validationError = validateCurrentStep();
 		if (validationError) {
-			setError(validationError);
+			alertStore.error(validationError);
 			return;
 		}
 		setError(null);
@@ -108,10 +107,10 @@ export default function RegisterContainer() {
 							agreedPrivacyCollection: formData.terms2,
 							agreedPrivacyThirdParty: formData.terms3,
 							// 외부 본인인증 비사용: 서버 변경되면 지우기
-							agreedIdentityAgencyTerms: false,
-							agreedIdentityPrivacyDelegate: false,
-							agreedIdentityUniqueInfo: false,
-							agreedIdentityProviderTerms: false
+							agreedIdentityAgencyTerms: true,
+							agreedIdentityPrivacyDelegate: true,
+							agreedIdentityUniqueInfo: true,
+							agreedIdentityProviderTerms: true
 						},
 					});
 					alertStore.success('회원가입이 완료되었습니다.');

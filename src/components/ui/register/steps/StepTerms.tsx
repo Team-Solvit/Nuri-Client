@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 interface Props {
   form: RegisterFormData;
-  onChange: (key: keyof RegisterFormData, value: any) => void;
+  onChange: (key: keyof RegisterFormData, value: RegisterFormData[keyof RegisterFormData]) => void;
 }
 
 export const StepTerms = memo(({ form, onChange }: Props) => {
@@ -28,7 +28,7 @@ export const StepTerms = memo(({ form, onChange }: Props) => {
           { key: 'terms3', label: '개인정보 제3자 제공 동의 (필수)', href: '/terms/third-party' },
         ]).map(({ key, label, href }) => (
           <S.CheckboxItem key={key}>
-            <S.Checkbox type="checkbox" id={key} checked={form[key as 'terms1']} onChange={e => onChange(key as keyof RegisterFormData, e.target.checked)} />
+            <S.Checkbox type="checkbox" id={key} checked={form[key as 'terms1' | 'terms2' | 'terms3']} onChange={e => onChange(key as keyof RegisterFormData, e.target.checked)} />
             <S.CheckboxLabel htmlFor={key}>{label}</S.CheckboxLabel>
             <Link href={href} target="_blank" rel="noopener noreferrer" style={{ marginLeft: 'auto', color: '#555', textDecoration: 'underline' }}>전문보기</Link>
           </S.CheckboxItem>

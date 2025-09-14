@@ -45,9 +45,4 @@ export interface OAuthSignUpInput {
   userAgreement: UserAgreement; // !
 }
 
-// 단순 String 반환 토큰/메시지들
-export type TokenString = string;      // localLogin, reissue 등
-export type GenericResultString = string; // logout, saveOAuthUserInfo 등
-
-export interface LocalLoginRequest extends LocalLoginInput { }
-export interface LocalSignUpRequest extends LocalSignUpInput { }
+export type TokenString = string;
