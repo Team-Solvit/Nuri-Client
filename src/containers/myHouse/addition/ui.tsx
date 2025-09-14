@@ -99,17 +99,22 @@ export default function Addition(){
 		variables: {
 			roomId: roomId
 		},
-		skip: !roomId
+		skip: !roomId,
+		fetchPolicy: "network-only"
 	});
 	function convertToContractString(periods: number[]): string[] {
 		return periods.map((num) => {
-			if (num % 12 === 0) {
-				return `${num / 12}년`;
-			}
-			return `${num}개월`;
+			const years = Math.floor(num / 12);
+			const months = num % 12;
+			let result = "";
+			
+			if (years > 0) result += `${years}년`;
+			if (months > 0) result += `${months}개월`;
+			
+			return result || "0개월"; // 0개월 처리
 		});
 	}
-	
+	console.log(selectedContracts)
 	useEffect(() => {
 		setName("");
 		setDescription("");
@@ -129,6 +134,12 @@ export default function Addition(){
 			setName(roomInfo?.name);
 			setDescription(roomInfo?.description);
 			setMonthlyRent(roomInfo?.monthlyRent.toString());
+			setContractOptions((prev) => {
+				const newOptions = convertToContractString(
+					roomInfo?.contractPeriod?.map(item => item.contractPeriod) ?? []
+				);
+				return Array.from(new Set([...prev, ...newOptions]));
+			});
 			setHeadCount(roomInfo?.headCount.toString());
 			setSelectedFacilities(roomInfo?.boardingRoomOption?.map((item) => item.name) || []);
 			setSelectedContracts(convertToContractString(roomInfo?.contractPeriod.map(item=>item.contractPeriod)));
@@ -146,11 +157,13 @@ export default function Addition(){
 		if (!selectedContracts.length) return error('계약 기간을 선택해주세요');
 		setIsLoading(true)
 		const contractPeriod = selectedContracts.map((item) => {
-			const num = parseInt(item.replace(/[^0-9]/g, ""), 10);
-			if (item.includes("년")) {
-				return num * 12;
-			}
-			return num;
+			const yearMatch = item.match(/(\d+)년/);
+			const monthMatch = item.match(/(\d+)개월/);
+			
+			const years = yearMatch ? parseInt(yearMatch[1], 10) : 0;
+			const months = monthMatch ? parseInt(monthMatch[1], 10) : 0;
+			
+			return years * 12 + months;
 		});
 		const roomInput : CreateBoardingHouseType = {
 			boardingRoomInfo :{
@@ -190,6 +203,7 @@ export default function Addition(){
 	};
 	console.log(selectedFacilities)
 	console.log(selectedContracts)
+	console.log(contractOptions)
 	return (
 		<S.Container style={{ position: 'relative' }}>
 			<S.Title>방추가</S.Title>
