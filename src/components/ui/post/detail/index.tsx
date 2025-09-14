@@ -220,6 +220,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
 
       const hashTagMatches = editingPostContent.match(/#[^\s#]+/g) || [];
       const hashTags = hashTagMatches.map(tag => tag.substring(1));
+      const hashtagsForUi = hashTags.map((name, i) => ({ hashtagId: `${i}`, name, postId: postInfo.postId }));
 
       const postUpdateInput = {
         postId: postInfo.postId,
@@ -236,6 +237,10 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
       await PostDetailService.updatePost(client, postUpdateInput);
 
       const updatedPost = await PostDetailService.getPostById(client, id);
+      // 프론트 메모리 상에서도 새로운 구조 반영 (서버가 아직 신규 구조를 반환하지 않더라도 안전)
+      if (updatedPost && updatedPost.__typename === 'SnsPost') {
+        (updatedPost as any).hashtags = hashtagsForUi;
+      }
       setPostInfo(updatedPost);
 
       setIsEditingPost(false);
@@ -302,7 +307,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
 
     try {
       await PostDetailService.toggleLike(client, postInfo, isLiked);
-      
+
       if (isLiked) {
         setLikeCount(prev => prev - 1);
         setIsLiked(false);
@@ -471,11 +476,11 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
                     <S.RightFacility key={opt.optionId}>
                       {iconName && (
                         <S.RightFacilityIcon>
-                          <Image 
-                            src={`/icons/post-detail/${iconName}.svg`} 
-                            alt={opt.name} 
-                            width={32} 
-                            height={32} 
+                          <Image
+                            src={`/icons/post-detail/${iconName}.svg`}
+                            alt={opt.name}
+                            width={32}
+                            height={32}
                           />
                         </S.RightFacilityIcon>
                       )}
@@ -489,9 +494,9 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
             <>
               <S.RightTopRow>
                 <S.RightPeriodTags>
-                  {postInfo.__typename === 'SnsPost' && postInfo.hashTags && postInfo.hashTags.length > 0 && 
-                    postInfo.hashTags.map(tag => (
-                      <S.RightPeriodTag key={tag}>#{tag}</S.RightPeriodTag>
+                  {postInfo.__typename === 'SnsPost' && postInfo.hashtags && postInfo.hashtags.length > 0 &&
+                    postInfo.hashtags.map(tag => (
+                      <S.RightPeriodTag key={tag.hashtagId}>#{tag.name}</S.RightPeriodTag>
                     ))
                   }
                 </S.RightPeriodTags>

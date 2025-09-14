@@ -17,7 +17,7 @@ export const PostDetailGQL = {
             likeCount
             isLiked
             commentCount
-            hashTags
+            hashtags { hashtagId name postId }
             author { userId profile }
             files { fileId url }
           }
@@ -400,12 +400,12 @@ export const PostDetailService = {
   toggleLike: async (client: ApolloClient<any>, post: PostDetailUnion, isLiked: boolean): Promise<boolean> => {
     if (post.__typename === 'SnsPost') {
       const snsPost = post as SnsPostDetail;
-      return isLiked 
+      return isLiked
         ? await PostDetailService.unlikePost(client, snsPost.postId)
         : await PostDetailService.likePost(client, snsPost.postId);
     } else if (post.__typename === 'BoardingPost') {
       const boardingPost = post as BoardingPostDetail;
-      return isLiked 
+      return isLiked
         ? await PostDetailService.unlikeRoom(client, boardingPost.room.roomId)
         : await PostDetailService.likeRoom(client, boardingPost.room.roomId);
     }

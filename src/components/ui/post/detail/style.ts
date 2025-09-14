@@ -500,7 +500,7 @@ export const InteractionBar = styled.div<{ isModal?: boolean }>`
   bottom: 0;
   background: #fff;
   border: 1px solid ${colors.line2};
-  padding: 1rem 1.5rem;
+  padding: 0.8rem 1.5rem;
   z-index: 20;
   ${mq.mobile} {
     position: fixed;
