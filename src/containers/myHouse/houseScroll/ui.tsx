@@ -51,6 +51,14 @@ const HouseScroll = () => {
 		setRoomNumber(roomId)
 		setRefetch(refetch)
 	}
+	const handleLeaveOpenModal = (e : React.MouseEvent, room: BoardingRoomAndBoardersType) =>{
+		e.stopPropagation();
+		openModal(
+			room?.contractInfo.boarders?.map(boarder => boarder.name) ?? [],
+			room.room?.name ?? "",
+			room.room?.roomId ?? ""
+		)
+	}
 	return (
 		<S.Container>
 			{leaveInfo && <LeaveModal boarders={leaveInfo} roomId={roomId}/>}
@@ -105,7 +113,7 @@ const HouseScroll = () => {
 						<S.RoomHeader>
 							<S.RoomInfo>
 								<S.RoomName>{room.room?.name}</S.RoomName>
-								{room.boarders && room.boarders.map(boarder => {
+								{room?.contractInfo.boarders && room?.contractInfo.boarders.map(boarder => {
 									return (
 										<S.ProfileWrap key={boarder.id}>
 											<S.ProfileImg>
@@ -122,13 +130,7 @@ const HouseScroll = () => {
 							</S.RoomInfo>
 							{room.room?.status !== "EMPTY_ROOM" && (
 								<Square text={"계약 종료"}
-								        onClick={() =>
-									        openModal(
-										        room.boarders?.map(boarder => boarder.name) ?? [],
-										        room.room?.name ?? "",
-										        room.room?.roomId ?? ""
-									        )
-								        } status={true}
+								        onClick={(e : React.MouseEvent) =>handleLeaveOpenModal(e, room)} status={true}
 								        width={"max-content"}/>
 							)}
 						</S.RoomHeader>

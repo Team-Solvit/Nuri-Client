@@ -77,7 +77,9 @@ export interface BoarderType {
 
 export interface BoardingRoomAndBoardersType {
 	room?: BoardingRoomType;
-	boarders?: BoarderType[];
+	contractInfo : {
+		boarders?: BoarderType[];
+	}
 }
 
 export interface CreateBoardingHouseType {

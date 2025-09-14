@@ -1,7 +1,6 @@
 "use client";
 
 import * as S from "./style";
-import {fakeData} from "@/containers/home/post-scroll/data";
 import Image from "next/image";
 import Square from "@/components/ui/button/square";
 import Heart from "@/assets/post/heart.svg";
@@ -25,24 +24,7 @@ export default function PostScroll() {
 	const [imageIndexMap, setImageIndexMap] = useState<Record<number, number>>({});
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
 
-	const handleMouseEnter = (id: number) => setHoverIndex(id);
-	const handleMouseLeave = () => setHoverIndex(null);
-
-	const handleSlide = (postId: number, direction: "next" | "prev") => {
-		if (postId === null) return;
-		setImageIndexMap(prev => {
-			const current = prev[postId] || 0;
-			const images = fakeData.find(p => p.id === postId)?.thumbnail || [];
-			const max = images.length - 1;
-
-			const next =
-				direction === "next"
-					? (current + 1) % (max + 1)
-					: (current - 1 + max + 1) % (max + 1);
-
-			return {...prev, [postId]: next};
-		});
-	};
+	
 	
 	const [page, setPage] = useState(0);
 	const [isDone, setIsDone] = useState(false);
@@ -107,6 +89,31 @@ export default function PostScroll() {
 		const chatId = [id1, id2].sort().join(":");
 		navigateClick(`/chat/${chatId}`);
 	}
+	const handleMouseEnter = (id: number) => setHoverIndex(id);
+	const handleMouseLeave = () => setHoverIndex(null);
+	
+	const handleSlide = (postId: number, direction: "next" | "prev") => {
+		if (!posts) return;
+		setImageIndexMap(prev => {
+			const current = prev[postId] || 0;
+			const postItem = posts[postId].postInfo
+			const images =
+				posts[postId]
+					? postItem.__typename === "SnsPost"
+						? postItem.files.map(f => f.url)
+						: postItem.room.boardingRoomFile.map(f => f.url)
+					: [];
+			console.log(images)
+			const max = images.length - 1;
+			
+			const next =
+				direction === "next"
+					? (current + 1) % (max + 1)
+					: (current - 1 + max + 1) % (max + 1);
+			
+			return {...prev, [postId]: next};
+		});
+	};
 	return (
 		<S.PostScrollContainer>
 			{!loading && posts?.length === 0 && <p>생성된 게시물이 없습니다.</p>}
@@ -161,11 +168,8 @@ export default function PostScroll() {
 					commentCount,
 					likeCount
 				};
-				let currentIndex = null
-				if (postData.id) {
-					currentIndex = imageIndexMap[Number(postData.id)];
-				}
-
+				const currentIndex = imageIndexMap[index] || 0;
+				console.log(currentIndex, currentIndex < postData.thumbnail.length - 1, hoverIndex)
 				const profileSrc: string =
 					!user?.thumbnail
 						? "/post/default.png"
@@ -203,18 +207,18 @@ export default function PostScroll() {
 						<S.PostImg
 							onClick={(e) => e.stopPropagation()}
 							onMouseEnter={() => {
-								if (postData.id !== null) handleMouseEnter(Number(postData.id));
+								handleMouseEnter(index);
 							}}
 							onMouseLeave={handleMouseLeave}
 						>
 							{/* Left Arrow: index > 0일 때만 */}
-							{currentIndex && currentIndex > 0 && (
+							{currentIndex > 0 && (
 								<S.Arrow
-									isHover={hoverIndex === postData.id}
+									isHover={hoverIndex === index}
 									status={false}
 									onClick={() => {
 										if (postData.id !== null) {
-											handleSlide(Number(postData.id), "prev");
+											handleSlide(index, "prev");
 										}
 									}}
 								>
@@ -239,13 +243,13 @@ export default function PostScroll() {
 							</S.SliderWrapper>
 							
 							{/* Right Arrow: index < 마지막일 때만 */}
-							{currentIndex && currentIndex < postData.thumbnail.length - 1 && (
+							{currentIndex < postData.thumbnail.length - 1 && (
 								<S.Arrow
-									isHover={hoverIndex === postData.id}
+									isHover={hoverIndex === index}
 									status={true}
 									onClick={() => {
 										if (postData.id !== null) {
-											handleSlide(Number(postData.id), "next");
+											handleSlide(index, "next");
 										}
 									}}
 								>

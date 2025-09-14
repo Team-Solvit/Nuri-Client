@@ -1,4 +1,4 @@
-import {ApolloClient, gql} from '@apollo/client';
+import {ApolloClient, gql, NormalizedCacheObject} from '@apollo/client';
 import {CreateBoardingHouseType} from "@/types/boardinghouse";
 
 export const BoardingHouseQueries = {
@@ -109,7 +109,7 @@ export const BoardingHouseMutations = {
 
 export const BoardingHouseService = {
 	createBoardingRoom: async (
-		client: ApolloClient<any>,
+		client: ApolloClient<NormalizedCacheObject>,
 		input: CreateBoardingHouseType
 	): Promise<string> => {
 		const {data} = await client.mutate<{ createBoardingRoom: string }>({
@@ -120,7 +120,7 @@ export const BoardingHouseService = {
 	},
 	
 	deleteBoardingRoom: async (
-		client: ApolloClient<any>,
+		client: ApolloClient<NormalizedCacheObject>,
 		roomId: string
 	): Promise<string> => {
 		const {data} = await client.mutate<{ deleteBoardingRoom: string }>({
@@ -131,7 +131,7 @@ export const BoardingHouseService = {
 	},
 	
 	endBoardingRoomContract: async (
-		client: ApolloClient<any>,
+		client: ApolloClient<NormalizedCacheObject>,
 		roomId: string
 	): Promise<string> => {
 		const {data} = await client.mutate<{ endBoardingRoomContract: string }>({
@@ -142,7 +142,7 @@ export const BoardingHouseService = {
 	},
 	
 	patchBoardingRoom: async (
-		client: ApolloClient<any>,
+		client: ApolloClient<NormalizedCacheObject>,
 		input: CreateBoardingHouseType
 	): Promise<string> => {
 		const { data } = await client.mutate<{ updateBoardingRoom: string }>({

@@ -29,10 +29,14 @@ export const AlertBox = ({alert} : { alert : AlertType}) =>{
 		
 		return () => clearTimeout(timer);
 	}, []);
+	const handleMove = async () =>{
+		await mutate();
+		navigate(alert.link)
+	}
 	return(
 		<S.Alert
 			isRead = {alert.checked}
-			onClick={() => navigate(alert.link)}
+			onClick={handleMove}
 		>
 			<S.Profile>
 				<Image src={Profile} alt="profile" fill/>

@@ -155,6 +155,8 @@ export default function Addition(){
 		if (!description) return error('방의 내용을 추가해주세요');
 		if (!contractOptions.length) return error('가격을 추가해주세요');
 		if (!selectedContracts.length) return error('계약 기간을 선택해주세요');
+		if (!monthlyRent|| Number(monthlyRent) <= 0) return error("월세를 입력해주세요")
+		if (!headCount|| Number(headCount) <= 0) return error("인원수를 입력해주세요")
 		setIsLoading(true)
 		const contractPeriod = selectedContracts.map((item) => {
 			const yearMatch = item.match(/(\d+)년/);

@@ -95,7 +95,12 @@ export const typeDefs = gql`
   type BoardingRoomAndBoarders {
     room: BoardingRoom!
     boarders: [Boarder!]!
-  }
+  contractInfo: [ContractInfo!]!
+ }
+
+type ContractInfo {
+  boarder: Boarder!
+}
 
   type BoardingPost {
     likeCount: Int
