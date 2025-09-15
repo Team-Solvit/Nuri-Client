@@ -54,7 +54,7 @@ export default function Meetings() {
 		variables: {
 			area: selectedMarker ? meetings[selectedMarker.id]?.title : "",
 		},
-		skip: !areas,
+		skip: !selectedMarker,
 	});
 	const {accessMeeting} = useMeetingAccessionStore()
 	useLoadingEffect(getAreaMeetingsLoading || getAreasLoading || loading)

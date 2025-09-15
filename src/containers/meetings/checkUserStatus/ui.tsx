@@ -4,21 +4,34 @@ import React, {useEffect} from "react";
 import {useIsEnteringMeetingStore} from "@/store/isEnteringMeeting";
 import {useOtherMeetingFind} from "@/store/otherMeetingFind";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {useQuery} from "@apollo/client";
+import {MeetingQueries} from "@/services/meeting";
+import {Status} from "@/types/meetings";
 
 export default function CheckUserStatus({children}: { children: React.ReactNode}) {
-	const {setFree, setEnteringMeeting, setSendRequest, isEnteringMeeting} = useIsEnteringMeetingStore()
+	const {setFree, setEnteringMeeting, setSendRequest} = useIsEnteringMeetingStore()
 	const {setFind} = useOtherMeetingFind()
 	const navigate = useNavigationWithProgress()
-	// 상태 불러오는 쿼리짜기
+	const {data} = useQuery(MeetingQueries.GET_MEETING_STATUS)
+	const status: Status = data?.getMeetingStatus
+	
 	useEffect(() => {
-		// 만약 상태가 어떻다면 각각의 상황 적용하기
-	}, []);
-	useEffect(() => {
-		if(isEnteringMeeting) {
+		if(!status) return
+		
+		if(status.hasGroup){
+			navigate(`/meetings/${status.groupId}`)
 			setFind(false)
-			navigate(`/meetings/${id}`)
+			setEnteringMeeting()
+		}else if(!status.hasGroup){
+			setFind(true)
+			if(status.groupId){
+				setSendRequest(status?.groupName || "")
+			}
+			else{
+				setFree()
+			}
 		}
-	}, [isEnteringMeeting]);
+	}, [status]);
 	return <>
 		{children}
 	</>

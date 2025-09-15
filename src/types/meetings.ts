@@ -18,3 +18,8 @@ export interface M {
 	id: number;
 	title: string;
 }
+export interface Status{
+		groupId: null | string,
+		groupName: null | string,
+		hasGroup: boolean,
+}

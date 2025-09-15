@@ -19,7 +19,7 @@ export default function Accession({isAccession, setIsAccession, accessions}: Acc
 		variables: {
 			groupJoinInput: {
 				groupId : accessions.groupId,
-				requestMessage : ""
+				requestMessage : "default"
 			}
 		}
 	})
@@ -50,7 +50,7 @@ export default function Accession({isAccession, setIsAccession, accessions}: Acc
 					<S.Title>모임 가입</S.Title>
 					<S.Text>
 						{isEnteringMeeting ? "현재 모임에 가입중이신데, 탈퇴하시고" : ""}
-						{isSendRequest ? "현재 다른 모임에 요청을 보내신 상태입니다. 이전에 보냈던 요청을 취소하시고 " : ""}
+						{isSendRequest ? `현재 ${isSendRequest} 모임에 요청을 보내신 상태입니다. 이전에 보냈던 요청을 취소하시고 ` : ""}
 						{accessions.name} 모임에 참여하시겠습니까?
 					</S.Text>
 					<S.ButtonContainer>

@@ -1,6 +1,15 @@
 import {gql} from '@apollo/client';
 
 export const MeetingQueries = {
+	GET_MEETING_STATUS: gql`
+		query {
+		  getGroupStatus{
+		    groupId
+		    groupName
+		    hasGroup
+		  }
+		}
+	`,
 	GET_MEETING_AREAS: gql`
 		query {
 		  getAreas{
