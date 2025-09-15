@@ -17,10 +17,11 @@ interface MeetingsSidebarProps {
 		currentParticipation: number;
 		maxParticipation: number;
 		profile : string
-	}[]
+	}[],
+	isLoading :boolean
 }
 
-export default function MeetingsSidebar({rooms, meetings}: MeetingsSidebarProps) {
+export default function MeetingsSidebar({rooms, meetings, isLoading}: MeetingsSidebarProps) {
 	const {open} = useModalStore();
 	const {setSelect, setMeetingId} = useSelectOtherMeetingDetailStore()
 	const openModal = (name: string, id : string) => {
@@ -28,7 +29,7 @@ export default function MeetingsSidebar({rooms, meetings}: MeetingsSidebarProps)
 		setMeetingId(id)
 		setSelect(name)
 	}
-	
+	if(isLoading) return <p>불러오는 중 입니다...</p>
 	return createPortal(
 		<S.SidebarContainer isOpen={true}>
 			<S.Head>

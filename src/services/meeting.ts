@@ -32,6 +32,9 @@ export const MeetingQueries = {
 		    currentParticipation
 		    profile
 		    banner
+		    area{
+		      area
+		    }
 		    thirdPartyName
 		    createdAt
 		  }

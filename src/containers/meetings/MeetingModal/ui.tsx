@@ -17,7 +17,7 @@ import {useMeetingAccessionStore} from "@/store/meetingAccessionData";
 export const Banner = ({bannerImage}: { bannerImage: string | StaticImageData }) => {
 	return (
 		<S.Banner>
-			<Image style={{objectFit: "cover"}} src={bannerImage} alt={"banner"} fill/>
+			<Image style={{objectFit: "cover"}} src={bannerImage ? bannerImage : "/post/profile.png"} alt={"banner"} fill/>
 			<S.Gradient/>
 		</S.Banner>
 	)
@@ -36,7 +36,7 @@ export const MeetingContent = (props: MeetingModalProps & {
 					</S.ImgBox>
 					<S.Name>
 						<h3>{props.name}</h3>
-						{/*<p>{props.location}</p>*/}
+						<p>{props.area?.area}</p>
 					</S.Name>
 				</S.Info>
 				<S.SignBtnBox>

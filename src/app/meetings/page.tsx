@@ -63,7 +63,7 @@ export default function Meetings() {
 	return (
 		<>
 			<GoogleMap onMarkerSelect={(m) => setSelectedMarker(m)} markers={markers} label={(m) => meetings[m.id].title} renderPopup={(marker: typeof markers[0]) => (
-				<MeetingsSidebar rooms={meetings[marker.id].title} meetings={meetingsData}/>
+				<MeetingsSidebar isLoading={getAreaMeetingsLoading} rooms={meetings[marker.id].title} meetings={meetingsData}/>
 			)}>
 			</GoogleMap>
 			<MeetingAccession accessions={accessMeeting} isAccession={isAccession} setIsAccession={setIsAccession}/>
