@@ -13,8 +13,7 @@ export default function CheckUserStatus({children}: { children: React.ReactNode}
 	const {setFind} = useOtherMeetingFind()
 	const navigate = useNavigationWithProgress()
 	const {data} = useQuery(MeetingQueries.GET_MEETING_STATUS)
-	const status: Status = data?.getMeetingStatus
-	
+	const status: Status = data?.getGroupStatus
 	useEffect(() => {
 		if(!status) return
 		
@@ -32,7 +31,5 @@ export default function CheckUserStatus({children}: { children: React.ReactNode}
 			}
 		}
 	}, [status]);
-	return <>
-		{children}
-	</>
+	return children
 }

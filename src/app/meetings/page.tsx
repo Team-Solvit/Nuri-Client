@@ -14,7 +14,7 @@ import {AreaResponse, M, Marker} from "@/types/meetings";
 import {useMeetingAccessionStore} from "@/store/meetingAccessionData";
 
 export default function Meetings() {
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(false);
 	const navigate = useRouter();
 	const {find} = useOtherMeetingFind();
 	useEffect(() => {
@@ -25,6 +25,7 @@ export default function Meetings() {
 	const [isAccession, setIsAccession] = useState(false);
 	
 	const changeAreaInitial = () => {
+		setLoading(true)
 		if(!areas) return;
 		const newMarkers = areas.getAreas.map((area, idx) => ({
 			id: idx,
