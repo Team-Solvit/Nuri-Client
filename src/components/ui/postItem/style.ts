@@ -2,34 +2,36 @@ import styled from "@emotion/styled";
 import {colors, radius, fontSizes} from '@/styles/theme';
 import { mq } from '@/styles/media';
 
-
 export const PostItem = styled.div`
-    display: flex;
-    padding: 12px;
-    gap: 42rem;
-    width: 73vw;
-    border: 1px solid ${colors.line};
-    border-radius: ${radius.md};
-    background-color: ${colors.background};
-    cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  width: 73vw;
+  border: 1px solid ${colors.line};
+  border-radius: ${radius.md};
+  background-color: ${colors.background};
+  cursor: pointer;
 
-    ${mq.mobile} {
-        width: 87.5vw;
-        height: 12vh;
-        gap: 4rem;
-    }
+  ${mq.mobile} {
+    width: 100%;
+  }
 `
 
 export const PostMain = styled.div`
-    display: flex;
-    flex-direction: column;
-    color: ${colors.gray};
-    gap: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
 
-    ${mq.mobile} {
-        width: 20vw;
-    }
+  & > * {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 `
+
 
 export const Profile = styled.div`
     display: flex;
