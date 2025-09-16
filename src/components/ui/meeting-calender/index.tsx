@@ -17,7 +17,8 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 	const {data: meetingSchedule} = useQuery(MeetingQueries.GET_MEETING_SCHEDULE, {
 		variables: {
 			groupId: groupId
-		}
+		},
+		skip: !groupId,
 	})
 	console.log('모임 일정(meetingSchedule):', meetingSchedule) // 모임 일정(meetingSchedule) 데이터 출력
 	const today = new Date();

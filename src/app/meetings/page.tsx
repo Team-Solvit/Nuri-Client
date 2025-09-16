@@ -1,12 +1,10 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import {useRouter} from "next/navigation";
 import GoogleMap from "@/components/ui/googleMap/Map";
 import MeetingsSidebar from "@/containers/meetings/sidebar/ui";
 import MeetingModal from "@/containers/meetings/MeetingModal/ui";
 import MeetingAccession from "@/containers/meetings/accession/ui";
-import {useOtherMeetingFind} from "@/store/otherMeetingFind";
 import {useQuery} from "@apollo/client";
 import {MeetingQueries} from "@/services/meeting";
 import {useLoadingEffect} from "@/hooks/useLoading";
@@ -15,13 +13,6 @@ import {useMeetingAccessionStore} from "@/store/meetingAccessionData";
 
 export default function Meetings() {
 	const [loading, setLoading] = useState(false);
-	const navigate = useRouter();
-	const {find} = useOtherMeetingFind();
-	useEffect(() => {
-		if (!find) {
-			navigate.push("/meetings/1");
-		}
-	}, [find]);
 	const [isAccession, setIsAccession] = useState(false);
 	
 	const changeAreaInitial = () => {

@@ -49,7 +49,7 @@ export default function Accession({isAccession, setIsAccession, accessions}: Acc
 				<S.Container>
 					<S.Title>모임 가입</S.Title>
 					<S.Text>
-						{isEnteringMeeting && "현재 모임에 가입중이신데, 탈퇴하시고"}
+						{isEnteringMeeting && "현재 가입중인 모임을 탈퇴하시고,"}
 						{isSendRequest && (
 							<>
 								현재 {isSendRequest} 모임에 <span>요청을 보내신 상태</span>입니다.
