@@ -15,6 +15,7 @@ import {useSelectOtherMeetingDetailStore} from "@/store/selectOtherMeetingDetail
 import {useParams} from "next/navigation";
 import {useLoadingEffect} from "@/hooks/useLoading";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {useIsMakeGroupPostStore} from "@/store/isMakeGroupPost";
 
 export default function Meeting() {
 	const [selected, setSelected] = useState(1);
@@ -32,6 +33,11 @@ export default function Meeting() {
 		}
 	})
 	const meeting = meetingInfo?.getGroupInfo
+	const {setGroup} = useIsMakeGroupPostStore()
+	const handleCreatePost = () => {
+		navigate(`/creating`)
+		setGroup()
+	}
 	useLoadingEffect(loading)
 	if(loading || !meeting) return null;
 	return (
@@ -62,8 +68,7 @@ export default function Meeting() {
 			<Nav isModal={false} selected={selected} setSelected={setSelected}/>
 			{selected === 1 && <MeetingPost groupId={params.id as string || ""} isModal={true}/>}
 			{selected === 1 && <S.BtnBox>
-        <Square text={"게시물 작성"} status={true} width={"calc(84.5vw - 10rem)"} onClick={() => {
-				}}/>
+        <Square text={"게시물 작성"} status={true} width={"calc(84.5vw - 10rem)"} onClick={handleCreatePost} />
       </S.BtnBox>}
 			{selected === 2 && <MeetingCalender groupId={params.id as string || ""}/>}
 			{selected === 3 && <MeetingMember groupId={params.id as string || ""}/>}
