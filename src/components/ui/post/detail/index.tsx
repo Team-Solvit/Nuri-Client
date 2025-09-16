@@ -17,6 +17,8 @@ import { usePostDetail } from "@/hooks/post-detail/usePostDetail";
 import { useMediaSlider } from "@/hooks/post-detail/useMediaSlider";
 import { usePostEdit } from "@/hooks/post-detail/usePostEdit";
 import { useComments } from "@/hooks/post-detail/useComments";
+import { useContract } from "@/hooks/post-detail/useContract";
+import ContractPeriodModal from "./ContractPeriodModal";
 
 interface PostDetailProps { id: string; isModal?: boolean; }
 
@@ -93,6 +95,26 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showRoomTour, setShowRoomTour] = useState(false);
   const roomTourRef = useRef<HTMLDivElement | null>(null);
+  const [showContractPeriods, setShowContractPeriods] = useState(false);
+  const { creating: creatingContract, sendContract } = useContract(postInfo, currentUserId);
+
+  const openContractPeriodPicker = () => {
+    if (!postInfo || postInfo.__typename !== 'BoardingPost') return;
+    if (!postInfo.room.contractPeriod?.length) {
+      // 기간 정보 없으면 기본 12개월로 바로 전송
+      sendContract(12);
+      return;
+    }
+    setShowContractPeriods(prev => {
+      const next = !prev;
+      if (next) {
+        setShowRoomTour(false);
+        setMenuOpen(false);
+        setOpenCommentMenuId(null);
+      }
+      return next;
+    });
+  };
 
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
@@ -103,7 +125,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
     };
     document.addEventListener("click", onDocClick);
     return () => document.removeEventListener("click", onDocClick);
-  }, [menuOpen, showRoomTour, openCommentMenuId]);
+  }, [menuOpen, showRoomTour, showContractPeriods, openCommentMenuId]);
 
   if (loading) return <div>불러오는 중...</div>;
   if (!postInfo) return <div>게시물을 불러올 수 없습니다.</div>;
@@ -134,7 +156,19 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
                 <Square text="룸투어" onClick={() => setShowRoomTour(prev => { const next = !prev; if (next) { setMenuOpen(false); setOpenCommentMenuId(null); } return next; })} status={true} width="max-content" />
                 {showRoomTour && (<RoomTourModal />)}
               </S.RoomTourWrapper>
-              <Square text="계약" onClick={() => { }} status={true} width="max-content" />
+              <S.RoomTourWrapper>
+                <Square text={creatingContract ? "보내는 중..." : "계약"} onClick={openContractPeriodPicker} status={true} width="max-content" />
+                {showContractPeriods && (
+                  <ContractPeriodModal
+                    periods={(postInfo.__typename === 'BoardingPost' ? postInfo.room.contractPeriod || [] : []).map(p => p.contractPeriod)}
+                    onConfirm={async (p) => {
+                      await sendContract(p);
+                      setShowContractPeriods(false);
+                    }}
+                    onClose={() => setShowContractPeriods(false)}
+                  />
+                )}
+              </S.RoomTourWrapper>
             </S.Buttons>
           )}
         </S.Footer>
