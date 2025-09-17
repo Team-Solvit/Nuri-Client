@@ -35,7 +35,7 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
       '대연역': { lat: 35.1379, lon: 129.0556 },
       '경성대·부경대역': { lat: 35.1379, lon: 129.0556 },
     };
-    
+
     const coord = coordinates[name] || { lat: 35.1379, lon: 129.0556 };
     return {
       lat: coord.lat,
@@ -61,20 +61,20 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
   };
 
   const handlePriceChange = (values: [number, number]) => {
-    onFilterChange({ 
-      price: { 
-        min: values[0], 
-        max: values[1] 
-      } 
+    onFilterChange({
+      price: {
+        min: values[0],
+        max: values[1]
+      }
     });
   };
 
   const handlePeriodChange = (values: [number, number]) => {
-    onFilterChange({ 
-      contractPeriod: { 
-        min: values[0], 
-        max: values[1] 
-      } 
+    onFilterChange({
+      contractPeriod: {
+        min: values[0],
+        max: values[1]
+      }
     });
   };
 
@@ -95,9 +95,9 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
     <>
       <S.Search>
         <Image src='/icons/search.svg' alt="search" width={24} height={24} />
-        <S.Input 
-          type='text' 
-          placeholder='검색어를 입력하세요.' 
+        <S.Input
+          type='text'
+          placeholder='검색어를 입력하세요.'
           value={searchKeyword}
           onChange={(e) => onSearchKeywordChange(e.target.value)}
         />
@@ -105,13 +105,6 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
 
       {(!isMobile || showFilters) && (
         <S.Dropdown>
-          <Dropdown
-            text="학교"
-            list={schoolList}
-            isOpen={openedDropdown === 'school'}
-            onOpen={() => setOpenedDropdown('school')}
-            onClose={() => setOpenedDropdown(null)}
-            onSelect={handleSchoolSelect} />
           <Dropdown
             text="지역(구)"
             list={regionList}
@@ -127,6 +120,13 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
             onClose={() => setOpenedDropdown(null)}
             onSelect={handleStationSelect}
           />
+          <Dropdown
+            text="학교"
+            list={schoolList}
+            isOpen={openedDropdown === 'school'}
+            onOpen={() => setOpenedDropdown('school')}
+            onClose={() => setOpenedDropdown(null)}
+            onSelect={handleSchoolSelect} />
           <SelectItem
             text="가격"
             isOpen={openedDropdown === 'money'}

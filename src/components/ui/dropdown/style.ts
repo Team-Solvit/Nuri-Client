@@ -40,13 +40,8 @@ export const Container = styled.div`
     border-radius: ${radius.xl};
     padding: 15px;
     margin-top: 10px;
-    overflow-y: auto;
     z-index: ${zIndex.dropdown};
     background-color: ${colors.background};
-
-    &::-webkit-scrollbar {
-        display: none;
-    }
 
     ${mq.mobile} {
         width: 45vw;
@@ -54,6 +49,29 @@ export const Container = styled.div`
     }
 `
 
+export const List = styled.div`
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px 10px;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+`
+
+export const Button = styled.div`
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding-top: 15px;
+    border-top: 1px solid ${colors.line};
+    background: ${colors.background};
+    position: sticky;
+    bottom: 0;
+`
 export const Input = styled.input`
     display: flex;
     padding: 12px 20px;
@@ -69,12 +87,6 @@ export const Input = styled.input`
         font-size: ${fontSizes.Small};
     }
 `
-export const List = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    padding: 20px 10px;
-`
 
 export const ListItem = styled.div<{ selected?: boolean }>`
     display: flex;
@@ -88,13 +100,4 @@ export const ListItem = styled.div<{ selected?: boolean }>`
     &:hover {
         background-color: ${({ selected }) => (selected ? colors.primary : colors.gray + '20')};
     }
-`
-
-export const Button = styled.div`
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid ${colors.line};
 `

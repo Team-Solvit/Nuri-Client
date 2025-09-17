@@ -8,7 +8,7 @@ interface PostCardProps {
   id: number;
   user: string;
   title: string;
-  region: string;
+  //region: string;
   price: string;
   thumbnail: string;
   userProfile: string;
@@ -20,7 +20,7 @@ export default function PostItem({
   id,
   user,
   title,
-  region,
+  //region,
   price,
   thumbnail,
   userProfile,
@@ -46,8 +46,10 @@ export default function PostItem({
         </S.PostThumbnail>
         <S.PostMain>
           <S.PostTitle>{title}</S.PostTitle>
-          <S.PostRegion>{region}</S.PostRegion>
-          <S.PostPrice>₩ {price}0,000+ / 월</S.PostPrice>
+          {/* <S.PostRegion>{region}</S.PostRegion> */}
+          <S.PostPrice>
+            ₩ {Number(price).toLocaleString()}+ / 월
+          </S.PostPrice>
         </S.PostMain>
       </S.Post>
 

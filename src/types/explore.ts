@@ -41,10 +41,10 @@ export interface PostItemData {
   id: number;
   user: string;
   title: string;
-  region: string;
+  //region: string;
   price: string;
-  period: number;
-  gender: string;
+  //period: number;
+  //gender: string;
   thumbnail: string;
   userProfile: string;
 }

@@ -2,7 +2,7 @@
 
 import PostItem from '@/components/ui/postItem';
 import * as S from './style';
-import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 import { useQuery } from '@apollo/client';
 import { SEARCH_BOARDING_ROOM } from '@/services/explore';
 import { BoardingRoomSearchFilter, BoardingRoom, PostItemData } from '@/services/explore';
@@ -32,13 +32,12 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
   });
 
   const convertToPostItem = (room: BoardingRoom): PostItemData => ({
-    id: parseInt(room.roomId),
+    id: room.roomId && !isNaN(Number(room.roomId))
+      ? Number(room.roomId)
+      : Math.random(),
     user: '해ㅠ피',
     title: room.name,
-    region: '강서구',
-    price: room.monthlyRent.toString(),
-    period: 6,
-    gender: 'M',
+    price: room.monthlyRent?.toString() ?? '0',
     thumbnail: '/post/post-example.png',
     userProfile: '/profile/profile.svg',
   });
@@ -68,7 +67,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
         <div>검색 결과가 없습니다.</div>
       ) : (
         postList.map((post: PostItemData) => (
-          <PostItem key={post.id} {...post} onClick={() => navigate(`/post/${post.id}`)}/>
+          <PostItem key={post.id} {...post} onClick={() => navigate(`/post/${post.id}`)} />
         ))
       )}
     </S.PostList>
