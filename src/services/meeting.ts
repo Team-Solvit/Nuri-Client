@@ -57,8 +57,8 @@ export const MeetingQueries = {
 		}
 	`,
 	GET_MEETING_SCHEDULE: gql`
-		query getAllGroupSchedules($groupId: String!) {
-		  getAllGroupSchedules(groupId: $groupId) {
+		query getUpcomingGroupSchedules($groupId: String!) {
+		  getUpcomingGroupSchedules(groupId: $groupId) {
 		    scheduleId
 		    title
 		    description

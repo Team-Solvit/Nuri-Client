@@ -4,11 +4,11 @@ import * as S from "./style";
 import Image from "next/image";
 import Arrow from "@/assets/meeting/arrow.svg";
 import ArrowBottom from "@/assets/meeting/arrow-bottom.svg";
-import {meetings} from "./data"
 import {breakpoints} from "@/styles/media";
 import Flag from "@/assets/icon/flag.svg";
 import {useQuery} from "@apollo/client";
 import {MeetingQueries} from "@/services/meeting";
+import {convertMeetingsToTimeOnly} from "@/utils/meetingCaleander";
 
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -20,7 +20,14 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 		},
 		skip: !groupId,
 	})
-	console.log('모임 일정(meetingSchedule):', meetingSchedule) // 모임 일정(meetingSchedule) 데이터 출력
+	const upcomingGroupSchedules = meetingSchedule?.getUpcomingGroupSchedules
+	
+	const [schedule, setSchedule] = useState([])
+	useEffect(() => {
+		if(!upcomingGroupSchedules) return;
+		setSchedule(convertMeetingsToTimeOnly(meetingSchedule?.getUpcomingGroupSchedules))
+	}, [upcomingGroupSchedules]);
+	
 	const today = new Date();
 	const [year, setYear] = useState(today.getFullYear());
 	const [month, setMonth] = useState(today.getMonth());
@@ -80,46 +87,46 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 	for (let day = 1; day <= daysInMonth; day++) {
 		const currentIndex = cellIndex;
 		const date = new Date(year, month, day).toLocaleDateString("ko-KR");
-		
+		const s = schedule[date] ? schedule[date] : []
 		cells.push(
 			<S.DateCell
-				style={{cursor: meetings[currentIndex] ? "pointer" : "default"}}
+				style={{cursor: schedule[currentIndex] ? "pointer" : "default"}}
 				key={day}
 				onClick={(e) => handleClick(currentIndex, e)}
 			>
 				{day}
 				{
-					date in meetings &&
+					date in schedule &&
 					breakpoints.mobile <= window.innerWidth ?
 						<S.Schedule>
-							{meetings[date]?.title}
+							{s?.title}
 						</S.Schedule> :
-						date in meetings &&
+						date in schedule &&
             <S.Schedule>
               <Image src={Flag} alt="flag" width={16} height={16}/>
             </S.Schedule>
 				}
 				
-				{date in meetings && selectedIndex === currentIndex && (
+				{date in schedule && selectedIndex === currentIndex && (
 					<S.Popup onClick={(e) => e.stopPropagation()}>
-						<h3>{meetings[date].title}</h3>
+						<h3>{s?.title}</h3>
 						<S.PopupContentBox>
 							<p>날짜</p>
-							<p>{meetings[date].date}</p>
+							<p>{date}</p>
 						</S.PopupContentBox>
-						<S.PopupContentBox>
-							<p>비용</p>
-							<p>₩ {meetings[date].cost}원</p>
-						</S.PopupContentBox>
+						{/*<S.PopupContentBox>*/}
+							{/*<p>비용</p>*/}
+							{/*<p>₩ {meetings[date].cost}원</p>*/}
+						{/*</S.PopupContentBox>*/}
 						<S.PopupContentBox>
 							<p>시작시간</p>
-							<p>{meetings[date].startTime}</p>
+							<p>{s?.startTime}</p>
 						</S.PopupContentBox>
 						<S.PopupContentBox>
 							<p>종료시간</p>
-							<p>{meetings[date].endTime}</p>
+							<p>{s?.endTime}</p>
 						</S.PopupContentBox>
-						<p>{meetings[date].description}</p>
+						<p>{s?.description}</p>
 						{breakpoints.mobile <= window.innerWidth &&
               <S.ImgBox>
                 <Image src={ArrowBottom} alt="arrow" fill/>
