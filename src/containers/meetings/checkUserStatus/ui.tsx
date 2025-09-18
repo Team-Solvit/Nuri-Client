@@ -2,19 +2,21 @@
 
 import {useState, useEffect} from "react";
 import {useIsEnteringMeetingStore} from "@/store/isEnteringMeeting";
-import {useOtherMeetingFind} from "@/store/otherMeetingFind";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import {useQuery} from "@apollo/client";
 import {MeetingQueries} from "@/services/meeting";
 import {Status} from "@/types/meetings";
 import {useSelectOtherMeetingDetailStore} from "@/store/selectOtherMeetingDetail";
+import {useUserStore} from "@/store/user";
 
 export default function CheckUserStatus({children}: { children: React.ReactNode}) {
 	const {setFree, setEnteringMeeting, setSendRequest} = useIsEnteringMeetingStore()
-	const {setFind} = useOtherMeetingFind()
 	const {setMeetingId} = useSelectOtherMeetingDetailStore()
 	const navigate = useNavigationWithProgress()
-	const {data} = useQuery(MeetingQueries.GET_MEETING_STATUS)
+	const {id} = useUserStore()
+	const {data} = useQuery(MeetingQueries.GET_MEETING_STATUS, {
+		skip: !id,
+	})
 	const status: Status = data?.getGroupStatus
 	const [isLoading, setIsLoading] = useState(true)
 	useEffect(() => {
@@ -22,10 +24,8 @@ export default function CheckUserStatus({children}: { children: React.ReactNode}
 		setMeetingId(status.groupId || "")
 		if(status.hasGroup){
 			navigate(`/meetings/${status.groupId}`)
-			setFind(false)
 			setEnteringMeeting()
 		}else if(!status.hasGroup){
-			setFind(true)
 			if(status.groupId){
 				setSendRequest(status?.groupName || "")
 			}
@@ -35,6 +35,6 @@ export default function CheckUserStatus({children}: { children: React.ReactNode}
 		}
 		setIsLoading(false)
 	}, [status]);
-	if(isLoading) return null;
+	if(isLoading && id) return null;
 	return children
 }

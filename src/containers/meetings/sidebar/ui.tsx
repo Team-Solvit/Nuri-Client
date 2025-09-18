@@ -39,7 +39,7 @@ export default function MeetingsSidebar({rooms, meetings, isLoading}: MeetingsSi
 				{meetings?.length > 0 ?  meetings?.map(meeting => (
 					<S.Meeting key={meeting.groupId} onClick={() => openModal(meeting?.name, meeting?.groupId)}>
 						<S.ImgBox>
-							<Image src={meeting.profile} alt="meeting" fill/>
+							<Image src={meeting?.profile ? process.env.NEXT_PUBLIC_IMAGE_URL + meeting.profile : "/post/default.png"} alt="meeting" fill/>
 						</S.ImgBox>
 						<S.Info>
 							<S.Sub>

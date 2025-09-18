@@ -94,6 +94,17 @@ export const MeetingMutations = {
 		mutation requestJoinGroup($groupJoinInput : GroupJoinInput!){
 			requestJoinGroup(groupJoinRequestDto : $groupJoinInput)
 		}
-	`
-	
+	`,
+	JOIN_MEETING_SCHEDULE_REQUEST: gql`
+	mutation joinGroupSchedule($scheduleId : String!){
+			joinGroupSchedule(scheduleId : $scheduleId)
+		}`,
+	CANCEL_MEETING_REQUEST: gql`
+		mutation cancelJoinGroupRequest($scheduleId : String!){
+			cancelJoinGroupRequest(scheduleId : $scheduleId)
+		}`,
+	CANCEL_MEETING_SCHEDULE_REQUEST: gql`
+		mutation cancelGroupScheduleParticipation($scheduleId : String!){
+			cancelGroupScheduleParticipation(scheduleId : $scheduleId)
+		}`,
 }

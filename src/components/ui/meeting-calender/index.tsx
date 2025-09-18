@@ -1,20 +1,24 @@
 'use client';
-import {useState, useEffect} from "react";
+import {useState, useEffect, useRef} from "react";
 import * as S from "./style";
 import Image from "next/image";
 import Arrow from "@/assets/meeting/arrow.svg";
 import ArrowBottom from "@/assets/meeting/arrow-bottom.svg";
 import {breakpoints} from "@/styles/media";
 import Flag from "@/assets/icon/flag.svg";
-import {useQuery} from "@apollo/client";
-import {MeetingQueries} from "@/services/meeting";
+import {useMutation, useQuery} from "@apollo/client";
+import {MeetingMutations, MeetingQueries} from "@/services/meeting";
 import {convertMeetingsToTimeOnly} from "@/utils/meetingCaleander";
+import {useOtherMeetingFind} from "@/store/otherMeetingFind";
+import {useAlertStore} from "@/store/alert";
+import {useLoadingEffect} from "@/hooks/useLoading";
+import {Participate} from "@/types/meetings";
 
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
 export default function MeetingCalender({groupId}: { groupId: string }) {
 	
-	const {data: meetingSchedule} = useQuery(MeetingQueries.GET_MEETING_SCHEDULE, {
+	const {data: meetingSchedule, loading} = useQuery(MeetingQueries.GET_MEETING_SCHEDULE, {
 		variables: {
 			groupId: groupId
 		},
@@ -22,6 +26,8 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 	})
 	const upcomingGroupSchedules = meetingSchedule?.getUpcomingGroupSchedules
 	
+	useLoadingEffect(loading)
+	const [complete, setComplete] = useState<Participate>("STILL");
 	const [schedule, setSchedule] = useState([])
 	useEffect(() => {
 		if(!upcomingGroupSchedules) return;
@@ -37,10 +43,14 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 	const daysInMonth = new Date(year, month + 1, 0).getDate();
 	const prevLastDay = new Date(year, month, 0).getDate();
 	
+	
+	const popupRef = useRef<HTMLDivElement>(null);
 	// 팝업 외부 클릭 감지
 	useEffect(() => {
-		const handleClickOutside = () => {
-			setSelectedIndex(null);
+		const handleClickOutside = (event: MouseEvent) => {
+			if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+				setSelectedIndex(null);
+			}
 		};
 		document.addEventListener("mousedown", handleClickOutside);
 		return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -82,7 +92,36 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 		);
 		cellIndex++;
 	}
+	const [joinMeetingRequest, {data : joinResponse}] = useMutation(MeetingMutations.JOIN_MEETING_SCHEDULE_REQUEST)
+	const [cancelMeetingRequest] = useMutation(MeetingMutations.CANCEL_MEETING_SCHEDULE_REQUEST)
 	
+	useEffect(() => {
+		setComplete(joinResponse?.joinGroupSchedule ? "YES" : "STILL")
+	}, [joinResponse?.joinGroupSchedule]);
+	
+	
+	const {find} = useOtherMeetingFind()
+	const {success, error} = useAlertStore()
+	const handlePart = async (e : React.MouseEvent, mode:"참가" | "불참가", scheduleId : string) =>{
+		e.stopPropagation();
+		if(mode === "참가"){
+			await joinMeetingRequest({
+				variables:{
+					scheduleId: scheduleId,
+				}
+			});
+			setSelectedIndex(null);
+			success("일정에 참가하였습니다.")
+		}else if(mode === "불참가"){
+			await cancelMeetingRequest({
+				variables:{
+					scheduleId: scheduleId
+				}
+			});
+			setSelectedIndex(null);
+			error("일정에 참가하지 않았습니다.")
+		}
+	}
 	// 이번달 날짜
 	for (let day = 1; day <= daysInMonth; day++) {
 		const currentIndex = cellIndex;
@@ -127,6 +166,22 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 							<p>{s?.endTime}</p>
 						</S.PopupContentBox>
 						<p>{s?.description}</p>
+						{!find ?
+							<S.ButtonContainer>
+								{
+									complete === "STILL" ?
+										<>
+											<S.LeaveButton onClick={(e)=>handlePart(e, "불참가", schedule[date]?.scheduleId)}>불참가하기</S.LeaveButton>
+											<S.JoinButton onClick={(e)=>handlePart(e, "참가", schedule[date]?.scheduleId)}>참가하기</S.JoinButton>
+										</> :
+										complete === "YES" ?
+										<S.CompleteButton>참가완료</S.CompleteButton>
+											: <S.CompleteButton>불참가완료</S.CompleteButton>
+								}
+							
+							</S.ButtonContainer>
+							: null
+						}
 						{breakpoints.mobile <= window.innerWidth &&
               <S.ImgBox>
                 <Image src={ArrowBottom} alt="arrow" fill/>

@@ -37,6 +37,9 @@ export const Banner = styled.div`
   left: -3rem;
   overflow: hidden;
   border-radius: ${radius.md} ${radius.md} 0 0;
+	& > img{
+		object-fit: cover;
+	}
 `
 export const Gradient = styled.div`
   width: 100%;
@@ -94,7 +97,9 @@ export const ImgBox = styled.div`
   border-radius: ${radius.md};
   position: relative;
   overflow: hidden;
-
+& > img{
+	object-fit: cover;
+}
   ${mq.mobile} {
     width: 4rem;
     height: 4rem;

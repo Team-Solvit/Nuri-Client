@@ -11,7 +11,7 @@ export default function BackMeetingRoomBtn() {
 	const {meetingId} = useSelectOtherMeetingDetailStore()
 	const navigate = useNavigationWithProgress()
 	const handleBack = () => {
-		setFind(true)
+		setFind(false)
 		navigate(`/meetings/${meetingId}`)
 	}
 	if(!find) return null;

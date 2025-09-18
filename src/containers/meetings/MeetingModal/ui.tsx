@@ -17,7 +17,7 @@ import {useMeetingAccessionStore} from "@/store/meetingAccessionData";
 export const Banner = ({bannerImage}: { bannerImage: string | StaticImageData }) => {
 	return (
 		<S.Banner>
-			<Image style={{objectFit: "cover"}} src={bannerImage ? bannerImage : "/post/profile.png"} alt={"banner"} fill/>
+			<Image src={bannerImage && process.env.NEXT_PUBLIC_IMAGE_URL ? process.env.NEXT_PUBLIC_IMAGE_URL + bannerImage : "/post/profile.png"} alt={"banner"} fill/>
 			<S.Gradient/>
 		</S.Banner>
 	)
@@ -32,7 +32,7 @@ export const MeetingContent = (props: MeetingModalProps & {
 			<S.TitleBox>
 				<S.Info>
 					<S.ImgBox>
-						<Image src={props?.profile} alt="meeting" fill/>
+						<Image src={props?.profile ? process.env.NEXT_PUBLIC_IMAGE_URL + props.profile : "/post/default.png"} alt="meeting" fill/>
 					</S.ImgBox>
 					<S.Name>
 						<h3>{props.name}</h3>
@@ -98,7 +98,7 @@ export default function MeetingModal({
 	return (
 		<Modal>
 			<S.ModalContainer>
-				<Banner bannerImage={meetingInfoData?.banner}/>
+				<Banner bannerImage={props?.banner}/>
 				<MeetingContent {...props} />
 				<Nav isModal ={true} selected={selected} setSelected={setSelected}/>
 				{selected === 1 && <MeetingPost isModal={true} groupId={meetingId ?? ""}/>}
