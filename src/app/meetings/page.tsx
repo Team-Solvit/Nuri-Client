@@ -10,6 +10,7 @@ import {MeetingQueries} from "@/services/meeting";
 import {useLoadingEffect} from "@/hooks/useLoading";
 import {AreaResponse, M, Marker} from "@/types/meetings";
 import {useMeetingAccessionStore} from "@/store/meetingAccessionData";
+import BackMeetingRoomBtn from "@/containers/meetings/BackMeetingRoomBtn/ui"
 
 export default function Meetings() {
 	const [loading, setLoading] = useState(false);
@@ -54,6 +55,7 @@ export default function Meetings() {
 	if(loading) return null;
 	return (
 		<>
+			<BackMeetingRoomBtn />
 			<GoogleMap onMarkerSelect={(m) => setSelectedMarker(m)} markers={markers} label={(m) => meetings[m.id].title} renderPopup={(marker: typeof markers[0]) => (
 				<MeetingsSidebar isLoading={getAreaMeetingsLoading} rooms={meetings[marker.id].title} meetings={meetingsData}/>
 			)}>
