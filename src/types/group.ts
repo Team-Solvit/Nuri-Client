@@ -1,15 +1,19 @@
 // Group 관련 타입들
+export interface Area {
+  area: string;
+  latitude: number;
+  longitude: number;
+}
+
 export interface Group {
   groupId: string;
   name: string;
   description: string;
-  area: string;
+  area: Area;
   maxParticipation: number;
   currentParticipation: number;
   profile?: string;
   banner?: string;
-  latitude: number;
-  longitude: number;
   thirdPartyName: string;
   createdAt: string;
 }
@@ -18,6 +22,7 @@ export interface GroupMember {
   userId: string;
   name: string;
   email: string;
+  profile?: string;
   joinedAt: string;
 }
 
@@ -95,13 +100,22 @@ export interface GroupScheduleCreateInput {
   description?: string;
   location: string;
   scheduledAt: string;
+  expense: number;
   durationMinutes?: number;
   file?: string;
 }
 
 export interface GroupScheduleRecordCreateInput {
   scheduleId: string;
+  title: string;
+  content?: string;
   fileUrl: string;
+}
+
+export interface GroupStatus {
+  groupId?: string;
+  groupName?: string;
+  hasGroup: boolean;
 }
 
 // 응답 타입들

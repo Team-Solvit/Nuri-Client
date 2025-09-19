@@ -37,7 +37,7 @@ export default function Alert() {
 			<S.Alert isLeaving={!isLeavingAnimation}>
 				<S.Content>
 					<S.Close onClick={closeAlert}>
-						<Image src="/icons/X.svg" alt="X" />
+						<Image src="/icons/X.svg" alt="X" fill />
 					</S.Close>
 					<S.Emotion>
 						<Image src={isStatus === "success" ? Smile : Lose} alt="emotion" />

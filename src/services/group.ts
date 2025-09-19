@@ -8,13 +8,15 @@ export const GroupGQL = {
           groupId
           name
           description
-          area
+          area {
+            area
+            latitude
+            longitude
+          }
           maxParticipation
           currentParticipation
           profile
           banner
-          latitude
-          longitude
           thirdPartyName
           createdAt
         }
@@ -26,13 +28,15 @@ export const GroupGQL = {
           groupId
           name
           description
-          area
+          area {
+            area
+            latitude
+            longitude
+          }
           maxParticipation
           currentParticipation
           profile
           banner
-          latitude
-          longitude
           thirdPartyName
           createdAt
         }
@@ -44,6 +48,7 @@ export const GroupGQL = {
           userId
           name
           email
+          profile
           joinedAt
         }
       }
@@ -79,17 +84,76 @@ export const GroupGQL = {
           createdAt
         }
       }
+    `,
+    GET_PARTICIPATION_REQUESTS: gql`
+      query GetParticipationRequests($groupId: String!) {
+        getParticipationRequests(groupId: $groupId) {
+          requestId
+          requesterId
+          requesterName
+          groupId
+          groupName
+          requestMessage
+          requestDate
+        }
+      }
+    `,
+    GET_MY_PARTICIPATION_REQUESTS: gql`
+      query GetMyParticipationRequests {
+        getMyParticipationRequests {
+          requestId
+          requesterId
+          requesterName
+          groupId
+          groupName
+          requestMessage
+          requestDate
+        }
+      }
+    `,
+    GET_GROUP_STATUS: gql`
+      query GetGroupStatus {
+        getGroupStatus {
+          groupId
+          groupName
+          hasGroup
+        }
+      }
+    `,
+    GET_AREAS: gql`
+      query GetAreas {
+        getAreas {
+          area
+          latitude
+          longitude
+        }
+      }
+    `,
+    GET_GROUP_SCHEDULE_RECORDS: gql`
+      query GetGroupScheduleRecords($scheduleId: String!) {
+        getGroupScheduleRecords(scheduleId: $scheduleId) {
+          recordId
+          scheduleId
+          scheduleTitle
+          writerUserId
+          writerName
+          title
+          content
+          imageUrls
+          createdAt
+        }
+      }
     `
   },
   MUTATIONS: {
     CREATE_GROUP: gql`
-      mutation CreateGroup($groupCreateInput: GroupCreateInput!) {
-        createGroup(groupCreateInput: $groupCreateInput)
+      mutation CreateGroup($groupCreateRequestDto: GroupCreateInput!) {
+        createGroup(groupCreateRequestDto: $groupCreateRequestDto)
       }
     `,
     UPDATE_GROUP: gql`
-      mutation UpdateGroup($groupUpdateInput: GroupUpdateInput!) {
-        updateGroup(groupUpdateInput: $groupUpdateInput)
+      mutation UpdateGroup($GroupUpdateRequestDto: GroupUpdateInput!) {
+        updateGroup(GroupUpdateRequestDto: $GroupUpdateRequestDto)
       }
     `,
     DELETE_GROUP: gql`
@@ -131,6 +195,26 @@ export const GroupGQL = {
     REJECT_PARTICIPATION_REQUEST: gql`
       mutation RejectParticipationRequest($requestId: String!) {
         rejectParticipationRequest(requestId: $requestId)
+      }
+    `,
+    LEAVE_GROUP: gql`
+      mutation LeaveGroup {
+        leaveGroup
+      }
+    `,
+    CREATE_GROUP_SCHEDULE_RECORD: gql`
+      mutation CreateGroupScheduleRecord($groupScheduleRecordCreateRequestDto: GroupScheduleRecordCreateInput!) {
+        createGroupScheduleRecord(groupScheduleRecordCreateRequestDto: $groupScheduleRecordCreateRequestDto) {
+          recordId
+          scheduleId
+          scheduleTitle
+          writerUserId
+          writerName
+          title
+          content
+          imageUrls
+          createdAt
+        }
       }
     `
   }
@@ -178,17 +262,29 @@ export const GroupService = {
   },
 
   createGroup: async (client: ApolloClient<any>, groupInput: any) => {
-    const { data } = await client.mutate({
-      mutation: GroupGQL.MUTATIONS.CREATE_GROUP,
-      variables: { groupCreateInput: groupInput }
+    console.log('GraphQL 요청 전체:', {
+      mutation: 'CreateGroup',
+      variables: { groupCreateRequestDto: groupInput },
+      inputData: groupInput
     });
-    return data.createGroup;
+
+    try {
+      const { data } = await client.mutate({
+        mutation: GroupGQL.MUTATIONS.CREATE_GROUP,
+        variables: { groupCreateRequestDto: groupInput }
+      });
+      console.log('GraphQL 응답:', data);
+      return data.createGroup;
+    } catch (error) {
+      console.error('GraphQL 에러 상세:', error);
+      throw error;
+    }
   },
 
   updateGroup: async (client: ApolloClient<any>, groupUpdateInput: any) => {
     const { data } = await client.mutate({
       mutation: GroupGQL.MUTATIONS.UPDATE_GROUP,
-      variables: { groupUpdateInput }
+      variables: { GroupUpdateRequestDto: groupUpdateInput }
     });
     return data.updateGroup;
   },
@@ -239,5 +335,57 @@ export const GroupService = {
       variables: { requestId }
     });
     return data.rejectParticipationRequest;
+  },
+
+  getParticipationRequests: async (client: ApolloClient<any>, groupId: string) => {
+    const { data } = await client.query({
+      query: GroupGQL.QUERIES.GET_PARTICIPATION_REQUESTS,
+      variables: { groupId }
+    });
+    return data.getParticipationRequests;
+  },
+
+  getMyParticipationRequests: async (client: ApolloClient<any>) => {
+    const { data } = await client.query({
+      query: GroupGQL.QUERIES.GET_MY_PARTICIPATION_REQUESTS
+    });
+    return data.getMyParticipationRequests;
+  },
+
+  getGroupStatus: async (client: ApolloClient<any>) => {
+    const { data } = await client.query({
+      query: GroupGQL.QUERIES.GET_GROUP_STATUS
+    });
+    return data.getGroupStatus;
+  },
+
+  getAreas: async (client: ApolloClient<any>) => {
+    const { data } = await client.query({
+      query: GroupGQL.QUERIES.GET_AREAS
+    });
+    return data.getAreas;
+  },
+
+  getGroupScheduleRecords: async (client: ApolloClient<any>, scheduleId: string) => {
+    const { data } = await client.query({
+      query: GroupGQL.QUERIES.GET_GROUP_SCHEDULE_RECORDS,
+      variables: { scheduleId }
+    });
+    return data.getGroupScheduleRecords;
+  },
+
+  leaveGroup: async (client: ApolloClient<any>) => {
+    const { data } = await client.mutate({
+      mutation: GroupGQL.MUTATIONS.LEAVE_GROUP
+    });
+    return data.leaveGroup;
+  },
+
+  createGroupScheduleRecord: async (client: ApolloClient<any>, recordInput: any) => {
+    const { data } = await client.mutate({
+      mutation: GroupGQL.MUTATIONS.CREATE_GROUP_SCHEDULE_RECORD,
+      variables: { groupScheduleRecordCreateRequestDto: recordInput }
+    });
+    return data.createGroupScheduleRecord;
   }
 };

@@ -25,16 +25,6 @@ export default function MeetingThirdPartyContainer() {
   const [loading, setLoading] = useState(true);
   const [hasGroup, setHasGroup] = useState(false);
 
-  // 더미 데이터 (백업용)
-  const curMeetingList = [
-    { id: "1", title: "서면 볼링장에서 놀아요!", time: "11월 27일 (수) 13:00~", location: "서면" },
-    { id: "2", title: "서면 볼링장에서 놀아요!!", time: "11월 28일 (수) 11:00~", location: "서면 주디스" },
-  ];
-  const PrevMeetingList = [
-    { id: "3", title: "서면 볼링장에서 놀아요!!!", time: "11월 29일 (화) 12:00~", location: "서면 주디스 태화" },
-    { id: "4", title: "서면 볼링장에서 놀아요!!!!", time: "11월 30일 (화) 13:00~", location: "서면 주디스 태화 앞" },
-  ];
-
   const { isOpen: isOpenList, open: openListStore, close: closeListStore } = useModalStore();
   const [isOpenCreate, setIsOpenCreate] = useState(false);
   const [isOpenGroupSettings, setIsOpenGroupSettings] = useState(false);
@@ -49,23 +39,29 @@ export default function MeetingThirdPartyContainer() {
   const loadGroupData = async () => {
     try {
       setLoading(true);
-      
-      // 현재 지역의 그룹 조회
-      const groups = await GroupService.getGroupsByArea(client, currentArea);
-      
-      if (groups && groups.length > 0) {
-        // 첫 번째 그룹을 현재 그룹으로 설정 (나중에 사용자가 속한 그룹 로직으로 변경)
-        const group = groups[0];
+
+      // 현재 사용자의 그룹 상태 조회
+      let groupStatus;
+      try {
+        groupStatus = await GroupService.getGroupStatus(client);
+      } catch (err) {
+        groupStatus = null;
+      }
+
+      if (groupStatus && groupStatus.hasGroup && groupStatus.groupId) {
+        // 그룹이 있으면 그룹 정보 조회
+        const group = await GroupService.getGroupInfo(client, groupStatus.groupId);
         setCurrentGroup(group);
         setHasGroup(true);
-        
+
         // 그룹의 일정들 조회
         await loadGroupSchedules(group.groupId);
       } else {
-        setHasGroup(false);
+        // 내 그룹이 없으면 바로 그룹 생성 페이지로 이동
+        router.push('/meeting/third-party/create');
+        return;
       }
     } catch (err) {
-      console.error('그룹 데이터 로드 실패:', err);
       error('그룹 정보를 불러올 수 없습니다.');
       setHasGroup(false);
     } finally {
@@ -81,14 +77,13 @@ export default function MeetingThirdPartyContainer() {
       ]);
 
       setUpcomingSchedules(upcoming || []);
-      
+
       // 과거 일정은 전체 일정에서 현재 시간 이전 것들 필터링
       const now = new Date();
       const past = (all || []).filter((schedule: GroupSchedule) => new Date(schedule.scheduledAt) < now);
       setPastSchedules(past);
-      
+
     } catch (err) {
-      console.error('일정 로드 실패:', err);
       error('일정 정보를 불러올 수 없습니다.');
     }
   };
@@ -112,7 +107,6 @@ export default function MeetingThirdPartyContainer() {
 
   const handleEditSchedule = (scheduleId: string) => {
     // TODO: 일정 수정 모달 또는 페이지로 이동
-    console.log('일정 수정:', scheduleId);
     // router.push(`/meeting/third-party/schedule/edit/${scheduleId}`);
   };
 
@@ -122,25 +116,24 @@ export default function MeetingThirdPartyContainer() {
     try {
       // TODO: 일정 삭제 API 추가 필요
       // await GroupService.deleteSchedule(client, scheduleId);
-      
+
       if (currentGroup) {
         await loadGroupSchedules(currentGroup.groupId);
       }
       success('일정이 삭제되었습니다.');
     } catch (err) {
-      console.error('일정 삭제 실패:', err);
       error('일정 삭제에 실패했습니다.');
     }
   };
 
-  // 실제 데이터가 있으면 사용, 없으면 더미 데이터
-  const currentMeetingList = hasGroup && upcomingSchedules.length > 0 
+  // 실제 데이터만 사용
+  const currentMeetingList = hasGroup && upcomingSchedules.length > 0
     ? convertSchedulesToMeetingList(upcomingSchedules)
-    : curMeetingList.map(item => ({ ...item, id: parseInt(item.id) }));
-    
-  const previousMeetingList = hasGroup && pastSchedules.length > 0 
+    : [];
+
+  const previousMeetingList = hasGroup && pastSchedules.length > 0
     ? convertSchedulesToMeetingList(pastSchedules)
-    : PrevMeetingList.map(item => ({ ...item, id: parseInt(item.id) }));
+    : [];
 
   const handleOpenList = () => {
     if (!hasGroup) {
@@ -167,7 +160,7 @@ export default function MeetingThirdPartyContainer() {
 
   const handleDeleteGroup = async () => {
     if (!currentGroup) return;
-    
+
     try {
       await GroupService.deleteGroup(client, currentGroup.groupId);
       setCurrentGroup(null);
@@ -177,7 +170,6 @@ export default function MeetingThirdPartyContainer() {
       success('모임이 삭제되었습니다.');
       setIsOpenGroupSettings(false);
     } catch (err) {
-      console.error('모임 삭제 실패:', err);
       error('모임 삭제에 실패했습니다.');
     }
   };
@@ -212,57 +204,65 @@ export default function MeetingThirdPartyContainer() {
     <S.Wrapper>
       <S.Header>
         <S.HeaderLeft>
-          <h1>{currentGroup?.area || currentArea}</h1>
+          <h1>{currentGroup?.area?.area || currentArea}</h1>
           <p>
-            {hasGroup 
+            {hasGroup
               ? `${currentGroup?.name}의 일정을 확인해요`
               : `${currentArea}에서 모임을 생성해보세요`
             }
           </p>
         </S.HeaderLeft>
         <S.HeaderRight>
-          <Square 
-            text="모임원 목록" 
-            onClick={handleOpenList} 
-            status={hasGroup} 
-            width="max-content" 
+          <Square
+            text="모임원 목록"
+            onClick={handleOpenList}
+            status={hasGroup}
+            width="max-content"
           />
-          <Square 
-            text={hasGroup ? "일정 추가" : "모임 생성"} 
-            onClick={handleOpenCreate} 
-            status={true} 
-            width="max-content" 
+          <Square
+            text={hasGroup ? "일정 추가" : "모임 생성"}
+            onClick={handleOpenCreate}
+            status={true}
+            width="max-content"
           />
           {hasGroup && (
-            <Square 
-              text="모임 설정" 
-              onClick={handleOpenGroupSettings} 
-              status={true} 
-              width="max-content" 
+            <Square
+              text="모임 설정"
+              onClick={handleOpenGroupSettings}
+              status={true}
+              width="max-content"
             />
           )}
         </S.HeaderRight>
       </S.Header>
       <S.Section>
-        <MeetingList title="현재 진행중인 모임" meetingList={currentMeetingList} />
-        <MeetingList title="이전에 진행되었던 모임" meetingList={previousMeetingList} />
+        {hasGroup ? (
+          <>
+            <MeetingList title="현재 진행중인 모임" meetingList={currentMeetingList} />
+            <MeetingList title="이전에 진행되었던 모임" meetingList={previousMeetingList} />
+          </>
+        ) : (
+          <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
+            <p>그룹 데이터를 불러오는 중입니다...</p>
+          </div>
+        )}
       </S.Section>
       {isOpenList && (
         <Modal>
-          <MemberModal 
-            groupId={currentGroup?.groupId} 
-            onDone={closeListStore} 
+          <MemberModal
+            groupId={currentGroup?.groupId}
+            onDone={closeListStore}
           />
         </Modal>
       )}
       {isOpenCreate && hasGroup && (
         <StateModal isOpen={isOpenCreate} close={() => setIsOpenCreate(false)}>
-          <CreateModal 
+          <CreateModal
             hasGroup={hasGroup}
             currentGroup={currentGroup}
             onGroupCreated={handleGroupCreated}
             onScheduleCreated={handleScheduleCreated}
-            onDone={() => setIsOpenCreate(false)} 
+            onDone={() => setIsOpenCreate(false)}
           />
         </StateModal>
       )}
@@ -271,23 +271,23 @@ export default function MeetingThirdPartyContainer() {
           <div style={{ padding: '20px', minWidth: '300px' }}>
             <h3 style={{ marginBottom: '20px' }}>모임 설정</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <Square 
-                text="모임 정보 수정" 
-                onClick={() => router.push(`/meeting/third-party/edit/${currentGroup?.groupId}`)} 
-                status={true} 
-                width="100%" 
+              <Square
+                text="모임 정보 수정"
+                onClick={() => router.push(`/meeting/third-party/edit/${currentGroup?.groupId}`)}
+                status={true}
+                width="100%"
               />
-              <Square 
-                text="모임 삭제" 
-                onClick={handleDeleteGroup} 
-                status={false} 
-                width="100%" 
+              <Square
+                text="모임 삭제"
+                onClick={handleDeleteGroup}
+                status={false}
+                width="100%"
               />
-              <Square 
-                text="취소" 
-                onClick={() => setIsOpenGroupSettings(false)} 
-                status={true} 
-                width="100%" 
+              <Square
+                text="취소"
+                onClick={() => setIsOpenGroupSettings(false)}
+                status={true}
+                width="100%"
               />
             </div>
           </div>

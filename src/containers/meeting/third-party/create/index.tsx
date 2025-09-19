@@ -6,6 +6,7 @@ import { useApollo } from '@/lib/apolloClient';
 import { GroupService } from '@/services/group';
 import { useAlertStore } from '@/store/alert';
 import { useFileUpload } from '@/hooks/useFileUpload';
+import { useLoadingEffect } from '@/hooks/useLoading';
 import Square from '@/components/ui/button/square';
 import ImageUpload from '@/components/ui/ImageUpload';
 import * as S from './style';
@@ -15,10 +16,13 @@ export default function CreateThirdPartyContainer() {
   const client = useApollo();
   const { success, error } = useAlertStore();
   const { upload, loading: uploadLoading } = useFileUpload();
-  
+
   const [loading, setLoading] = useState(false);
   const [bannerPreview, setBannerPreview] = useState<string>('');
   const [profilePreview, setProfilePreview] = useState<string>('');
+
+  useLoadingEffect(loading || uploadLoading);
+
   const [formData, setFormData] = useState({
     name: '',
     banner: '',
@@ -88,6 +92,7 @@ export default function CreateThirdPartyContainer() {
     try {
       const uploadResult = await upload([file]);
       const imageUrl = uploadResult[0];
+      console.log('배너 업로드 결과:', imageUrl);
       setBannerPreview(URL.createObjectURL(file));
       setFormData(prev => ({ ...prev, banner: imageUrl }));
       success('배너 이미지가 업로드되었습니다.');
@@ -101,6 +106,7 @@ export default function CreateThirdPartyContainer() {
     try {
       const uploadResult = await upload([file]);
       const imageUrl = uploadResult[0];
+      console.log('프로필 업로드 결과:', imageUrl);
       setProfilePreview(URL.createObjectURL(file));
       setFormData(prev => ({ ...prev, profile: imageUrl }));
       success('프로필 이미지가 업로드되었습니다.');
@@ -143,20 +149,24 @@ export default function CreateThirdPartyContainer() {
 
     try {
       setLoading(true);
-      
+
       const groupCreateInput = {
         name: formData.name,
-        banner: formData.banner || undefined,
+        banner: formData.banner || null,
         description: formData.description,
-        profile: formData.profile || undefined,
+        profile: formData.profile || null,
         introduce: formData.introduce,
-        position: {
+        positionDto: {
           area: formData.position.area,
           latitude: formData.position.latitude,
           longitude: formData.position.longitude
         },
         maxParticipation: formData.maxParticipation
       };
+
+      console.log('전송할 데이터:', groupCreateInput);
+      console.log('배너 URL:', formData.banner);
+      console.log('프로필 URL:', formData.profile);
 
       await GroupService.createGroup(client, groupCreateInput);
       success('모임이 성공적으로 생성되었습니다.');
@@ -176,7 +186,7 @@ export default function CreateThirdPartyContainer() {
   return (
     <S.CreatePageWrapper>
       <S.Header>
-        <S.Title>✨ 새로운 모임 만들기</S.Title>
+        <S.Title>새로운 모임 만들기</S.Title>
       </S.Header>
 
       <S.Form>
@@ -284,17 +294,17 @@ export default function CreateThirdPartyContainer() {
       </S.Form>
 
       <S.ButtonSection>
-        <Square 
-          text="취소" 
-          onClick={handleCancel} 
-          status={false} 
-          width="48%" 
+        <Square
+          text="취소"
+          onClick={handleCancel}
+          status={false}
+          width="48%"
         />
-        <Square 
-          text={loading ? "생성 중..." : "🎉 모임 생성"} 
-          onClick={handleSubmit} 
-          status={!loading && !!formData.name.trim() && !!formData.description.trim() && !!formData.introduce.trim() && !!formData.position.area} 
-          width="48%" 
+        <Square
+          text={loading ? "생성 중..." : "모임 만들기"}
+          onClick={handleSubmit}
+          status={!loading && !!formData.name.trim() && !!formData.description.trim() && !!formData.introduce.trim() && !!formData.position.area}
+          width="48%"
         />
       </S.ButtonSection>
     </S.CreatePageWrapper>

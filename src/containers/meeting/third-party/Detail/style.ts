@@ -19,11 +19,19 @@ export const Wrapper = styled.div`
 
 export const Header = styled.header`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   gap: 1rem;
   width: 100%;
   ${mq.mobile} {
     gap: 0.6rem;
+    flex-direction: row;
+  }
+  
+  h1 {
+    margin: 0;
+    flex: 1;
   }
 `;
 

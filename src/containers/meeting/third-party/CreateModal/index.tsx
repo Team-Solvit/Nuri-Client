@@ -14,19 +14,19 @@ interface CreateModalProps {
   onDone?: () => void;
 }
 
-export default function CreateModal({ 
-  hasGroup = false, 
-  currentGroup = null, 
-  onGroupCreated, 
+export default function CreateModal({
+  hasGroup = false,
+  currentGroup = null,
+  onGroupCreated,
   onScheduleCreated,
-  onDone 
+  onDone
 }: CreateModalProps) {
   const client = useApollo();
   const { success, error } = useAlertStore();
-  
+
   // 공통 상태
   const [loading, setLoading] = useState(false);
-  
+
   // 모임 생성 관련 상태
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
@@ -35,10 +35,11 @@ export default function CreateModal({
   const [area, setArea] = useState("부산광역시 부산진구");
   const [latitude, setLatitude] = useState(35.1595);
   const [longitude, setLongitude] = useState(129.0756);
-  
+
   // 일정 생성 관련 상태 (기존)
   const [scheduleName, setScheduleName] = useState("");
   const [place, setPlace] = useState("");
+  const [expense, setExpense] = useState(0);
   const [date, setDate] = useState<Date | null>(new Date());
   const [ampm, setAmpm] = useState<'AM' | 'PM'>('AM');
   const [hour, setHour] = useState(6);
@@ -55,7 +56,7 @@ export default function CreateModal({
 
     try {
       setLoading(true);
-      
+
       const groupInput: GroupCreateInput = {
         name: groupName,
         description: groupDescription,
@@ -69,16 +70,16 @@ export default function CreateModal({
       };
 
       const result = await GroupService.createGroup(client, groupInput);
-      
+
       if (result) {
         // 생성된 그룹 정보를 다시 조회
         const groups = await GroupService.getGroupsByArea(client, area);
         const newGroup = groups.find((g: Group) => g.name === groupName);
-        
+
         if (newGroup && onGroupCreated) {
           onGroupCreated(newGroup);
         }
-        
+
         success('모임이 생성되었습니다!');
         onDone?.();
       }
@@ -98,13 +99,13 @@ export default function CreateModal({
 
     try {
       setLoading(true);
-      
+
       // 시간 조합
       const scheduleDateTime = new Date(date);
       let scheduleHour = hour;
       if (ampm === 'PM' && hour !== 12) scheduleHour += 12;
       if (ampm === 'AM' && hour === 12) scheduleHour = 0;
-      
+
       scheduleDateTime.setHours(scheduleHour, minute, 0, 0);
 
       const scheduleInput: GroupScheduleCreateInput = {
@@ -112,11 +113,12 @@ export default function CreateModal({
         title: scheduleName,
         location: place,
         scheduledAt: scheduleDateTime.toISOString(),
+        expense: expense,
         durationMinutes: 120 // 기본 2시간
       };
 
       await GroupService.createSchedule(client, scheduleInput);
-      
+
       success('일정이 생성되었습니다!');
       onScheduleCreated?.();
       onDone?.();
@@ -139,7 +141,7 @@ export default function CreateModal({
   return (
     <S.Wrapper>
       <S.Title>{hasGroup ? "일정 생성" : "모임 생성"}</S.Title>
-      
+
       {!hasGroup ? (
         // 모임 생성 폼
         <>
@@ -154,7 +156,7 @@ export default function CreateModal({
               />
             </S.InputBox>
           </S.Section>
-          
+
           <S.Section>
             <S.Label htmlFor="group-description">모임 설명</S.Label>
             <S.InputBox>
@@ -166,7 +168,7 @@ export default function CreateModal({
               />
             </S.InputBox>
           </S.Section>
-          
+
           <S.Section>
             <S.Label htmlFor="group-introduce">모임 소개</S.Label>
             <S.InputBox>
@@ -178,7 +180,7 @@ export default function CreateModal({
               />
             </S.InputBox>
           </S.Section>
-          
+
           <S.Section>
             <S.Label htmlFor="max-participation">최대 참여 인원</S.Label>
             <S.InputBox>
@@ -192,7 +194,7 @@ export default function CreateModal({
               />
             </S.InputBox>
           </S.Section>
-          
+
           <S.Section>
             <S.Label htmlFor="area">지역</S.Label>
             <S.InputBox>
@@ -219,7 +221,7 @@ export default function CreateModal({
               />
             </S.InputBox>
           </S.Section>
-          
+
           <S.Section>
             <S.Label>일정 시간 설정</S.Label>
             <S.DateRow>
@@ -253,7 +255,7 @@ export default function CreateModal({
               ))}
             </S.TimeGrid>
           </S.Section>
-          
+
           <S.Section>
             <S.Label htmlFor="schedule-place">일정 장소</S.Label>
             <S.InputBox>
@@ -265,14 +267,28 @@ export default function CreateModal({
               />
             </S.InputBox>
           </S.Section>
+
+          <S.Section>
+            <S.Label htmlFor="schedule-expense">예상 비용 (원)</S.Label>
+            <S.InputBox>
+              <S.Input
+                id="schedule-expense"
+                type="number"
+                min="0"
+                placeholder="예상 비용을 입력해주세요."
+                value={expense}
+                onChange={e => setExpense(parseInt(e.target.value) || 0)}
+              />
+            </S.InputBox>
+          </S.Section>
         </>
       )}
-      
-      <Square 
-        text={loading ? "처리 중..." : "완료"} 
-        onClick={handleSubmit} 
-        status={!loading} 
-        width="100%" 
+
+      <Square
+        text={loading ? "처리 중..." : "완료"}
+        onClick={handleSubmit}
+        status={!loading}
+        width="100%"
       />
     </S.Wrapper>
   );
