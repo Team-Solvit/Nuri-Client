@@ -11,50 +11,13 @@ export default function MeetingPost({isModal, groupId}: { isModal: boolean, grou
 		},
 		skip: !groupId,
 	})
-	console.log('모임 게시물(meetingPost):', meetingPost) // 모임 게시물(meetingPost) 데이터 출력
 	
-	const fakeData = [
-		{
-			id: 1,
-			thumbnail: '/post/post-example.png',
-		},
-		{
-			id: 2,
-			thumbnail: '/post/post-example.png',
-		},
-		{
-			id: 3,
-			thumbnail: '/post/post-example.png',
-		},
-		{
-			id: 4,
-			thumbnail: '/post/post-example.png',
-		},
-		{
-			id: 5,
-			thumbnail: '/post/post-example.png',
-		},
-		{
-			id: 6,
-			thumbnail: '/post/post-example.png',
-		},
-		{
-			id: 7,
-			thumbnail: '/post/post-example.png',
-		},
-		{
-			id: 8,
-			thumbnail: '/post/post-example.png',
-		},
-		{
-			id: 9,
-			thumbnail: '/post/post-example.png',
-		},
-	]
+	const posts = meetingPost?.getGroupPosts
 	return (
 		<S.MetingPostContainer isModal={isModal}>
-			{fakeData.map(post => (
-				<Post key={post.id} post={post}/>
+			{posts && posts.map((post : {postId : string,
+				thumbnail : string}) => (
+				<Post key={post.postId} post={post}/>
 			))}
 		</S.MetingPostContainer>
 	)

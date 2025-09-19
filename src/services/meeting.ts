@@ -49,10 +49,10 @@ export const MeetingQueries = {
 		  }
 		}	`,
 	GET_MEETING_POST: gql`
-		query GetPosts($groupId: Int!) {
-		  posts(group_id: $groupId) {
-		    id
-		    picture
+		query getGroupPosts($groupId: String!) {
+		  getGroupPosts(groupId: $groupId) {
+		    postId
+        thumbnail
 		  }
 		}
 	`,
