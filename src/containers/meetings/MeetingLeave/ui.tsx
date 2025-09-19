@@ -2,9 +2,20 @@ import * as S from "@/styles/confirm"
 import Modal from "@/components/layout/modal";
 import Square from "@/components/ui/button/square";
 import {useModalStore} from "@/store/modal";
+import {useMutation} from "@apollo/client";
+import {MeetingMutations} from "@/services/meeting";
 
 export default function MeetingLeave() {
 	const {close} = useModalStore();
+	const [leaveMeeting] = useMutation(MeetingMutations.LEAVE_MEETING);
+	const handleLeave = async () => {
+		try {
+			await leaveMeeting()
+			close()
+		} catch (err) {
+			console.log(err)
+		}
+	}
 	return (
 		<Modal>
 			<S.Container>
@@ -14,8 +25,7 @@ export default function MeetingLeave() {
 					<S.CancelBtn onClick={close} $width={"100%"}>
 						<S.Name>취소</S.Name>
 					</S.CancelBtn>
-					<Square text={"탈퇴"} onClick={() => {
-					}} status={true} width={"100%"}/>
+					<Square text={"탈퇴"} onClick={handleLeave} status={true} width={"100%"}/>
 				</S.ButtonContainer>
 			</S.Container>
 		</Modal>

@@ -37,7 +37,7 @@ export const MeetingMember = ({groupId}: { groupId: string }) => {
 	
 	const {id} = useUserStore()
 	const {find} = useOtherMeetingFind()
-	const [leaveMeeting] = useMutation(MeetingMutations.LEAVE_MEETING);
+	
 	useLoadingEffect(loading)
 	return (
 		<S.MeetingMemberContainer>
@@ -58,9 +58,7 @@ export const MeetingMember = ({groupId}: { groupId: string }) => {
 								{/*<S.Count>게시물 {member["게시물"]} 팔로워 {member["팔로워"]} 팔로우 {member["팔로우"]}</S.Count>*/}
 								{member.userId === id && !find &&
                   <S.Leave onClick={(e) => leaveCheck(e)}>
-                    <Square text={"탈퇴"} onClick={() => {
-											leaveMeeting();
-										}} status={true} width={"max-content"}/>
+                    <Square text={"탈퇴"} status={true} width={"max-content"}/>
                   </S.Leave>}
 							</S.NameBox>
 						</S.Member>

@@ -91,8 +91,8 @@ export const MeetingMutations = {
 		}
 	`,
 		LEAVE_MEETING: gql`
-	  mutation LeaveMeeting {
-	    leaveMeeting
+	  mutation leaveGroup {
+	    leaveGroup
 	  }
 	`,
 	JOIN_MEETING_REQUEST: gql`
