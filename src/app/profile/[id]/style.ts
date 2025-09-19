@@ -41,6 +41,30 @@ export const ProfileImage = styled.div`
     object-fit: cover;
   }
 
+  ${mq.mobile} {
+    width: 31vw;
+    margin-left: 1.5rem;
+    margin-top: 6rem;
+    aspect-ratio: 1 / 1;
+    height: auto;
+  }
+`
+
+export const ProfileImage2 = styled.div`
+  position: relative;
+  width: 10vw;
+  height: 18vh;
+  border-radius: 50%;
+  overflow: hidden;
+  background: ${colors.gray};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  img {
+    object-fit: cover;
+  }
+
   &::after {
     content: '';
     position: absolute;

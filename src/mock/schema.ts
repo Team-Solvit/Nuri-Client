@@ -17,6 +17,11 @@ export const typeDefs = gql`
     name: String!
   }
 
+  input PasswordChangeInput {
+    oldPassword: String!
+    newPassword: String!
+  }
+
   type SnsPostInfo {
     postId: ID!
     title: String!
@@ -61,8 +66,10 @@ export const typeDefs = gql`
     postCount: Int!
     followerCount: Int!
     followingCount: Int!
-    profile: String!
-    userId: String!
+    profile: String
+    userId: String
+    introduce: String
+    isFollowing: boolean;
   }
 
   # --- Query ---
@@ -95,6 +102,7 @@ export const typeDefs = gql`
     follow(userId: String!): Boolean
     unfollow(userId: String!): Boolean
     changeProfile(profile: String!): Boolean!
+    changePassword(input: PasswordChangeInput!): Boolean!
     sendSms(phoneNumber: String!): SendSmsResponse!
     verifyPhone(phoneNumber: String!, verificationCode: String!): VerifyPhoneResponse!
   }

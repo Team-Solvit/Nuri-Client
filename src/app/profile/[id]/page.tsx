@@ -9,93 +9,115 @@ import Post from '@/components/ui/post';
 import Follow from '@/components/ui/follow';
 import FollowerList from '@/components/ui/follower';
 import {useRouter, useParams} from 'next/navigation';
+import { useQuery } from '@apollo/client';
 import NProgress from 'nprogress';
+import { useApolloClient } from '@apollo/client';
+import { followUser, unfollowUser } from '@/services/profile';
+import { ProfileGQL } from '@/services/profile';
+import { UserProfileResponseDto } from '@/types/profile';
 
-interface UserProfile {
-    userid: string;
-    userProfile: string;
-    introduction: string;
-    followers: number;
-    follow: number;
-    post: number;
-    isFollowing?: boolean;
-}
 
 export default function UserProfilePage() {
     const router = useRouter();
     const params = useParams();
     const userId = params.id as string;
+    const client = useApolloClient();
     
     const [selected, setSelected] = useState(1);
     const [showFollowerModal, setShowFollowerModal] = useState(false);
     const [showFollowModal, setShowFollowModal] = useState(false);
     const [isFollowing, setIsFollowing] = useState(false);
 
-    const [profile, setProfile] = useState<UserProfile>({
-        userid: userId || 'Unknown_User',
-        userProfile: '/profile/profile.svg',
-        introduction: '',
-        followers: 0,
-        follow: 0,
-        post: 0,
-        isFollowing: false
-    });
+    const { data, loading, error } = useQuery<{ getUserProfile: UserProfileResponseDto }>(
+        ProfileGQL.QUERIES.GET_USER_PROFILE,
+        {
+          variables: { userId },
+          skip: !userId,
+          fetchPolicy: 'network-only',
+          onCompleted: (data) => {
+            setIsFollowing(data.getUserProfile.isFollowing);
+          },
+        }
+      );
+    
+      const profile = data?.getUserProfile ?? {
+        postCount: 0,
+        followerCount: 0,
+        followingCount: 0,
+        profile: '/profile/profile.svg',
+        userId: userId || '알 수 없음',
+        introduce: '소개글이 없습니다.',
+      };
+
+      const handleFollowToggle = async () => {
+        try {
+          if (isFollowing) {
+            const success = await unfollowUser(client, userId);
+            if (success) setIsFollowing(false);
+          } else {
+            const success = await followUser(client, userId);
+            if (success) setIsFollowing(true);
+          }
+        } catch (e) {
+          console.error("팔로우 요청 실패:", e);
+        }
+      };
 
 
     const postList = [
         {
             id: 1,
-            user: profile.userid,
+            user: userId,
             title: '하숙집 소개',
             region: '강서구',
             price: '30',
             thumbnail: '/post/post-example.png',
-            userProfile: profile.userProfile,
+            userProfile: profile.profile,
         },
         {
             id: 2,
-            user: profile.userid,
+            user: userId,
             title: '하숙집 소개',
             region: '강서구',
             price: '30',
             thumbnail: '/post/post-example.png',
-            userProfile: profile.userProfile,
+            userProfile: profile.profile,
         },
         {
             id: 3,
-            user: profile.userid,
+            user: userId,
             title: '하숙집 소개',
             region: '강서구',
             price: '30',
             thumbnail: '/post/post-example.png',
-            userProfile: profile.userProfile,
+            userProfile: profile.profile,
         },
         {
             id: 4,
-            user: profile.userid,
+            user: userId,
             title: '하숙집 소개',
             region: '강서구',
             price: '30',
             thumbnail: '/post/post-example.png',
-            userProfile: profile.userProfile,
+            userProfile: profile.profile,
         },
         {
             id: 5,
-            user: profile.userid,
+            user: userId,
             title: '하숙집 소개',
             region: '강서구',
             price: '30',
             thumbnail: '/post/post-example.png',
-            userProfile: profile.userProfile,
+            userProfile: profile.profile,
         },
         {
             id: 6,
-            user: profile.userid,
+            user: profile.userId,
             title: '하숙집 소개',
             region: '강서구',
             price: '30',
             thumbnail: '/post/post-example.png',
-            userProfile: profile.userProfile,
+            userProfile: profile.profile,
         }
     ];
 
@@ -108,16 +130,12 @@ export default function UserProfilePage() {
         router.push(path)
     }
 
-    const handleFollowToggle = () => {
-        setIsFollowing(!isFollowing);
-    }
-
     return (
         <S.ProfileWrapper>
             <S.Profile>
                 <S.ProfileImage>
                     <Image
-                        src={profile.userProfile}
+                        src={profile.profile}
                         alt="프로필"
                         fill
                         style={{ objectFit: 'cover', zIndex: 0 }}
@@ -126,7 +144,7 @@ export default function UserProfilePage() {
 
                 <S.ProfileMain>
                     <S.ButtonRow>
-                        <S.Nickname>{profile.userid}</S.Nickname>
+                        <S.Nickname>{userId}</S.Nickname>
                         <S.Button>
                             <Square
                                 text={isFollowing ? "언팔로우" : "팔로우"}
@@ -144,19 +162,19 @@ export default function UserProfilePage() {
                     </S.ButtonRow>
                     <S.Stats>
                         <S.Stat>
-                            <S.StatValue>{profile.post}</S.StatValue>
+                            <S.StatValue>{profile.postCount}</S.StatValue>
                             <S.StatLabel>게시물</S.StatLabel>
                         </S.Stat>
                         <S.Stat style={{ cursor: 'pointer' }} onClick={() => setShowFollowerModal(true)}>
-                            <S.StatValue1>{profile.followers}</S.StatValue1>
+                            <S.StatValue1>{profile.followerCount}</S.StatValue1>
                             <S.StatLabelF>팔로워</S.StatLabelF>
                         </S.Stat>
                         <S.Stat style={{ cursor: 'pointer' }} onClick={() => setShowFollowModal(true)}>
-                            <S.StatValue2>{profile.follow}</S.StatValue2>
+                            <S.StatValue2>{profile.followingCount}</S.StatValue2>
                             <S.StatLabelF2>팔로잉</S.StatLabelF2>
                         </S.Stat>
                     </S.Stats>
-                    <S.introduction>{profile.introduction}</S.introduction>
+                    <S.introduction>{profile.introduce}</S.introduction>
                 </S.ProfileMain>
             </S.Profile>
             <S.Side isSelected={selected}>
@@ -188,8 +206,8 @@ export default function UserProfilePage() {
                     </S.List2>
                 )}
             </S.PostList>
-            {showFollowModal && <Follow onClose={() => setShowFollowModal(false)} userId={profile.userid} />}
-            {showFollowerModal && <FollowerList onClose={() => setShowFollowerModal(false)} userId={profile.userid} />}
+            {showFollowModal && <Follow onClose={() => setShowFollowModal(false)} userId={userId} />}
+            {showFollowerModal && <FollowerList onClose={() => setShowFollowerModal(false)} userId={userId} />}
         </S.ProfileWrapper>
     );
 }

@@ -1,5 +1,5 @@
 import { gql, ApolloClient } from '@apollo/client';
-import { UserProfileResponseDto, ChangeProfileRequest, FollowUserInfoResponseDto, FollowUserInfo, FollowerUserInfo } from '@/types/profile';
+import { UserProfileResponseDto, ChangeProfileRequest, FollowUserInfoResponseDto, FollowUserInfo, FollowerUserInfo, PasswordChangeInput } from '@/types/profile';
 
 export const ProfileGQL = {
   QUERIES: {
@@ -11,6 +11,8 @@ export const ProfileGQL = {
           followingCount
           profile
           userId
+          introduce
+          isFollowing
         }
       }
     `,
@@ -48,6 +50,11 @@ export const ProfileGQL = {
     UNFOLLOW: gql`
       mutation Unfollow($userId: String!) {
         unfollow(userId: $userId)
+      }
+    `,
+    CHANGE_PASSWORD: gql`
+      mutation ChangePassword($passwordRequestDto: PasswordChangeInput!) {
+        changePassword(passwordRequestDto: $passwordRequestDto)
       }
     `,
   },
@@ -104,4 +111,15 @@ export const unfollowUser = async (client: ApolloClient<any>, userId: string): P
     variables: { userId },
   });
   return data.unfollow;
+};
+
+export const changePassword = async (
+  client: ApolloClient<any>,
+  input: PasswordChangeInput
+): Promise<boolean> => {
+  const { data } = await client.mutate({
+    mutation: ProfileGQL.MUTATIONS.CHANGE_PASSWORD,
+    variables: { input },
+  });
+  return data.changePassword;
 };
