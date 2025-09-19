@@ -149,7 +149,7 @@ export const ButtonContainer = styled.div`
   width: 100%;
 `;
 
-export const JoinButton = styled.button`
+export const PartButton = styled.button`
   flex: 1;
   padding: 0.5rem;
   border: none;
@@ -163,23 +163,5 @@ export const JoinButton = styled.button`
   
   &:hover {
     background-color: ${colors.primary};
-  }
-`;
-
-export const LeaveButton = styled(JoinButton)`
-  background-color: ${colors.gray};
-  
-  &:hover {
-    background-color: ${colors.gray};
-  }
-`;
-
-export const CompleteButton = styled(JoinButton)`
-  background-color: ${colors.primary};
-  width: 100%;
-  
-  &:hover {
-    background-color: ${colors.primary};
-    cursor: default;
   }
 `;

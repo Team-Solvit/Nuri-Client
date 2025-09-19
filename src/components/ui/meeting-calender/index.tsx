@@ -6,13 +6,12 @@ import Arrow from "@/assets/meeting/arrow.svg";
 import ArrowBottom from "@/assets/meeting/arrow-bottom.svg";
 import {breakpoints} from "@/styles/media";
 import Flag from "@/assets/icon/flag.svg";
-import {useMutation, useQuery} from "@apollo/client";
+import {useLazyQuery, useMutation, useQuery} from "@apollo/client";
 import {MeetingMutations, MeetingQueries} from "@/services/meeting";
 import {convertMeetingsToTimeOnly} from "@/utils/meetingCaleander";
 import {useOtherMeetingFind} from "@/store/otherMeetingFind";
 import {useAlertStore} from "@/store/alert";
 import {useLoadingEffect} from "@/hooks/useLoading";
-import {Participate} from "@/types/meetings";
 
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -27,7 +26,7 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 	const upcomingGroupSchedules = meetingSchedule?.getUpcomingGroupSchedules
 	
 	useLoadingEffect(loading)
-	const [complete, setComplete] = useState<Participate>("STILL");
+	const [complete, setComplete] = useState(false);
 	const [schedule, setSchedule] = useState([])
 	useEffect(() => {
 		if(!upcomingGroupSchedules) return;
@@ -56,9 +55,23 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
 	
-	const handleClick = (i: number, e: React.MouseEvent) => {
+	const [getSchedule, { data : isPart, loading : isPartLoading }] = useLazyQuery(
+		MeetingQueries.GET_IS_PARTICIPATING_GROUP_SCHEDULE
+	);
+	
+	useEffect(() => {
+		if(!isPart) return;
+		setComplete(isPart?.isParticipatingGroupSchedule)
+	}, [isPart?.isParticipatingGroupSchedule]);
+	
+	const handleClick = async (i: number, e: React.MouseEvent, scheduleId : string ) => {
 		e.stopPropagation(); // 외부 클릭 방지
 		setSelectedIndex(i);
+		await getSchedule({
+			variables:{
+				scheduleId: scheduleId
+			}
+		})
 	};
 	
 	const prevMonth = () => {
@@ -93,11 +106,16 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 		cellIndex++;
 	}
 	const [joinMeetingRequest, {data : joinResponse}] = useMutation(MeetingMutations.JOIN_MEETING_SCHEDULE_REQUEST)
-	const [cancelMeetingRequest] = useMutation(MeetingMutations.CANCEL_MEETING_SCHEDULE_REQUEST)
-	
+	const [cancelMeetingRequest, {data : cancelResponse}] = useMutation(MeetingMutations.CANCEL_MEETING_SCHEDULE_REQUEST)
+	console.log(cancelResponse)
 	useEffect(() => {
-		setComplete(joinResponse?.joinGroupSchedule ? "YES" : "STILL")
-	}, [joinResponse?.joinGroupSchedule]);
+		if(joinResponse?.joinGroupSchedule){
+			setComplete(true)
+		}
+		else if(cancelResponse?.cancelGroupScheduleParticipation){
+			setComplete(false)
+		}
+	}, [joinResponse?.joinGroupSchedule, cancelResponse?.cancelGroupScheduleParticipation]);
 	
 	
 	const {find} = useOtherMeetingFind()
@@ -119,7 +137,7 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 				}
 			});
 			setSelectedIndex(null);
-			error("일정에 참가하지 않았습니다.")
+			success("일정 참가를 취소했습니다.")
 		}
 	}
 	// 이번달 날짜
@@ -131,7 +149,7 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 			<S.DateCell
 				style={{cursor: schedule[currentIndex] ? "pointer" : "default"}}
 				key={day}
-				onClick={(e) => handleClick(currentIndex, e)}
+				onClick={(e) => handleClick(currentIndex, e, s?.scheduleId)}
 			>
 				{day}
 				{
@@ -166,17 +184,13 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 							<p>{s?.endTime}</p>
 						</S.PopupContentBox>
 						<p>{s?.description}</p>
-						{!find ?
+						{!find && !isPartLoading ?
 							<S.ButtonContainer>
 								{
-									complete === "STILL" ?
-										<>
-											<S.LeaveButton onClick={(e)=>handlePart(e, "불참가", schedule[date]?.scheduleId)}>불참가하기</S.LeaveButton>
-											<S.JoinButton onClick={(e)=>handlePart(e, "참가", schedule[date]?.scheduleId)}>참가하기</S.JoinButton>
-										</> :
-										complete === "YES" ?
-										<S.CompleteButton>참가완료</S.CompleteButton>
-											: <S.CompleteButton>불참가완료</S.CompleteButton>
+									complete ?
+										<S.PartButton onClick={(e)=>handlePart(e, "불참가", schedule[date]?.scheduleId)}>참가 취소하기</S.PartButton>
+											:
+										<S.PartButton onClick={(e)=>handlePart(e, "참가", schedule[date]?.scheduleId)}>참가하기</S.PartButton>
 								}
 							
 							</S.ButtonContainer>

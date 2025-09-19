@@ -76,6 +76,11 @@ export const MeetingQueries = {
 		    email
 		  }
 		}
+	`,
+	GET_IS_PARTICIPATING_GROUP_SCHEDULE: gql`
+		query isParticipatingGroupSchedule($scheduleId: String!) {
+		  isParticipatingGroupSchedule(scheduleId: $scheduleId)
+		}
 	`
 }
 

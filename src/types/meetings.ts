@@ -4,7 +4,6 @@ export interface Area {
 	latitude: number;
 }
 
-export type Participate = "YES" | "NO" | "STILL";
 export interface AreaResponse {
 	getAreas: Area[];
 }
