@@ -8,19 +8,45 @@ import Image from 'next/image'
 import Square from '@/components/ui/button/square'
 import { useMutation } from '@apollo/client';
 import { ProfileGQL } from '@/services/profile';
-
-const contactData = [
-    { type: 'phone', value: '010-1234-5678', icon: '/icons/call.svg' },
-    { type: 'email', value: 'example@email.com', icon: '/icons/mail.svg' },
-]
+import { useUserStore } from '@/store/user';
+import { AuthService } from '@/services/auth';
+import { useApollo } from '@/lib/apolloClient';
+import { useRouter } from 'next/navigation';
+import Logout from '@/components/ui/logout';
 
 export default function SettingPage() {
+    const { email, id, clear } = useUserStore(s => s);
+    const apolloClient = useApollo();
+    const router = useRouter();
     const [isMobile, setIsMobile] = useState(false)
+    const [isClient, setIsClient] = useState(false)
+    const [showLogoutModal, setShowLogoutModal] = useState(false)
+    const [isLoggingOut, setIsLoggingOut] = useState(false)
     const [currentPw, setCurrentPw] = useState('');
     const [newPw, setNewPw] = useState('');
     const [confirmPw, setConfirmPw] = useState('');
 
+    const contactData = [
+        { type: 'phone', value: '010-1234-5678', icon: '/icons/call.svg' },
+        { type: 'email', value: email || '이메일 없음', icon: '/icons/mail.svg' },
+    ]
+
     const [changePassword] = useMutation(ProfileGQL.MUTATIONS.CHANGE_PASSWORD);
+
+    const handleLogout = async () => {
+        setIsLoggingOut(true)
+        try {
+            await AuthService.logout(apolloClient);
+            clear(); // 사용자 스토어 초기화
+            alert('로그아웃되었습니다.');
+            router.push('/');
+        } catch (error) {
+            console.error('로그아웃 실패:', error);
+            alert('로그아웃 중 오류가 발생했습니다.');
+            setIsLoggingOut(false)
+        }
+        setShowLogoutModal(false)
+    };
 
     const handleChangePassword = async () => {
         if (newPw !== confirmPw) {
@@ -43,6 +69,7 @@ export default function SettingPage() {
     };
 
     useEffect(() => {
+        setIsClient(true)
         const handleResize = () => {
             setIsMobile(window.innerWidth <= 430)
         }
@@ -51,12 +78,25 @@ export default function SettingPage() {
         return () => window.removeEventListener('resize', handleResize)
     }, [])
 
+    // 로그인 상태 확인 (클라이언트 사이드에서만)
+    useEffect(() => {
+        if (isClient && !id && !isLoggingOut) {
+            alert('로그인이 필요합니다.');
+            router.push('/');
+        }
+    }, [isClient, id, router, isLoggingOut])
+
+    // 클라이언트 사이드 로딩 중이거나 로그인하지 않은 경우
+    if (!isClient || (isClient && !id)) {
+        return <div>로딩 중...</div>;
+    }
+
     return (
         <S.Layout>
             {isMobile && <SettingHeader />}
 
             <S.NavArea>
-                <SettingNav />
+                <SettingNav onLogoutClick={() => setShowLogoutModal(true)} />
             </S.NavArea>
 
             <S.ContentArea>
@@ -101,11 +141,18 @@ export default function SettingPage() {
                     <Square
                         text="비밀번호 변경"
                         status={true}
-                        width="44vw"
+                        width="100%"
                         onClick={handleChangePassword}
                     />
                 </S.Section>
             </S.ContentArea>
+            
+            {showLogoutModal && (
+                <Logout
+                    onLogout={handleLogout}
+                    onClose={() => setShowLogoutModal(false)}
+                />
+            )}
         </S.Layout>
     )
 }

@@ -41,7 +41,7 @@ export default function Leave({ onLeave, onClose }: LeaveModalProps) {
                     <S.Alert>* 모든 데이터는 복구할 수 없으며,</S.Alert>
                     <S.Alert>해당 계정은 영구적으로 삭제됩니다.</S.Alert>
                 </S.AlertContainer>
-                <S.Input placeholder="이메일을 입력해주세요" />
+                <S.Input placeholder="비밀번호를 입력해주세요" />
                 <S.ButtonContainer>
                     <S.CancelBtn onClick={onClose} width="7vw">
                         취소

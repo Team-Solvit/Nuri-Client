@@ -6,6 +6,11 @@ export const Layout = styled.div`
   display: flex;
   width: 100%;
   background: ${colors.background};
+
+  ${mq.mobile} {
+    min-height: 100vh;
+    flex-direction: column;
+  }
 `
 
 export const NavArea = styled.div`
@@ -27,8 +32,10 @@ export const ContentArea = styled.div`
   margin: 0 auto;
 
   ${mq.mobile} {
-    padding: 1rem;
+    padding: 1rem 1rem 2rem 1rem;
     width: 100%;
+    box-sizing: border-box;
+    min-height: calc(100vh - 120px);
   }
 `
 
@@ -41,7 +48,8 @@ export const RadioGroup = styled.div`
 
   ${mq.mobile} {
     gap: 1rem;
-    //width: 100%;
+    width: 100%;
+    margin-bottom: 2rem;
   }
 `
 
@@ -53,7 +61,10 @@ export const RadioLabel = styled.label`
 
   ${mq.mobile} {
     width: 100%;
-    padding: 0 1rem;
+    padding: 1rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
   }
 `
 
