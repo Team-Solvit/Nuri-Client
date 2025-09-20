@@ -56,9 +56,10 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
     onFilterChange({ station: location });
   };
 
-  const handleRegionSelect = (region: string, radius: string) => {
-    onFilterChange({ region: `${region} (${radius}m)` });
+  const handleRegionSelect = (region: string, radius?: string) => {
+    onFilterChange({ region: radius ? `${region} (${radius}m)` : region });
   };
+  
 
   const handlePriceChange = (values: [number, number]) => {
     onFilterChange({
@@ -111,7 +112,9 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
             isOpen={openedDropdown === 'region'}
             onOpen={() => setOpenedDropdown('region')}
             onClose={() => setOpenedDropdown(null)}
-            onSelect={handleRegionSelect} />
+            onSelect={handleRegionSelect} 
+            showRadius={false}
+            />
           <Dropdown
             text="역"
             list={stationList}
@@ -119,6 +122,7 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
             onOpen={() => setOpenedDropdown('station')}
             onClose={() => setOpenedDropdown(null)}
             onSelect={handleStationSelect}
+            showRadius={true}
           />
           <Dropdown
             text="학교"
@@ -126,7 +130,9 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
             isOpen={openedDropdown === 'school'}
             onOpen={() => setOpenedDropdown('school')}
             onClose={() => setOpenedDropdown(null)}
-            onSelect={handleSchoolSelect} />
+            onSelect={handleSchoolSelect} 
+            showRadius={true}
+            />
           <SelectItem
             text="가격"
             isOpen={openedDropdown === 'money'}

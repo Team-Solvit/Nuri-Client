@@ -11,10 +11,11 @@ interface DropdownProps {
     isOpen: boolean;
     onOpen: () => void;
     onClose: () => void;
-    onSelect?: (item: string, radius: string) => void;
+    onSelect?: (item: string, radius: string) => void; // 옵셔널 제거
+    showRadius?: boolean;
 }
 
-export default function Dropdown({ text, list, isOpen, onOpen, onClose, onSelect }: DropdownProps) {
+export default function Dropdown({ text, list, isOpen, onOpen, onClose, onSelect, showRadius }: DropdownProps) {
     const [selected, setSelected] = useState<string>(text);
     const [tempSelected, setTempSelected] = useState<string>(text);
     const [radius, setRadius] = useState<string>('');
@@ -39,33 +40,40 @@ export default function Dropdown({ text, list, isOpen, onOpen, onClose, onSelect
     const toggleDropdown = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (isOpen) {
-          onClose();
+            onClose();
         } else {
-          setTempSelected(selected);
-          setRadius('');
-          onOpen();
+            setTempSelected(selected);
+            setRadius('');
+            onOpen();
         }
     };
-      
+
     const handleSelect = (item: string) => {
         setTempSelected(item);
     };
 
     const handleComplete = () => {
-        if (!radius.trim()) {
-            alert('반경을 입력해주세요.');
-            return;
+        if (showRadius) {
+            if (!radius.trim()) {
+                alert('반경을 입력해주세요.');
+                return;
+            }
+            if (isNaN(Number(radius)) || Number(radius) <= 0) {
+                alert('올바른 반경 값을 입력해주세요.');
+                return;
+            }
         }
-        if (isNaN(Number(radius)) || Number(radius) <= 0) {
-            alert('올바른 반경 값을 입력해주세요.');
-            return;
-        }
-        setSelected(`${tempSelected} (${radius}m)`);
+    
+        setSelected(showRadius ? `${tempSelected} (${radius}m)` : tempSelected);
+    
         if (onSelect) {
-            onSelect(tempSelected, radius);
+            onSelect(tempSelected, showRadius ? `${radius}m` : '');
         }
+    
         onClose();
     };
+    
+
 
     const handleCancel = () => {
         setTempSelected(selected);
@@ -87,12 +95,15 @@ export default function Dropdown({ text, list, isOpen, onOpen, onClose, onSelect
 
             {isOpen && (
                 <S.Container>
-                    <S.Input 
-                        type="text" 
-                        placeholder="반경 입력(m)" 
-                        value={radius}
-                        onChange={(e) => setRadius(e.target.value)}
-                    />
+                    {showRadius && (
+                        <S.Input
+                            type="text"
+                            placeholder="반경 입력(m)"
+                            value={radius}
+                            onChange={(e) => setRadius(e.target.value)}
+                        />
+                    )}
+
                     <S.List>
                         {list.map((item, idx) => (
                             <S.ListItem
@@ -104,22 +115,24 @@ export default function Dropdown({ text, list, isOpen, onOpen, onClose, onSelect
                             </S.ListItem>
                         ))}
                     </S.List>
+
                     <S.Button>
                         <Square
                             text="취소"
                             status={false}
                             onClick={handleCancel}
-                            width='100px'
+                            width="100px"
                         />
                         <Square
                             text="완료"
                             status={true}
                             onClick={handleComplete}
-                            width='100px'
+                            width="100px"
                         />
                     </S.Button>
                 </S.Container>
             )}
+
         </S.DropdownContainer >
     );
 }
