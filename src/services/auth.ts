@@ -46,7 +46,18 @@ export const AuthGQL = {
       }
     `,
 		REISSUE: gql`
-      mutation Reissue { reissue }
+      mutation Reissue {
+        reissue {
+          id
+          userId
+          country
+          language
+          name
+          email
+          role
+          profile
+        }
+      }
     `,
 		LOGOUT: gql`
       mutation Logout { logout }
@@ -54,6 +65,16 @@ export const AuthGQL = {
     OAUTH_LOGIN: gql`
       mutation OAuth2Login($input: OAuth2LoginInput!) {
         oauth2Login(oauth2LoginInput: $input) {
+          user {
+            id
+            userId
+            country
+            language
+            name
+            email
+            role
+            profile
+          }
           oauthId
           isNewUser
         }
@@ -101,12 +122,18 @@ export const AuthService = {
     });
     return data?.localSignUp ?? '';
   },
-  reissue: async (client: ApolloClient<any>): Promise<TokenString> => {
-    const { data } = await client.mutate<{ reissue: TokenString }>({
+  reissue: async (client: ApolloClient<any>) => {
+    const res = await client.mutate<{ reissue: LoginUserResponse }>({
       mutation: AuthGQL.MUTATIONS.REISSUE,
       fetchPolicy: 'no-cache'
     });
-    return data?.reissue ?? '';
+    const headers = headersToObject((res as any).__headers);
+    const status = (res as any).__status as number | undefined;
+    return {
+      user: res.data?.reissue,
+      headers,
+      status,
+    };
   },
   logout: async (client: ApolloClient<any>): Promise<TokenString> => {
     const { data } = await client.mutate<{ logout: TokenString }>({

@@ -65,14 +65,14 @@ export default function OAuthCallbackClient() {
 
         localStorage.setItem('AT', headerToken);
         setAuth({
-          id: response.id || '',
-          email: response.email || '',
-          userId: response.userId || '',
-          country: response.country || '',
-          language: response.language || '',
-          name: response.name || '',
-          profile: response.profile || '',
-          role: response.role || '',
+          id: response.user.id || '',
+          email: response.user.email || '',
+          userId: response.user.userId || '',
+          country: response.user.country || '',
+          language: response.user.language || '',
+          name: response.user.name || '',
+          profile: response.user.profile || '',
+          role: response.user.role || '',
         });
 
         alertStore.success('로그인 성공');

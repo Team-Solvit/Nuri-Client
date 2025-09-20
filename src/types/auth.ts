@@ -26,16 +26,9 @@ export interface LoginOAuthCodeInput {
 }
 
 export interface OAuthLoginResponse {
+  user: LoginUserResponse;
   oauthId?: string | null;
   isNewUser: boolean;
-  id?: string;
-  userId?: string;
-  country?: string;
-  language?: string;
-  name?: string;
-  email?: string;
-  profile?: string | null;
-  role?: string;
 }
 
 export interface OAuthSignUpInput {

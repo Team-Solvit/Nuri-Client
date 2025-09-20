@@ -16,13 +16,19 @@ export default function AuthBootstrap() {
       try {
         let token = getAccessToken();
         if (!token) {
-          const r = await client.mutate({ mutation: AuthGQL.MUTATIONS.REISSUE, fetchPolicy: 'no-cache' });
+          const r = await client.mutate({
+            mutation: AuthGQL.MUTATIONS.REISSUE,
+            fetchPolicy: 'no-cache',
+          });
           token = extractTokenFromApolloResult(r);
           if (token) saveAccessToken(token);
         }
 
         if (token && !cancelled) {
-          const r = await client.mutate({ mutation: AuthGQL.MUTATIONS.REISSUE, fetchPolicy: 'no-cache' });
+          const r = await client.mutate({
+            mutation: AuthGQL.MUTATIONS.REISSUE,
+            fetchPolicy: 'no-cache',
+          });
           const user = r.data?.reissue;
           if (user) {
             setAuth(user);

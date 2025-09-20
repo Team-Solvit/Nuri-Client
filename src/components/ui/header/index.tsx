@@ -6,6 +6,7 @@ import Image from 'next/image'
 import * as S from './style'
 import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 import { useUserStore } from '@/store/user'
+import { useLoginModalStore } from '@/store/loginModal';
 
 const MENU_ITEMS = [
 	{ label: '홈', path: '/', icon: '/icons/home.svg', order: 0 },
@@ -23,6 +24,7 @@ export default function Header() {
 	const pathname = usePathname();
 	const navigate = useNavigationWithProgress();
 	const { userId, role, profile } = useUserStore(s => s);
+	const loginModal = useLoginModalStore();
 	
 	const [isMobile, setIsMobile] = useState(false);
 	const [moreOpen, setMoreOpen] = useState(false);
@@ -64,10 +66,6 @@ export default function Header() {
 		};
 	}, [moreOpen]);
 
-	const shouldHideHeader = () => {
-		return isMobile && HIDDEN_PATHS.some(path => pathname.startsWith(path));
-	};
-
 	const getFilteredMenuItems = () => {
 		return MENU_ITEMS.filter(item => !item.isThirdParty || role === 'THIRD_PARTY');
 	};
@@ -90,11 +88,17 @@ export default function Header() {
 		setMoreOpen(false);
 	};
 
+	const handleProfileClick = () => {
+		if (userId) {
+			navigate('/profile');
+		} else {
+			loginModal.open();
+		}
+	};
+
 	const isMenuActive = (path: string) => {
 		return path === '/' ? pathname === '/' : pathname.startsWith(path);
 	};
-
-	if (shouldHideHeader()) return null;
 
 	const { primaryItems, extraItems } = getMenuItems();
 
@@ -178,7 +182,7 @@ export default function Header() {
 			)}
 
 			<S.HeaderBottom>
-				<S.Profile>
+				<S.Profile onClick={handleProfileClick} style={{ cursor: 'pointer' }}>
 					{profileNode}
 					<span>{userId || '로그인을 해주세요'}</span>
 				</S.Profile>
