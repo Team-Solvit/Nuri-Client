@@ -14,9 +14,13 @@ export default function CheckUserStatus({children}: { children: React.ReactNode}
 	const {setMeetingId} = useSelectOtherMeetingDetailStore()
 	const navigate = useNavigationWithProgress()
 	const {id} = useUserStore()
-	const {data} = useQuery(MeetingQueries.GET_MEETING_STATUS, {
+	
+	const { data } = useQuery(MeetingQueries.GET_MEETING_STATUS, {
 		skip: !id,
-	})
+		notifyOnNetworkStatusChange: true,
+		fetchPolicy: "cache-and-network", 
+		nextFetchPolicy: "cache-first",  
+	});
 	const status: Status = data?.getGroupStatus
 	const [isLoading, setIsLoading] = useState(true)
 	useEffect(() => {
@@ -24,7 +28,7 @@ export default function CheckUserStatus({children}: { children: React.ReactNode}
 		setMeetingId(status.groupId || "")
 		if(status.hasGroup){
 			navigate(`/meetings/${status.groupId}`)
-			setEnteringMeeting()
+			setEnteringMeeting(status?.groupName || "")
 		}else if(!status.hasGroup){
 			if(status.groupId){
 				setSendRequest(status?.groupName || "")

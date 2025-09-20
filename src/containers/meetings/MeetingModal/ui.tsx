@@ -90,7 +90,6 @@ export default function MeetingModal({
 		skip: !meetingId,
 	});
 	
-	console.log('모임 상세 정보(meetingInfo):', meetingInfo?.getGroupInfo) // 모임 상세 정보(meetingInfo) 출력
 	const meetingInfoData = meetingInfo?.getGroupInfo;
 	const props = {...meetingInfoData, setIsAccessionAction};
 	

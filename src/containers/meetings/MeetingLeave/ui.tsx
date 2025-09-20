@@ -3,15 +3,23 @@ import Modal from "@/components/layout/modal";
 import Square from "@/components/ui/button/square";
 import {useModalStore} from "@/store/modal";
 import {useMutation} from "@apollo/client";
-import {MeetingMutations} from "@/services/meeting";
+import {MeetingMutations, MeetingQueries} from "@/services/meeting";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {useLoadingEffect} from "@/hooks/useLoading";
 
 export default function MeetingLeave() {
 	const {close} = useModalStore();
-	const [leaveMeeting] = useMutation(MeetingMutations.LEAVE_MEETING);
+	const [leaveMeeting, {loading}] = useMutation(MeetingMutations.LEAVE_MEETING,{
+		refetchQueries: [MeetingQueries.GET_MEETING_STATUS],
+		awaitRefetchQueries: true,
+	});
+	useLoadingEffect(loading);
+	const navigate = useNavigationWithProgress()
 	const handleLeave = async () => {
 		try {
 			await leaveMeeting()
 			close()
+			navigate("/meetings")
 		} catch (err) {
 			console.log(err)
 		}

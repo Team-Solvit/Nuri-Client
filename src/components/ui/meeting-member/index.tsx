@@ -5,8 +5,8 @@ import Square from "@/components/ui/button/square";
 import React from "react";
 import {useModalStore} from "@/store/modal";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
-import {useMutation, useQuery} from "@apollo/client";
-import {MeetingMutations, MeetingQueries} from "@/services/meeting";
+import { useQuery} from "@apollo/client";
+import { MeetingQueries} from "@/services/meeting";
 import {useUserStore} from "@/store/user";
 import {useOtherMeetingFind} from "@/store/otherMeetingFind";
 import {useLoadingEffect} from "@/hooks/useLoading";
@@ -35,9 +35,8 @@ export const MeetingMember = ({groupId}: { groupId: string }) => {
 		skip: !groupId,
 	})
 	
-	const {id} = useUserStore()
+	const {userId} = useUserStore()
 	const {find} = useOtherMeetingFind()
-	
 	useLoadingEffect(loading)
 	return (
 		<S.MeetingMemberContainer>
@@ -56,7 +55,7 @@ export const MeetingMember = ({groupId}: { groupId: string }) => {
 							<S.NameBox>
 								<S.Name>{member.name}</S.Name>
 								{/*<S.Count>게시물 {member["게시물"]} 팔로워 {member["팔로워"]} 팔로우 {member["팔로우"]}</S.Count>*/}
-								{member.userId === id && !find &&
+								{member.userId === userId && !find &&
                   <S.Leave onClick={(e) => leaveCheck(e)}>
                     <Square text={"탈퇴"} status={true} width={"max-content"}/>
                   </S.Leave>}

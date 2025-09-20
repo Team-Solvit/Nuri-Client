@@ -43,7 +43,7 @@ export default function Meeting() {
 	return (
 		<S.ModalContainer>
 			<S.Banner>
-				<Image style={{objectFit: "cover"}} src={meeting?.banner || "/post/default.png"} alt={"banner"} fill/>
+				<Image style={{objectFit: "cover"}} src={meeting ? process.env.NEXT_PUBLIC_IMAGE_URL + meeting?.banner : "/post/default.png"} alt={"banner"} fill/>
 				<S.Gradient/>
 				<S.BackBtnBox>
 					<Square text={"다른 모임 둘러보기"} onClick={handleBack} status={true} width={"max-content"}/>
@@ -53,7 +53,7 @@ export default function Meeting() {
 				<S.TitleBox>
 					<S.Info>
 						<S.ImgBox>
-							<Image src={meeting?.profile || "/meeting/member-profile.png"} alt="meeting" fill/>
+							<Image src={meeting ? process.env.NEXT_PUBLIC_IMAGE_URL + meeting?.profile : "/post/default.png"} alt="meeting" fill/>
 						</S.ImgBox>
 						<S.Name>
 							<h3>{meeting?.name}</h3>

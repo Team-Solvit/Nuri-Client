@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 
 interface IsEnteringMeetingState {
-	isEnteringMeeting: boolean;
+	isEnteringMeeting: boolean | string;
 	isSendRequest: boolean | string;
 	isFree: boolean;
-	setEnteringMeeting: () => void;
+	setEnteringMeeting: (name : string) => void;
 	setSendRequest: (name : string) => void;
 	setFree: () => void;
 }
@@ -14,8 +14,8 @@ export const useIsEnteringMeetingStore = create<IsEnteringMeetingState>((set) =>
 	isSendRequest: false,
 	isFree: false,
 	
-	setEnteringMeeting: () => set({
-		isEnteringMeeting: true,
+	setEnteringMeeting: (name : string) => set({
+		isEnteringMeeting: name,
 		isSendRequest: false,
 		isFree: false,
 	}),

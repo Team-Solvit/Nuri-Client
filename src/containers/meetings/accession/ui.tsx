@@ -24,8 +24,12 @@ export default function Accession({isAccession, setIsAccession, accessions}: Acc
 		}
 	})
 	const {error, success} = useAlertStore()
+	const [leaveMeeting] = useMutation(MeetingMutations.LEAVE_MEETING)
 	useLoadingEffect(loading);
 	const handelRouter = async () => {
+		if(isEnteringMeeting) {
+			await leaveMeeting();
+		}
 		try{
 			await mutate()
 			success("모임 신청에 성공하였습니다.")
