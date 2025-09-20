@@ -1,17 +1,18 @@
 import styled from '@emotion/styled';
-import {useCallback, useState} from 'react';
-import {colors, radius, fontSizes} from '@/styles/theme';
+import { useCallback, useState } from 'react';
+import { colors, radius, fontSizes } from '@/styles/theme';
 import Square from '@/components/ui/button/square';
 import Image from 'next/image';
-import {useRouter} from 'next/navigation';
-import {mq} from '@/styles/media';
-import {useApollo} from '@/lib/apolloClient';
-import {useAlertStore} from '@/store/alert';
-import {useLoginModalStore} from '@/store/loginModal';
-import {useUserStore} from '@/store/user';
-import {AuthGQL, AuthService} from '@/services/auth';
-import {decodeJWT} from '@/utils/jwt';
-import {useMessageRoomListConnectStore} from "@/store/messageRoomListConnect";
+import { useRouter } from 'next/navigation';
+import { mq } from '@/styles/media';
+import { useApollo } from '@/lib/apolloClient';
+import { useAlertStore } from '@/store/alert';
+import { useLoginModalStore } from '@/store/loginModal';
+import { useUserStore } from '@/store/user';
+import { AuthGQL, AuthService } from '@/services/auth';
+import { decodeJWT } from '@/utils/jwt';
+import { useQuery } from '@apollo/client';
+
 
 export default function Login() {
 	const router = useRouter();
@@ -28,7 +29,6 @@ export default function Login() {
 	const alertStore = useAlertStore();
 	const loginModal = useLoginModalStore();
 	const setAuth = useUserStore(s => s.setAuth);
-	const {setOpen} = useMessageRoomListConnectStore();
 	
 	const handleLogin = useCallback(async () => {
 		if (loading) return;
@@ -38,9 +38,9 @@ export default function Login() {
 		}
 		setLoading(true);
 		try {
-			const {headers, status} = await AuthService.localLogin(
+			const { user, headers, status } = await AuthService.localLogin(
 				client,
-				{id: id.trim(), password}
+				{ id: id.trim(), password }
 			);
 			
 			const headerTokenRaw =
@@ -51,32 +51,31 @@ export default function Login() {
 				throw new Error(`토큰이 응답에 없습니다. status=${status ?? 'N/A'}`);
 			}
 			
-			const decodedToken = decodeJWT(headerToken);
-			const role = decodedToken?.role || 'USER';
-			
 			localStorage.setItem('AT', headerToken);
 			
-			setAuth(id.trim(), role, headerToken);
+			if (!user) {
+				throw new Error('로그인 유저 정보가 없습니다.');
+			}
+			setAuth(user);
 			alertStore.success('로그인 성공');
 			loginModal.close();
-			setOpen();
 		} catch (e: any) {
 			alertStore.error(e?.message || '로그인 실패');
 		} finally {
 			setLoading(false);
 		}
 	}, [id, password, client, alertStore, loginModal, loading, setAuth]);
-
+	
 	const handleSocialLogin = useCallback(async (provider: 'kakao' | 'google' | 'facebook' | 'tiktok') => {
 		try {
 			sessionStorage.setItem('oauth_provider', provider);
-
+			
 			const { data } = await client.query({
 				query: AuthGQL.QUERIES.GET_SOCIAL_URL,
 				variables: { provider },
 				fetchPolicy: 'no-cache'
 			});
-
+			
 			if (data?.getOAuth2Link) {
 				window.location.href = data.getOAuth2Link;
 			} else {
@@ -88,10 +87,10 @@ export default function Login() {
 			sessionStorage.removeItem('oauth_provider');
 		}
 	}, [client, alertStore]);
-
+	
 	return (
 		<Wrapper>
-			<Image src="/logo.svg" alt="로고" width={80} height={80} priority/>
+			<Image src="/logo.svg" alt="로고" width={80} height={80} priority />
 			
 			{step === 'login' && (
 				<>
@@ -102,9 +101,7 @@ export default function Login() {
 							placeholder="아이디 또는 이메일을 입력해주세요."
 							value={id}
 							onChange={e => setId(e.target.value)}
-							onKeyDown={(e) => {
-								if (e.key === 'Enter') handleLogin();
-							}}
+							onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(); }}
 						/>
 					</FormGroup>
 					<FormGroup>
@@ -114,9 +111,7 @@ export default function Login() {
 							placeholder="비밀번호를 입력해주세요."
 							value={password}
 							onChange={e => setPassword(e.target.value)}
-							onKeyDown={(e) => {
-								if (e.key === 'Enter') handleLogin();
-							}}
+							onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(); }}
 						/>
 						<Hint>
 							<Left>
@@ -162,13 +157,13 @@ export default function Login() {
 								placeholder="인증 번호를 입력해주세요."
 								value={code}
 								onChange={e => setCode(e.target.value)}
-								style={{flex: 1}}
+								style={{ flex: 1 }}
 							/>
 							<Square text='인증' onClick={() => {
-							}} status={true} width='6vw'/>
+							}} status={true} width='6vw' />
 						</InputRow>
 					</FormGroup>
-					<Square text='다음' onClick={() => setStep('find-reset')} status={true} width='100%'/>
+					<Square text='다음' onClick={() => setStep('find-reset')} status={true} width='100%' />
 				</>
 			)}
 			
@@ -192,7 +187,7 @@ export default function Login() {
 							onChange={e => setPw2(e.target.value)}
 						/>
 					</FormGroup>
-					<Square text='비밀번호 재설정' onClick={() => setStep('login')} status={true} width='100%'/>
+					<Square text='비밀번호 재설정' onClick={() => setStep('login')} status={true} width='100%' />
 				</>
 			)}
 		</Wrapper>

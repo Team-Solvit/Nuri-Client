@@ -25,6 +25,7 @@ export default function RootLayout({children, modal}: { children: React.ReactNod
 		<MessageAlert/>
 		<head>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<meta name="google-site-verification" content="4mbr6batT4ll6nkqWnfo479cEFCpleGzuoT9jswmIwg" />
 		</head>
 		<GlobalStyles/>
 		<body style={{display: 'flex'}}>
