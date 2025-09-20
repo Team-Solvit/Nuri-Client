@@ -14,14 +14,12 @@ import { useQuery } from '@apollo/client';
 import { ProfileGQL } from '@/services/profile';
 import { UserProfileResponseDto } from '@/types/profile';
 import { useUserStore } from '@/store/user';
-import { useMutation } from '@apollo/client';
 
 
 export default function MyProfilePage() {
   const router = useRouter()
   const [showFollowerModal, setShowFollowerModal] = useState(false);
   const [showFollowModal, setShowFollowModal] = useState(false);
-  const [changeProfileMutation] = useMutation(ProfileGQL.MUTATIONS.CHANGE_PROFILE);
   const { id, role } = useUserStore(s => s);
   const userId = id;
 
@@ -35,7 +33,6 @@ export default function MyProfilePage() {
       fetchPolicy: 'network-only',
     }
   );
-  
 
   const profile = data?.getUserProfile ?? {
     postCount: 0,
@@ -110,39 +107,13 @@ export default function MyProfilePage() {
     router.push(`/post/${id}`)
   }
 
-  const imageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const imageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-  
-    const localUrl = URL.createObjectURL(file);
-    setImageUrl(localUrl);
-  
-    try {
-      // 서버 업로드
-      const formData = new FormData();
-      formData.append('file', file);
-  
-      const res = await fetch('/api/uploadProfileImage', {
-        method: 'POST',
-        body: formData,
-      });
-  
-      if (!res.ok) throw new Error('이미지 업로드 실패');
-  
-      const { imageUrl } = await res.json();
-  
-      // mutation 호출
-      await changeProfileMutation({
-        variables: { profile: imageUrl },
-      });
-  
-      console.log('프로필 사진 변경 완료');
-    } catch (err) {
-      console.error(err);
-      alert('프로필 이미지 변경에 실패했습니다.');
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setImageUrl(imageUrl);
     }
   };
-  
 
   const fileInput = () => {
     inputRef.current?.click();
