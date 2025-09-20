@@ -48,15 +48,12 @@ export default function PostScroll() {
 		setPage(newPage);
 		
 		try {
-			await fetchMore({
+			const res = await fetchMore({
 				variables: { start: newPage },
 				updateQuery: (prev, { fetchMoreResult }) => {
 					if (!fetchMoreResult || fetchMoreResult.getPostList.length === 0) {
-						error("더 이상 불러올 게시물이 없습니다");
-						setIsDone(true)
-						return prev; // 기존 데이터 그대로 유지
+						return prev;
 					}
-					
 					return {
 						...prev,
 						getPostList: [
@@ -66,6 +63,10 @@ export default function PostScroll() {
 					};
 				},
 			});
+			if (!res.data || res.data.getPostList.length === 0) {
+				    error("더 이상 불러올 게시물이 없습니다");
+				    setIsDone(true);
+				  }
 		} finally {
 			setIsFetchingMore(false);
 		}
@@ -76,11 +77,14 @@ export default function PostScroll() {
 	const lastPostElementRef = useCallback((node: HTMLDivElement | null) => {
 		if (loading || isFetchingMore) return;
 		if (observer.current) observer.current.disconnect();
-		observer.current = new IntersectionObserver(entries => {
-			if (entries[0].isIntersecting && posts && posts?.length > 10 ) {
-				loadMore();
-			}
-		});
+		observer.current = new IntersectionObserver(
+			  (entries) => {
+			    if (entries[0].isIntersecting) {
+				      loadMore();
+				    }
+			  },
+		  { root: null, rootMargin: "300px 0px", threshold: 0 }
+		);
 		if (node) observer.current.observe(node);
 	}, [loading, isFetchingMore, posts?.length]);
 
@@ -103,7 +107,7 @@ export default function PostScroll() {
 						? postItem.files.map(f => f.url)
 						: postItem.room.boardingRoomFile.map(f => f.url)
 					: [];
-			console.log(images)
+			
 			const max = images.length - 1;
 			
 			const next =
@@ -169,7 +173,7 @@ export default function PostScroll() {
 					likeCount
 				};
 				const currentIndex = imageIndexMap[index] || 0;
-				console.log(currentIndex, currentIndex < postData.thumbnail.length - 1, hoverIndex)
+				
 				const profileSrc: string =
 					!user?.thumbnail
 						? "/post/default.png"
@@ -232,10 +236,14 @@ export default function PostScroll() {
 									{postData?.thumbnail.map((src, i) => (
 										<S.Slide key={i}>
 											<Image
-												src={src ? process.env.NEXT_PUBLIC_IMAGE_URL + src : "/post/default.png"}
+												src={
+													    src
+													      ? (/^https?:\/\//.test(src) ? src : `${process.env.NEXT_PUBLIC_IMAGE_URL ?? ""}${src}`)
+														      : "/post/default.png"
+														  }
 												alt={`slide-${i}`}
 												fill
-												style={{objectFit: "contain"}}
+												style={{objectFit: "cover"}}
 											/>
 										</S.Slide>
 									))}

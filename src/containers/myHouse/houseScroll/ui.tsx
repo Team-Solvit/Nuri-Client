@@ -107,8 +107,16 @@ const HouseScroll = () => {
 						key={idx}
 					>
 						<S.RoomImage>
-							<Image src={process.env.NEXT_PUBLIC_IMAGE_URL ? process.env.NEXT_PUBLIC_IMAGE_URL + room?.room?.boardingRoomFile?.[0]?.url : ""} alt={"profile"} fill
-							       style={{objectFit: "cover"}}/>
+							{room?.room?.boardingRoomFile?.[0]?.url && process.env.NEXT_PUBLIC_IMAGE_URL ? (
+																<Image
+																	src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${room.room.boardingRoomFile[0].url}`}
+																	alt="room"
+																	fill
+																	style={{ objectFit: "cover" }}
+																/>
+															) : (
+																<div style={{ width: "100%", height: "100%", background: "#f2f2f2" }} />
+													)}
 						</S.RoomImage>
 						<S.RoomHeader>
 							<S.RoomInfo>

@@ -5,6 +5,11 @@ const nextConfig: NextConfig = {
 	images: {
 		remotePatterns: [
 			{
+				protocol: "https",
+				hostname: "search.pstatic.net",
+				pathname: "/**",
+			},
+			{
 				protocol: "http",
 				hostname: "localhost",
 				port: "1010",
