@@ -157,7 +157,7 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 				{day}
 				{
 					date in schedule &&
-					breakpoints.mobile <= window.innerWidth ?
+					(typeof window !== 'undefined' && breakpoints.mobile <= window.innerWidth) ?
 						<S.Schedule>
 							{s?.title}
 						</S.Schedule> :
