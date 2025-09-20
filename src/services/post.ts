@@ -29,6 +29,7 @@ export const PostQueries = {
 						    boardingHouse{
 							    host {
                      user {
+                        profile
 										    userId
 										    name
                      }
