@@ -6,7 +6,6 @@ import { useApollo } from '@/lib/apolloClient';
 import { useAlertStore } from '@/store/alert';
 import { useUserStore } from '@/store/user';
 import { AuthService } from '@/services/auth';
-import { decodeJWT } from '@/utils/jwt';
 
 export default function OAuthCallbackPage() {
   const router = useRouter();
@@ -56,19 +55,7 @@ export default function OAuthCallbackPage() {
           return;
         }
 
-        const headerTokenRaw = headers['authorization'] || headers['x-access-token'] || '';
-        const headerToken = headerTokenRaw.replace(/^Bearer\s+/i, '');
-
-        if (!headerToken) {
-          throw new Error(`토큰이 응답에 없습니다. status=${status ?? 'N/A'}`);
-        }
-
-        const decodedToken = decodeJWT(headerToken);
-        const role = decodedToken?.role || 'USER';
-        const userId = decodedToken?.sub || decodedToken?.id || 'unknown';
-
-        localStorage.setItem('AT', headerToken);
-        setAuth(userId, role);
+        setAuth(response as any);
 
         alertStore.success('로그인 성공');
         router.push('/');
