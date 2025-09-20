@@ -1,3 +1,5 @@
+"use client"
+
 import * as S from './style';
 import Image from 'next/image'
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";

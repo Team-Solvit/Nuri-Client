@@ -23,7 +23,7 @@ export interface Status{
 		groupName: null | string,
 		hasGroup: boolean,
 }
-export interface MeetingCalenderProps {
+export interface MeetingCalendarProps {
 	scheduleId:string;
 	title:string;
 	location:string;
@@ -33,7 +33,7 @@ export interface MeetingCalenderProps {
 	durationMinutes:number;
 }
 
-export interface MeetingCalenderResponseState {
+export interface MeetingCalendarResponseState {
 	scheduleId:string;
 	title:string;
 	description:string;

@@ -43,11 +43,10 @@ export default function Meetings() {
 	const [meetings, setMeetings] = useState<M[]>([])
 	const [selectedMarker, setSelectedMarker] = useState<Marker | null>(null);
 	
+	const hasArea = selectedMarker && meetings[selectedMarker.id]?.title;
 	const {data: areaMeetings, loading : getAreaMeetingsLoading} = useQuery(MeetingQueries.GET_MEETINGS, {
-		variables: {
-			area: selectedMarker ? meetings[selectedMarker.id]?.title : "",
-		},
-		skip: !selectedMarker,
+		variables: { area: hasArea ? meetings[selectedMarker.id]!.title : "" },
+		skip: !hasArea,
 	});
 	const {accessMeeting} = useMeetingAccessionStore()
 	useLoadingEffect(getAreaMeetingsLoading || getAreasLoading || loading)
@@ -56,10 +55,17 @@ export default function Meetings() {
 	return (
 		<>
 			<BackMeetingRoomBtn />
-			<GoogleMap onMarkerSelect={(m) => setSelectedMarker(m)} markers={markers} label={(m) => meetings[m.id].title} renderPopup={(marker: typeof markers[0]) => (
-				<MeetingsSidebar isLoading={getAreaMeetingsLoading} rooms={meetings[marker.id].title} meetings={meetingsData}/>
-			)}>
-			</GoogleMap>
+			<GoogleMap
+        onMarkerSelect={(m) => setSelectedMarker(m)}
+        markers={markers}
+        label={(m) => meetings[m.id]?.title ?? ''}
+        renderPopup={(marker: typeof markers[0]) => (
+					<MeetingsSidebar
+	            isLoading={getAreaMeetingsLoading}
+	            rooms={meetings[marker.id]?.title ?? ''}
+	            meetings={meetingsData}
+	          />
+        )} />
 			<MeetingAccession accessions={accessMeeting} isAccession={isAccession} setIsAccession={setIsAccession}/>
 			<MeetingModal {...{setIsAccessionAction: setIsAccession}} />
 		</>

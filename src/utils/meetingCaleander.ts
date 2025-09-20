@@ -1,8 +1,8 @@
-import {MeetingCalenderProps, MeetingCalenderResponseState} from "@/types/meetings";
+import {MeetingCalendarProps, MeetingCalendarResponseState} from "@/types/meetings";
 
-export function convertMeetingsToTimeOnly(meetings: MeetingCalenderResponseState[]) {
-	if(!meetings) return;
-	return meetings.reduce((acc: Record<string, MeetingCalenderProps>, meeting) => {
+export function convertMeetingsToTimeOnly(meetings?: MeetingCalendarResponseState[]) : Record<string, MeetingCalendarProps> | undefined {
+	  if(!meetings) return;
+	  return meetings.reduce<Record<string, MeetingCalendarProps>>((acc, meeting) => {
 		const startDate = new Date(meeting.scheduledAt);
 		const endDate = new Date(startDate.getTime() + meeting.durationMinutes * 60 * 1000);
 		
@@ -11,12 +11,17 @@ export function convertMeetingsToTimeOnly(meetings: MeetingCalenderResponseState
 		const formatTime = (date: Date) =>
 			date.toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false });
 		
-		acc[key] = {
-			...meeting,
-			startTime: formatTime(startDate),
-			endTime: formatTime(endDate)
-		};
+		const {scheduleId, title, description, location, durationMinutes} = meeting;
+		    acc[key] = {
+			      scheduleId,
+			      title,
+			      description,
+			      location,
+			      durationMinutes,
+			      startTime: formatTime(startDate),
+			      endTime: formatTime(endDate),
+			    };
 		
 		return acc;
-	}, {});
+	}, {} as Record<string, MeetingCalendarProps>);
 }

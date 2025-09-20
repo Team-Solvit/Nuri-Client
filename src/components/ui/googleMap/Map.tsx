@@ -23,7 +23,8 @@ interface MapProps {
   markers: MarkerItem[]
   label: (m: MarkerItem) => string
   renderPopup: (m: MarkerItem) => React.ReactNode
-  onMarkerSelect?: (m: MarkerItem | null) => void,
+	onMarkerSelect?: (m: MarkerItem | null) => void,
+	fallbackCenter?: { lat: number; lng: number },
 }
 
 export default function Map({ markers, label, renderPopup, onMarkerSelect }: MapProps) {
@@ -40,7 +41,11 @@ export default function Map({ markers, label, renderPopup, onMarkerSelect }: Map
   return (
     <GoogleMap
       mapContainerStyle={containerStyle}
-      center={markers[0]?.position}
+      center={
+        (markers.find(m => m.id === selectedId)?.position) ??
+        markers[0]?.position ??
+            { lat: 0, lng: 0 }
+      }
       zoom={15}
     >
       {markers.map((m) => {

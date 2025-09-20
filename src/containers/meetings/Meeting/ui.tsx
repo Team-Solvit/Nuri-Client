@@ -5,7 +5,7 @@ import Image from "next/image";
 import Square from "@/components/ui/button/square";
 import {useState} from "react";
 import MeetingPost from "@/components/ui/meting-post";
-import MeetingCalender from "@/components/ui/meeting-calender";
+import MeetingCalender from "@/components/ui/meeting-calendar";
 import {MeetingMember} from "@/components/ui/meeting-member";
 import {Nav} from "@/containers/meetings/MeetingModal/ui";
 import {useOtherMeetingFind} from "@/store/otherMeetingFind";

@@ -16,6 +16,7 @@ export default function MeetingLeave() {
 	useLoadingEffect(loading);
 	const navigate = useNavigationWithProgress()
 	const handleLeave = async () => {
+		if (loading) return;
 		try {
 			await leaveMeeting()
 			close()
@@ -33,7 +34,7 @@ export default function MeetingLeave() {
 					<S.CancelBtn onClick={close} $width={"100%"}>
 						<S.Name>취소</S.Name>
 					</S.CancelBtn>
-					<Square text={"탈퇴"} onClick={handleLeave} status={true} width={"100%"}/>
+					<Square text={loading ? "로딩중..." : "탈퇴"} onClick={handleLeave} status={!loading} width={"100%"}/>
 				</S.ButtonContainer>
 			</S.Container>
 		</Modal>

@@ -64,8 +64,9 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 		setComplete(isPart?.isParticipatingGroupSchedule)
 	}, [isPart?.isParticipatingGroupSchedule]);
 	
-	const handleClick = async (i: number, e: React.MouseEvent, scheduleId : string ) => {
-		e.stopPropagation(); // 외부 클릭 방지
+	const handleCellDetailClick = async (i: number, e: React.MouseEvent, scheduleId : string ) => {
+		e.stopPropagation();
+		if (!scheduleId) return;
 		setSelectedIndex(i);
 		await getSchedule({
 			variables:{
@@ -107,7 +108,7 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 	}
 	const [joinMeetingRequest, {data : joinResponse}] = useMutation(MeetingMutations.JOIN_MEETING_SCHEDULE_REQUEST)
 	const [cancelMeetingRequest, {data : cancelResponse}] = useMutation(MeetingMutations.CANCEL_MEETING_SCHEDULE_REQUEST)
-	console.log(cancelResponse)
+	
 	useEffect(() => {
 		if(joinResponse?.joinGroupSchedule){
 			setComplete(true)
@@ -119,9 +120,10 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 	
 	
 	const {find} = useOtherMeetingFind()
-	const {success, error} = useAlertStore()
+	const {success} = useAlertStore()
 	const handlePart = async (e : React.MouseEvent, mode:"참가" | "불참가", scheduleId : string) =>{
 		e.stopPropagation();
+		if (!scheduleId) return;
 		if(mode === "참가"){
 			await joinMeetingRequest({
 				variables:{
@@ -147,9 +149,9 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 		const s = schedule[date] ? schedule[date] : []
 		cells.push(
 			<S.DateCell
-				style={{cursor: schedule[currentIndex] ? "pointer" : "default"}}
+				style={{ cursor: (date in schedule) ? "pointer" : "default" }}
 				key={day}
-				onClick={(e) => handleClick(currentIndex, e, s?.scheduleId)}
+				onClick={(e) => (s?.scheduleId ? handleCellDetailClick(currentIndex, e, s.scheduleId) : undefined)}
 			>
 				{day}
 				{
@@ -165,7 +167,10 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 				}
 				
 				{date in schedule && selectedIndex === currentIndex && (
-					<S.Popup onClick={(e) => e.stopPropagation()}>
+					<S.Popup
+						onClick={(e) => e.stopPropagation()}
+						ref={popupRef}
+					>
 						<h3>{s?.title}</h3>
 						<S.PopupContentBox>
 							<p>날짜</p>

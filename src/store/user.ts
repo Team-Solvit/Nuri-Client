@@ -26,17 +26,22 @@ export const useUserStore = create<State>()(
 			email: null,
 			profile: null,
 			role: null,
-			setAuth: (user) =>
-				set({
-					id: user.id,
-					userId: user.userId,
-					country: user.country,
-					language: user.language,
-					name: user.name,
-					email: user.email,
-					profile: user.profile,
-					role: user.role,
-				}),
+			setAuth: (user) => {
+		    if (!user) {
+			        console.error('setAuth called with null/undefined user');
+			        return;
+			    }
+		    set({
+			        id: user.id,
+			        userId: user.userId,
+			        country: user.country,
+			        language: user.language,
+			        name: user.name,
+			        email: user.email,
+			        profile: user.profile,
+			        role: user.role,
+			    });
+				},
 			clear: () =>
 				set({
 					id: null,

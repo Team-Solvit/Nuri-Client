@@ -38,7 +38,7 @@ export default function CheckUserStatus({children}: { children: React.ReactNode}
 			}
 		}
 		setIsLoading(false)
-	}, [status]);
-	if(isLoading && id) return null;
-	return children
+	}, [status, navigate, setMeetingId, setEnteringMeeting, setSendRequest, setFree]);
+	 if (isLoading) return null;
+	 return children;
 }
