@@ -54,6 +54,16 @@ export default function RegisterContainer() {
 		return null;
 	};
 
+	// 현재 단계까지의 완료된 단계들만 필터링 (체크 표시용)
+	const getVisibleCompletedSteps = () => {
+		return completedSteps.filter(step => step < currentStep);
+	};
+
+	// 프로그레스 바 계산 (현재 단계까지 다 채우기)
+	const getProgressValue = () => {
+		return currentStep;
+	};
+
 	const navigate = useNavigationWithProgress()
 	const handleNext = async () => {
 		setTouched(true);
@@ -114,7 +124,8 @@ export default function RegisterContainer() {
 
 	const handleEdit = (stepIndex: number) => {
 		setCurrentStep(stepIndex);
-		setCompletedSteps(completedSteps.filter(i => i !== stepIndex));
+		// 편집하려는 단계 이후의 완료 상태는 제거하지 않음 (데이터는 유지)
+		// UI에서만 현재 단계 이후는 보이지 않도록 함
 	};
 
 	const onChangeField = <K extends keyof RegisterFormData>(key: K, value: RegisterFormData[K]) => {
@@ -148,28 +159,30 @@ export default function RegisterContainer() {
 		}
 	};
 
+	const visibleCompletedSteps = getVisibleCompletedSteps();
+
 	return (
 		<S.Wrapper>
 			<S.Header>
 				<S.Progress>
-					<S.ProgressLine progress={completedSteps.length} />
+					<S.ProgressLine progress={getProgressValue()} totalSteps={effectiveSteps.length} />
 					{effectiveSteps.map((label, idx) => (
 						<S.Step key={idx}>
 							<S.StepCircle
-								completed={completedSteps.includes(idx)}
+								completed={visibleCompletedSteps.includes(idx)}
 								current={idx === currentStep}
 							>
-								{completedSteps.includes(idx)
+								{visibleCompletedSteps.includes(idx)
 									? <Image src="icons/check.svg" alt="완료" width={18} height={18} />
 									: idx + 1}
 							</S.StepCircle>
 							<S.StepLabel
 								current={idx === currentStep}
-								completed={completedSteps.includes(idx)}
+								completed={visibleCompletedSteps.includes(idx)}
 							>
 								{label}
 							</S.StepLabel>
-							{completedSteps.includes(idx) && (
+							{visibleCompletedSteps.includes(idx) && (
 								<S.EditButton onClick={() => handleEdit(idx)}>수정</S.EditButton>
 							)}
 						</S.Step>
