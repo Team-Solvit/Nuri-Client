@@ -12,6 +12,7 @@ import {convertMeetingsToTimeOnly} from "@/utils/meetingCaleander";
 import {useOtherMeetingFind} from "@/store/otherMeetingFind";
 import {useAlertStore} from "@/store/alert";
 import {useLoadingEffect} from "@/hooks/useLoading";
+import {MeetingCalendarProps} from "@/types/meetings";
 
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -27,7 +28,7 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 	
 	useLoadingEffect(loading)
 	const [complete, setComplete] = useState(false);
-	const [schedule, setSchedule] = useState([])
+	const [schedule, setSchedule] = useState<Record<string, MeetingCalendarProps>>({});
 	useEffect(() => {
 		if(!upcomingGroupSchedules) return;
 		setSchedule(convertMeetingsToTimeOnly(meetingSchedule?.getUpcomingGroupSchedules))
@@ -146,7 +147,7 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 	for (let day = 1; day <= daysInMonth; day++) {
 		const currentIndex = cellIndex;
 		const date = new Date(year, month, day).toLocaleDateString("ko-KR");
-		const s = schedule[date] ? schedule[date] : []
+		const s : MeetingCalendarProps = schedule[date] ? schedule[date] : {scheduleId: "", title: "", description: "", location: "", durationMinutes: 0, startTime: "", endTime: ""};
 		cells.push(
 			<S.DateCell
 				style={{ cursor: (date in schedule) ? "pointer" : "default" }}

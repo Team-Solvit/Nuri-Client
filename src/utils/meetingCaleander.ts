@@ -1,7 +1,7 @@
 import {MeetingCalendarProps, MeetingCalendarResponseState} from "@/types/meetings";
 
-export function convertMeetingsToTimeOnly(meetings?: MeetingCalendarResponseState[]) : Record<string, MeetingCalendarProps> | undefined {
-	  if(!meetings) return;
+export function convertMeetingsToTimeOnly(meetings?: MeetingCalendarResponseState[]) : Record<string, MeetingCalendarProps> {
+	  if(!meetings) return {"null" : {scheduleId: "", title: "", description: "", location: "", durationMinutes: 0, startTime: "", endTime: ""}};
 	  return meetings.reduce<Record<string, MeetingCalendarProps>>((acc, meeting) => {
 		const startDate = new Date(meeting.scheduledAt);
 		const endDate = new Date(startDate.getTime() + meeting.durationMinutes * 60 * 1000);
