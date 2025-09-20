@@ -1,10 +1,11 @@
 'use client'
 
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import * as S from './style'
-import NProgress from "nprogress";
+import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
+import { useUserStore } from '@/store/user'
 
 const MENU_ITEMS = [
 	{ label: '홈', path: '/', icon: '/icons/home.svg', order: 0 },
@@ -18,7 +19,7 @@ const MENU_ITEMS = [
 
 export default function Header() {
 	const pathname = usePathname()
-	const router = useRouter()
+	const id = useUserStore(s => s?.id);
 
 	const [isMobile, setIsMobile] = useState(false);
 	const [moreOpen, setMoreOpen] = useState(false);
@@ -51,9 +52,10 @@ export default function Header() {
 		};
 	}, [moreOpen]);
 
+	const navigate = useNavigationWithProgress();
+
 	const handleMenuClick = (path: string) => {
-		NProgress.start()
-		router.push(path)
+		navigate(path)
 		setMoreOpen(false);
 	}
 
@@ -128,7 +130,7 @@ export default function Header() {
 						style={{ borderRadius: '50%' }}
 						unoptimized={true}
 					/>
-					<span>xx._un8</span>
+					<span>{id || '정보 없음'}</span>
 				</S.Profile>
 				<S.Report>
 					<Image

@@ -3,13 +3,13 @@
 import Image from 'next/image';
 import * as S from './style';
 import PostItem from '@/components/ui/postItem';
-import { useRouter } from 'next/navigation'
 import Square from '@/components/ui/button/square';
-import { useState, useRef } from 'react';
+import {useState, useRef} from 'react';
 import Post from '@/components/ui/post';
 import Follow from '@/components/ui/follow';
 import FollowerList from '@/components/ui/follower';
-import NProgress from "nprogress";
+import {useRouter} from 'next/navigation';
+import NProgress from 'nprogress';
 
 export default function ProfilePage() {
     const router = useRouter()
@@ -33,7 +33,7 @@ export default function ProfilePage() {
             title: '해피해피하숙',
             region: '강서구',
             price: '30',
-            thumbnail: '/post/room.svg',
+            thumbnail: '/post/post-example.png',
             userProfile: '/profile/profile.svg',
         },
         {
@@ -42,7 +42,7 @@ export default function ProfilePage() {
             title: '해피해피하숙',
             region: '강서구',
             price: '30',
-            thumbnail: '/post/room.svg',
+            thumbnail: '/post/post-example.png',
             userProfile: '/profile/profile.svg',
         },
         {
@@ -51,7 +51,7 @@ export default function ProfilePage() {
             title: '해피해피하숙',
             region: '강서구',
             price: '30',
-            thumbnail: '/post/room.svg',
+            thumbnail: '/post/post-example.png',
             userProfile: '/profile/profile.svg',
         },
         {
@@ -60,7 +60,7 @@ export default function ProfilePage() {
             title: '해피해피하숙',
             region: '강서구',
             price: '30',
-            thumbnail: '/post/room.svg',
+            thumbnail: '/post/post-example.png',
             userProfile: '/profile/profile.svg',
         },
         {
@@ -69,7 +69,7 @@ export default function ProfilePage() {
             title: '해피해피하숙',
             region: '강서구',
             price: '30',
-            thumbnail: '/post/room.svg',
+            thumbnail: '/post/post-example.png',
             userProfile: '/profile/profile.svg',
         },
         {
@@ -78,7 +78,7 @@ export default function ProfilePage() {
             title: '해피해피하숙',
             region: '강서구',
             price: '30',
-            thumbnail: '/post/room.svg',
+            thumbnail: '/post/post-example.png',
             userProfile: '/profile/profile.svg',
         }
     ];
