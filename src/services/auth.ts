@@ -1,4 +1,5 @@
 import { gql, ApolloClient } from '@apollo/client';
+import type { LoginUserResponse } from '@/types/auth';
 import { LocalLoginInput, LocalSignUpInput, LoginOAuthCodeInput, OAuthLoginResponse, TokenString, OAuthSignUpInput } from '@/types/auth';
 import { headersToObject } from '@/utils/headers';
 
@@ -27,7 +28,16 @@ export const AuthGQL = {
   MUTATIONS: {
     LOCAL_LOGIN: gql`
       mutation LocalLogin($input: LocalLoginInput!) {
-        localLogin(localLoginInput: $input)
+        localLogin(localLoginInput: $input) {
+          id
+          userId
+          country
+          language
+          name
+          email
+          role
+          profile
+        }
       }
     `,
     LOCAL_SIGN_UP: gql`
@@ -69,7 +79,7 @@ export const AuthGQL = {
 
 export const AuthService = {
   localLogin: async (client: ApolloClient<any>, input: LocalLoginInput) => {
-    const res = await client.mutate<{ localLogin: TokenString }>({
+    const res = await client.mutate<{ localLogin: LoginUserResponse }>({
       mutation: AuthGQL.MUTATIONS.LOCAL_LOGIN,
       variables: { input },
       fetchPolicy: 'no-cache',
@@ -79,7 +89,7 @@ export const AuthService = {
     const status = (res as any).__status as number | undefined;
 
     return {
-      tokenFromBody: res.data?.localLogin ?? '',
+      user: res.data?.localLogin,
       headers,
       status,
     };

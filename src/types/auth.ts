@@ -42,3 +42,14 @@ export interface OAuthSignUpInput {
 }
 
 export type TokenString = string;
+
+export interface LoginUserResponse {
+  id: string;
+  userId: string;
+  country: string;
+  language: string;
+  name: string;
+  email: string;
+  profile: string;
+  role: string;
+}
