@@ -39,7 +39,11 @@ export function useEmailVerification(client: ApolloClient<NormalizedCacheObject>
       }
     } catch (e: any) {
       setState({ phase: 'sent' });
-      alertStore.error(e?.message || '인증 실패');
+      const message =
+        (e?.graphQLErrors?.[0]?.message) ||
+        e?.message ||
+        '인증 실패';
+      alertStore.error(message);
     }
   };
 
