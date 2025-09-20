@@ -22,7 +22,7 @@ const HIDDEN_PATHS = ['/register', '/message'];
 export default function Header() {
 	const pathname = usePathname();
 	const navigate = useNavigationWithProgress();
-	const { userId, role } = useUserStore(s => s);
+	const { userId, role, profile } = useUserStore(s => s);
 	
 	const [isMobile, setIsMobile] = useState(false);
 	const [moreOpen, setMoreOpen] = useState(false);
@@ -98,6 +98,34 @@ export default function Header() {
 
 	const { primaryItems, extraItems } = getMenuItems();
 
+	const profileNode = profile ? (
+		<Image
+			src={profile}
+			alt="프로필"
+			width={36}
+			height={36}
+			style={{ borderRadius: '50%' }}
+			unoptimized={true}
+		/>
+	) : (
+		<div
+			style={{
+				width: 36,
+				height: 36,
+				borderRadius: '50%',
+				background: '#e0e0e0',
+				display: 'flex',
+				alignItems: 'center',
+				justifyContent: 'center',
+				fontWeight: 700,
+				fontSize: 18,
+				color: '#666',
+			}}
+		>
+			{(userId && userId[0]) || '?'}
+		</div>
+	);
+
 	return (
 		<S.HeaderContainer>
 			<Image
@@ -151,14 +179,7 @@ export default function Header() {
 
 			<S.HeaderBottom>
 				<S.Profile>
-					<Image
-						src="https://avatars.githubusercontent.com/u/193513016?s=200&v=4"
-						alt="프로필"
-						width={36}
-						height={36}
-						style={{ borderRadius: '50%' }}
-						unoptimized={true}
-					/>
+					{profileNode}
 					<span>{userId || '로그인을 해주세요'}</span>
 				</S.Profile>
 				
