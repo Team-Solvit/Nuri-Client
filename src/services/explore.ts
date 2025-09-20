@@ -13,6 +13,18 @@ export const SEARCH_BOARDING_ROOM = gql`
       commentCount
       status
       day
+      boardingHouse {
+        host {
+          user {
+            name
+            profile
+          }
+        }
+        location
+      }
+      boardingRoomFile {
+        fileId
+      }
     }
   }
 `;

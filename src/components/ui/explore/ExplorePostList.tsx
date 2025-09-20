@@ -32,7 +32,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
 
   const { data, loading, error, fetchMore } = useQuery(SEARCH_BOARDING_ROOM, {
     variables: {
-      boardingRoomSearchFilter: { ...debouncedFilter, start: 1 }
+      boardingRoomSearchFilter: { ...debouncedFilter, start: 0 }
     },
     skip: Object.keys(debouncedFilter).length === 0,
     onCompleted: (data) => {
@@ -47,11 +47,11 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     id: room.roomId && !isNaN(Number(room.roomId))
       ? Number(room.roomId)
       : Math.random(),
-    user: '해ㅠ피',
+    user: room.boardingHouse?.host?.user?.name || '알 수 없음',
     title: room.name,
     price: room.monthlyRent?.toString() ?? '0',
-    thumbnail: '/post/post-example.png',
-    userProfile: '/profile/profile.svg',
+    thumbnail: room.boardingRoomFile?.[0]?.fileId,
+    userProfile: room.boardingHouse?.host?.user?.profile || '/profile/profile.svg',
   });
 
   const loadMorePosts = useCallback(async () => {

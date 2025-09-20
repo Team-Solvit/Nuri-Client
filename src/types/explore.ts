@@ -9,6 +9,18 @@ export interface BoardingRoom {
   commentCount: number;
   status: string;
   day: string;
+  boardingHouse: {
+    host: {
+      user: {
+        name: string;
+        profile?: string;
+      };
+    };
+    location: string;
+  };
+  boardingRoomFile: {
+    fileId: string;
+  }[];
 }
 
 export interface Location {
