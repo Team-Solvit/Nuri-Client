@@ -24,7 +24,10 @@ export default function CheckUserStatus({children}: { children: React.ReactNode}
 	const status: Status = data?.getGroupStatus
 	const [isLoading, setIsLoading] = useState(true)
 	useEffect(() => {
-		if(!status) return
+		if (!id || !status) {
+			setIsLoading(false);
+			return;
+		}
 		setMeetingId(status.groupId || "")
 		if(status.hasGroup){
 			navigate(`/meetings/${status.groupId}`)
@@ -38,7 +41,7 @@ export default function CheckUserStatus({children}: { children: React.ReactNode}
 			}
 		}
 		setIsLoading(false)
-	}, [status, navigate, setMeetingId, setEnteringMeeting, setSendRequest, setFree]);
+	}, [id, status, navigate, setMeetingId, setEnteringMeeting, setSendRequest, setFree]);
 	 if (isLoading) return null;
 	 return children;
 }

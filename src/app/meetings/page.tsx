@@ -17,8 +17,8 @@ export default function Meetings() {
 	const [isAccession, setIsAccession] = useState(false);
 	
 	const changeAreaInitial = () => {
+		if (!areas?.getAreas) return;
 		setLoading(true)
-		if(!areas) return;
 		const newMarkers = areas.getAreas.map((area, idx) => ({
 			id: idx,
 			position: {lat: area.latitude, lng: area.longitude},

@@ -31,7 +31,7 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 	const [schedule, setSchedule] = useState<Record<string, MeetingCalendarProps>>({});
 	useEffect(() => {
 		if(!upcomingGroupSchedules) return;
-		setSchedule(convertMeetingsToTimeOnly(meetingSchedule?.getUpcomingGroupSchedules))
+		setSchedule(convertMeetingsToTimeOnly(upcomingGroupSchedules) ?? {})
 	}, [upcomingGroupSchedules]);
 	
 	const today = new Date();
@@ -147,7 +147,7 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 	for (let day = 1; day <= daysInMonth; day++) {
 		const currentIndex = cellIndex;
 		const date = new Date(year, month, day).toLocaleDateString("ko-KR");
-		const s : MeetingCalendarProps = schedule[date] ? schedule[date] : {scheduleId: "", title: "", description: "", location: "", durationMinutes: 0, startTime: "", endTime: ""};
+		const s = schedule[date]
 		cells.push(
 			<S.DateCell
 				style={{ cursor: (date in schedule) ? "pointer" : "default" }}
