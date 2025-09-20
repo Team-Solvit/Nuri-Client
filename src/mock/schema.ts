@@ -2,6 +2,25 @@ import {gql} from 'apollo-server';
 
 export const typeDefs = gql`
   # --- Post 관련 타입 ---
+  enum ShareRange {
+    ALL
+    FRIENDS
+    PRIVATE
+  }
+
+  input CreatePostInput {
+    postInfo: PostInfoInput!
+    files: [String!]!
+    hashTags: [String!]!
+  }
+
+  input PostInfoInput {
+    title: String!
+    contents: String!
+    shareRange: ShareRange!
+    isGroup: Boolean!
+  }
+
   type Author {
     id: ID!
     name: String!
@@ -46,5 +65,10 @@ export const typeDefs = gql`
     getPostList(start: Int!): [Post]!
     getAlertList: [Alert]!
     getAlertCount: Int!
+  }
+
+  # --- Mutation ---
+  type Mutation {
+    createPost(createPostInput: CreatePostInput!): Boolean!
   }
 `;

@@ -1,13 +1,13 @@
 import { USERNAME_PATTERN, EMAIL_PATTERN } from '@/constants/register';
 
-export interface TermsData { terms1: boolean; terms2: boolean; terms3: boolean; terms4: boolean; terms5: boolean; terms6: boolean; terms7: boolean; }
+export interface TermsData { terms1: boolean; terms2: boolean; terms3: boolean; }
 export interface AccountData { name: string; username: string; usernameChecked: boolean; usernameAvailable: boolean; }
 export interface EmailData { email: string; code: string; verified: boolean; }
 export interface PasswordData { password: string; confirmPassword: string; }
 export interface ProfileData { nationality: string; language: string; }
 
 export const validateTerms = (d: TermsData) => (
-  d.terms1 && d.terms2 && d.terms3 && d.terms4 && d.terms5 && d.terms6 && d.terms7 ? null : '모든 약관에 동의해야 합니다.'
+  d.terms1 && d.terms2 && d.terms3 ? null : '모든 약관에 동의해야 합니다.'
 );
 
 export const validateAccount = (d: AccountData) => {
@@ -27,7 +27,10 @@ export const validateEmail = (d: EmailData) => {
 
 export const validatePassword = (d: PasswordData) => {
   if (!d.password.trim() || !d.confirmPassword.trim()) return '비밀번호와 비밀번호 재입력을 모두 입력해주세요.';
-  if (d.password.length < 8) return '비밀번호는 8자 이상이어야 합니다.';
+  if (d.password.length < 8) return '비밀번호는 8자 이상 입력해주세요.';
+  if (!/[a-z]/.test(d.password)) return '영어 소문자를 1개 이상 포함해주세요.';
+  if (!/\d/.test(d.password)) return '숫자를 1개 이상 포함해주세요.';
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(d.password)) return '특수문자를 1개 이상 포함해주세요.';
   if (d.password !== d.confirmPassword) return '비밀번호가 일치하지 않습니다.';
   return null;
 };

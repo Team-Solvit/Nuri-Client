@@ -5,7 +5,7 @@ import { memo } from 'react';
 
 interface Props {
   form: RegisterFormData;
-  onChange: (k: keyof RegisterFormData, v: any) => void;
+  onChange: <K extends keyof RegisterFormData>(k: K, v: RegisterFormData[K]) => void;
   usernameState: { status: string; message?: string };
   onCheck: () => void;
 }

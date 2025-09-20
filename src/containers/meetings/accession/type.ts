@@ -5,10 +5,7 @@ export interface AccessionProps {
 }
 
 export interface Accession {
-	id: number;
-	title: string;
-	content: string;
-	personnel: number;
-	maxPersonnel: number;
+	groupId: string;
+	name: string;
 }
 

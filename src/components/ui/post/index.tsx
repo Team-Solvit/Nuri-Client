@@ -1,36 +1,25 @@
-'use client'
+"use client"
 
 import * as S from './style';
 import Image from 'next/image'
-import {useState, useEffect} from 'react';
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 
 interface PostProps {
 	post: {
-		id: number;
+		postId: string;
 		thumbnail: string;
 	};
 }
 
 export default function Post({post}: PostProps) {
-	const [isMobile, setIsMobile] = useState(false);
-	
-	useEffect(() => {
-		const handleResize = () => {
-			setIsMobile(window.innerWidth <= 430);
-		};
-		handleResize();
-		window.addEventListener('resize', handleResize);
-		return () => window.removeEventListener('resize', handleResize);
-	}, []);
 	
 	const navigate = useNavigationWithProgress();
 	
 	return (
-		<S.Post onClick={() => navigate(`/post/${post.id}`)}>
-			<S.PostImg style={isMobile ? {width: '46vw', height: '21vh'} : {}}>
+		<S.Post onClick={() => navigate(`/post/${post.postId}`)}>
+			<S.PostImg>
 				<Image
-					src={post.thumbnail}
+					src={process.env.NEXT_PUBLIC_IMAGE_URL + post?.thumbnail}
 					alt="thumbnail"
 					fill
 					style={{objectFit: "cover", objectPosition: "center"}}

@@ -141,3 +141,27 @@ export const ImgBox = styled.div`
   width: 2rem;
   height: 2rem;
 `
+
+export const ButtonContainer = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  width: 100%;
+`;
+
+export const PartButton = styled.button`
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  border-radius: ${radius.sm};
+  background-color: ${colors.primary};
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: ${fontSizes.Caption};
+  
+  &:hover {
+    background-color: ${colors.primary};
+  }
+`;

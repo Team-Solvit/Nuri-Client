@@ -90,6 +90,9 @@ export const ImgBox = styled.div`
   border-radius: ${radius.md};
   position: relative;
   overflow: hidden;
+	& > img{
+		object-fit: cover;
+	}
 `
 export const Info = styled.div`
   display: flex;

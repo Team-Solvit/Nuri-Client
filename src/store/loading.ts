@@ -18,7 +18,6 @@ export const useLoadingStore = create<LoadingState>((set) => ({
 		});
 	},
 	show: () => {
-		console.log("show")
 		// init 용 set
 		set({
 			isVisible: false,
