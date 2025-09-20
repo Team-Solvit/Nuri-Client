@@ -116,6 +116,7 @@ export const Gauge = styled.div<Status>`
 export const Emotion = styled.div`
   height: 3rem;
   padding: 0 1rem;
+	position: relative;
   display: flex;
   justify-content: center;
   align-items: center;

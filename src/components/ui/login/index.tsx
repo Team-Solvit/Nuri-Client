@@ -237,6 +237,7 @@ const Input = styled.input`
   }
 
 
+
   &::placeholder {
     color: ${colors.gray};
     font-size: ${fontSizes.Small};

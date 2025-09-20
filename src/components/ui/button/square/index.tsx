@@ -1,6 +1,7 @@
 'use client'
 
 import * as S from './style';
+import React from "react";
 
 // true(ex 업로드):
 //     배경: #FF4C61
@@ -11,7 +12,7 @@ import * as S from './style';
 
 interface SquareProps {
     text: string
-    onClick?: () => void 
+    onClick?: (e:React.MouseEvent<HTMLDivElement>) => void
     status: boolean
     width: string
 }

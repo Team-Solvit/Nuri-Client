@@ -3,7 +3,6 @@
 import MyHouseScroll from "@/containers/myHouse/houseScroll/ui";
 import Navigate from "@/components/ui/navigate/ui";
 import styled from "@emotion/styled";
-import LeaveModal from "@/containers/myHouse/leave-modal/ui";
 import {mq} from "@/styles/media";
 
 export default function MyHouse() {
