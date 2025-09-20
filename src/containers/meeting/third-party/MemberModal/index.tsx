@@ -62,7 +62,7 @@ export default function MemberModal({ groupId, onDone }: MemberModalProps) {
 
     try {
       await GroupService.removeMember(client, groupId, memberToExpel.userId);
-      await loadMemberData(); // 데이터 다시 로드
+      await loadMemberData();
       success('멤버가 추방되었습니다.');
     } catch (err) {
       console.error('멤버 추방 실패:', err);
@@ -82,7 +82,6 @@ export default function MemberModal({ groupId, onDone }: MemberModalProps) {
     try {
       await GroupService.approveParticipationRequest(client, requestId);
       await loadMemberData();
-      setTimeout(() => { loadMemberData(); }, 300);
       success('참가 요청을 수락했습니다.');
     } catch (err) {
       console.error('참가 요청 수락 실패:', err);
@@ -94,7 +93,6 @@ export default function MemberModal({ groupId, onDone }: MemberModalProps) {
     try {
       await GroupService.rejectParticipationRequest(client, requestId);
       await loadMemberData();
-      setTimeout(() => { loadMemberData(); }, 300);
       success('참가 요청을 거절했습니다.');
     } catch (err) {
       console.error('참가 요청 거절 실패:', err);

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useMemo, useRef, useEffect } from "react";
-import { useSearchParams } from 'next/navigation';
 import { useApolloClient } from '@apollo/client';
 import { GroupService } from '@/services/group';
 import { GroupSchedule } from '@/types/group';
@@ -11,9 +10,7 @@ import { useFileUpload } from '@/hooks/useFileUpload';
 import * as S from "./style";
 import Square from '@/components/ui/button/square';
 
-export default function MeetingThirdPartyDetailContainer() {
-  const searchParams = useSearchParams();
-  const scheduleId = searchParams.get('scheduleId');
+export default function MeetingThirdPartyDetailContainer({ id }: { id: string }) {
   const client = useApolloClient();
   const { error: showAlert, success: showSuccess } = useAlertStore();
   const { upload: uploadFile, loading: uploadLoading } = useFileUpload();
@@ -23,7 +20,7 @@ export default function MeetingThirdPartyDetailContainer() {
   const [scheduleRecords, setScheduleRecords] = useState<any[]>([]);
 
   useEffect(() => {
-    if (!scheduleId) {
+    if (!id) {
       showAlert('일정 ID가 없습니다.');
       setLoading(false);
       return;
@@ -35,12 +32,12 @@ export default function MeetingThirdPartyDetailContainer() {
 
         if (groupStatus?.groupId) {
           const schedules = await GroupService.getAllSchedules(client, groupStatus.groupId);
-          const foundSchedule = schedules.find((s: GroupSchedule) => s.scheduleId === scheduleId);
+          const foundSchedule = schedules.find((s: GroupSchedule) => s.scheduleId === id);
 
           if (foundSchedule) {
             setSchedule(foundSchedule);
             try {
-              const records = await GroupService.getGroupScheduleRecords(client, scheduleId);
+              const records = await GroupService.getGroupScheduleRecords(client, id);
               setScheduleRecords(records);
             } catch (recordError) {
               console.error('기록 조회 실패:', recordError);
@@ -60,7 +57,7 @@ export default function MeetingThirdPartyDetailContainer() {
     };
 
     fetchSchedule();
-  }, [scheduleId, client, showAlert]);
+  }, [id, client, showAlert]);
 
   const parsedTime = useMemo(() => {
     if (!schedule?.scheduledAt) return { ampm: 'AM' as const, hour: 6, minute: 20 };
@@ -112,7 +109,7 @@ export default function MeetingThirdPartyDetailContainer() {
   const acceptDoc = ".hwp,.hwpx,.doc,.docx,.pdf,application/x-hwp,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf";
   const TEMPLATE_URL = "https://cdn.solvit-nuri.com/file/30a6aa26-e242-4633-b2fb-2f3b61bad124";
   const handleUpdateSchedule = async () => {
-    if (!schedule || !scheduleId) {
+    if (!schedule || !id) {
       showAlert('일정 정보가 없습니다.');
       return;
     }
@@ -140,7 +137,7 @@ export default function MeetingThirdPartyDetailContainer() {
   const handleRecordUpload = async (fileToUpload?: File) => {
     const fileToUse = fileToUpload || record;
 
-    if (!fileToUse || !scheduleId) {
+    if (!fileToUse || !id) {
       showAlert('업로드할 파일이 없습니다.');
       return;
     }
@@ -154,7 +151,7 @@ export default function MeetingThirdPartyDetailContainer() {
       }
 
       const recordInput = {
-        scheduleId: scheduleId,
+        scheduleId: id,
         title: fileToUse.name.replace(/\.[^/.]+$/, ''),
         content: `파일: ${fileToUse.name}`,
         fileUrl: uploadResult[0]
@@ -163,7 +160,7 @@ export default function MeetingThirdPartyDetailContainer() {
       await GroupService.createGroupScheduleRecord(client, recordInput);
 
       try {
-        const records = await GroupService.getGroupScheduleRecords(client, scheduleId);
+        const records = await GroupService.getGroupScheduleRecords(client, id);
         setScheduleRecords(records);
       } catch (recordError) {
         console.error('기록 목록 재조회 실패:', recordError);

@@ -6,21 +6,10 @@ import Image from "next/image";
 import {useMeetingStore} from "@/store/meeting";
 import {mq} from '@/styles/media';
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import type { MeetingListProps } from '@/types/group';
 
 const MeetingTime = "/icons/meeting-time.svg";
 const MeetingLocation = "/icons/meeting-location.svg";
-
-interface MeetingListItem {
-	id: number;
-	title: string;
-	time: string;
-	location: string;
-}
-
-interface MeetingListProps {
-	title: string;
-	meetingList: MeetingListItem[];
-}
 
 export default function MeetingList({title, meetingList}: MeetingListProps) {
 	const navigate = useNavigationWithProgress();
@@ -34,7 +23,7 @@ export default function MeetingList({title, meetingList}: MeetingListProps) {
 					<Empty>모임이 없습니다.</Empty>
 				) : (
 					meetingList.map((meeting) => (
-						<Card key={meeting.id}>
+						<Card key={meeting.scheduleId}>
 							<Info>
 								<MeetingTitle>
 									{meeting.title}
@@ -49,7 +38,7 @@ export default function MeetingList({title, meetingList}: MeetingListProps) {
 							</Info>
 							<Square text="모임 관리" onClick={() => {
 								selectMeeting(meeting);
-								navigate(`/meeting/third-party/detail/${meeting.id}`);
+								navigate(`/meeting/third-party/detail/${meeting.scheduleId}`);
 							}} status={true} width="max-content"/>
 						</Card>
 					))

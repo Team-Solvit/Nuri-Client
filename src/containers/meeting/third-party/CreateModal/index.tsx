@@ -72,7 +72,6 @@ export default function CreateModal({
       const result = await GroupService.createGroup(client, groupInput);
 
       if (result) {
-        // 생성된 그룹 정보를 다시 조회
         const groups = await GroupService.getGroupsByArea(client, area);
         const newGroup = groups.find((g: Group) => g.name === groupName);
 

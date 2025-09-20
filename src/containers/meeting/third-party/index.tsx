@@ -90,8 +90,8 @@ export default function MeetingThirdPartyContainer() {
 
   // GraphQL 데이터를 MeetingList 컴포넌트 형식으로 변환
   const convertSchedulesToMeetingList = (schedules: GroupSchedule[]): MeetingListItem[] => {
-    return schedules.map((schedule, index) => ({
-      id: index + 1, // MeetingList는 number id를 요구하므로 index 사용
+    return schedules.map((schedule) => ({
+      id: schedule.scheduleId,
       title: schedule.title,
       time: new Date(schedule.scheduledAt).toLocaleDateString('ko-KR', {
         month: 'long',
@@ -144,6 +144,14 @@ export default function MeetingThirdPartyContainer() {
     openListStore();
   };
 
+  const handleMemberModalClose = () => {
+    closeListStore();
+    // 모임원 목록 모달이 닫힐 때 데이터 새로고침
+    if (currentGroup) {
+      loadGroupData();
+    }
+  };
+
   const handleOpenCreate = () => {
     if (!hasGroup) {
       // 모임이 없으면 모임 생성 페이지로 이동
@@ -175,7 +183,6 @@ export default function MeetingThirdPartyContainer() {
   };
 
   const handleScheduleCreated = () => {
-    // 일정이 생성되면 데이터 다시 로드
     if (currentGroup) {
       loadGroupSchedules(currentGroup.groupId);
     }
@@ -220,7 +227,7 @@ export default function MeetingThirdPartyContainer() {
             width="max-content"
           />
           <Square
-            text={hasGroup ? "일정 추가" : "모임 생성"}
+            text={hasGroup ? "일정 생성" : "모임 생성"}
             onClick={handleOpenCreate}
             status={true}
             width="max-content"
@@ -251,7 +258,7 @@ export default function MeetingThirdPartyContainer() {
         <Modal>
           <MemberModal
             groupId={currentGroup?.groupId}
-            onDone={closeListStore}
+            onDone={handleMemberModalClose}
           />
         </Modal>
       )}

@@ -38,7 +38,7 @@ export default function Login() {
 		}
 		setLoading(true);
 		try {
-			const { headers, status } = await AuthService.localLogin(
+			const { user, headers, status } = await AuthService.localLogin(
 				client,
 				{ id: id.trim(), password }
 			);
@@ -51,11 +51,12 @@ export default function Login() {
 				throw new Error(`토큰이 응답에 없습니다. status=${status ?? 'N/A'}`);
 			}
 
-			const decodedToken = decodeJWT(headerToken);
-			const role = decodedToken?.role || 'USER';
-
 			localStorage.setItem('AT', headerToken);
-			setAuth(id.trim(), role);
+
+			if (!user) {
+				throw new Error('로그인 유저 정보가 없습니다.');
+			}
+			setAuth(user);
 			alertStore.success('로그인 성공');
 			loginModal.close();
 		} catch (e: any) {

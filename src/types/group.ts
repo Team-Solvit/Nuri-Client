@@ -174,7 +174,7 @@ export interface RequestJoinGroupVariables {
 
 // 컨테이너에서 사용할 변환된 타입
 export interface MeetingListItem {
-  id: number;
+  id: string;
   title: string;
   time: string;
   location: string;
