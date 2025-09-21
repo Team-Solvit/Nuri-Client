@@ -1,0 +1,77 @@
+"use client";
+
+import * as S from './style';
+
+export default function TosContainer() {
+  return (
+    <S.Page>
+      <S.Title>서비스 이용약관</S.Title>
+      <S.Effective>시행일: 2025-09-11</S.Effective>
+
+      <S.Section>
+        <S.SectionTitle>제1조 (목적)</S.SectionTitle>
+        <p>본 약관은 “누리” 서비스(이하 “서비스”)의 이용과 관련하여, 서비스 운영자와 회원 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.</p>
+      </S.Section>
+
+      <S.Section>
+        <S.SectionTitle>제2조 (약관의 효력 및 변경)</S.SectionTitle>
+        <p>① 본 약관은 서비스 화면에 게시하거나 기타 방법으로 공지함으로써 효력이 발생합니다.</p>
+        <p>② 서비스 운영자는 관련 법령을 위배하지 않는 범위에서 본 약관을 개정할 수 있으며, 개정 시에는 적용일자 및 개정 사유를 명시하여 사전 공지합니다.</p>
+      </S.Section>
+
+      <S.Section>
+        <S.SectionTitle>제3조 (이용계약의 체결)</S.SectionTitle>
+        <p>① 회원가입은 이용자가 본 약관에 동의하고 소정의 가입 절차를 완료함으로써 성립합니다.</p>
+        <p>② 서비스 운영자는 가입 신청자에게 서비스 제공에 장애가 없다고 판단되는 경우 승낙합니다.</p>
+      </S.Section>
+
+      <S.Section>
+        <S.SectionTitle>제4조 (회원의 의무)</S.SectionTitle>
+        <p>① 회원은 관계 법령, 본 약관, 서비스 운영자가 정한 이용안내를 준수해야 합니다.</p>
+        <p>② 회원은 서비스 이용과 관련하여 다음 행위를 하여서는 아니 됩니다.</p>
+        <S.List>
+          <li>1. 타인의 정보 도용</li>
+          <li>2. 서비스 운영 방해 행위</li>
+          <li>3. 지식재산권 침해 행위</li>
+          <li>4. 불법적이거나 부당한 행위</li>
+        </S.List>
+      </S.Section>
+
+      <S.Section>
+        <S.SectionTitle>제5조 (서비스 운영자의 의무)</S.SectionTitle>
+        <p>① 서비스 운영자는 안정적이고 지속적인 서비스 제공을 위해 최선을 다합니다.</p>
+        <p>② 회원의 개인정보는 관련 법령에 따라 보호되며, 본인의 동의 없이 제3자에게 제공되지 않습니다(법령에 의한 경우 제외).</p>
+      </S.Section>
+
+      <S.Section>
+        <S.SectionTitle>제6조 (서비스의 제공 및 변경)</S.SectionTitle>
+        <p>① 서비스 운영자는 회원에게 서비스를 제공합니다.</p>
+        <p>② 운영상·기술상 필요에 따라 서비스 내용을 변경할 수 있으며, 중요한 변경 시 사전 공지합니다.</p>
+      </S.Section>
+
+      <S.Section>
+        <S.SectionTitle>제7조 (서비스의 중단)</S.SectionTitle>
+        <p>① 시스템 점검, 고장, 통신 두절 등의 사유가 발생한 경우 일시적으로 서비스 제공을 중단할 수 있습니다.</p>
+        <p>② 불가피한 사유로 서비스를 중단하게 될 경우 사전 또는 사후에 공지합니다.</p>
+      </S.Section>
+
+      <S.Section>
+        <S.SectionTitle>제8조 (계약 해지 및 이용제한)</S.SectionTitle>
+        <p>① 회원은 언제든지 탈퇴를 요청할 수 있으며, 서비스 운영자는 즉시 처리합니다.</p>
+        <p>② 회원이 본 약관 또는 법령을 위반한 경우 서비스 이용을 제한하거나 계약을 해지할 수 있습니다.</p>
+      </S.Section>
+
+      <S.Section>
+        <S.SectionTitle>제9조 (책임의 제한)</S.SectionTitle>
+        <p>① 서비스 운영자는 천재지변, 불가항력, 회원의 귀책사유로 인한 이용 장애에 대해 책임지지 않습니다.</p>
+        <p>② 회원 상호 간 또는 회원과 제3자 간의 분쟁에 개입하지 않으며, 이에 따른 책임을 지지 않습니다.</p>
+        <p>③ 서비스 운영자는 하숙 계약, 모임 활동 등과 관련하여 <strong>회원(특히 유학생 및 호스트)의 채무나 법적 의무를 보증하지 않으며</strong>, 회원 간 체결된 계약의 이행 책임은 해당 당사자에게 있습니다.</p>
+      </S.Section>
+
+      <S.Section>
+        <S.SectionTitle>제10조 (준거법 및 관할)</S.SectionTitle>
+        <p>본 약관은 대한민국 법령에 따라 해석되며, 서비스와 관련한 분쟁은 민사소송법상 관할 법원을 제1심 관할 법원으로 합니다.</p>
+      </S.Section>
+    </S.Page>
+  );
+}
