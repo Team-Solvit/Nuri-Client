@@ -1,3 +1,5 @@
+"use client"
+
 import * as S from "./style"
 import Image from "next/image";
 import React, {useEffect, useRef, useState} from "react";
@@ -12,12 +14,21 @@ import {MessageQueries} from "@/services/message";
 import {RoomReadResponseDto} from "@/types/message";
 import {useMessageDmManageStore} from "@/store/messageDmManage";
 import {useMessageHeaderStore} from "@/store/messageHeader";
+import {useMessageAlertStore} from "@/store/messageAlert";
 
 export default function MessageSideBar() {
 	const [size, setSize] = useState(10);
+	const { content } = useMessageAlertStore();
+	const [queryVars, setQueryVars] = useState({ page: 0, size, content });
 	
-	const {data} = useQuery(MessageQueries.GET_ROOMS_CHAT_LIST, {
-		variables: {page: 0, size},
+	useEffect(() => {
+		setQueryVars({ page: 0, size, content });
+	}, [content, size]);
+	
+	const { data } = useQuery(MessageQueries.GET_ROOMS_CHAT_LIST, {
+		variables: queryVars,
+		fetchPolicy: "no-cache",
+		nextFetchPolicy: "no-cache",
 	});
 	const [roomDataList, setRoomDataList] = useState<RoomReadResponseDto[]>(data?.getRooms || []);
 	
@@ -96,7 +107,7 @@ export default function MessageSideBar() {
 			});
 		}
 	}, [isOpen, chatRoomId]);
-	console.log(data?.getRooms, roomDataList)
+	
 	const changeParamsId = (id: string) => {
 		const decoded = decodeURIComponent(id);
 		const idx = decoded.lastIndexOf(":");

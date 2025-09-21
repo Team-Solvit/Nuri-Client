@@ -13,6 +13,8 @@ type State = {
 	role: string | null;
 	setAuth: (user: LoginUserResponse) => void;
 	clear: () => void;
+	token : string | null;
+	setToken : (token : string) => void;
 };
 
 export const useUserStore = create<State>()(
@@ -48,6 +50,11 @@ export const useUserStore = create<State>()(
 					profile: null,
 					role: null,
 				}),
+			token : null,
+			setToken : (token : string) =>
+				set({
+					token : token
+				})
 		}),
 		{name: 'nuri-user'}
 	)
