@@ -4,7 +4,6 @@ import { useApollo } from '@/lib/apolloClient';
 import { AuthGQL } from '@/services/auth';
 import { useUserStore } from '@/store/user';
 import { extractTokenFromApolloResult, getAccessToken, saveAccessToken } from '@/utils/token';
-import { decodeJWT } from '@/utils/jwt';
 
 export default function AuthBootstrap() {
   const client = useApollo();
@@ -17,16 +16,23 @@ export default function AuthBootstrap() {
       try {
         let token = getAccessToken();
         if (!token) {
-          const r = await client.mutate({ mutation: AuthGQL.MUTATIONS.REISSUE, fetchPolicy: 'no-cache' });
+          const r = await client.mutate({
+            mutation: AuthGQL.MUTATIONS.REISSUE,
+            fetchPolicy: 'no-cache',
+          });
           token = extractTokenFromApolloResult(r);
           if (token) saveAccessToken(token);
         }
 
         if (token && !cancelled) {
-          const d = decodeJWT(token);
-          const userId = d?.sub ?? d?.userId ?? d?.id ?? null;
-          const role = d?.role ?? 'USER';
-          if (userId) setAuth(userId, role);
+          const r = await client.mutate({
+            mutation: AuthGQL.MUTATIONS.REISSUE,
+            fetchPolicy: 'no-cache',
+          });
+          const user = r.data?.reissue;
+          if (user) {
+            setAuth(user);
+          }
         }
       } catch {
         // 비로그인 유지
