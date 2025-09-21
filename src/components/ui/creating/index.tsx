@@ -25,7 +25,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
     const [isMobile, setIsMobile] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const { id } = useUserStore(s => s);
+    const { id, userId, profile } = useUserStore(s => s);
     const apolloClient = useApollo();
 
     const prevImage = () => {
@@ -265,14 +265,34 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
 
                     <S.ProfileRow>
                         <S.ProfileImg>
-                            <Image
-                                src="/profile/profile.svg"
-                                alt="프로필"
-                                width={48}
-                                height={48}
-                            />
+                            {profile ? (
+                                <Image
+                                    src={profile}
+                                    alt="프로필"
+                                    width={48}
+                                    height={48}
+                                    unoptimized
+                                />
+                            ) : (
+                                <div
+                                    style={{
+                                        width: 48,
+                                        height: 48,
+                                        borderRadius: '50%',
+                                        background: '#e0e0e0',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: 700,
+                                        fontSize: 20,
+                                        color: '#666',
+                                    }}
+                                >
+                                    {(userId && userId[0]) || '?'}
+                                </div>
+                            )}
                         </S.ProfileImg>
-                        <S.ProfileName>{id || '알 수 없음'}</S.ProfileName>
+                        <S.ProfileName>{userId || '로그인을 해주세요'}</S.ProfileName>
                     </S.ProfileRow>
                 </S.Left>
 

@@ -4,8 +4,8 @@ import { PostCreateInput, CreatePostResponse } from '@/types/post';
 export const PostGQL = {
   MUTATIONS: {
     CREATE_POST: gql`
-      mutation CreatePost($createPostInput: CreatePostInput!) {
-        createPost(createPostInput: $createPostInput)
+      mutation CreatePost($postCreateInput: PostCreateInput!) {
+        createPost(postCreateInput: $postCreateInput)
       }
     `,
   },
@@ -17,7 +17,7 @@ export const createPost = async (
 ): Promise<boolean> => {
   const { data } = await client.mutate<CreatePostResponse>({
     mutation: PostGQL.MUTATIONS.CREATE_POST,
-    variables: { createPostInput: postCreateInput },
+    variables: { postCreateInput: postCreateInput },
   });
   
   return data?.createPost ?? false;
