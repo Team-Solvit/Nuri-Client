@@ -4,7 +4,6 @@ import * as S from "./style"
 import Image from "next/image";
 import React, {useEffect, useRef, useState} from "react";
 import Search from "@/assets/icon/search.svg"
-import Profile from "@/assets/meeting/member-profile.png"
 import {useParams, useRouter} from "next/navigation";
 import NProgress from "nprogress";
 import Plus from "@/assets/icon/plus.svg"

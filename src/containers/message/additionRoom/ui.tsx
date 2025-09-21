@@ -114,12 +114,12 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 	}
 	
 	const [loading, setLoading] = useState(false);
-	const {id} = useUserStore()
+	const {userId : id} = useUserStore()
 	const handleCreateRoom = async () => {
 		const inputData: RoomCreateRequestDto = {
 			roomDto: {
 				name: roomName,
-				profile: profileDataUrl ?? "profile.png"
+				profile: profileDataUrl ?? null
 			},
 			users: [...selectedUsers.map(user => user.userId), id || ""],
 			isTeam: false
