@@ -3,7 +3,6 @@
 import React, {useState, useRef, useEffect} from "react"
 import * as S from "./style"
 import Image from "next/image"
-import Message from "@/assets/meeting/profile.png"
 import EllipsisIcon from '@/assets/post/ellipsis.svg';
 import StateModal from "@/components/layout/stateModal";
 import {useParams, useRouter} from "next/navigation";
@@ -13,6 +12,7 @@ import {MessageService} from "@/services/message";
 import {useApollo} from "@/lib/apolloClient";
 import {useAlertStore} from "@/store/alert";
 import {useMessageHeaderStore} from "@/store/messageHeader";
+import {imageCheck} from "@/utils/imageCheck";
 
 interface FadeBoxProps {
 	onClose: () => void;
@@ -92,7 +92,7 @@ export default function MessageHeaderUI() {
 		<S.MessageHeaderContainer className="message-header">
 			<S.ProfileBox>
 				<S.Profile>
-					<Image src={Message} alt="message" fill priority/>
+					<Image src={imageCheck(chatProfile || "") || "/post/default.png"} alt="message" fill priority/>
 				</S.Profile>
 				<p>{chatRoomName}</p>
 			</S.ProfileBox>

@@ -15,6 +15,7 @@ import {RoomReadResponseDto} from "@/types/message";
 import {useMessageDmManageStore} from "@/store/messageDmManage";
 import {useMessageHeaderStore} from "@/store/messageHeader";
 import {useMessageAlertStore} from "@/store/messageAlert";
+import {imageCheck} from "@/utils/imageCheck";
 const IMAGE_BASE = process.env.NEXT_PUBLIC_IMAGE_URL;
 
 export default function MessageSideBar() {
@@ -146,11 +147,11 @@ export default function MessageSideBar() {
 							isRead={params.id === room.roomDto.id || changeParamsId(params.id as string) === room.roomDto.id}
 						>
 							<S.Profile>
-								<Image src={Profile} alt={"profile"} fill/>
+								<Image src={imageCheck(room?.roomDto?.profile || "")} alt={"profile"} fill/>
 							</S.Profile>
 							<S.Info>
 								<h4>{room.roomDto.name}</h4>
-								<p>{room.latestMessage?.startsWith(IMAGE_BASE) ? "이미지" : room.latestMessage}</p>
+								<p>{room.latestMessage?.startsWith(IMAGE_BASE || "") ? "이미지" : room.latestMessage}</p>
 							</S.Info>
 						</S.ChatBox>
 					)
