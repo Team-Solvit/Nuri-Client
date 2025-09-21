@@ -41,9 +41,9 @@ export default function PostScroll() {
 	
 	const {setValues} = useMessageDmManageStore();
 	const {setValues: setMessageHeader} = useMessageHeaderStore();
-	const {id} = useUserStore();
+	const {userId} = useUserStore();
 	const moveChatRoom = (opponent: string) => {
-		const chatRoomId = id + ":" + opponent
+		const chatRoomId = [userId, opponent].sort().join(":");
 		navigate(`/message/${chatRoomId}`)
 		setMessageHeader({
 			chatProfile: opponent,

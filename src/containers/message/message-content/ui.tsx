@@ -42,9 +42,11 @@ export default function MessageContent() {
 		setRoomId(newRoomId);
 	}, [id]);
 	
-	const {data} = useQuery(MessageQueries.READ_MESSAGES, {
-		variables: {roomId: roomId as string},
+	const { data } = useQuery(MessageQueries.READ_MESSAGES, {
+		variables: { roomId: roomId as string },
 		skip: !roomId,
+		fetchPolicy: "no-cache",
+		nextFetchPolicy: "no-cache",
 	});
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	useEffect(() => {
@@ -101,7 +103,7 @@ export default function MessageContent() {
 		else unSetMaster();
 	};
 	
-	const {id: userId} = useUserStore();
+	const {userId} = useUserStore();
 	// 접속 시 맨 밑으로 스크롤
 	useEffect(() => {
 		const handleResize = () => scrollToBottom(containerRef.current);
@@ -183,12 +185,12 @@ export default function MessageContent() {
 								/>
 							);
 						}
-						
+						const regex = /^https:\/\/cdn\.solvit-nuri\.com\/file\/[0-9a-fA-F-]{36}$/;
 						// 이미지 형식
-						// if (msg.contents === "" && msg.img) {
-						// 	return <ImageMessage src={msg.img} alt="img-msg" time={isLastOfTime ? msg.time : undefined}
-						// 	                     isSent={msg.type === 'sent'}/>;
-						// }
+						if (regex.test(msg.contents)) {
+							return <ImageMessage src={msg.contents} alt="img-msg" time={isLastOfTime ? msg.createdAt.time : undefined}
+							                     isSent={msg.sender.name === userId}/>;
+						}
 						// 답장형식
 						return (
 							<>

@@ -80,20 +80,25 @@ export const Profile = styled.div`
 `
 
 export const Info = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  width: 180px;
+  overflow: hidden;
 
-  & > h4 {
+  h4, p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  h4 {
     font-size: ${fontSizes.Body};
     font-weight: 500;
   }
 
-  & > p {
+  p {
     font-size: ${fontSizes.Caption};
     color: ${colors.gray};
   }
-`
+`;
 
 export const CategoryList = styled.div`
   width: 100%;

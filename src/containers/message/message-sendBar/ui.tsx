@@ -1,13 +1,16 @@
+
 "use client"
 
 import * as S from "./style"
 import Send from "@/assets/icon/sent.svg"
 import Image from "next/image"
 import Plus from "@/assets/icon/plus.svg"
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {sendDmChatMessage, sendGroupChatMessage} from "@/lib/soketClient";
 import {useParams} from "next/navigation";
 import {useAlertStore} from "@/store/alert";
+import {useFileUpload} from "@/hooks/useFileUpload";
+import {useLoadingEffect} from "@/hooks/useLoading";
 
 export default function MessageSendBar() {
 	const {id} = useParams();
@@ -15,18 +18,22 @@ export default function MessageSendBar() {
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const [isComposing, setIsComposing] = useState(false);
 	
-	
+	const {upload, result, loading} = useFileUpload()
+	useLoadingEffect(loading)
 	// 이미지 전송 관련
-	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (file) {
-			if (!file.type.startsWith('image/')) {
-				
-				return;
-			}
+	const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		const files = e.target.files;
+		if (!files || files.length === 0) return
+		const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+		if (imageFiles.length === 0) {
+			return;
 		}
+		await upload(imageFiles);
 	};
 	
+	useEffect(() => {
+		imageSend()
+	}, [result]);
 	const handleAddFileClick = () => {
 		fileInputRef.current?.click();
 	};
@@ -60,6 +67,17 @@ export default function MessageSendBar() {
 	// 	});
 	// }
 	
+	const imageSend = () => {
+		if (!result || result.length === 0) return;
+		const type = checkType(id as string);
+		if (Array.isArray(type)) {
+			sendDmChatMessage(type, process.env.NEXT_PUBLIC_IMAGE_URL + result[0]);
+		} else if (type === "UUID 형식") {
+			sendGroupChatMessage(id as string, process.env.NEXT_PUBLIC_IMAGE_URL + result[0]);
+		} else {
+			error("메시지 전송실패")
+		}
+	}
 	
 	// 메시지 전송 버튼
 	const {error} = useAlertStore();
@@ -67,8 +85,10 @@ export default function MessageSendBar() {
 		if (!message.trim()) return;
 		const type = checkType(id as string);
 		if (Array.isArray(type)) {
+			alert("message: " + message + " type: " + type + " id: " + id + "")
 			sendDmChatMessage(type, message);
 		} else if (type === "UUID 형식") {
+			alert("설미?")
 			sendGroupChatMessage(id as string, message);
 		} else {
 			error("메시지 전송실패")

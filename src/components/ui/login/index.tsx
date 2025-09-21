@@ -10,8 +10,6 @@ import { useAlertStore } from '@/store/alert';
 import { useLoginModalStore } from '@/store/loginModal';
 import { useUserStore } from '@/store/user';
 import { AuthGQL, AuthService } from '@/services/auth';
-import { decodeJWT } from '@/utils/jwt';
-import { useQuery } from '@apollo/client';
 
 
 export default function Login() {
@@ -29,6 +27,7 @@ export default function Login() {
 	const alertStore = useAlertStore();
 	const loginModal = useLoginModalStore();
 	const setAuth = useUserStore(s => s.setAuth);
+	const setToken = useUserStore(s => s.setToken);
 	
 	const handleLogin = useCallback(async () => {
 		if (loading) return;
@@ -52,7 +51,7 @@ export default function Login() {
 			}
 			
 			localStorage.setItem('AT', headerToken);
-			
+			setToken(headerToken)
 			if (!user) {
 				throw new Error('로그인 유저 정보가 없습니다.');
 			}

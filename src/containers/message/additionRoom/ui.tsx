@@ -11,6 +11,8 @@ import {useAlertStore} from "@/store/alert";
 import {useQuery} from "@apollo/client";
 import {useUserStore} from "@/store/user";
 import {useMessageDmManageStore} from "@/store/messageDmManage";
+import { useFileUpload } from "@/hooks/useFileUpload";
+import {useLoadingEffect} from "@/hooks/useLoading";
 
 interface User {
 	userId: string;
@@ -31,6 +33,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 	// 프로필 이미지 업로드(추가 모드에서만 사용)
 	const [profilePreview, setProfilePreview] = useState<string | null>(null);
 	const [profileDataUrl, setProfileDataUrl] = useState<string | null>(null);
+	const { upload, loading: uploadLoading } = useFileUpload();
 	
 	const [debouncedTerm, setDebouncedTerm] = useState("");
 	
@@ -116,7 +119,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 		const inputData: RoomCreateRequestDto = {
 			roomDto: {
 				name: roomName,
-				profile: "profile.png"
+				profile: profileDataUrl ?? "profile.png"
 			},
 			users: [...selectedUsers.map(user => user.userId), id || ""],
 			isTeam: false
@@ -155,7 +158,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 	
 	
 	// 프로필 이미지 파일 선택 핸들러
-	const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleProfileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
 		if (!file) {
 			setProfilePreview(null);
@@ -165,16 +168,17 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 		// 미리보기는 object URL, 전송은 base64 DataURL 사용
 		const objectUrl = URL.createObjectURL(file);
 		setProfilePreview(objectUrl);
-		
-		const reader = new FileReader();
-		reader.onload = () => {
-			if (typeof reader.result === 'string') {
-				setProfileDataUrl(reader.result); // data:image/...;base64,xxxx
+		try {
+			const [uploaded] = await upload([file]);
+			if (uploaded) {
+				setProfileDataUrl(uploaded);
 			}
-		};
-		reader.readAsDataURL(file);
+		} catch (err) {
+			console.error('프로필 이미지 업로드 실패', err);
+			setProfilePreview(null);
+			setProfileDataUrl(null);
+		}
 	};
-	
 	
 	const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchTerm(e.target.value);
@@ -196,6 +200,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 	};
 	const [roomName, setRoomName] = useState<string>("");
 	const {setValues} = useMessageDmManageStore();
+	useLoadingEffect(uploadLoading);
 	if (!isAddition) return null;
 	
 	return (
