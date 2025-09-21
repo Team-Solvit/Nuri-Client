@@ -12,7 +12,6 @@ import {useAlertStore} from "@/store/alert";
 import {useFileUpload} from "@/hooks/useFileUpload";
 import {useLoadingEffect} from "@/hooks/useLoading";
 import {useMessageReplyStore} from "@/store/messageReply";
-import * as repl from "node:repl";
 
 export default function MessageSendBar() {
 	const {id} = useParams();

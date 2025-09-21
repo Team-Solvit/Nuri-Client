@@ -12,7 +12,6 @@ export const client = new Client({
 	reconnectDelay: 5000,
 });
 
-
 export const sendGroupChatMessage = (roomId: string, message: string, replyChat : ReplyChatInput | null) => {
 	if (!client.active) {
 		console.error("❌ 소켓 연결 안 됨");

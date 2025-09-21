@@ -192,7 +192,6 @@ export default function MessageContent() {
 							return <ImageMessage src={msg.contents} alt="img-msg" time={isLastOfTime ? msg.createdAt.time : undefined}
 							                     isSent={msg.sender.name === userId}/>;
 						}
-						console.log(msg.sender.name, userId)
 						// 답장형식
 						return (
 							<>

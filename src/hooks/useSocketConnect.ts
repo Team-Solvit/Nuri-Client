@@ -18,6 +18,9 @@ export default function useSocketConnect() {
 	
 	const { data } = useQuery(MessageQueries.GET_CONNECT_MESSAGES_LIST, {
 		skip: !isLoggedIn,
+		variables: {
+			isGroup: isLoggedIn,
+		}
 	});
 	
 	const { success, error } = useAlertStore();
@@ -37,7 +40,6 @@ export default function useSocketConnect() {
 			
 			subscriptions["user-messages"] = client.subscribe(`/user/${userId}/messages`, (message) => {
 				const messageData: ChatMessageResponse = JSON.parse(message.body);
-				console.log(messageData);
 				fadeIn(
 					"https://storage.googleapis.com/ploytechcourse-version3/391b0b82-c522-4fd5-9a75-5a1488c21b7e",
 					messageData.userId,
@@ -77,6 +79,7 @@ export default function useSocketConnect() {
 			});
 			
 			data?.getRoomsGroupChat?.content?.forEach((room) => {
+				console.log("messageData : ", room);
 				const roomId = room.roomDto?.id;
 				if (!roomId) return;
 				

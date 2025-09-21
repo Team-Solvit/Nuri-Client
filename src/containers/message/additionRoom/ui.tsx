@@ -128,7 +128,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 			setLoading(true)
 			const res = await MessageService.createChatRoom(apolloClient, inputData);
 			if (res?.data?.createRoom?.id) {
-				success("채팅방 생성에 성공하였습니다.");
+				success("채팅방을 생성했습니다. 새로생긴 채팅방에 아무 채팅이나 남겨주셔야 채팅방이 저장됩니다.");
 				handleClose();
 				setValues({
 					chatProfile: profilePreview ?? "",
