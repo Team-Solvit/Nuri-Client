@@ -298,3 +298,27 @@ export const MainRow = styled.div`
     width: 100%;
   }
 `;
+
+export const TimeRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+`;
+
+export const DateInput = styled.input`
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 16px;
+  background: #fafbfc;
+  color: #222;
+  outline: none;
+  transition: border 0.2s;
+  height: 40px;
+  box-sizing: border-box;
+  &:focus {
+    border: 1.5px solid #4b8fff;
+    background: #fff;
+  }
+`;

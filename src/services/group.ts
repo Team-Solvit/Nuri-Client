@@ -139,7 +139,7 @@ export const GroupGQL = {
           writerName
           title
           content
-          imageUrls
+          fileUrls
           createdAt
         }
       }
@@ -212,9 +212,30 @@ export const GroupGQL = {
           writerName
           title
           content
-          imageUrls
+          fileUrls
           createdAt
         }
+      }
+    `,
+    UPDATE_GROUP_SCHEDULE: gql`
+      mutation UpdateGroupSchedule($groupScheduleUpdateRequestDto: GroupScheduleUpdateInput!) {
+        updateGroupSchedule(groupScheduleUpdateRequestDto: $groupScheduleUpdateRequestDto) {
+          scheduleId
+          groupId
+          groupName
+          title
+          description
+          location
+          scheduledAt
+          durationMinutes
+          file
+          createdAt
+        }
+      }
+    `,
+    DELETE_GROUP_SCHEDULE: gql`
+      mutation DeleteGroupSchedule($scheduleId: String!) {
+        deleteGroupSchedule(scheduleId: $scheduleId)
       }
     `
   }
@@ -248,7 +269,8 @@ export const GroupService = {
   getUpcomingSchedules: async (client: ApolloClient<any>, groupId: string) => {
     const { data } = await client.query({
       query: GroupGQL.QUERIES.GET_UPCOMING_GROUP_SCHEDULES,
-      variables: { groupId }
+      variables: { groupId },
+      fetchPolicy: 'no-cache'
     });
     return data.getUpcomingGroupSchedules;
   },
@@ -256,7 +278,8 @@ export const GroupService = {
   getAllSchedules: async (client: ApolloClient<any>, groupId: string) => {
     const { data } = await client.query({
       query: GroupGQL.QUERIES.GET_ALL_GROUP_SCHEDULES,
-      variables: { groupId }
+      variables: { groupId },
+      fetchPolicy: 'no-cache'
     });
     return data.getAllGroupSchedules;
   },
@@ -354,7 +377,8 @@ export const GroupService = {
 
   getGroupStatus: async (client: ApolloClient<any>) => {
     const { data } = await client.query({
-      query: GroupGQL.QUERIES.GET_GROUP_STATUS
+      query: GroupGQL.QUERIES.GET_GROUP_STATUS,
+      fetchPolicy: 'no-cache'
     });
     return data.getGroupStatus;
   },
@@ -369,7 +393,8 @@ export const GroupService = {
   getGroupScheduleRecords: async (client: ApolloClient<any>, scheduleId: string) => {
     const { data } = await client.query({
       query: GroupGQL.QUERIES.GET_GROUP_SCHEDULE_RECORDS,
-      variables: { scheduleId }
+      variables: { scheduleId },
+      fetchPolicy: 'no-cache'
     });
     return data.getGroupScheduleRecords;
   },
@@ -384,8 +409,33 @@ export const GroupService = {
   createGroupScheduleRecord: async (client: ApolloClient<any>, recordInput: any) => {
     const { data } = await client.mutate({
       mutation: GroupGQL.MUTATIONS.CREATE_GROUP_SCHEDULE_RECORD,
-      variables: { groupScheduleRecordCreateRequestDto: recordInput }
+      variables: { groupScheduleRecordCreateRequestDto: recordInput },
+      refetchQueries: [{
+        query: GroupGQL.QUERIES.GET_GROUP_SCHEDULE_RECORDS,
+        variables: { scheduleId: recordInput.scheduleId }
+      }],
+      awaitRefetchQueries: true
     });
     return data.createGroupScheduleRecord;
-  }
+  },
+
+  updateGroupSchedule: async (client: ApolloClient<any>, updateInput: any) => {
+    const { data } = await client.mutate({
+      mutation: GroupGQL.MUTATIONS.UPDATE_GROUP_SCHEDULE,
+      variables: { groupScheduleUpdateRequestDto: updateInput },
+      refetchQueries: ['GetAllGroupSchedules', 'GetGroupScheduleRecords'],
+      awaitRefetchQueries: true
+    });
+    return data.updateGroupSchedule;
+  },
+
+  deleteGroupSchedule: async (client: ApolloClient<any>, scheduleId: string) => {
+    const { data } = await client.mutate({
+      mutation: GroupGQL.MUTATIONS.DELETE_GROUP_SCHEDULE,
+      variables: { scheduleId },
+      refetchQueries: ['GetAllGroupSchedules'],
+      awaitRefetchQueries: true
+    });
+    return data.deleteGroupSchedule;
+  },
 };

@@ -7,17 +7,19 @@ import { useModalStore } from "@/store/modal";
 import Modal from "@/components/layout/modal";
 import MemberModal from "./MemberModal";
 import CreateModal from "./CreateModal";
+import GroupEditModal from "./GroupEditModal";
 import { useState, useEffect } from "react";
 import StateModal from "@/components/layout/stateModal";
 import { useApollo } from "@/lib/apolloClient";
 import { GroupService } from "@/services/group";
 import type { Group, GroupSchedule, MeetingListItem } from "@/types/group";
 import { useAlertStore } from "@/store/alert";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function MeetingThirdPartyContainer() {
   const client = useApollo();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { success, error } = useAlertStore();
   const [currentGroup, setCurrentGroup] = useState<Group | null>(null);
   const [upcomingSchedules, setUpcomingSchedules] = useState<GroupSchedule[]>([]);
@@ -27,20 +29,27 @@ export default function MeetingThirdPartyContainer() {
 
   const { isOpen: isOpenList, open: openListStore, close: closeListStore } = useModalStore();
   const [isOpenCreate, setIsOpenCreate] = useState(false);
-  const [isOpenGroupSettings, setIsOpenGroupSettings] = useState(false);
-
-  // 지역 정보 (나중에 사용자 위치나 설정에서 가져올 수 있음)
+  const [isOpenEdit, setIsOpenEdit] = useState(false);
+  
   const currentArea = "부산광역시 부산진구";
 
   useEffect(() => {
     loadGroupData();
   }, []);
 
+  useEffect(() => {
+    const refresh = searchParams.get('refresh');
+    if (refresh === 'true' && currentGroup) {
+      console.log('refresh 파라미터 감지 - 데이터 새로고침');
+      loadGroupSchedules(currentGroup.groupId);
+      router.replace('/meeting/third-party');
+    }
+  }, [searchParams, currentGroup]);
+
   const loadGroupData = async () => {
     try {
       setLoading(true);
 
-      // 현재 사용자의 그룹 상태 조회
       let groupStatus;
       try {
         groupStatus = await GroupService.getGroupStatus(client);
@@ -49,15 +58,11 @@ export default function MeetingThirdPartyContainer() {
       }
 
       if (groupStatus && groupStatus.hasGroup && groupStatus.groupId) {
-        // 그룹이 있으면 그룹 정보 조회
         const group = await GroupService.getGroupInfo(client, groupStatus.groupId);
         setCurrentGroup(group);
         setHasGroup(true);
-
-        // 그룹의 일정들 조회
         await loadGroupSchedules(group.groupId);
       } else {
-        // 내 그룹이 없으면 바로 그룹 생성 페이지로 이동
         router.push('/meeting/third-party/create');
         return;
       }
@@ -75,10 +80,8 @@ export default function MeetingThirdPartyContainer() {
         GroupService.getUpcomingSchedules(client, groupId),
         GroupService.getAllSchedules(client, groupId)
       ]);
-
       setUpcomingSchedules(upcoming || []);
 
-      // 과거 일정은 전체 일정에서 현재 시간 이전 것들 필터링
       const now = new Date();
       const past = (all || []).filter((schedule: GroupSchedule) => new Date(schedule.scheduledAt) < now);
       setPastSchedules(past);
@@ -88,7 +91,6 @@ export default function MeetingThirdPartyContainer() {
     }
   };
 
-  // GraphQL 데이터를 MeetingList 컴포넌트 형식으로 변환
   const convertSchedulesToMeetingList = (schedules: GroupSchedule[]): MeetingListItem[] => {
     return schedules.map((schedule) => ({
       id: schedule.scheduleId,
@@ -101,32 +103,10 @@ export default function MeetingThirdPartyContainer() {
         minute: '2-digit'
       }),
       location: schedule.location,
-      scheduleId: schedule.scheduleId // 실제 일정 ID 추가
+      scheduleId: schedule.scheduleId
     }));
   };
 
-  const handleEditSchedule = (scheduleId: string) => {
-    // TODO: 일정 수정 모달 또는 페이지로 이동
-    // router.push(`/meeting/third-party/schedule/edit/${scheduleId}`);
-  };
-
-  const handleDeleteSchedule = async (scheduleId: string) => {
-    if (!confirm('정말 이 일정을 삭제하시겠습니까?')) return;
-
-    try {
-      // TODO: 일정 삭제 API 추가 필요
-      // await GroupService.deleteSchedule(client, scheduleId);
-
-      if (currentGroup) {
-        await loadGroupSchedules(currentGroup.groupId);
-      }
-      success('일정이 삭제되었습니다.');
-    } catch (err) {
-      error('일정 삭제에 실패했습니다.');
-    }
-  };
-
-  // 실제 데이터만 사용
   const currentMeetingList = hasGroup && upcomingSchedules.length > 0
     ? convertSchedulesToMeetingList(upcomingSchedules)
     : [];
@@ -146,7 +126,6 @@ export default function MeetingThirdPartyContainer() {
 
   const handleMemberModalClose = () => {
     closeListStore();
-    // 모임원 목록 모달이 닫힐 때 데이터 새로고침
     if (currentGroup) {
       loadGroupData();
     }
@@ -154,7 +133,6 @@ export default function MeetingThirdPartyContainer() {
 
   const handleOpenCreate = () => {
     if (!hasGroup) {
-      // 모임이 없으면 모임 생성 페이지로 이동
       router.push('/meeting/third-party/create');
       return;
     }
@@ -162,12 +140,12 @@ export default function MeetingThirdPartyContainer() {
     setIsOpenCreate(true);
   };
 
-  const handleOpenGroupSettings = () => {
-    setIsOpenGroupSettings(true);
-  };
-
   const handleDeleteGroup = async () => {
     if (!currentGroup) return;
+
+    if (!confirm('정말로 모임을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+      return;
+    }
 
     try {
       await GroupService.deleteGroup(client, currentGroup.groupId);
@@ -176,10 +154,20 @@ export default function MeetingThirdPartyContainer() {
       setUpcomingSchedules([]);
       setPastSchedules([]);
       success('모임이 삭제되었습니다.');
-      setIsOpenGroupSettings(false);
+      router.push('/meeting/third-party/create');
     } catch (err) {
       error('모임 삭제에 실패했습니다.');
     }
+  };
+
+  const handleEditGroup = () => {
+    setIsOpenEdit(true);
+  };
+
+  const handleGroupUpdated = (updatedGroup: Group) => {
+    setCurrentGroup(updatedGroup);
+    success('모임 정보가 수정되었습니다.');
+    setIsOpenEdit(false);
   };
 
   const handleScheduleCreated = () => {
@@ -226,20 +214,28 @@ export default function MeetingThirdPartyContainer() {
             status={hasGroup}
             width="max-content"
           />
+          {hasGroup && (
+            <>
+              <Square
+                text="모임 수정"
+                onClick={handleEditGroup}
+                status={true}
+                width="max-content"
+              />
+              <Square
+                text="모임 삭제"
+                onClick={handleDeleteGroup}
+                status={true}
+                width="max-content"
+              />
+            </>
+          )}
           <Square
             text={hasGroup ? "일정 생성" : "모임 생성"}
             onClick={handleOpenCreate}
             status={true}
             width="max-content"
           />
-          {hasGroup && (
-            <Square
-              text="모임 설정"
-              onClick={handleOpenGroupSettings}
-              status={true}
-              width="max-content"
-            />
-          )}
         </S.HeaderRight>
       </S.Header>
       <S.Section>
@@ -273,33 +269,16 @@ export default function MeetingThirdPartyContainer() {
           />
         </StateModal>
       )}
-      {isOpenGroupSettings && (
-        <Modal>
-          <div style={{ padding: '20px', minWidth: '300px' }}>
-            <h3 style={{ marginBottom: '20px' }}>모임 설정</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <Square
-                text="모임 정보 수정"
-                onClick={() => router.push(`/meeting/third-party/edit/${currentGroup?.groupId}`)}
-                status={true}
-                width="100%"
-              />
-              <Square
-                text="모임 삭제"
-                onClick={handleDeleteGroup}
-                status={false}
-                width="100%"
-              />
-              <Square
-                text="취소"
-                onClick={() => setIsOpenGroupSettings(false)}
-                status={true}
-                width="100%"
-              />
-            </div>
-          </div>
-        </Modal>
+      {isOpenEdit && currentGroup && (
+        <StateModal isOpen={isOpenEdit} close={() => setIsOpenEdit(false)}>
+          <GroupEditModal
+            group={currentGroup}
+            onDone={() => setIsOpenEdit(false)}
+            onUpdated={handleGroupUpdated}
+          />
+        </StateModal>
       )}
+
     </S.Wrapper>
   )
 }

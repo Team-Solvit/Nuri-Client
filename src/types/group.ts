@@ -37,6 +37,7 @@ export interface GroupSchedule {
   durationMinutes?: number;
   file?: string;
   createdAt: string;
+  expense?: number;
 }
 
 export interface GroupScheduleRecord {
@@ -47,7 +48,7 @@ export interface GroupScheduleRecord {
   writerName: string;
   title: string;
   content: string;
-  imageUrls?: string[];
+  fileUrls?: string[];
   createdAt: string;
 }
 
