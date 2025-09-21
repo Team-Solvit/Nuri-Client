@@ -4,6 +4,7 @@ import React from "react";
 
 const ReplyBubbleWrapper = styled.div<{ type: 'sent' | 'received' }>`
   display: flex;
+	height: 100%;
   flex-direction: column;
   align-items: center;
   min-width: max-content;
@@ -12,7 +13,7 @@ const ReplyBubbleWrapper = styled.div<{ type: 'sent' | 'received' }>`
   justify-content: ${({type}) => type === 'sent' ? 'flex-end' : 'flex-start'};
   gap: 0.5rem;
   position: absolute;
-  top: -3.8rem;
+  top: ${({type}) => type === 'sent' ? '-3rem' : '-3.8rem'};
   z-index: ${zIndex.base};
   ${({type}) => type === "sent" ? "right:0.5rem;" : "left: 0.5rem;"};
 `;
@@ -21,15 +22,14 @@ const ReplyBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  width: 100%;
+  width: max-content;
 `;
 
 const ReplyBubble = styled.div<{ type: 'sent' | 'received' }>`
-  background: ${colors.line2};
+  background: ${colors.line};
   border-radius: ${radius.lg};
   padding: 0.5rem 1rem;
   max-width: 220px;
-  min-width: 120px;
   display: flex;
   flex-direction: column;
 `;
@@ -45,8 +45,26 @@ const ReplyBubbleText = styled.div<{ type: 'sent' | 'received' }>`
   font-size: ${fontSizes.Body};
   color: ${colors.gray};
   font-weight: 300;
+	width: max-content;
   word-break: break-all;
 `;
+const ReplyContentBox = styled.div<{ type: { type: 'sent' | 'received' } }>`
+	display: flex;
+	align-items: flex-end;
+  justify-content: flex-start;
+	width: 100%;
+	height: 100%;
+	gap: 0.5rem;
+	position: relative;
+	${({type}) => type.type === 'sent' && `
+		justify-content: flex-end;
+	`}
+`
+const ReplyLine = styled.div`
+	width: 2px;
+	background: ${colors.line};
+	height: 100%;
+`
 
 interface ReplyMessageProps {
 	type: 'sent' | 'received';
@@ -64,9 +82,13 @@ const ReplyMessage: React.FC<ReplyMessageProps> = ({type, name, text, icon, time
 				<ReplyBubbleName>{name}님에게 답장</ReplyBubbleName>
 				{type === 'received' && icon}
 			</ReplyBox>
-			<ReplyBubble type={type}>
-				<ReplyBubbleText type={type}>{text}</ReplyBubbleText>
-			</ReplyBubble>
+			<ReplyContentBox type={{type}}>
+				{type === 'received' && <ReplyLine />}
+				<ReplyBubble type={type}>
+					<ReplyBubbleText type={type}>{text}</ReplyBubbleText>
+				</ReplyBubble>
+				{type === "sent" && <ReplyLine />}
+			</ReplyContentBox>
 		</ReplyBubbleWrapper>
 	)
 };

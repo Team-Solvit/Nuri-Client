@@ -24,6 +24,7 @@ import {formatKoreanDateTime} from "@/utils/formatKoreanDateTime"
 import type {ChatMessage, ChatReadMessageResponse} from "@/containers/message/message-content/type";
 import {useMessageReflectStore} from "@/store/messageReflect";
 import {scrollToBottom} from "@/utils/scrollToBottom";
+import {useMessageReplyStore} from "@/store/messageReply";
 
 export default function MessageContent() {
 	const {message: newMessageReflect} = useMessageReflectStore();
@@ -83,7 +84,7 @@ export default function MessageContent() {
 	
 	let lastDate: string | null = null;
 	const containerRef = useRef<HTMLDivElement>(null);
-	const [replyInfo, setReplyInfo] = useState<null | { name: string, text: string }>(null);
+	const {reply : replyInfo, setReply : setReplyInfo} = useMessageReplyStore()
 	
 	
 	const {open} = useModalStore();
@@ -123,7 +124,7 @@ export default function MessageContent() {
 				<S.ReplyPreviewContainer>
 					<div style={{flex: 1}}>
 						<S.ReplyPreviewName>{replyInfo.name}님에게 답장</S.ReplyPreviewName>
-						<S.ReplyPreviewText>{replyInfo.text}</S.ReplyPreviewText>
+						<S.ReplyPreviewText>{replyInfo.contents}</S.ReplyPreviewText>
 					</div>
 					<S.ReplyPreviewCloseBtn onClick={() => setReplyInfo(null)}>
 						<Image style={{transform: 'rotate(45deg)'}} src={Plus} width={24} height={24} alt="close reply"/>
@@ -191,18 +192,19 @@ export default function MessageContent() {
 							return <ImageMessage src={msg.contents} alt="img-msg" time={isLastOfTime ? msg.createdAt.time : undefined}
 							                     isSent={msg.sender.name === userId}/>;
 						}
+						console.log(msg.sender.name, userId)
 						// 답장형식
 						return (
 							<>
-								{/*{msg.replyChat && (*/}
-								{/*	<ReplyMessage*/}
-								{/*		type={msg.type}*/}
-								{/*		name={msg.replyTo.name || ""}*/}
-								{/*		text={msg.replyTo.text || ""}*/}
-								{/*		icon={<Image src={Reply} width={20} height={20} alt="reply"/>}*/}
-								{/*		time={isLastOfTime ? msg.time : undefined}*/}
-								{/*	/>*/}
-								{/*)}*/}
+								{msg.replyChat && (
+									<ReplyMessage
+										type={msg.sender.name === userId ? "sent" : "received"}
+										name={msg.replyChat.name || ""}
+										text={msg.replyChat.contents || ""}
+										icon={<Image src={Reply} width={20} height={20} alt="reply"/>}
+										time={isLastOfTime ? msg.createdAt.time : undefined}
+									/>
+								)}
 								<BasicMessage text={msg.contents}
 								              time={isLastOfTime ? msg.createdAt.time : undefined}
 								              isSent={msg.sender.name === userId}/>
@@ -225,11 +227,11 @@ export default function MessageContent() {
 									) : (
 										<S.ProfileImg isFirst={false}/>
 									)}
-									<S.ReceivedMsgAndTimeWrapper isHaveReply={msg.replyChat ?? false}>
+									<S.ReceivedMsgAndTimeWrapper isHaveReply={!!msg.replyChat?.contents}>
 										{renderMessageBody()}
 										{!msg.contract && !msg.roomTour && !msg.img && (
 											<S.MsgHoverIcons className="msg-hover-icons"
-											                 onClick={() => setReplyInfo({name: msg.sender.name || '', text: msg.contents})}
+											                 onClick={() => setReplyInfo({chatId : msg.id ,name: msg.sender.name || '', contents: msg.contents})}
 											>
 												<Image
 													src={Reply}
@@ -244,7 +246,7 @@ export default function MessageContent() {
 								</S.ReceivedMsgRow>
 							) : (
 								<S.SentMsgRow isSameUser={nextUser !== msg.sender.name}>
-									<S.SentMsgAndTimeWrapper isHaveReply={msg.replyChat ?? false}>
+									<S.SentMsgAndTimeWrapper isHaveReply={!!msg.replyChat?.contents}>
 										{renderMessageBody()}
 									</S.SentMsgAndTimeWrapper>
 								</S.SentMsgRow>

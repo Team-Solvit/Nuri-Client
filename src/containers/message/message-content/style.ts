@@ -84,7 +84,7 @@ export const SentMsgRow = styled.div<{ isSameUser: boolean }>`
   ${(props) => props.isSameUser ? "margin-bottom: 2rem;" : null}
 `;
 
-export const ReceivedMsgAndTimeWrapper = styled.div<{ isHaveReply: boolean | null }>`
+export const ReceivedMsgAndTimeWrapper = styled.div<{ isHaveReply: boolean  }>`
   ${(props) => props.isHaveReply ? "margin-top:4rem;" : null}
   display: flex;
   align-items: flex-end;

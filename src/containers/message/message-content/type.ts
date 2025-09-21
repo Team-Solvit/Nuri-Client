@@ -13,7 +13,11 @@ export interface ChatMessage {
 	
 	img?: string;
 	roomTour?: RoomTour
-	replyChat?: boolean | null;
+	replyChat?:  {
+		chatId : string,
+		contents : string,
+		name : string
+	}
 	contract?: Contract
 }
 
