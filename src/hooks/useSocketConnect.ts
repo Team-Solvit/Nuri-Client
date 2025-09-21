@@ -8,9 +8,10 @@ import {MessageQueries} from "@/services/message";
 import {useMessageReflectStore} from "@/store/messageReflect";
 import {ChatMessageResponse} from "@/containers/message/message-content/type";
 import {useMessageAlertStore} from "@/store/messageAlert";
+import {useAlertStore} from "@/store/alert";
 
 export default function useSocketConnect() {
-	const {id, accessToken} = useUserStore();
+	const {userId, token : accessToken, clear} = useUserStore();
 	const {setMessage} = useMessageReflectStore();
 	const {
 		fadeIn
@@ -20,9 +21,9 @@ export default function useSocketConnect() {
 	const {data} = useQuery(MessageQueries.GET_CONNECT_MESSAGES_LIST, {
 		skip: !isLoggedIn,
 	});
-	
+	const {success, error} = useAlertStore()
 	useEffect(() => {
-		if (!id || !accessToken) return;
+		if (!userId || !accessToken) return;
 		
 		client.connectHeaders = {
 			Authorization: `Bearer ${accessToken}`,
@@ -30,20 +31,24 @@ export default function useSocketConnect() {
 		
 		client.onConnect = () => {
 			console.log("✅ 연결완료")
-			client.subscribe(`/user/${id}/messages`, (message) => {
+			success("✅ 연결완료")
+			client.subscribe(`/user/${userId}/messages`, (message) => {
 				const messageData: ChatMessageResponse = JSON.parse(message.body);
+				console.log("messageData : ", messageData)
 				fadeIn("https://storage.googleapis.com/ploytechcourse-version3/391b0b82-c522-4fd5-9a75-5a1488c21b7e", messageData.userId, messageData.contents, messageData.sendAt)
 				setMessage(messageData)
 			});
 			
-			client.subscribe(`/user/${id}/notify`, (message) => {
+			client.subscribe(`/user/${userId}/notify`, (message) => {
 				const messageData = JSON.parse(message.body);
 				alert("notify 발동", messageData)
 			});
 			
-			client.subscribe(`/user/${id}/exceptions`, (message) => {
-				const messageData = JSON.parse(message.body);
-				alert("중복 로그인 감지", messageData)
+			client.subscribe(`/user/${userId}/exceptions`, () => {
+				error("중복 로그인이 감지되어 기존 세션은 로그아웃 처리 됩니다.")
+				clear()
+				localStorage.removeItem("AT")
+				localStorage.removeItem("nuri-user")
 			});
 			data?.getRoomsGroupChat?.copntent?.forEach((room) => {
 				const roomId = room.roomDto?.id;
@@ -62,5 +67,5 @@ export default function useSocketConnect() {
 		return () => {
 			client.deactivate();
 		};
-	}, [id, accessToken, data]);
+	}, [userId, accessToken, data]);
 }
