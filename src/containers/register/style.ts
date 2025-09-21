@@ -19,7 +19,7 @@ export const Header = styled.div`
 
 export const Progress = styled.div`
   display: flex;
-  align-items: center;
+  align-items: base-line;
   justify-content: space-between;
   margin-bottom: 12px;
   position: relative;
@@ -36,7 +36,7 @@ export const Progress = styled.div`
   }
 `;
 
-export const ProgressLine = styled.div<{ progress: number }>`
+export const ProgressLine = styled.div<{ progress: number; totalSteps: number }>`
   position: absolute;
   top: 20px;
   left: 20px;
@@ -45,9 +45,11 @@ export const ProgressLine = styled.div<{ progress: number }>`
   border-radius: 2px;
   z-index: 2;
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  width: ${({ progress }) => (progress / 4) * (100 - 40)}%;
+  width: ${({ progress, totalSteps }) => {
+    const maxProgress = totalSteps - 1;
+    return (progress / maxProgress) * (100 - 5);
+  }}%;
 `;
-
 export const Step = styled.div`
   display: flex;
   flex-direction: column;

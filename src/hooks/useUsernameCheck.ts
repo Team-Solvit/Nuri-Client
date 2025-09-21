@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { AuthService } from '@/services/auth';
 import { USERNAME_PATTERN } from '@/constants/register';
 import { useAlertStore } from '@/store/alert';
-import { ApolloClient } from '@apollo/client';
+import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 
-export function useUsernameCheck(client: ApolloClient<any>) {
+export function useUsernameCheck(client: ApolloClient<NormalizedCacheObject>) {
   const alertStore = useAlertStore();
   const [state, setState] = useState<{ status: 'idle' | 'checking' | 'available' | 'taken'; message?: string }>({ status: 'idle' });
 
