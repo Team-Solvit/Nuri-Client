@@ -2,7 +2,7 @@
 
 import * as S from "./style"
 import Image from "next/image";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import Search from "@/assets/icon/search.svg"
 import {useParams, useRouter} from "next/navigation";
 import NProgress from "nprogress";
@@ -13,24 +13,22 @@ import {MessageQueries} from "@/services/message";
 import { RoomReadResponseDto} from "@/types/message";
 import {useMessageDmManageStore} from "@/store/messageDmManage";
 import {useMessageHeaderStore} from "@/store/messageHeader";
-import {useMessageAlertStore} from "@/store/messageAlert";
 import {imageCheck} from "@/utils/imageCheck";
+import {useAlertStore} from "@/store/alert";
+import {useLoadingEffect} from "@/hooks/useLoading";
 const IMAGE_BASE = process.env.NEXT_PUBLIC_IMAGE_URL;
 
 export default function MessageSideBar() {
-	const [size, setSize] = useState(10);
-	const { content } = useMessageAlertStore();
-	const [queryVars, setQueryVars] = useState({ page: 0, size, content });
+	const size = 10;
+	const [page, setPage] = useState(0);
 	
-	useEffect(() => {
-		setQueryVars({ page: 0, size, content });
-	}, [content, size]);
-	
-	const { data } = useQuery(MessageQueries.GET_ROOMS_CHAT_LIST, {
-		variables: queryVars,
+	const { data, loading, fetchMore } = useQuery(MessageQueries.GET_ROOMS_CHAT_LIST, {
+		variables: { page, size },
 		fetchPolicy: "no-cache",
 		nextFetchPolicy: "no-cache",
 	});
+	useLoadingEffect(loading)
+	const [isFetchingMore, setIsFetchingMore] = useState(false);
 	const [roomDataList, setRoomDataList] = useState<RoomReadResponseDto[]>(data?.getRooms || []);
 	
 	const router = useRouter();
@@ -45,28 +43,62 @@ export default function MessageSideBar() {
 	}
 	const params = useParams();
 	const [isAddition, setIsAddition] = useState(false);
+	const [isDone, setIsDone] = useState(false);
 	
+	const {error} = useAlertStore()
+	const loadMore = async () => {
+		console.log(1)
+		if (isFetchingMore || isDone) return;
+		if (!data?.getRooms || data?.getRooms?.length === 0) {
+			setIsDone(true);
+			return;
+		}
+		setIsFetchingMore(true);
+		try {
+			const newPage = page + 1;
+			
+			const res = await fetchMore({
+				variables: { 
+					page: newPage,
+					size,
+				},
+				updateQuery: (prev, { fetchMoreResult }) => {
+					if (!fetchMoreResult || fetchMoreResult?.getRooms?.length === 0) {
+						setIsDone(true);
+						return prev;
+					}
+					setPage(newPage);
+					return {
+						...prev,
+						getRooms: [...(prev?.getRooms ?? []), ...fetchMoreResult?.getRooms],
+					};
+				},
+			});
+			console.log(res)
+			if (!res.data || res.data?.getRooms?.length === 0) {
+				setIsDone(true);
+				error("더 이상 불러올 채팅방이 없습니다");
+			}
+		} finally {
+			setIsFetchingMore(false);
+		}
+	};
 	const iconRef = useRef<HTMLImageElement>(null);
 	
-	const targetRef = useRef<HTMLDivElement>(null);
-	
-	useEffect(() => {
-		if (!targetRef.current) return;
-		const container = targetRef.current.parentElement; // 실제 스크롤 되는 요소
-		
-		const handleScroll = () => {
-			if (!container) return;
-			
-			const {scrollTop, scrollHeight, clientHeight} = container;
-			if (scrollTop + clientHeight >= scrollHeight - 50) {
-				setSize((prev) => prev + 1);
-			}
-		};
-		
-		container?.addEventListener("scroll", handleScroll);
-		return () => container?.removeEventListener("scroll", handleScroll);
-	}, []);
-	
+	const observer = useRef<IntersectionObserver | null>(null);
+	const lastPostElementRef = useCallback((node: HTMLDivElement | null) => {
+		if (loading || isFetchingMore) return;
+		if (observer.current) observer.current.disconnect();
+		observer.current = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting) {
+					loadMore();
+				}
+			},
+			{ root: null, rootMargin: "300px 0px", threshold: 0 }
+		);
+		if (node) observer.current.observe(node);
+	}, [loading, isFetchingMore, roomDataList?.length]);
 	const {chatRoomId, chatRoomName, chatProfile, isOpen, setValues: setDmRoom} = useMessageDmManageStore();
 	
 	useEffect(() => {
@@ -151,10 +183,10 @@ export default function MessageSideBar() {
 			</S.Search>
 			<S.CategoryList
 			>
-				{roomDataList && roomDataList?.map((room) => {
+				{roomDataList && roomDataList?.map((room, index) => {
 					return (
 						<S.ChatBox
-							ref={targetRef}
+							ref={roomDataList && index === roomDataList.length - 1 ? lastPostElementRef : undefined}
 							key={room.roomDto.id}
 							onClick={() => handleRouter(room.roomDto.id, room.roomDto.name, room.roomDto.profile ?? "")}
 							isRead={params.id === room.roomDto.id || changeParamsId(params.id as string) === room.roomDto.id}
