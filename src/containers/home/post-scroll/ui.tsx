@@ -42,17 +42,17 @@ export default function PostScroll() {
 	const {setValues} = useMessageDmManageStore();
 	const {setValues: setMessageHeader} = useMessageHeaderStore();
 	const {userId} = useUserStore();
-	const moveChatRoom = (opponent: string) => {
-		const chatRoomId = [userId, opponent].sort().join(":");
+	const moveChatRoom = (user) => {
+		const chatRoomId = [userId, user.userId].sort().join(":");
 		navigate(`/message/${chatRoomId}`)
 		setMessageHeader({
-			chatProfile: opponent,
-			chatRoomName: opponent,
+			chatProfile: user.thumbnail,
+			chatRoomName: user.userId,
 		})
 		setValues({
-			chatProfile: opponent,
-			chatRoomId: opponent,
-			chatRoomName: opponent,
+			chatProfile: user.thumbnail,
+			chatRoomId: user.userId,
+			chatRoomName: user.userId,
 			isOpen: true,
 		});
 	}
@@ -82,7 +82,7 @@ export default function PostScroll() {
 							<S.Nav onClick={(e) => e.stopPropagation()}>
 								<p>{post.subject}</p>
 								<Square text={"채팅"} onClick={() => {
-									moveChatRoom(post.user.userId)
+									moveChatRoom(post.user)
 								}} status={true} width={"100px"}/>
 							</S.Nav>
 						</S.PostTitle>

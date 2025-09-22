@@ -10,7 +10,7 @@ import Plus from "@/assets/icon/plus.svg"
 import AdditionRoom from "@/containers/message/additionRoom/ui";
 import {useQuery} from "@apollo/client";
 import {MessageQueries} from "@/services/message";
-import {RoomReadResponseDto} from "@/types/message";
+import { RoomReadResponseDto} from "@/types/message";
 import {useMessageDmManageStore} from "@/store/messageDmManage";
 import {useMessageHeaderStore} from "@/store/messageHeader";
 import {useMessageAlertStore} from "@/store/messageAlert";
@@ -70,14 +70,19 @@ export default function MessageSideBar() {
 	const {chatRoomId, chatRoomName, chatProfile, isOpen, setValues: setDmRoom} = useMessageDmManageStore();
 	
 	useEffect(() => {
-		if (data?.getRooms) {
-			setRoomDataList(data.getRooms);
-		}
-	}, []);
-	
-	useEffect(() => {
 		if (data?.getRooms && data.getRooms.length > 0) {
-			setRoomDataList(data.getRooms);
+			setRoomDataList((prev) => {
+				const merged = [...prev, ...data.getRooms];
+				
+				const unique = merged.reduceRight((acc, cur) => {
+					if (!acc.some((r : RoomReadResponseDto) => r.roomDto.name === cur.roomDto.name)) {
+						acc.push(cur);
+					}
+					return acc;
+				}, [] as typeof merged);
+				
+				return unique.reverse();
+			});
 		}
 	}, [data?.getRooms]);
 	
@@ -85,19 +90,28 @@ export default function MessageSideBar() {
 		if (isOpen && chatRoomId) {
 			setRoomDataList((prev) => {
 				const roomExists = prev.some(room => room.roomDto.id === chatRoomId);
-				if (roomExists) return prev;
-				return [
-					...prev,
-					{
-						latestMessage: "",
-						latestCreatedAt: "",
-						roomDto: {
-							name: chatRoomName,
-							id: chatRoomId,
-							profile: chatProfile,
+				const next = roomExists
+					? prev
+					: [
+						{
+							latestMessage: "",
+							latestCreatedAt: "",
+							roomDto: {
+								name: chatRoomName,
+								id: chatRoomId,
+								profile: chatProfile,
+							},
 						},
-					},
-				];
+						...prev,
+					];
+				const unique = next.reduceRight((acc, cur) => {
+					if (!acc.some(r => r.roomDto.name === cur.roomDto.name)) {
+						acc.push(cur);
+					}
+					return acc;
+				}, [] as typeof next);
+				
+				return unique.reverse();
 			});
 			
 			setDmRoom({

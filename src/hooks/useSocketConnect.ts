@@ -14,7 +14,7 @@ export default function useSocketConnect() {
 	const { setMessage } = useMessageReflectStore();
 	const { fadeIn } = useMessageAlertStore();
 	const { success, error } = useAlertStore();
-	const {subscriptions, addSubscription, removeSubscription, clearSubscriptions} = useMessageConnectStore();
+	const { addSubscription, removeSubscription, clearSubscriptions} = useMessageConnectStore();
 	
 	useEffect(() => {
 		if (!userId || !accessToken) return;
@@ -40,8 +40,6 @@ export default function useSocketConnect() {
 			addSubscription("user-notify", client.subscribe(`/user/${userId}/notify`, (message) => {
 				try {
 					const subMessage = message.body.split(" ");
-					console.log(subMessage);
-					console.log(subscriptions, subMessage.length);
 					if (subMessage.length === 2 && subMessage[0] === "UNSUB") {
 						console.log("UNSUB", subMessage[1]);
 						removeSubscription(subMessage[1]);

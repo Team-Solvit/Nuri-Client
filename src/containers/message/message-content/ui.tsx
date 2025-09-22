@@ -1,7 +1,6 @@
 "use client"
 
 import * as S from "./style"
-import Profile from "@/assets/meeting/member-profile.png"
 import Image from "next/image"
 import React, {useEffect, useRef, useState} from "react";
 import Reply from "@/assets/icon/reply.svg"
@@ -25,6 +24,7 @@ import type {ChatMessage, ChatReadMessageResponse} from "@/containers/message/me
 import {useMessageReflectStore} from "@/store/messageReflect";
 import {scrollToBottom} from "@/utils/scrollToBottom";
 import {useMessageReplyStore} from "@/store/messageReply";
+import {imageCheck} from "@/utils/imageCheck";
 
 export default function MessageContent() {
 	const {message: newMessageReflect} = useMessageReflectStore();
@@ -220,7 +220,7 @@ export default function MessageContent() {
 										<div style={{position: "relative"}}>
 											<S.ProfileName>{msg.sender.name}</S.ProfileName>
 											<S.ProfileImg isFirst={true}>
-												{msg.sender.profile && <Image src={Profile} fill alt={msg.sender.name || 'profile'}/>}
+												<Image src={imageCheck(msg.sender.profile  || "")} fill alt={msg.sender.name || 'profile'}/>
 											</S.ProfileImg>
 										</div>
 									) : (

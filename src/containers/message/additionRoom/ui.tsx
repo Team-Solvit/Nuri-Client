@@ -131,6 +131,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 			users: [...selectedUsers.map(user => user.userId), id || ""],
 			isTeam: false
 		}
+		console.log("inputData :", inputData)
 		try {
 			setLoading(true)
 			const res = await MessageService.createChatRoom(apolloClient, inputData);
@@ -153,7 +154,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 				}
 				handleClose();
 				setValues({
-					chatProfile: profilePreview ?? "",
+					chatProfile: profileDataUrl ?? "",
 					chatRoomId: res?.data?.createRoom?.id,
 					chatRoomName: roomName,
 					isOpen: true,

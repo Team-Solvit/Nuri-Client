@@ -72,6 +72,11 @@ export const ProfileImg = styled.div<{ isFirst: boolean }>`
   object-fit: cover;
   background: ${(props) => (props.isFirst ? "#e0e0e0" : "#ffffff")};
 
+	& > img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
   ${mq.mobile} {
     width: 30px;
     height: 30px;

@@ -16,7 +16,6 @@ export const useMessageConnectStore = create<MessageConnectState>((set) => ({
 	
 	addSubscription: (id : string, item : SubscriptionItem) =>
 		set((state) => {
-			console.log(state.subscriptions, id, item)
 			return ({
 				subscriptions: {
 					...state.subscriptions,

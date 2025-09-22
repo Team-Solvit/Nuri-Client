@@ -27,7 +27,6 @@ export default function ChatConnect() {
 		if (!client.connected) return;
 		data?.getRoomsGroupChat?.forEach((room : string) => {
 			if (!room) return;
-			console.log("messageData : ", room);
 			addSubscription(room, client.subscribe(`/chat/messages/${room}`, (message) => {
 				console.log(message)
 				const messageData = JSON.parse(message.body);
