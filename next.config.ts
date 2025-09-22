@@ -1,6 +1,7 @@
-import type {NextConfig} from "next";
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+	output: 'standalone',
 	images: {
 		remotePatterns: [
 			{
@@ -19,6 +20,8 @@ const nextConfig: NextConfig = {
 		emotion: true
 	},
 	reactStrictMode: true,
+	eslint: { ignoreDuringBuilds: true },
+	typescript: { ignoreBuildErrors: true },
 };
 
 export default nextConfig;

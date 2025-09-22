@@ -1,11 +1,14 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { fontSizes, colors } from '@/styles/theme';
 import Square from '../button/square';
 import { mq } from '@/styles/media';
+import { useApollo } from '@/lib/apolloClient';
+import { BoardingService } from '@/services/boarding';
+import type { RoomContract } from '@/types/boarding';
 
 interface Room {
+	roomId: string;
 	number: string;
 	names: string;
 }
@@ -18,23 +21,49 @@ interface RoomDetailProps {
 	close: () => void;
 }
 
-const RoomDetailData = {
-	host: {
-		name: "김경숙",
-		phone: "010-1234-4567",
-	},
-	members: [
-		{ name: "오주현", phone: "010-1234-4567", contractPeriod: "2025.01.05 ~ 2025.05.05" },
-		{ name: "윤도훈", phone: "010-8765-4321", contractPeriod: "2024.12.21 ~ 2025.05.21" },
-		{ name: "박동현", phone: "010-4949-4321", contractPeriod: "2025.01.21 ~ 2025.05.21" },
-		{ name: "박동현", phone: "010-4949-4321", contractPeriod: "2025.01.21 ~ 2025.05.21" },
-		{ name: "박동현", phone: "010-4949-4321", contractPeriod: "2025.01.21 ~ 2025.05.21" },
-		{ name: "박동현", phone: "010-4949-4321", contractPeriod: "2025.01.21 ~ 2025.05.21" },
-	]
-}
-
 export default function RoomDetail({ id, room, title, address, close }: RoomDetailProps) {
+	const client = useApollo();
+	const [contracts, setContracts] = useState<RoomContract | null>(null);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const roomId = room?.roomId || room?.number;
+
+	useEffect(() => {
+		if (!roomId) return;
+		let active = true;
+		(async () => {
+			setLoading(true); setError(null);
+			try {
+				const list = await BoardingService.getRoomContractList(client, roomId);
+				if (!active) return;
+				setContracts(list);
+			} catch (e) {
+				if (!active) return;
+				setError('계약 정보를 불러오지 못했습니다.');
+			} finally {
+				if (active) setLoading(false);
+			}
+		})();
+		return () => { active = false; };
+	}, [client, roomId]);
+
 	if (!room) return null;
+
+	const first = contracts;
+	const host = first?.room?.boardingHouse?.host;
+	const hostInfo = host?.user?.name ? { name: host.user.name, phone: host?.callNumber || '' } : null;
+
+	const formatDate = (d?: string) => {
+		if (!d) return '';
+		return d.slice(0,10);
+	};
+
+	const members = (contracts?.contractInfo || []).map(info => {
+		const name = info?.boarder?.user?.name;
+		if (!name) return null;
+		const expiry = (info as any).expiryDate || (info as any).expireDate;
+		return { name, phone: info?.boarder?.callNumber, expiryDate: expiry ? formatDate(expiry) : undefined };
+	}).filter(Boolean) as { name: string; phone?: string; expiryDate?: string }[];
 
 	return (
 		<Wrapper>
@@ -45,21 +74,33 @@ export default function RoomDetail({ id, room, title, address, close }: RoomDeta
 
 			<Host>
 				<Label>호스트</Label>
-				<HostName>{RoomDetailData.host.name}</HostName>
-				<PhoneNumber>{RoomDetailData.host.phone}</PhoneNumber>
+				{loading && !hostInfo && <PhoneNumber>불러오는 중...</PhoneNumber>}
+				{error && <PhoneNumber style={{ color: 'red' }}>{error}</PhoneNumber>}
+				{!loading && !error && hostInfo && (
+					<>
+						<HostName>{hostInfo.name}</HostName>
+						{hostInfo.phone && <PhoneNumber>{hostInfo.phone}</PhoneNumber>}
+					</>
+				)}
+				{!loading && !error && !hostInfo && <PhoneNumber>정보 없음</PhoneNumber>}
 			</Host>
 
 			<Members>
 				<Label>유학생</Label>
-				<MemberGrid>
-					{RoomDetailData.members.map((member, index) => (
-						<MemberItem key={index}>
-							<MemberName>{member.name}</MemberName>
-							<PhoneNumber>{member.phone}</PhoneNumber>
-							<ContractPeriod>계약 기간 : {member.contractPeriod}</ContractPeriod>
-						</MemberItem>
-					))}
-				</MemberGrid>
+				{loading && members.length === 0 && <PhoneNumber>불러오는 중...</PhoneNumber>}
+				{!loading && members.length === 0 && !error && <PhoneNumber>입주자 없음</PhoneNumber>}
+				{error && <PhoneNumber style={{ color: 'red' }}>{error}</PhoneNumber>}
+				{members.length > 0 && (
+					<MemberGrid>
+						{members.map((member, index) => (
+							<MemberItem key={index}>
+								<MemberName>{member.name}</MemberName>
+								{member.phone && <PhoneNumber>{member.phone}</PhoneNumber>}
+								{member.expiryDate && <ContractPeriod>계약 만료 일 : {member.expiryDate}</ContractPeriod>}
+							</MemberItem>
+						))}
+					</MemberGrid>
+				)}
 			</Members>
 			<Square text='완료' onClick={() => { close() }} status={true} width='fix-content' />
 		</Wrapper>
@@ -112,9 +153,7 @@ const PhoneNumber = styled.p`
   margin: 0;
 `;
 
-const Members = styled.div`
-
-`;
+const Members = styled.div``;
 
 const MemberGrid = styled.div`
   display: grid;

@@ -1,17 +1,16 @@
 'use client';
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 import * as S from './style';
 import Image from "next/image";
 import Smile from "@/assets/icon/smile.svg"
 import Lose from "@/assets/icon/lose.svg"
-import X from "@/assets/icon/x.svg"
-import {createPortal} from 'react-dom';
-import {useAlertStore} from "@/store/alert";
+import { createPortal } from 'react-dom';
+import { useAlertStore } from "@/store/alert";
 
 
 export default function Alert() {
-	const {isStatus, description, none, isLeavingAnimation, setIsLeavingAnimation, isVisible} = useAlertStore();
-	
+	const { isStatus, description, none, isLeavingAnimation, setIsLeavingAnimation, isVisible } = useAlertStore();
+
 	useEffect(() => {
 		const leavingTimer = setTimeout(() => {
 			setIsLeavingAnimation(false);
@@ -24,7 +23,7 @@ export default function Alert() {
 			clearTimeout(visibleTimer);
 		};
 	}, [isStatus]);
-	
+
 	const closeAlert = () => {
 		setIsLeavingAnimation(false);
 		setTimeout(() => {
@@ -32,16 +31,16 @@ export default function Alert() {
 		}, 500)
 	}
 	if (!isVisible && isStatus === "none") return null;
-	
+
 	return (
 		createPortal(
 			<S.Alert isLeaving={!isLeavingAnimation}>
 				<S.Content>
 					<S.Close onClick={closeAlert}>
-						<Image src={X} alt="X"/>
+						<Image src="/icons/X.svg" alt="X" fill/>
 					</S.Close>
 					<S.Emotion>
-						<Image src={isStatus === "success" ? Smile : Lose} alt="emotion"/>
+						<Image src={isStatus === "success" ? Smile : Lose} alt="emotion" />
 					</S.Emotion>
 					<S.TextBox success={isStatus === "success"}>
 						<h3>{isStatus === "success" ? "Success" : "Error"}</h3>
@@ -53,7 +52,7 @@ export default function Alert() {
 					</S.TextBox>
 				</S.Content>
 				<S.GageBox>
-					<S.Gauge success={isStatus === "success"}/>
+					<S.Gauge success={isStatus === "success"} />
 				</S.GageBox>
 			</S.Alert>,
 			document.body

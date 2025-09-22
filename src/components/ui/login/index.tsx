@@ -9,8 +9,9 @@ import { useApollo } from '@/lib/apolloClient';
 import { useAlertStore } from '@/store/alert';
 import { useLoginModalStore } from '@/store/loginModal';
 import { useUserStore } from '@/store/user';
-import { AuthService } from '@/services/auth';
+import { AuthGQL, AuthService } from '@/services/auth';
 import { decodeJWT } from '@/utils/jwt';
+import { useQuery } from '@apollo/client';
 
 
 export default function Login() {
@@ -37,7 +38,7 @@ export default function Login() {
 		}
 		setLoading(true);
 		try {
-			const { headers, status } = await AuthService.localLogin(
+			const { user, headers, status } = await AuthService.localLogin(
 				client,
 				{ id: id.trim(), password }
 			);
@@ -50,11 +51,12 @@ export default function Login() {
 				throw new Error(`토큰이 응답에 없습니다. status=${status ?? 'N/A'}`);
 			}
 
-			const decodedToken = decodeJWT(headerToken);
-			const role = decodedToken?.role || 'USER';
-
 			localStorage.setItem('AT', headerToken);
-			setAuth(id.trim(), role);
+
+			if (!user) {
+				throw new Error('로그인 유저 정보가 없습니다.');
+			}
+			setAuth(user);
 			alertStore.success('로그인 성공');
 			loginModal.close();
 		} catch (e: any) {
@@ -63,6 +65,28 @@ export default function Login() {
 			setLoading(false);
 		}
 	}, [id, password, client, alertStore, loginModal, loading, setAuth]);
+
+	const handleSocialLogin = useCallback(async (provider: 'kakao' | 'google' | 'facebook' | 'tiktok') => {
+		try {
+			sessionStorage.setItem('oauth_provider', provider);
+
+			const { data } = await client.query({
+				query: AuthGQL.QUERIES.GET_SOCIAL_URL,
+				variables: { provider },
+				fetchPolicy: 'no-cache'
+			});
+
+			if (data?.getOAuth2Link) {
+				window.location.href = data.getOAuth2Link;
+			} else {
+				alertStore.error('소셜 로그인 URL을 가져올 수 없습니다.');
+				sessionStorage.removeItem('oauth_provider');
+			}
+		} catch (error: any) {
+			alertStore.error(error?.message || '소셜 로그인 연결에 실패했습니다.');
+			sessionStorage.removeItem('oauth_provider');
+		}
+	}, [client, alertStore]);
 
 	return (
 		<Wrapper>
@@ -106,10 +130,10 @@ export default function Login() {
 					/>
 					<SocialOther>또는</SocialOther>
 					<SocialList>
-						<Image src="/login/kakao.svg" alt="카카오 로그인" width={56} height={56} />
-						<Image src="/login/tiktok.svg" alt="틱톡 로그인" width={56} height={56} />
-						<Image src="/login/facebook.svg" alt="페이스북 로그인" width={56} height={56} />
-						<Image src="/login/google.svg" alt="구글 로그인" width={56} height={56} />
+						<Image src="/login/kakao.svg" alt="카카오 로그인" width={56} height={56} onClick={() => handleSocialLogin('kakao')} />
+						<Image src="/login/tiktok.svg" alt="틱톡 로그인" width={56} height={56} onClick={() => handleSocialLogin('tiktok')} />
+						<Image src="/login/facebook.svg" alt="페이스북 로그인" width={56} height={56} onClick={() => handleSocialLogin('facebook')} />
+						<Image src="/login/google.svg" alt="구글 로그인" width={56} height={56} onClick={() => handleSocialLogin('google')} />
 					</SocialList>
 				</>
 			)}

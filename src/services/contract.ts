@@ -2,7 +2,7 @@ import { ApolloClient, gql } from '@apollo/client';
 
 export interface CreateContractInput {
   roomId: string;
-  boarderId: string;
+  hostId: string;
   expiryDate: string;
   contractPeriod: number;
 }
@@ -10,10 +10,10 @@ export interface CreateContractInput {
 export const ContractGQL = {
   MUTATIONS: {
     CREATE_CONTRACT: gql`
-			mutation CreateContract($input: ContractCreateInput!) {
-				createContract(contractCreateInput: $input)
-			}
-		`,
+      mutation CreateContract($contractCreateRequestDto: ContractCreateInput!) {
+        createContract(contractCreateRequestDto: $contractCreateRequestDto)
+      }
+    `,
   },
 } as const;
 
@@ -24,7 +24,7 @@ export const ContractService = {
   ): Promise<boolean> => {
     const { data } = await client.mutate<{ createContract: boolean }>({
       mutation: ContractGQL.MUTATIONS.CREATE_CONTRACT,
-      variables: { input },
+      variables: { contractCreateRequestDto: input },
     });
     return !!data?.createContract;
   },

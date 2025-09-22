@@ -7,12 +7,14 @@ import type { PostDetailUnion } from '@/types/postDetail';
 import { useApollo } from '@/lib/apolloClient';
 import { useAlertStore } from '@/store/alert';
 import { ContractService } from '@/services/contract';
+import { useRouter } from 'next/navigation';
 
 export function useContract(postInfo: PostDetailUnion | null, currentUserId?: string | null) {
   const client = useApollo();
   const { success, error } = useAlertStore();
   const navigate = useNavigationWithProgress();
   const [creating, setCreating] = useState(false);
+  const router = useRouter();
 
   const sendContract = async (period: number) => {
     if (!postInfo || postInfo.__typename !== 'BoardingPost') return;
@@ -26,19 +28,24 @@ export function useContract(postInfo: PostDetailUnion | null, currentUserId?: st
     try {
       const roomId = postInfo.room.roomId;
       const boarderId = currentUserId;
+      const hostId = postInfo.room.boardingHouse.host.user.userId;
       const expiryDate = addMonths(new Date(), period).toISOString();
 
       const ok = await ContractService.createContract(client, {
         roomId,
-        boarderId,
+        hostId,
         contractPeriod: period,
         expiryDate,
       });
 
       if (ok) {
         success('계약 요청을 보냈습니다.');
-        const postOwnerId = postInfo.room.boardingHouse.host.user.userId;
-        navigate(`/message/${postOwnerId}`);
+        const user = [hostId, boarderId].sort();
+        console.log(user.join(':'));
+        router.back();
+        setTimeout(() => {
+          navigate(`/message/${user.join(':')}`);
+        }, 100);
       } else {
         error('계약 요청에 실패했습니다.');
       }

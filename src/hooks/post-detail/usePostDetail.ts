@@ -12,7 +12,7 @@ import { useModalStore } from "@/store/modal";
 export function usePostDetail(id: string) {
   const router = useRouter();
   const client = useApollo();
-  const { id: currentUserId } = useUserStore();
+  const { userId: currentUserId } = useUserStore();
   const { success, error } = useAlertStore();
   const { open: openModal, close: closeModal, isOpen } = useModalStore();
 

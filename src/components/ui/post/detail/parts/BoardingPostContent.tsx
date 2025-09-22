@@ -44,8 +44,8 @@ export default function BoardingPostContent({
     <>
       <S.RightTopRow>
         <S.RightPeriodTags>
-          {periods.map((p) => (
-            <S.RightPeriodTag key={p}>{p}개월</S.RightPeriodTag>
+          {periods.map((p, Idx) => (
+            <S.RightPeriodTag key={Idx}>{p}개월</S.RightPeriodTag>
           ))}
         </S.RightPeriodTags>
       </S.RightTopRow>
