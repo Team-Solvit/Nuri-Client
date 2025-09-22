@@ -27,6 +27,13 @@ export default function MessageSideBar() {
 		fetchPolicy: "no-cache",
 		nextFetchPolicy: "no-cache",
 	});
+	
+	useEffect(() => {
+		if (data?.getRooms && data.getRooms.length < size) {
+			setIsDone(true);
+		}
+	}, [data?.getRooms]);
+	
 	useLoadingEffect(loading)
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
 	const [roomDataList, setRoomDataList] = useState<RoomReadResponseDto[]>(data?.getRooms || []);
@@ -34,6 +41,7 @@ export default function MessageSideBar() {
 	const router = useRouter();
 	const {setValues: setHeader} = useMessageHeaderStore()
 	const handleRouter = (id: string, name: string, profile: string) => {
+		if (decodeURIComponent(params.id as string) === id) return;
 		setHeader({
 			chatProfile: profile,
 			chatRoomName: name,
@@ -47,7 +55,6 @@ export default function MessageSideBar() {
 	
 	const {error} = useAlertStore()
 	const loadMore = async () => {
-		console.log(1)
 		if (isFetchingMore || isDone) return;
 		if (!data?.getRooms || data?.getRooms?.length === 0) {
 			setIsDone(true);
@@ -74,7 +81,6 @@ export default function MessageSideBar() {
 					};
 				},
 			});
-			console.log(res)
 			if (!res.data || res.data?.getRooms?.length === 0) {
 				setIsDone(true);
 				error("더 이상 불러올 채팅방이 없습니다");
@@ -189,7 +195,7 @@ export default function MessageSideBar() {
 							ref={roomDataList && index === roomDataList.length - 1 ? lastPostElementRef : undefined}
 							key={room.roomDto.id}
 							onClick={() => handleRouter(room.roomDto.id, room.roomDto.name, room.roomDto.profile ?? "")}
-							isRead={params.id === room.roomDto.id || changeParamsId(params.id as string) === room.roomDto.id}
+							isRead={decodeURIComponent(params.id as string) === room.roomDto.id || changeParamsId(params.id as string) === room.roomDto.id}
 						>
 							<S.Profile>
 								<Image src={imageCheck(room?.roomDto?.profile || "")} alt={"profile"} fill/>

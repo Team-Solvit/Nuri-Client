@@ -141,7 +141,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 				if(inputData.users.length > 10){
 					console.log("success")
 					addSubscription(roomId,
-						client.subscribe(`/messages/${roomId}`, (msg) => {
+						client.subscribe(`/chat/messages/${roomId}`, (msg) => {
 							const msgData = JSON.parse(msg.body);
 							setMessage(msgData);
 							fadeIn(
