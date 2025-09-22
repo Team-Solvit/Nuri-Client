@@ -1,8 +1,12 @@
 import { create } from 'zustand';
+interface SubscriptionItem {
+	id: string;
+	unsubscribe: () => void;
+}
 
 interface MessageConnectState {
-	subscriptions: Record<string, { id: string; unsubscribe: () => void }>;
-	addSubscription: (id: string, unsubscribe: () => void) => void;
+	subscriptions: Record<string, SubscriptionItem>;
+	addSubscription: (id : string, item : SubscriptionItem) => void;
 	removeSubscription: (id: string) => void;
 	clearSubscriptions: () => void;
 }
@@ -10,17 +14,22 @@ interface MessageConnectState {
 export const useMessageConnectStore = create<MessageConnectState>((set) => ({
 	subscriptions: {},
 	
-	addSubscription: (id, unsubscribe) =>
-		set((state) => ({
-			subscriptions: {
-				...state.subscriptions,
-				[id]: { id, unsubscribe },
-			},
-		})),
+	addSubscription: (id : string, item : SubscriptionItem) =>
+		set((state) => {
+			console.log(state.subscriptions, id, item)
+			return ({
+				subscriptions: {
+					...state.subscriptions,
+					[id]: {id, unsubscribe: item.unsubscribe} ,
+				},
+			})
+		}),
 	
 	removeSubscription: (id) =>
 		set((state) => {
 			const newSubs = { ...state.subscriptions };
+			state.subscriptions[id].unsubscribe();
+			console.log(state.subscriptions, id)
 			delete newSubs[id];
 			return { subscriptions: newSubs };
 		}),

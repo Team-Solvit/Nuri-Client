@@ -13,6 +13,10 @@ import {useUserStore} from "@/store/user";
 import {useMessageDmManageStore} from "@/store/messageDmManage";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import {useLoadingEffect} from "@/hooks/useLoading";
+import {useMessageConnectStore} from "@/store/messageConnect";
+import { client } from "@/lib/soketClient";
+import {useMessageReflectStore} from "@/store/messageReflect";
+import {useMessageAlertStore} from "@/store/messageAlert";
 
 interface User {
 	userId: string;
@@ -115,6 +119,9 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 	
 	const [loading, setLoading] = useState(false);
 	const {userId : id} = useUserStore()
+	const {addSubscription} = useMessageConnectStore()
+	const { setMessage } = useMessageReflectStore();
+	const { fadeIn } = useMessageAlertStore();
 	const handleCreateRoom = async () => {
 		const inputData: RoomCreateRequestDto = {
 			roomDto: {
@@ -127,8 +134,23 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 		try {
 			setLoading(true)
 			const res = await MessageService.createChatRoom(apolloClient, inputData);
-			if (res?.data?.createRoom?.id) {
+			const roomId = res?.data?.createRoom?.id
+			if (roomId) {
 				success("채팅방을 생성했습니다. 새로생긴 채팅방에 아무 채팅이나 남겨주셔야 채팅방이 저장됩니다.");
+				if(inputData.users.length > 10){
+					console.log("success")
+					addSubscription(roomId,
+						client.subscribe(`/messages/${roomId}`, (msg) => {
+							const msgData = JSON.parse(msg.body);
+							setMessage(msgData);
+							fadeIn(
+								"https://storage.googleapis.com/ploytechcourse-version3/391b0b82-c522-4fd5-9a75-5a1488c21b7e",
+								msgData.userId,
+								msgData.contents,
+								msgData.sendAt
+							);
+						}))
+				}
 				handleClose();
 				setValues({
 					chatProfile: profilePreview ?? "",

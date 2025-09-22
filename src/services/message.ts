@@ -84,17 +84,18 @@ export const MessageMutations = {
 
 export const MessageService = {
 	createChatRoom: async (client: ApolloClient<any>, roomCreateInput: RoomCreateRequestDto) => {
-		return client.mutate({
+		const response = await client.mutate({
 			mutation: MessageMutations.CREATE_ROOM,
 			variables: {
 				input: roomCreateInput,
 			},
 			refetchQueries: [
-				{query: MessageQueries.GET_ROOMS_CHAT_LIST, variables: {page: 0, size: 10}}
+				{ query: MessageQueries.GET_ROOMS_CHAT_LIST, variables: { page: 0, size: 10 } }
 			],
 			awaitRefetchQueries: true,
 			fetchPolicy: 'no-cache',
 		});
+		return response;
 	},
 	inviteUserInChatRoom: async (client: ApolloClient<any>, roomInviteInput: RoomInviteRequestDto) => {
 		return client.mutate({
