@@ -6,10 +6,21 @@ import {contractData, userData} from "./data";
 import {useMessageModalStore} from "@/store/messageModal";
 import {useConfirmStore} from "@/store/confirm";
 import {ConfirmRejectModal} from "./ConfirmRejectModal";
+import {useParams} from "next/navigation";
+import {useQuery} from "@apollo/client";
+import {ContractQueries} from "@/services/contract";
+import {useLoadingEffect} from "@/hooks/useLoading";
 
 export default function ContractModal() {
 	const {isOpen, messageType, master, close} = useMessageModalStore();
 	const {isOpen: isConfirmOpen, openConfirm, closeConfirm} = useConfirmStore();
+	const params = useParams()
+	const {data, loading} = useQuery(ContractQueries.GET_ROOM_CONTRACT_LIST, {
+		variables: {
+			roomId : decodeURIComponent(params.id as string),
+		}
+	})
+	useLoadingEffect(loading)
 	const closeModal = () => {
 		close();
 	}

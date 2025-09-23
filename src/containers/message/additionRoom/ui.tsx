@@ -14,7 +14,7 @@ import {useMessageDmManageStore} from "@/store/messageDmManage";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import {useLoadingEffect} from "@/hooks/useLoading";
 import {useMessageConnectStore} from "@/store/messageConnect";
-import { client } from "@/lib/soketClient";
+import { client } from "@/lib/socketClient";
 import {useMessageReflectStore} from "@/store/messageReflect";
 import {useMessageAlertStore} from "@/store/messageAlert";
 

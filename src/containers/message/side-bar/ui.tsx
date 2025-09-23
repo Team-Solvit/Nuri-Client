@@ -202,7 +202,7 @@ export default function MessageSideBar() {
 							</S.Profile>
 							<S.Info>
 								<h4>{room.roomDto.name}</h4>
-								<p>{room.latestMessage?.startsWith(IMAGE_BASE || "") ? "이미지" : room.latestMessage}</p>
+								<p>{room.latestMessage?.startsWith(IMAGE_BASE || "") ? "이미지" : room.latestMessage?.startsWith("ContractCreateRequestDto") ? "계약" : room.latestMessage}</p>
 							</S.Info>
 						</S.ChatBox>
 					)

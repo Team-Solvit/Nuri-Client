@@ -9,6 +9,7 @@ export const MessageQueries = {
           id
           name
           profile
+          memberCount
         }
         newMessageCount
         latestMessage

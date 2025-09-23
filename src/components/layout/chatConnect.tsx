@@ -5,7 +5,7 @@ import {useEffect} from "react";
 import {useQuery} from "@apollo/client";
 import {MessageQueries} from "@/services/message";
 import {useUserStore} from "@/store/user";
-import {client} from "@/lib/soketClient";
+import {client} from "@/lib/socketClient";
 import {useMessageConnectStore} from "@/store/messageConnect";
 import {useMessageReflectStore} from "@/store/messageReflect";
 import {useMessageAlertStore} from "@/store/messageAlert";

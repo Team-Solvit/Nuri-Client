@@ -25,6 +25,7 @@ import {useMessageReflectStore} from "@/store/messageReflect";
 import {scrollToBottom} from "@/utils/scrollToBottom";
 import {useMessageReplyStore} from "@/store/messageReply";
 import {imageCheck} from "@/utils/imageCheck";
+import {contractCheck} from "@/utils/contractCheck";
 
 export default function MessageContent() {
 	const {message: newMessageReflect} = useMessageReflectStore();
@@ -89,6 +90,8 @@ export default function MessageContent() {
 	
 	const {open} = useModalStore();
 	const {
+		isOpen,
+		messageType,
 		setMessageType,
 		open: messageModalOpen,
 		setMaster,
@@ -117,7 +120,7 @@ export default function MessageContent() {
 	}, [messages]);
 	return (
 		<S.ContainerBox>
-			<ContractModal/>
+			{ messageType === "contract" && isOpen && <ContractModal/>}
 			<RoomTourModal/>
 			
 			{replyInfo && (
@@ -148,11 +151,11 @@ export default function MessageContent() {
 						messages[idx - 1].sender.name !== msg.sender.name;
 					
 					const renderMessageBody = () => {
-						if (msg.contents === "" && msg.contract) {
+						const contract = contractCheck(msg.contents)
+						if (contract) {
 							return (
 								<ContractMessage
-									thumbnail={msg.contract.thumbnail || '/assets/meeting/profile.png'}
-									name={msg.contract.name || ""}
+									contract = {contract}
 									time={isLastOfTime ? msg.createdAt.time : undefined}
 									isSent={msg.sender.name === userId}
 									button={

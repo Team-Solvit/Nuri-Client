@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { client } from "@/lib/soketClient";
+import { client } from "@/lib/socketClient";
 import { useUserStore } from "@/store/user";
 import { useMessageReflectStore } from "@/store/messageReflect";
 import { ChatMessageResponse } from "@/containers/message/message-content/type";
@@ -18,7 +18,6 @@ export default function useSocketConnect() {
 	
 	useEffect(() => {
 		if (!userId || !accessToken) return;
-		
 		client.connectHeaders = {
 			Authorization: `Bearer ${accessToken}`,
 		};

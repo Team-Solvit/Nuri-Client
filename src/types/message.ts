@@ -63,6 +63,7 @@ export interface RoomDto {
 	name: string;
 	id: string;
 	profile?: string | null;
+	memberCount:number
 }
 
 export interface RoomCreateResponseDto {
@@ -88,3 +89,14 @@ export interface RoomReadPage {
 	content: RoomReadResponseDto[];
 	pageInfo: PageInfo;
 }
+export interface Contract {
+	type: ContractStatus;
+	roomId: string;
+	hostId: string;
+	contractPeriod: number;
+	expiryDate: string;
+	status: string;
+	contractId: string;
+	thumbnail: string;
+}
+type ContractStatus = "PENDING" | "ACTIVE" | "EXPIRED" | "REJECTED"

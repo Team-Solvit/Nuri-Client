@@ -6,7 +6,7 @@ import Send from "@/assets/icon/sent.svg"
 import Image from "next/image"
 import Plus from "@/assets/icon/plus.svg"
 import React, {useEffect, useRef, useState} from "react";
-import {sendDmChatMessage, sendGroupChatMessage} from "@/lib/soketClient";
+import {sendDmChatMessage, sendGroupChatMessage} from "@/lib/socketClient";
 import {useParams} from "next/navigation";
 import {useAlertStore} from "@/store/alert";
 import {useFileUpload} from "@/hooks/useFileUpload";

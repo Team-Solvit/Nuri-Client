@@ -1,7 +1,7 @@
 "use client";
 
 import {useEffect} from 'react';
-import {soketClient} from '@/lib/soketClient';
+import {soketClient} from '@/lib/socketClient';
 import {useUserStore} from '@/store/user';
 
 export default function ChatComponent() {
