@@ -6,21 +6,11 @@ import {contractData, userData} from "./data";
 import {useMessageModalStore} from "@/store/messageModal";
 import {useConfirmStore} from "@/store/confirm";
 import {ConfirmRejectModal} from "./ConfirmRejectModal";
-import {useParams} from "next/navigation";
-import {useQuery} from "@apollo/client";
-import {ContractQueries} from "@/services/contract";
-import {useLoadingEffect} from "@/hooks/useLoading";
 
 export default function ContractModal() {
 	const {isOpen, messageType, master, close} = useMessageModalStore();
-	const {isOpen: isConfirmOpen, openConfirm, closeConfirm} = useConfirmStore();
-	const params = useParams()
-	const {data, loading} = useQuery(ContractQueries.GET_ROOM_CONTRACT_LIST, {
-		variables: {
-			roomId : decodeURIComponent(params.id as string),
-		}
-	})
-	useLoadingEffect(loading)
+	const { openConfirm} = useConfirmStore();
+	
 	const closeModal = () => {
 		close();
 	}
@@ -83,16 +73,15 @@ export default function ContractModal() {
 				
 				{/* 버튼 */}
 				<S.ButtonRow>
-					{master ? <>
-						<Square text="거절" onClick={openConfirm} status={false} width="48%"/>
-						<Square text="수락" onClick={() => {
-						}} status={true} width="48%"/>
-					</> : <Square text="확인" onClick={closeModal} status={true} width="100%"/>}
+					{master ?
+						<>
+							<Square text="거절" onClick={()=>openConfirm("delete")} status={false} width="48%"/>
+							<Square text="수락" onClick={() => openConfirm("sure")} status={true} width="48%"/>
+						</> : <Square text="확인" onClick={closeModal} status={true} width="100%"/>
+					}
 				</S.ButtonRow>
 			</S.ModalContainer>
 			<ConfirmRejectModal
-				isOpen={isConfirmOpen}
-				onClose={closeConfirm}
 				onConfirm={close}
 				type={"결제"}
 			/>

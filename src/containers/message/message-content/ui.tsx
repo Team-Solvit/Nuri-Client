@@ -121,7 +121,7 @@ export default function MessageContent() {
 	return (
 		<S.ContainerBox>
 			{ messageType === "contract" && isOpen && <ContractModal/>}
-			<RoomTourModal/>
+			{ messageType === "roomtour" && isOpen && <RoomTourModal/>}
 			
 			{replyInfo && (
 				<S.ReplyPreviewContainer>

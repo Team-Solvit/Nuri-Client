@@ -16,6 +16,7 @@ import {useMessageHeaderStore} from "@/store/messageHeader";
 import {imageCheck} from "@/utils/imageCheck";
 import {useAlertStore} from "@/store/alert";
 import {useLoadingEffect} from "@/hooks/useLoading";
+import {contractCheck} from "@/utils/contractCheck";
 const IMAGE_BASE = process.env.NEXT_PUBLIC_IMAGE_URL;
 
 export default function MessageSideBar() {
@@ -202,7 +203,7 @@ export default function MessageSideBar() {
 							</S.Profile>
 							<S.Info>
 								<h4>{room.roomDto.name}</h4>
-								<p>{room.latestMessage?.startsWith(IMAGE_BASE || "") ? "이미지" : room.latestMessage?.startsWith("ContractCreateRequestDto") ? "계약" : room.latestMessage}</p>
+								<p>{room.latestMessage?.startsWith(IMAGE_BASE || "") ? "이미지" : contractCheck(room.latestMessage) ? "계약" : room.latestMessage}</p>
 							</S.Info>
 						</S.ChatBox>
 					)

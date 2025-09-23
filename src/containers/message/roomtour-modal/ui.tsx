@@ -13,7 +13,7 @@ export default function RoomTourModal() {
 	const closeModal = () => {
 		close()
 	}
-	const {isOpen: isConfirmOpen, openConfirm, closeConfirm} = useConfirmStore();
+	const { openConfirm, closeConfirm} = useConfirmStore();
 	return isOpen && messageType === "roomtour" && (
 		<Modal>
 			<S.ModalContainer>
@@ -70,21 +70,15 @@ export default function RoomTourModal() {
 				{/* 버튼 */}
 				<S.ButtonRow>
 					{master ? <>
-						<Square text="거절" onClick={() => {
-							openConfirm();
-						}} status={false} width="48%"/>
-						<Square text="수락" onClick={() => {
-						}} status={true} width="48%"/>
-					</> : <Square text="확인" onClick={() => {
-						closeModal()
-					}} status={true} width="100%"/>}
+						<Square text="거절" onClick={() => openConfirm("delete")} status={false} width="48%"/>
+						<Square text="수락" onClick={() => openConfirm("sure")} status={true} width="48%"/>
+					</> :
+						<Square text="확인" onClick={closeModal} status={true} width="100%"/>}
 				</S.ButtonRow>
 			</S.ModalContainer>
 			<ConfirmRejectModal
-				isOpen={isConfirmOpen}
-				onClose={closeConfirm}
 				onConfirm={close}
-				type={"결제"}
+				type={"룸투어"}
 			/>
 		</Modal>
 	);
