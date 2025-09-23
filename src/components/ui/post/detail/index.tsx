@@ -19,6 +19,7 @@ import { usePostEdit } from "@/hooks/post-detail/usePostEdit";
 import { useComments } from "@/hooks/post-detail/useComments";
 import { useContract } from "@/hooks/post-detail/useContract";
 import ContractPeriodModal from "./ContractPeriodModal";
+import { useAlertStore } from "@/store/alert";
 
 interface PostDetailProps { id: string; isModal?: boolean; }
 
@@ -96,13 +97,13 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
   const [showRoomTour, setShowRoomTour] = useState(false);
   const roomTourRef = useRef<HTMLDivElement | null>(null);
   const [showContractPeriods, setShowContractPeriods] = useState(false);
+  const { error } = useAlertStore();
   const { creating: creatingContract, sendContract } = useContract(postInfo, currentUserId);
 
   const openContractPeriodPicker = () => {
     if (!postInfo || postInfo.__typename !== 'BoardingPost') return;
     if (!postInfo.room.contractPeriod?.length) {
-      // 기간 정보 없으면 기본 12개월로 바로 전송
-      sendContract(12);
+      error('개월을 선택해주세요.');
       return;
     }
     setShowContractPeriods(prev => {

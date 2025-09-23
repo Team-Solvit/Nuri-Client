@@ -39,8 +39,9 @@ export function useContract(postInfo: PostDetailUnion | null, currentUserId?: st
       });
 
       if (ok) {
-        success('계약 요청을 보냈습니다.');
         const user = [hostId, boarderId].sort();
+        router.prefetch(`/message/${user.join(':')}`);
+        success('계약 요청을 보냈습니다.');
         console.log(user.join(':'));
         router.back();
         setTimeout(() => {
