@@ -152,8 +152,8 @@ export const GroupGQL = {
       }
     `,
     UPDATE_GROUP: gql`
-      mutation UpdateGroup($GroupUpdateRequestDto: GroupUpdateInput!) {
-        updateGroup(GroupUpdateRequestDto: $GroupUpdateRequestDto)
+      mutation UpdateGroup($groupUpdateRequestDto: GroupUpdateInput!) {
+        updateGroup(groupUpdateRequestDto: $groupUpdateRequestDto)
       }
     `,
     DELETE_GROUP: gql`
@@ -307,7 +307,7 @@ export const GroupService = {
   updateGroup: async (client: ApolloClient<any>, groupUpdateInput: any) => {
     const { data } = await client.mutate({
       mutation: GroupGQL.MUTATIONS.UPDATE_GROUP,
-      variables: { GroupUpdateRequestDto: groupUpdateInput }
+      variables: { groupUpdateRequestDto: groupUpdateInput }
     });
     return data.updateGroup;
   },

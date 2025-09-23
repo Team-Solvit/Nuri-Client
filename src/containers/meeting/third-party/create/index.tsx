@@ -28,7 +28,6 @@ export default function CreateThirdPartyContainer() {
     banner: '',
     description: '',
     profile: '',
-    introduce: '',
     position: {
       area: '부산광역시 남구',
       latitude: 35.13340833,
@@ -137,11 +136,6 @@ export default function CreateThirdPartyContainer() {
       return;
     }
 
-    if (!formData.introduce.trim()) {
-      error('모임 소개를 입력해주세요.');
-      return;
-    }
-
     if (!formData.position.area) {
       error('활동 구를 선택해주세요.');
       return;
@@ -155,7 +149,6 @@ export default function CreateThirdPartyContainer() {
         banner: formData.banner || null,
         description: formData.description,
         profile: formData.profile || null,
-        introduce: formData.introduce,
         positionDto: {
           area: formData.position.area,
           latitude: formData.position.latitude,
@@ -209,17 +202,6 @@ export default function CreateThirdPartyContainer() {
             placeholder="모임에 대한 설명을 입력해주세요"
             rows={4}
             maxLength={500}
-          />
-        </S.FormSection>
-
-        <S.FormSection>
-          <S.Label>모임 소개</S.Label>
-          <S.TextArea
-            value={formData.introduce}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleInputChange('introduce', e.target.value)}
-            placeholder="모임에 대한 소개를 입력해주세요"
-            rows={3}
-            maxLength={300}
           />
         </S.FormSection>
 
@@ -303,7 +285,7 @@ export default function CreateThirdPartyContainer() {
         <Square
           text={loading ? "생성 중..." : "모임 만들기"}
           onClick={handleSubmit}
-          status={!loading && !!formData.name.trim() && !!formData.description.trim() && !!formData.introduce.trim() && !!formData.position.area}
+          status={!loading && !!formData.name.trim() && !!formData.description.trim() && !!formData.position.area}
           width="48%"
         />
       </S.ButtonSection>

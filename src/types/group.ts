@@ -68,7 +68,6 @@ export interface GroupCreateInput {
   banner?: string;
   description: string;
   profile?: string;
-  introduce: string;
   position: PositionInput;
   maxParticipation: number;
 }
@@ -79,8 +78,7 @@ export interface GroupUpdateInput {
   banner?: string;
   description: string;
   profile?: string;
-  introduce: string;
-  position: PositionInput;
+  positionDto: PositionInput;
   maxParticipation: number;
 }
 

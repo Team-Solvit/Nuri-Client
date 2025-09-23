@@ -5,6 +5,7 @@ import { useAlertStore } from '@/store/alert';
 import { useApolloClient } from '@apollo/client';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import type { Group, GroupUpdateInput, Area } from '@/types/group';
+import * as S from './style';
 
 interface GroupEditModalProps {
   group: Group;
@@ -19,7 +20,6 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
 
   const [name, setName] = useState(group.name);
   const [description, setDescription] = useState(group.description || '');
-  const [introduce, setIntroduce] = useState('');
   const [maxParticipation, setMaxParticipation] = useState(group.maxParticipation);
   const [area, setArea] = useState(group.area.area);
   const [latitude, setLatitude] = useState(group.area.latitude);
@@ -79,7 +79,7 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
   };
 
   const handleSave = async () => {
-    if (!name.trim() || !description.trim() || !introduce.trim()) {
+    if (!name.trim() || !description.trim()) {
       error('모든 필드를 입력해주세요.');
       return;
     }
@@ -92,8 +92,7 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
         banner: banner || undefined,
         description,
         profile: profile || undefined,
-        introduce,
-        position: {
+        positionDto: {
           area,
           latitude,
           longitude
@@ -128,27 +127,15 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
   };
 
   return (
-    <div style={{ padding: 24, minWidth: 500, maxWidth: 600, maxHeight: '80vh', overflowY: 'auto' }}>
-      <h3 style={{ marginBottom: 24, fontSize: 18, fontWeight: 'bold' }}>모임 정보 수정</h3>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-
-        {/* 배너 이미지 */}
+    <S.Wrapper>
+      <S.Title>모임 정보 수정</S.Title>
+      <S.FormCol>
         <div>
-          <label style={{ display: 'block', marginBottom: 8, fontWeight: '500' }}>
-            배너 이미지
-          </label>
+          <S.Label>배너 이미지</S.Label>
           {banner && (
-            <img
+            <S.BannerImg
               src={`https://cdn.solvit-nuri.com/file/${banner}`}
               alt="배너 미리보기"
-              style={{
-                width: '100%',
-                height: 120,
-                objectFit: 'cover',
-                borderRadius: 8,
-                marginBottom: 8,
-                border: '1px solid #ddd'
-              }}
             />
           )}
           <input
@@ -166,24 +153,12 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
             width="100%"
           />
         </div>
-
-        {/* 프로필 이미지 */}
         <div>
-          <label style={{ display: 'block', marginBottom: 8, fontWeight: '500' }}>
-            프로필 이미지
-          </label>
+          <S.Label>프로필 이미지</S.Label>
           {profile && (
-            <img
+            <S.ProfileImg
               src={`https://cdn.solvit-nuri.com/file/${profile}`}
               alt="프로필 미리보기"
-              style={{
-                width: 80,
-                height: 80,
-                objectFit: 'cover',
-                borderRadius: '50%',
-                marginBottom: 8,
-                border: '1px solid #ddd'
-              }}
             />
           )}
           <input
@@ -201,78 +176,32 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
             width="100%"
           />
         </div>
-
         <div>
-          <label style={{ display: 'block', marginBottom: 8, fontWeight: '500' }}>
-            모임 이름
-          </label>
-          <input
+          <S.Label>모임 이름</S.Label>
+          <S.TextInput
             value={name}
             onChange={e => setName(e.target.value)}
             disabled={loading}
             placeholder="모임 이름을 입력해주세요"
-            style={{
-              width: '100%',
-              padding: 12,
-              borderRadius: 8,
-              border: '1px solid #ddd',
-              fontSize: 14
-            }}
           />
         </div>
-
         <div>
-          <label style={{ display: 'block', marginBottom: 8, fontWeight: '500' }}>
-            모임 설명
-          </label>
-          <textarea
+          <S.Label>모임 설명</S.Label>
+          <S.TextArea
             value={description}
             onChange={e => setDescription(e.target.value)}
             disabled={loading}
             placeholder="모임에 대한 설명을 입력해주세요"
-            style={{
-              width: '100%',
-              minHeight: 60,
-              padding: 12,
-              borderRadius: 8,
-              border: '1px solid #ddd',
-              fontSize: 14,
-              resize: 'vertical'
-            }}
           />
         </div>
-
         <div>
-          <label style={{ display: 'block', marginBottom: 8, fontWeight: '500' }}>
-            모임 소개
-          </label>
-          <textarea
-            value={introduce}
-            onChange={e => setIntroduce(e.target.value)}
-            disabled={loading}
-            placeholder="모임에 대한 자세한 소개를 입력해주세요"
-            style={{
-              width: '100%',
-              minHeight: 80,
-              padding: 12,
-              borderRadius: 8,
-              border: '1px solid #ddd',
-              fontSize: 14,
-              resize: 'vertical'
-            }}
-          />
-        </div>
-
-        <div>
-          <label style={{ display: 'block', marginBottom: 8, fontWeight: '500' }}>
-            지역
-          </label>
+          <S.Label>지역</S.Label>
           {loadingAreas ? (
             <div style={{ padding: 12, textAlign: 'center', color: '#666' }}>
               지역 목록을 불러오는 중...
             </div>
           ) : (
-            <select
+            <S.Select
               value={area}
               onChange={e => {
                 const selectedArea = areas.find(a => a.area === e.target.value);
@@ -283,14 +212,6 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
                 }
               }}
               disabled={loading}
-              style={{
-                width: '100%',
-                padding: 12,
-                borderRadius: 8,
-                border: '1px solid #ddd',
-                fontSize: 14,
-                backgroundColor: 'white'
-              }}
             >
               <option value="">지역을 선택해주세요</option>
               {areas.map((areaItem) => (
@@ -298,35 +219,24 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
                   {areaItem.area}
                 </option>
               ))}
-            </select>
+            </S.Select>
           )}
-          <div style={{ marginTop: 8, fontSize: 12, color: '#666' }}>
+          <S.CoordText>
             선택된 좌표: 위도 {latitude.toFixed(6)}, 경도 {longitude.toFixed(6)}
-          </div>
+          </S.CoordText>
         </div>
-
         <div>
-          <label style={{ display: 'block', marginBottom: 8, fontWeight: '500' }}>
-            최대 참여 인원
-          </label>
-          <input
+          <S.Label>최대 참여 인원</S.Label>
+          <S.TextInput
             type="number"
             min="2"
             max="50"
             value={maxParticipation}
             onChange={e => setMaxParticipation(parseInt(e.target.value) || 2)}
             disabled={loading}
-            style={{
-              width: '100%',
-              padding: 12,
-              borderRadius: 8,
-              border: '1px solid #ddd',
-              fontSize: 14
-            }}
           />
         </div>
-
-        <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
+        <S.BtnRow>
           <Square
             text={loading ? '저장 중...' : '저장'}
             onClick={handleSave}
@@ -339,8 +249,8 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
             status={!loading && !uploadLoading}
             width="100%"
           />
-        </div>
-      </div>
-    </div>
+        </S.BtnRow>
+      </S.FormCol>
+    </S.Wrapper>
   );
 }

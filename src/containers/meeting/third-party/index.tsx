@@ -7,7 +7,7 @@ import { useModalStore } from "@/store/modal";
 import Modal from "@/components/layout/modal";
 import MemberModal from "./MemberModal";
 import CreateModal from "./CreateModal";
-import GroupEditModal from "./GroupEditModal";
+import GroupEditModal from "./GroupEditModal/GroupEditModal";
 import { useState, useEffect } from "react";
 import StateModal from "@/components/layout/stateModal";
 import { useApollo } from "@/lib/apolloClient";
@@ -30,7 +30,7 @@ export default function MeetingThirdPartyContainer() {
   const { isOpen: isOpenList, open: openListStore, close: closeListStore } = useModalStore();
   const [isOpenCreate, setIsOpenCreate] = useState(false);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
-  
+
   const currentArea = "부산광역시 부산진구";
 
   useEffect(() => {

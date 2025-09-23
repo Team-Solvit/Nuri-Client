@@ -60,7 +60,6 @@ export default function CreateModal({
       const groupInput: GroupCreateInput = {
         name: groupName,
         description: groupDescription,
-        introduce: groupIntroduce,
         position: {
           area,
           latitude,
@@ -164,18 +163,6 @@ export default function CreateModal({
                 placeholder="모임에 대한 간단한 설명을 입력해주세요."
                 value={groupDescription}
                 onChange={e => setGroupDescription(e.target.value)}
-              />
-            </S.InputBox>
-          </S.Section>
-
-          <S.Section>
-            <S.Label htmlFor="group-introduce">모임 소개</S.Label>
-            <S.InputBox>
-              <S.Input
-                id="group-introduce"
-                placeholder="모임 소개를 자세히 작성해주세요."
-                value={groupIntroduce}
-                onChange={e => setGroupIntroduce(e.target.value)}
               />
             </S.InputBox>
           </S.Section>
