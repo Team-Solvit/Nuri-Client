@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { RoomTourService } from '@/services/roomTour';
+import { useApolloClient } from '@apollo/client';
 import styled from '@emotion/styled';
 import Image from 'next/image';
 import { colors, fontSizes, zIndex } from '@/styles/theme';
@@ -17,7 +19,13 @@ import ArrowRight from '@/assets/post/arrow/right.svg';
 import { mq } from '@/styles/media';
 import { useAlertStore } from "@/store/alert";
 
-export default function RoomTourModal() {
+interface RoomTourModalProps {
+	boardingRoomId?: string;
+	onSuccess?: () => void;
+}
+
+export default function RoomTourModal({ boardingRoomId, onSuccess }: RoomTourModalProps) {
+	const client = useApolloClient();
 	const now = new Date();
 	const rawHour = now.getHours();
 	const initialPeriod = rawHour >= 12 ? 'PM' : 'AM';
@@ -53,6 +61,28 @@ export default function RoomTourModal() {
 			return;
 		}
 		setSelectedDate(day);
+	};
+
+
+	const handleSend = async () => {
+		if (!boardingRoomId) {
+			error('예약 정보가 올바르지 않습니다.');
+			return;
+		}
+		const date = new Date(selectedDate);
+		let hour24 = hour % 12;
+		if (period === 'PM') hour24 += 12;
+		date.setHours(hour24, minute, 0, 0);
+
+		try {
+			await RoomTourService.createRoomTour(client, {
+				boardingRoomId,
+				time: date.toISOString(),
+			});
+			onSuccess?.();
+		} catch (e) {
+			error('룸투어 예약에 실패했습니다.');
+		}
 	};
 
 	return (
@@ -138,19 +168,22 @@ export default function RoomTourModal() {
 				</TimeSelector>
 			</TimeRow>
 
-			<SendButton
-				onClick={() =>
-					console.log(
-						'전송:',
-						format(selectedDate, 'yyyy-MM-dd'),
-						formatTime(hour, minute),
-						period
-					)
-				}
-			>
-				<Image src={'/icons/post-detail/send.svg'} alt="Send" width={20} height={20} />
-				전송
-			</SendButton>
+			{!boardingRoomId ? (
+				<>
+					<SendButton disabled>
+						<Image src={'/icons/post-detail/send.svg'} alt="Send" width={20} height={20} />
+						전송
+					</SendButton>
+					<div style={{ color: '#e74c3c', textAlign: 'center', marginTop: 8, fontSize: 14 }}>
+						예약에 필요한 정보가 없습니다. 게시글에서 진입 시에만 예약이 가능합니다.
+					</div>
+				</>
+			) : (
+				<SendButton onClick={handleSend}>
+					<Image src={'/icons/post-detail/send.svg'} alt="Send" width={20} height={20} />
+					전송
+				</SendButton>
+			)}
 
 			<Arrow>
 				<Image src="/icons/roomtour-popover-arrow.svg" alt="arrow" width={20} height={10} />

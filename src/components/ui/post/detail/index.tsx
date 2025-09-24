@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Square from "@/components/ui/button/square";
 import RoomTourModal from "./RoomTourModal";
@@ -20,10 +21,13 @@ import { useComments } from "@/hooks/post-detail/useComments";
 import { useContract } from "@/hooks/post-detail/useContract";
 import ContractPeriodModal from "./ContractPeriodModal";
 import { useAlertStore } from "@/store/alert";
+import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 
 interface PostDetailProps { id: string; isModal?: boolean; }
 
 export default function PostDetail({ id, isModal }: PostDetailProps) {
+  const router = useRouter();
+  const navigate = useNavigationWithProgress();
   const {
     postInfo,
     loading,
@@ -155,7 +159,22 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
             <S.Buttons>
               <S.RoomTourWrapper ref={roomTourRef}>
                 <Square text="룸투어" onClick={() => setShowRoomTour(prev => { const next = !prev; if (next) { setMenuOpen(false); setOpenCommentMenuId(null); } return next; })} status={true} width="max-content" />
-                {showRoomTour && (<RoomTourModal />)}
+                {showRoomTour && (
+                  <RoomTourModal
+                    boardingRoomId={postInfo.__typename === 'BoardingPost' ? postInfo.room.roomId : undefined}
+                    onSuccess={() => {
+                      if (postInfo.__typename === 'BoardingPost') {
+                        const user = [postInfo.room.boardingHouse.host.user.userId, currentUserId].sort();
+                        setShowRoomTour(false);
+                        router.prefetch(`/message/${user.join(':')}`);
+                        router.back();
+                        setTimeout(() => {
+                          navigate(`/message/${user.join(':')}`);
+                        }, 300);
+                      }
+                    }}
+                  />
+                )}
               </S.RoomTourWrapper>
               <S.RoomTourWrapper>
                 <Square text={creatingContract ? "보내는 중..." : "계약"} onClick={openContractPeriodPicker} status={true} width="max-content" />

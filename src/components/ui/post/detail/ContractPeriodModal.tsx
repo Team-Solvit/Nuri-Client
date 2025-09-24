@@ -25,7 +25,6 @@ export default function ContractPeriodModal({ periods, onConfirm, onClose }: Pro
   const handleConfirm = () => {
     if (selectedPeriod) {
       onConfirm(selectedPeriod);
-      // 팝오버는 onConfirm 완료 후 상위에서 닫도록 함
     }
   };
 
