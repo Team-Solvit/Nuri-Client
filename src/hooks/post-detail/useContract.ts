@@ -51,7 +51,11 @@ export function useContract(postInfo: PostDetailUnion | null, currentUserId?: st
         error('계약 요청에 실패했습니다.');
       }
     } catch (e) {
-      error(e.message || '계약 요청에 실패했습니다.');
+      if (e instanceof Error) {
+        error(e.message || '계약 요청에 실패했습니다.');
+      } else {
+        error('계약 요청에 실패했습니다.');
+      }
     } finally {
       setCreating(false);
     }
