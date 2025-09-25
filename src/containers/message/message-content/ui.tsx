@@ -26,8 +26,9 @@ import {useMessageReflectStore} from "@/store/messageReflect";
 import {scrollToBottom} from "@/utils/scrollToBottom";
 import {useMessageReplyStore} from "@/store/messageReply";
 import {imageCheck} from "@/utils/imageCheck";
-import {contractCheck} from "@/utils/contractCheck";
-import {Contract} from "@/types/message";
+import {messageRequestCheck} from "@/utils/messageRequestCheck";
+import {Contract, RoomTour} from "@/types/message";
+import {parseKST} from "@/utils/dateTime";
 
 export default function MessageContent() {
 	const {message: newMessageReflect} = useMessageReflectStore();
@@ -102,7 +103,7 @@ export default function MessageContent() {
 	} = useMessageModalStore();
 	
 	
-	const openContract = (messageType: messageType, isMaster: boolean, data ?: Contract) => {
+	const openContract = (messageType: messageType, isMaster: boolean, data ?: Contract | RoomTour) => {
 		open();
 		messageModalOpen();
 		if (!data) return;
@@ -156,17 +157,17 @@ export default function MessageContent() {
 						messages[idx - 1].sender.name !== msg.sender.name;
 					
 					const renderMessageBody = () => {
-						const contract = contractCheck(msg.contents)
-						if (contract) {
+						const request = messageRequestCheck(msg.contents)
+						if (request && request.type === "contract") {
 							return (
 								<ContractMessage
-									contract = {contract}
+									contract = {request}
 									time={isLastOfTime ? msg.createdAt.time : undefined}
 									isSent={msg.sender.name === userId}
 									button={
 										<Square
 											text="자세히보기"
-											onClick={() => openContract("contract", msg.sender.name !== userId || contract.status === "ACTIVE", contract)}
+											onClick={() => openContract("contract", msg.sender.name !== userId || request.status === "ACTIVE", request)}
 											status={true}
 											width="100%"
 										/>
@@ -174,19 +175,16 @@ export default function MessageContent() {
 								/>
 							);
 						}
-						if (msg.contents === "" && msg.roomTour) {
+						if (request && request.type === "roomTour") {
 							return (
 								<RoomTourMessage
-									thumbnail={msg.roomTour.thumbnail || '/assets/meeting/profile.png'}
-									name={msg.roomTour.name || ""}
-									date={msg.roomTour.date || ""}
-									tourTime={msg.roomTour.time || ""}
+									roomTour = {request}
 									messageTime={isLastOfTime ? msg.createdAt.time : undefined}
 									isSent={msg.sender.name === userId}
 									button={
 										<Square
 											text="자세히보기"
-											onClick={() => openContract("roomtour", msg.sender.name !== userId)}
+											onClick={() => openContract("roomtour", msg.sender.name !== userId, request)}
 											status={true}
 											width="100%"
 										/>

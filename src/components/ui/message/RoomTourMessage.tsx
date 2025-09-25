@@ -3,6 +3,10 @@ import {colors, fontSizes} from '@/styles/theme';
 import React from "react";
 import {mq} from "@/styles/media";
 import {MESSAGE_MAX_WIDTH_MOBILE} from "@/constants/constant";
+import {RoomTour, RoomTourResponseDto} from "@/types/message";
+import {useQuery} from "@apollo/client";
+import {RoomTourQueries} from "@/services/roomTour";
+import * as S from "@/containers/message/roomtour-modal/style";
 
 const RoomTourBubble = styled.div`
   background: #fff;
@@ -81,10 +85,7 @@ const MsgTime = styled.div<{ isSent?: boolean }>`
 `;
 
 interface RoomTourMessageProps {
-	thumbnail: string;
-	name: string;
-	date: string;
-	tourTime?: string;
+	roomTour : RoomTour;
 	messageTime?: string;
 	isSent?: boolean;
 	onDetail?: () => void;
@@ -92,30 +93,46 @@ interface RoomTourMessageProps {
 }
 
 const RoomTourMessage: React.FC<RoomTourMessageProps> = ({
-	                                                         thumbnail,
-	                                                         name,
-	                                                         date,
-	                                                         tourTime,
+	                                                         roomTour,
 	                                                         messageTime,
 	                                                         isSent,
 	                                                         onDetail,
 	                                                         button
-                                                         }) => (
-	<div style={{position: 'relative', display: 'inline-block'}}>
-		<RoomTourBubble>
-			<RoomTourImage src={thumbnail} alt="roomtour-img"/>
-			<RoomTourContent>
-				<RoomTourTitle>룸투어를 예약했어요</RoomTourTitle>
-				<RoomTourHouse>{name}</RoomTourHouse>
-				<RoomTourDate>날짜 : {date}</RoomTourDate>
-				<RoomTourTime>시간 : {tourTime}</RoomTourTime>
-				<RoomTourButtonWrapper>
-					{button ? button : onDetail && <button onClick={onDetail}>자세히보기</button>}
-				</RoomTourButtonWrapper>
-			</RoomTourContent>
-		</RoomTourBubble>
-		{messageTime && <MsgTime isSent={isSent}>{messageTime}</MsgTime>}
-	</div>
-);
+                                                         }) =>{
+	
+	const shouldSkip = !(roomTour.roomTourId && roomTour.type === "roomTour");
+	
+	const { data } = useQuery(RoomTourQueries.GET_ROOM_TOUR, {
+		variables: { roomTourId: roomTour.roomTourId },
+		skip: shouldSkip,
+	});
+	
+	const roomTourData: RoomTourResponseDto | undefined = data?.getRoomTour;
+	const date = roomTour.time
+	const status = roomTourData?.status;
+	return(
+		<div style={{position: 'relative', display: 'inline-block'}}>
+			{status !== "PENDING" && <S.Status isAgree = {status === "APPROVED"}>{status === "APPROVED" ? "수락" : "거절"}</S.Status>}
+			<RoomTourBubble>
+				<RoomTourImage src={roomTour?.thumbnail} alt="roomtour-img"/>
+				<RoomTourContent>
+					<RoomTourTitle>
+						{roomTourData?.status === "APPROVED" && "룸투어를 예약했어요"}
+						{roomTourData?.status === "REJECTED" && "룸투어예약을 취소했어요"}
+						{roomTourData?.status === "PENDING" && "룸투어 요청이 왔어요"}
+					</RoomTourTitle>
+					<RoomTourHouse>{roomTour.roomName}</RoomTourHouse>
+					<RoomTourDate>날짜 : {date.year}년 {date.month}월 {date.day}일</RoomTourDate>
+					<RoomTourTime>시간 : {date.hour}시 {date.minute}분</RoomTourTime>
+					<RoomTourButtonWrapper>
+						{button ? button : onDetail && <button onClick={onDetail}>자세히보기</button>}
+					</RoomTourButtonWrapper>
+				</RoomTourContent>
+			</RoomTourBubble>
+			{messageTime && <MsgTime isSent={isSent}>{messageTime}</MsgTime>}
+		</div>
+	);
+}
+
 
 export default RoomTourMessage; 

@@ -90,12 +90,12 @@ export interface RoomReadPage {
 	pageInfo: PageInfo;
 }
 export interface Contract {
-	type: ContractStatus;
+	type: "contract";
 	roomId: string;
 	hostId: string;
 	contractPeriod: number;
 	expiryDate: string;
-	status: string;
+	status: RequestStatus;
 	contractId: string;
 	thumbnail: string;
 	boardingHouseName: string;
@@ -105,4 +105,52 @@ export interface Contract {
 	area: string;
 	
 }
-type ContractStatus = "PENDING" | "ACTIVE" | "EXPIRED" | "REJECTED"
+
+type RequestStatus = "PENDING" | "ACTIVE" | "EXPIRED" | "REJECTED" | "APPROVED" | "CANCELLED";
+
+export interface RoomTour {
+	area:string;
+	boardingHouseName: string;
+	price: number;
+	requesterName: string;
+	roomId: string;
+	roomName: string;
+	roomTourId: string;
+	status: RequestStatus
+	thumbnail: string;
+	time: {
+		year : number,
+		month : number,
+		day: number,
+		hour: number,
+		minute : number,
+	};
+	type: "roomTour"
+}
+
+export interface RoomTourResponseDto {
+		user : {
+		id : string;
+		userId : string;
+		name : string;
+	}
+boarderRoom : {
+	name : string;
+	boardingHouse  : {
+		name : string;
+		location : string;
+		lat : string;
+		lon : string;
+	}
+}
+host  : {
+	callNumber : string;
+	user : {
+		id : string;
+		userId : string;
+		name : string;
+	}
+}
+time : string;
+status : RequestStatus
+}

@@ -69,11 +69,14 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 	const {isOpen, type : status, closeConfirm : onClose} = useConfirmStore()
 	const {error, success} = useAlertStore();
 	const {contractData} = useMessageModalStore()
+	const closeModal = () =>{
+		onConfirm();
+		onClose();
+	}
 	const [acceptContract] = useMutation(ContractMutations.ACCEPT_CONTRACT, {
 			onCompleted: () => {
 				success("계약에 성공하였습니다.")
-				onConfirm();
-				onClose();
+				closeModal()
 			},
 			onError: (err) => {
 				error(err.message)
@@ -83,8 +86,7 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 	const [rejectContract] = useMutation(ContractMutations.REJECT_CONTRACT, {
 		onCompleted: () => {
 			success("계약을 반려하였습니다.")
-			onConfirm();
-			onClose();
+			closeModal()
 		},
 		onError: (err) => {
 			error(err.message)
@@ -92,9 +94,8 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 	})
 	const [rejectRoomTour] = useMutation(RoomTourMutations.REJECT_ROOM_TOUR, {
 		onCompleted: () => {
-			success("룸투어에 성공하였습니다.")
-			onConfirm();
-			onClose();
+			success("룸투어 취소에 성공하였습니다.")
+			closeModal()
 		},
 		onError: (err) => {
 			error(err.message)
@@ -102,26 +103,34 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 	})
 	const [acceptRoomTour] = useMutation(RoomTourMutations.ACCEPT_ROOM_TOUR, {
 		onCompleted : () =>{
-			onConfirm();
-			onClose();
-			success("룸투어 반려에 성공하였습니다.")
+			closeModal()
+			success("룸투어 반영에 성공하였습니다.")
 		},
 		onError : (err) =>{
 			error(err.message)
 		}
 	})
-	const handleBtnClick = async (check : "수락" | "거절") =>{
-		if(type === "룸투어"){
-			if(check === "수락") await acceptRoomTour();
-			else if(check === "거절") await rejectRoomTour();
+	const handleBtnClick = async () =>{
+		console.log(status)
+		if(type === "룸투어" && contractData?.type === "roomTour"){
+			if(status === "sure") await acceptRoomTour({
+				variables:{
+					roomTourId : contractData?.roomTourId
+				}
+			});
+			else if(status === "delete") await rejectRoomTour({
+				variables:{
+					roomTourId : contractData?.roomTourId
+				}
+			});
 		}
-		else if(type === "결제"){
-			if(check === "수락") await acceptContract({
+		else if(type === "결제" && contractData?.type === "contract"){
+			if(status === "sure") await acceptContract({
 				variables:{
 					contractId : contractData?.contractId
 				}
 			});
-			else if(check === "거절") await rejectContract({
+			else if(status === "delete") await rejectContract({
 				variables:{
 					contractId : contractData?.contractId
 				}
@@ -129,7 +138,6 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 		}
 	}
 	if (!isOpen) return null;
-	console.log(type)
 	return (
 		<Black onClick={onClose}>
 			<Content onClick={(e) => e.stopPropagation()}>
@@ -142,13 +150,13 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 				<ButtonContainer>
 					<Square
 						text="취소"
-						onClick={()=>handleBtnClick("거절")}
+						onClick={closeModal}
 						status={false}
 						width="100%"
 					/>
 					<Square
 						text="확인"
-						onClick={() => handleBtnClick("수락")}
+						onClick={() => handleBtnClick()}
 						status={true}
 						width="100%"
 					/>

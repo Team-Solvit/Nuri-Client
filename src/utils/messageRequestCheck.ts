@@ -1,12 +1,18 @@
-import {Contract} from "@/types/message";
+import {Contract, RoomTour} from "@/types/message";
+import {parseKST} from "@/utils/dateTime";
 
-export const contractCheck = (contents: string): Contract | null  => {
+export const messageRequestCheck = (contents: string): Contract |RoomTour| null  => {
 	const isJson = contents.trim().startsWith('{') && contents.trim().endsWith('}');
 	if (!isJson) return null;
 	try {
-		const obj = JSON.parse(contents);
-		const { type, roomId, hostId, contractPeriod, expiryDate, status, contractId, thumbnail, boardingHouseName, roomName, boarderName, price, area } = obj;
-		return { type, roomId, hostId, contractPeriod, expiryDate, status, contractId, thumbnail, boardingHouseName, roomName, boarderName, price, area };
+		const data = JSON.parse(contents);
+		if (data.type === "contract") {
+			return data as Contract;
+		} else if (data.type === "roomTour") {
+			data.time = parseKST(data?.time);
+			return data as RoomTour;
+		}
+		return null;
 	} catch (e) {
 		console.error("Invalid contract format:", e);
 		return null;

@@ -1,10 +1,9 @@
 import {gql} from "@apollo/client";
 
-
 export const RoomTourQueries = {
 	GET_ROOM_TOUR: gql`
-		query getRoomTour($roomId: String!){
-		getRoomTour(roomId: $roomId){
+		query getRoomTour($roomTourId: String!){
+		getRoomTour(roomTourId: $roomTourId){
 				user {
 					id
           userId

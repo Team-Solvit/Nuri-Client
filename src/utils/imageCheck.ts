@@ -3,5 +3,7 @@ export const imageCheck = (thumbnail?: string): string => {
 	
 	if (!thumbnail) return "/post/default.png";
 	if (/^https:\/\//.test(thumbnail)) return thumbnail;
-	return `${BASE_URL?.replace(/\/$/, "")}/${thumbnail.replace(/^\//, "")}`;
+	return BASE_URL
+		? `${BASE_URL.replace(/\/$/, "")}/${thumbnail.replace(/^\//, "")}`
+		: `/${thumbnail.replace(/^\//, "")}`;
 };

@@ -2,25 +2,37 @@ import Modal from "@/components/layout/modal";
 import * as S from "./style";
 import Square from "@/components/ui/button/square";
 import Image from "next/image";
-import {roomTourData, visitorData} from "./data";
 import {useMessageModalStore} from "@/store/messageModal";
-import MapIcon from "@/assets/icon/map.svg"
 import {ConfirmRejectModal} from "@/containers/message/contract-modal/ConfirmRejectModal";
 import {useConfirmStore} from "@/store/confirm";
+import {useQuery} from "@apollo/client";
+import {RoomTourQueries} from "@/services/roomTour";
+import {imageCheck} from "@/utils/imageCheck";
+import {RoomTourResponseDto} from "@/types/message";
+import React from "react";
 
 export default function RoomTourModal() {
-	const {isOpen, master, messageType, close} = useMessageModalStore();
+	const {isOpen, master, messageType, close, contractData} = useMessageModalStore();
 	const closeModal = () => {
 		close()
 	}
-	const { openConfirm, closeConfirm} = useConfirmStore();
+	const { openConfirm} = useConfirmStore();
+	const {data} = useQuery(RoomTourQueries.GET_ROOM_TOUR, {
+		variables: {
+			roomTourId : contractData!.roomTourId!
+		}
+	})
+	if(contractData?.type === "contract") return null;
+	const roomTour: RoomTourResponseDto = data?.getRoomTour;
+	const status = roomTour?.status;
+	console.log(status)
 	return isOpen && messageType === "roomtour" && (
 		<Modal>
 			<S.ModalContainer>
 				{/* 이미지 */}
 				<S.TopImageWrapper>
 					<Image
-						src={MapIcon}
+						src={imageCheck(contractData?.thumbnail)}
 						alt="룸투어 이미지"
 						fill
 						style={{objectFit: "cover", borderRadius: "none"}}
@@ -37,19 +49,19 @@ export default function RoomTourModal() {
 						<S.SubTitle>하숙집</S.SubTitle>
 						<S.InfoRow>
 							<S.Label>이름</S.Label>
-							<S.Value>{roomTourData.houseName}</S.Value>
+							<S.Value>{roomTour?.boarderRoom.boardingHouse.name} {roomTour?.boarderRoom.name}</S.Value>
 						</S.InfoRow>
 						<S.InfoRow>
 							<S.Label>날짜</S.Label>
-							<S.Value>{roomTourData.date}</S.Value>
+							<S.Value>{contractData?.time?.month}월 {contractData?.time.day}일</S.Value>
 						</S.InfoRow>
 						<S.InfoRow>
 							<S.Label>시간</S.Label>
-							<S.Value>{roomTourData.time}</S.Value>
+							<S.Value>{contractData?.time.hour}시 {contractData?.time?.minute}분</S.Value>
 						</S.InfoRow>
 						<S.InfoRow>
 							<S.Label>연락처</S.Label>
-							<S.Value>{roomTourData.contact}</S.Value>
+							<S.Value>{roomTour?.host.callNumber}</S.Value>
 						</S.InfoRow>
 					</S.SubSection>
 					
@@ -58,18 +70,18 @@ export default function RoomTourModal() {
 						<S.SubTitle>방문자</S.SubTitle>
 						<S.InfoRow>
 							<S.Label>이름</S.Label>
-							<S.Value>{visitorData.name}</S.Value>
+							<S.Value>{roomTour?.user.name}</S.Value>
 						</S.InfoRow>
 						<S.InfoRow>
 							<S.Label>아이디</S.Label>
-							<S.Value>{visitorData.id}</S.Value>
+							<S.Value>{roomTour?.user.userId}</S.Value>
 						</S.InfoRow>
 					</S.SubSection>
 				</S.Section>
 				
 				{/* 버튼 */}
 				<S.ButtonRow>
-					{master ? <>
+					{master && status === "PENDING" ? <>
 						<Square text="거절" onClick={() => openConfirm("delete")} status={false} width="48%"/>
 						<Square text="수락" onClick={() => openConfirm("sure")} status={true} width="48%"/>
 					</> :
