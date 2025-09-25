@@ -79,9 +79,7 @@ export default function RoomTourModal({ boardingRoomId, onSuccess }: RoomTourMod
 				boardingRoomId,
 				time: date.toISOString(),
 			});
-			if (typeof window !== 'undefined') {
-				success('룸투어 예약이 완료되었습니다.');
-			}
+			success('룸투어 예약이 완료되었습니다.');
 			onSuccess?.();
 		} catch (e) {
 			if (e instanceof Error) {
