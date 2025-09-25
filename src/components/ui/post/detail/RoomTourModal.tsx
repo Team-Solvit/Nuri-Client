@@ -48,7 +48,7 @@ export default function RoomTourModal({ boardingRoomId, onSuccess }: RoomTourMod
 	const formatTime = (h: number, m: number) =>
 		`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
 
-	const { error } = useAlertStore();
+	const { error, success } = useAlertStore();
 
 	const handleDateClick = (day: Date, isCurrentMonth: boolean) => {
 		const today = new Date();
@@ -79,6 +79,9 @@ export default function RoomTourModal({ boardingRoomId, onSuccess }: RoomTourMod
 				boardingRoomId,
 				time: date.toISOString(),
 			});
+			if (typeof window !== 'undefined') {
+				success('룸투어 예약이 완료되었습니다.');
+			}
 			onSuccess?.();
 		} catch (e) {
 			if (e instanceof Error) {
