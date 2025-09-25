@@ -81,7 +81,11 @@ export default function RoomTourModal({ boardingRoomId, onSuccess }: RoomTourMod
 			});
 			onSuccess?.();
 		} catch (e) {
-			error('룸투어 예약에 실패했습니다.');
+			if (e instanceof Error) {
+				error(e.message || '룸투어 예약에 실패했습니다.');
+			} else {
+				error(String(e) || '룸투어 예약에 실패했습니다.');
+			}
 		}
 	};
 
