@@ -1,12 +1,8 @@
 import styled from "@emotion/styled";
-import {colors, fontSizes} from '@/styles/theme';
+import {colors, fontSizes, radius} from '@/styles/theme';
 import React from "react";
 import {MESSAGE_MAX_WIDTH_MOBILE} from "@/constants/constant";
 import {mq} from "@/styles/media";
-import {useQuery} from "@apollo/client";
-import {ContractQueries} from "@/services/contract";
-import {useLoadingEffect} from "@/hooks/useLoading";
-import {useParams} from "next/navigation";
 import {Contract} from "@/types/message";
 
 const ContractBubble = styled.div`
@@ -84,6 +80,19 @@ const DetailButton = styled.button`
   }
 `;
 
+const Status = styled.div<{isAgree : boolean}>`
+	position: absolute;
+	top: 20px;
+	left: 20px;
+  background-color: ${(props) => (props.isAgree ? colors.success : colors.error)};
+  color: white;
+	padding: 0.4rem 1rem;
+	border-radius: ${radius.md};
+	font-size: ${fontSizes.Small};
+	font-weight: 300;
+	z-index: 1;
+`
+
 interface ContractMessageProps {
 	contract : Contract
 	time?: string;
@@ -93,18 +102,19 @@ interface ContractMessageProps {
 }
 
 const ContractMessage: React.FC<ContractMessageProps> = ({contract, time, isSent, onDetail, button}) => {
-	console.log(contract)
+	const status = contract.status;
 	return (
 		<div style={{position: 'relative', display: 'inline-block'}}>
+			{status !== "PENDING" && <Status isAgree = {status === "ACTIVE"}>{status === "ACTIVE" ? "수락" : "거절"}</Status>}
 			<ContractBubble>
 				<ContractThumbnail src={contract?.thumbnail} alt="contract-img"/>
 				<ContractContent>
-					<ContractHouse>{contract?.hostId}</ContractHouse>
+					<ContractHouse>{contract?.boardingHouseName} {contract?.roomName}</ContractHouse>
 					<ContractTitle>
-						{contract.status === "ACTIVE" && "계약이 완료되었어요"}
-						{contract.status === "PENDING" && "계약요청이 왔어요"}
-						{contract.status === "REJECTED" && "계약을 취소했어요"}
-						{contract.status === "EXPIRED" && "계약이 만료되었어요"}
+						{status === "ACTIVE" && "계약이 완료되었어요"}
+						{status === "PENDING" && "계약요청이 왔어요"}
+						{status === "REJECTED" && "계약을 취소했어요"}
+						{status === "EXPIRED" && "계약이 만료되었어요"}
 					</ContractTitle>
 					<ContractButtonWrapper>
 						{button ? button : onDetail && <DetailButton onClick={onDetail}>자세히보기</DetailButton>}

@@ -98,5 +98,11 @@ export interface Contract {
 	status: string;
 	contractId: string;
 	thumbnail: string;
+	boardingHouseName: string;
+	roomName: string;
+	boarderName: string;
+	price: number;
+	area: string;
+	
 }
 type ContractStatus = "PENDING" | "ACTIVE" | "EXPIRED" | "REJECTED"

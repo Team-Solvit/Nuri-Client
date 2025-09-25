@@ -27,6 +27,7 @@ import {scrollToBottom} from "@/utils/scrollToBottom";
 import {useMessageReplyStore} from "@/store/messageReply";
 import {imageCheck} from "@/utils/imageCheck";
 import {contractCheck} from "@/utils/contractCheck";
+import {Contract} from "@/types/message";
 
 export default function MessageContent() {
 	const {message: newMessageReflect} = useMessageReflectStore();
@@ -96,13 +97,16 @@ export default function MessageContent() {
 		setMessageType,
 		open: messageModalOpen,
 		setMaster,
-		unSetMaster
+		unSetMaster,
+		setContractData
 	} = useMessageModalStore();
 	
 	
-	const openContract = (messageType: messageType, isMaster: boolean) => {
+	const openContract = (messageType: messageType, isMaster: boolean, data ?: Contract) => {
 		open();
 		messageModalOpen();
+		if (!data) return;
+		setContractData(data);
 		setMessageType(messageType);
 		if (isMaster) setMaster();
 		else unSetMaster();
@@ -162,7 +166,7 @@ export default function MessageContent() {
 									button={
 										<Square
 											text="자세히보기"
-											onClick={() => openContract("contract", msg.sender.name !== userId)}
+											onClick={() => openContract("contract", msg.sender.name !== userId || contract.status === "ACTIVE", contract)}
 											status={true}
 											width="100%"
 										/>

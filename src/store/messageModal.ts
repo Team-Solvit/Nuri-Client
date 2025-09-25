@@ -1,9 +1,12 @@
 import { create } from 'zustand';
+import {Contract} from "@/types/message";
 
 export type messageType =  "contract" | "roomtour" 
 export type type = "sent" | "received"
 
 interface ModalState {
+	contractData ?: Contract | null;
+	setContractData : (data : Contract)=>void;
 	isOpen: boolean;
 	open: () => void;
 	close: () => void;
@@ -17,6 +20,8 @@ interface ModalState {
 }
 
 export const useMessageModalStore = create<ModalState>((set) => ({
+	contractData : null,
+	setContractData : (data : Contract)=>set({contractData : data}),
 	isOpen: false,
     messageType : null,
     master : false,

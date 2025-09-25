@@ -7,6 +7,7 @@ import {useAlertStore} from "@/store/alert";
 import {useMutation} from "@apollo/client";
 import {ContractMutations} from "@/services/contract";
 import {RoomTourMutations} from "@/services/roomTour";
+import {useMessageModalStore} from "@/store/messageModal";
 
 const Black = styled.div`
   position: fixed;
@@ -67,6 +68,7 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
                                                                       }) => {
 	const {isOpen, type : status, closeConfirm : onClose} = useConfirmStore()
 	const {error, success} = useAlertStore();
+	const {contractData} = useMessageModalStore()
 	const [acceptContract] = useMutation(ContractMutations.ACCEPT_CONTRACT, {
 			onCompleted: () => {
 				success("계약에 성공하였습니다.")
@@ -114,18 +116,27 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 			else if(check === "거절") await rejectRoomTour();
 		}
 		else if(type === "결제"){
-			if(check === "수락") await acceptContract();
-			else if(check === "거절") await rejectContract();
+			if(check === "수락") await acceptContract({
+				variables:{
+					contractId : contractData?.contractId
+				}
+			});
+			else if(check === "거절") await rejectContract({
+				variables:{
+					contractId : contractData?.contractId
+				}
+			});
 		}
 	}
 	if (!isOpen) return null;
-	
+	console.log(type)
 	return (
 		<Black onClick={onClose}>
 			<Content onClick={(e) => e.stopPropagation()}>
 				<Title>
-					{status === "sure" && {type} + "수락"}
-					{status === "delete" && {type} + "거절"}
+					{type}
+					{status === "sure" && "수락"}
+					{status === "delete" && "거절"}
 				</Title>
 				<Text>{status === "sure" ? "정말 수락하시겠습니까?" : "정말 거절하시겠습니까?"}</Text>
 				<ButtonContainer>

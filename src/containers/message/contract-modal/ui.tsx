@@ -2,25 +2,25 @@ import Modal from "@/components/layout/modal";
 import * as S from "./style";
 import Square from "@/components/ui/button/square";
 import Image from "next/image";
-import {contractData, userData} from "./data";
 import {useMessageModalStore} from "@/store/messageModal";
 import {useConfirmStore} from "@/store/confirm";
 import {ConfirmRejectModal} from "./ConfirmRejectModal";
+import {convertToContractString} from "@/utils/periodCarculate";
 
 export default function ContractModal() {
-	const {isOpen, messageType, master, close} = useMessageModalStore();
+	const {isOpen, messageType, master, close, contractData} = useMessageModalStore();
 	const { openConfirm} = useConfirmStore();
 	
 	const closeModal = () => {
 		close();
 	}
-	return isOpen && messageType === "contract" && (
+	return isOpen && messageType === "contract"  && (
 		<Modal>
 			<S.ModalContainer>
 				{/* 이미지 */}
 				<S.TopImageWrapper>
 					<Image
-						src={contractData.image}
+						src={contractData?.thumbnail || ""}
 						alt="계약 이미지"
 						fill
 						style={{objectFit: "cover"}}
@@ -37,38 +37,35 @@ export default function ContractModal() {
 						<S.SubTitle>하숙집</S.SubTitle>
 						<S.InfoRow>
 							<S.Label>이름</S.Label>
-							<S.Value>{contractData.houseName}</S.Value>
+							<S.Value>{contractData?.roomName}</S.Value>
 						</S.InfoRow>
 						<S.InfoRow>
 							<S.Label>기간</S.Label>
-							<S.Value>{contractData.period}</S.Value>
+							<S.Value>{convertToContractString([contractData?.contractPeriod || 0])}</S.Value>
 						</S.InfoRow>
 						<S.InfoRow>
 							<S.Label>위치</S.Label>
-							<S.Value>{contractData.location}</S.Value>
+							<S.Value>{contractData?.area}</S.Value>
 						</S.InfoRow>
 						<S.InfoRow>
 							<S.Label>가격</S.Label>
 							<S.PriceBox>
 								<S.PriceUnit>월</S.PriceUnit>
-								<S.PriceValue>{contractData.price}</S.PriceValue>
+								<S.PriceValue>{contractData?.price}</S.PriceValue>
 							</S.PriceBox>
 						</S.InfoRow>
 					</S.SubSection>
-					
-					{userData.map((user, idx) => (
-						<S.SubSection key={user.name}>
-							<S.SubTitle>{userData.length === 1 ? "하숙생" : `하숙생 ${idx + 1}`}</S.SubTitle>
-							<S.InfoRow>
-								<S.Label>이름</S.Label>
-								<S.Value>{user.name}</S.Value>
-							</S.InfoRow>
-							<S.InfoRow>
-								<S.Label>성별</S.Label>
-								<S.Value>{user.gender}</S.Value>
-							</S.InfoRow>
-						</S.SubSection>
-					))}
+					<S.SubSection>
+						<S.SubTitle>하숙생</S.SubTitle>
+						<S.InfoRow>
+							<S.Label>이름</S.Label>
+							<S.Value>{contractData?.boarderName}</S.Value>
+						</S.InfoRow>
+						{/*<S.InfoRow>*/}
+						{/*	<S.Label>성별</S.Label>*/}
+						{/*	<S.Value>{user.gender}</S.Value>*/}
+						{/*</S.InfoRow>*/}
+					</S.SubSection>
 				</S.Section>
 				
 				{/* 버튼 */}
