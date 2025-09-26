@@ -173,7 +173,7 @@ export default function RegisterContainer() {
 								current={idx === currentStep}
 							>
 								{visibleCompletedSteps.includes(idx)
-									? <Image src="icons/check.svg" alt="완료" width={18} height={18} />
+									? <Image src="/icons/check.svg" alt="완료" width={18} height={18} />
 									: idx + 1}
 							</S.StepCircle>
 							<S.StepLabel
