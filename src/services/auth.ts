@@ -95,6 +95,11 @@ export const AuthGQL = {
         oauth2SignUp(oauth2SignUpInput: $input)
       }
     `,
+		UPDATE_PASSWORD: gql`
+      mutation UpdatePasswordWithEmail($input: PasswordUpdateInput!) {
+        updatePasswordWithEmail(passwordUpdateInput: $input)
+      }
+    `,
 	}
 };
 
@@ -188,5 +193,19 @@ export const AuthService = {
 			variables: { input },
 		});
 		return data?.oauthSignUp ?? '';
+	},
+	updatePasswordWithEmail: async (client: ApolloClient<any>, email: string, emailVerifyTicket: string, password: string): Promise<string> => {
+		const { data } = await client.mutate<{ updatePasswordWithEmail: string }>({
+			mutation: AuthGQL.MUTATIONS.UPDATE_PASSWORD,
+			variables: {
+				input: {
+					email,
+					emailVerifyTicket,
+					password,
+				},
+			},
+			fetchPolicy: 'no-cache',
+		});
+		return data?.updatePasswordWithEmail ?? '';
 	},
 };
