@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import * as S from './style';
 import Square from '@/components/ui/button/square';
@@ -26,7 +26,6 @@ export default function RegisterContainer() {
 	const [currentStep, setCurrentStep] = useState(0);
 	const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 	const [formData, setFormData] = useState<RegisterFormData>(createInitialRegisterForm());
-	const [error, setError] = useState<string | null>(null);
 	const [touched, setTouched] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [oauthId, setOauthId] = useState<string | null>(null);
@@ -36,19 +35,18 @@ export default function RegisterContainer() {
 	const { usernameState, checkUsername, resetUsername } = useUsernameCheck(client);
 	const { emailState, sendMailCode, verifyMailCode, resetEmail } = useEmailVerification(client);
 
-	useState(() => {
+	useEffect(() => {
 		try {
 			const stored = typeof window !== 'undefined' ? sessionStorage.getItem('pending_oauth_id') : null;
 			if (stored) setOauthId(stored);
 		} catch { }
-		return undefined;
-	});
+	}, []);
 
 	const effectiveSteps = oauthId ? steps.filter(s => s !== '비밀번호') : steps;
 
 	const validateCurrentStep = () => {
 		const stepLabel = effectiveSteps[currentStep];
-		if (stepLabel === '이용약관') return validateTerms(formData as any);
+		if (stepLabel === '이용약관') return validateTerms(formData);
 		if (stepLabel === '활동정보') return validateAccount({ name: formData.name, username: formData.username, usernameChecked: usernameState.status !== 'idle', usernameAvailable: usernameState.status === 'available' });
 		if (stepLabel === '인증') return validateEmail({ email: formData.email, code: formData.verificationCode, verified: emailState.phase === 'verified' });
 		if (stepLabel === '비밀번호') return validatePassword({ password: formData.password, confirmPassword: formData.confirmPassword });
@@ -56,15 +54,24 @@ export default function RegisterContainer() {
 		return null;
 	};
 
+	// 현재 단계까지의 완료된 단계들만 필터링 (체크 표시용)
+	const getVisibleCompletedSteps = () => {
+		return completedSteps.filter(step => step < currentStep);
+	};
+
+	// 프로그레스 바 계산 (현재 단계까지 다 채우기)
+	const getProgressValue = () => {
+		return currentStep;
+	};
+
 	const navigate = useNavigationWithProgress()
 	const handleNext = async () => {
 		setTouched(true);
 		const validationError = validateCurrentStep();
 		if (validationError) {
-			setError(validationError);
+			alertStore.error(validationError);
 			return;
 		}
-		setError(null);
 		if (currentStep < effectiveSteps.length - 1) {
 			setCompletedSteps([...completedSteps, currentStep]);
 			setCurrentStep(currentStep + 1);
@@ -85,10 +92,6 @@ export default function RegisterContainer() {
 							agreedTermsOfService: formData.terms1,
 							agreedPrivacyCollection: formData.terms2,
 							agreedPrivacyThirdParty: formData.terms3,
-							agreedIdentityAgencyTerms: formData.terms4,
-							agreedIdentityPrivacyDelegate: formData.terms5,
-							agreedIdentityUniqueInfo: formData.terms6,
-							agreedIdentityProviderTerms: formData.terms7
 						},
 					});
 					alertStore.success('회원가입이 완료되었습니다.');
@@ -106,10 +109,6 @@ export default function RegisterContainer() {
 							agreedTermsOfService: formData.terms1,
 							agreedPrivacyCollection: formData.terms2,
 							agreedPrivacyThirdParty: formData.terms3,
-							agreedIdentityAgencyTerms: formData.terms4,
-							agreedIdentityPrivacyDelegate: formData.terms5,
-							agreedIdentityUniqueInfo: formData.terms6,
-							agreedIdentityProviderTerms: formData.terms7
 						},
 					});
 					alertStore.success('회원가입이 완료되었습니다.');
@@ -125,7 +124,8 @@ export default function RegisterContainer() {
 
 	const handleEdit = (stepIndex: number) => {
 		setCurrentStep(stepIndex);
-		setCompletedSteps(completedSteps.filter(i => i !== stepIndex));
+		// 편집하려는 단계 이후의 완료 상태는 제거하지 않음 (데이터는 유지)
+		// UI에서만 현재 단계 이후는 보이지 않도록 함
 	};
 
 	const onChangeField = <K extends keyof RegisterFormData>(key: K, value: RegisterFormData[K]) => {
@@ -133,10 +133,6 @@ export default function RegisterContainer() {
 			const updated = { ...prev, [key]: value };
 			if (key === 'username') { resetUsername(); }
 			if (key === 'email') { resetEmail(); }
-			if (touched) {
-				const validationError = validateCurrentStep();
-				if (!validationError) setError(null);
-			}
 			return updated;
 		});
 	};
@@ -163,28 +159,30 @@ export default function RegisterContainer() {
 		}
 	};
 
+	const visibleCompletedSteps = getVisibleCompletedSteps();
+
 	return (
 		<S.Wrapper>
 			<S.Header>
 				<S.Progress>
-					<S.ProgressLine progress={completedSteps.length} />
+					<S.ProgressLine progress={getProgressValue()} totalSteps={effectiveSteps.length} />
 					{effectiveSteps.map((label, idx) => (
 						<S.Step key={idx}>
 							<S.StepCircle
-								completed={completedSteps.includes(idx)}
+								completed={visibleCompletedSteps.includes(idx)}
 								current={idx === currentStep}
 							>
-								{completedSteps.includes(idx)
-									? <Image src="icons/check.svg" alt="완료" width={18} height={18} />
+								{visibleCompletedSteps.includes(idx)
+									? <Image src="/icons/check.svg" alt="완료" width={18} height={18} />
 									: idx + 1}
 							</S.StepCircle>
 							<S.StepLabel
 								current={idx === currentStep}
-								completed={completedSteps.includes(idx)}
+								completed={visibleCompletedSteps.includes(idx)}
 							>
 								{label}
 							</S.StepLabel>
-							{completedSteps.includes(idx) && (
+							{visibleCompletedSteps.includes(idx) && (
 								<S.EditButton onClick={() => handleEdit(idx)}>수정</S.EditButton>
 							)}
 						</S.Step>
@@ -194,11 +192,7 @@ export default function RegisterContainer() {
 
 			<S.Content>
 				{renderStepContent()}
-				{touched && error && <S.ErrorMessage>{error}</S.ErrorMessage>}
 				<S.ButtonGroup>
-					{currentStep === 0 && (
-						<Square text='돌아가기' onClick={() => router.back()} status={false} width="100%" />
-					)}
 					<Square
 						text={currentStep === effectiveSteps.length - 1 ? (loading ? '가입 중...' : '가입완료') : '다음'}
 						onClick={handleNext}
