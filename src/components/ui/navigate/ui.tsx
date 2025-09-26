@@ -10,6 +10,8 @@ import Login from "../login";
 import LoginModal from "@/components/layout/loginModal";
 import {useLoginModalStore} from "@/store/loginModal";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {useQuery} from "@apollo/client";
+import {AlertQueries} from "@/services/alert";
 
 export default function Navigate() {
 	const navigate = useNavigationWithProgress();
@@ -60,6 +62,8 @@ export default function Navigate() {
 			onClick: () => navigate("/register"),
 		},
 	] as const
+	
+	const {data} = useQuery(AlertQueries.GET_ALERT_COUNT);
 	return (
 		<S.NavigateContainer>
 			<S.Logo onClick={() => navigate("/")}>
@@ -83,7 +87,7 @@ export default function Navigate() {
 						>
 							<S.IconBox>
 								<Image src={item.icon} alt={item.label} width={32} height={32}/>
-								{/*<S.Count>1</S.Count>*/}
+								{item.label === "알림" && data?.alertCount > 0 && <S.Count>{data.alertCount}</S.Count>}
 							</S.IconBox>
 							<p>{item.label}</p>
 						</S.NavigateBtn>

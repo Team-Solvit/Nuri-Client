@@ -24,7 +24,7 @@ export const NavigateContainer = styled.section`
     padding: 0.6rem 1rem;
     box-shadow: 0 4.57px 7.312px 0 rgba(0, 0, 0, 0.03), 0 10.967px 36.558px 0 rgba(0, 0, 0, 0.04);
     backdrop-filter: blur(2px);
-    z-index: ${zIndex.dropdown}
+    z-index: ${zIndex.overlay}
   }
 `
 export const NavigateBtn = styled.button<{ isActive: boolean }>`

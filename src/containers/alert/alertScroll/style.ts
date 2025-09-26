@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import {colors, fontSizes} from "@/styles/theme";
+import {colors, fontSizes, radius} from "@/styles/theme";
 import {mq} from "@/styles/media";
 
 export const AlertScrollContainer = styled.section`
@@ -27,6 +27,14 @@ export const Alert = styled.article`
   width: 100%;
   align-items: center;
   border-bottom: 1px solid ${colors.line};
+
+  border-radius: ${radius.md};
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    background-color: ${colors.line2};
+  }
 
   &:first-of-type {
     ${mq.mobile} {

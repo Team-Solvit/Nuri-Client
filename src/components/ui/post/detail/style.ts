@@ -21,28 +21,31 @@ export const Wrapper = styled.div`
 `;
 
 export const Left = styled.div`
-  flex: 3;
+  flex: none;
+  width: 640px;
+  max-width: calc(100vw - 2rem);
   display: flex;
   flex-direction: column;
   ${mq.mobile} {
-    flex: none;
     width: 100%;
+    max-width: 100%;
   }
 `;
 
 export const SliderWrapper = styled.div`
   position: relative;
   width: 100%;
-  aspect-ratio: 4/3;
-  background: ${colors.line2};
+  height: 640px;
+  background: #000;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: ${radius.sm};
   ${mq.mobile} {
-    max-height: none;
+    height: auto;
+    aspect-ratio: 1;
     border-radius: ${radius.md};
-    box-shadow: none;
   }
 `;
 
@@ -52,6 +55,9 @@ export const SliderTrack = styled.div<{ index: number; count: number }>`
   height: 100%;
   transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
   transform: ${({ index }) => `translateX(-${index * 100}%)`};
+  ${mq.mobile} {
+    height: 100%;
+  }
 `;
 
 export const Slide = styled.div`
@@ -59,6 +65,12 @@ export const Slide = styled.div`
   height: 100%;
   flex: 0 0 100%;
   position: relative;
+  & > span, & img {
+    object-fit: cover;
+  }
+  ${mq.mobile} {
+    height: 100%;
+  }
 `;
 
 export const ArrowBtn = styled.button<{ left?: boolean }>`
@@ -155,6 +167,7 @@ export const RightContent = styled.div<{ showComments: boolean; isModal?: boolea
   overflow-y: auto;
   padding: 2rem;
   transition: transform 0.3s ease;
+  min-width: 24vw;
   transform: ${({ showComments }) => showComments ? 'translateY(-100%)' : 'translateY(0)'};
   ${mq.mobile} {
     padding: 1.25rem 1rem 5.5rem;
@@ -190,6 +203,7 @@ export const RightTitle = styled.h2`
   font-size: 1.5rem;
   font-weight: 700;
   margin: 0.5rem 0;
+  gap: 0.5rem;
   ${mq.mobile} {
     font-size: 1.125rem;
     flex-wrap: wrap;
@@ -439,6 +453,18 @@ export const CommentAvatar = styled.div`
   flex-shrink: 0;
 `;
 
+export const CommentAvatarFallback = styled.div`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: ${colors.text};
+  background: ${colors.line2};
+`;
+
 export const CommentContent = styled.div`
   flex: 1;
   min-width: 0;
@@ -475,7 +501,7 @@ export const InteractionBar = styled.div<{ isModal?: boolean }>`
   bottom: 0;
   background: #fff;
   border: 1px solid ${colors.line2};
-  padding: 1rem 1.5rem;
+  padding: 0.8rem 1.5rem;
   z-index: 20;
   ${mq.mobile} {
     position: fixed;
@@ -635,6 +661,7 @@ export const SendButton = styled.button<{ disabled?: boolean }>`
 
 export const MobileClose = styled.button`
   position: fixed;
+  top: 1rem;
   right: 0.75rem;
   width: 36px;
   height: 36px;
@@ -646,4 +673,333 @@ export const MobileClose = styled.button`
   z-index: 100;
   display: none;
   ${mq.mobile} { display: flex; align-items: center; justify-content: center; }
+`;
+
+export const CommentEditContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+`;
+
+export const CommentEditTextarea = styled.textarea`
+  width: 100%;
+  min-height: 60px;
+  padding: 8px 12px;
+  border: 1px solid ${colors.line2};
+  border-radius: ${radius.sm};
+  font-size: ${fontSizes.Body};
+  font-family: inherit;
+  resize: none;
+  background: ${colors.background};
+  color: ${colors.text};
+  
+  &:focus {
+    outline: none;
+    border-color: ${colors.primary};
+  }
+  
+  &::placeholder {
+    color: ${colors.gray};
+  }
+`;
+
+export const CommentEditButtons = styled.div`
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+`;
+
+export const CommentEditSaveButton = styled.button`
+  padding: 6px 16px;
+  font-size: ${fontSizes.Caption};
+  font-weight: 500;
+  background: ${colors.primary};
+  color: white;
+  border: none;
+  border-radius: ${radius.sm};
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:hover {
+    background: ${colors.primary};
+    opacity: 0.9;
+  }
+`;
+
+export const CommentEditCancelButton = styled.button`
+  padding: 6px 16px;
+  font-size: ${fontSizes.Caption};
+  font-weight: 500;
+  background: ${colors.line2};
+  color: ${colors.gray};
+  border: none;
+  border-radius: ${radius.sm};
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:hover {
+    background: ${colors.line2};
+    opacity: 0.8;
+  }
+`;
+
+export const ConfirmModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: white;
+  border-radius: ${radius.lg};
+  max-width: 400px;
+  width: 90vw;
+`;
+
+export const ConfirmModalTitle = styled.h3`
+  font-size: ${fontSizes.H3};
+  font-weight: 600;
+  color: ${colors.text};
+  text-align: center;
+  margin: 0;
+`;
+
+export const ConfirmModalMessage = styled.p`
+  font-size: ${fontSizes.Body};
+  color: ${colors.gray};
+  text-align: center;
+  margin: 0;
+  line-height: 1.4;
+`;
+
+export const ConfirmModalButtons = styled.div`
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+`;
+
+export const EditPostModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: white;
+  border-radius: ${radius.lg};
+  max-width: 500px;
+  width: 90vw;
+  max-height: 80vh;
+`;
+
+export const EditPostModalTitle = styled.h3`
+  font-size: ${fontSizes.H3};
+  font-weight: 600;
+  color: ${colors.text};
+  text-align: center;
+  margin: 0;
+`;
+
+export const EditPostTextarea = styled.textarea`
+  width: 100%;
+  min-height: 120px;
+  padding: 1rem;
+  border: 1px solid ${colors.line2};
+  border-radius: ${radius.md};
+  font-size: ${fontSizes.Body};
+  color: ${colors.text};
+  background: white;
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: inherit;
+  line-height: 1.4;
+
+  &:focus {
+    outline: none;
+    border-color: ${colors.primary};
+  }
+
+  &::placeholder {
+    color: ${colors.gray};
+  }
+`;
+
+export const EditPostModalButtons = styled.div`
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+`;
+
+export const EditPostContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid ${colors.line2};
+  border-radius: ${radius.md};
+  background: ${colors.background};
+  
+  ${mq.mobile} {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+`;
+
+export const EditPostInlineTextarea = styled.textarea`
+  width: 100%;
+  min-height: 100px;
+  padding: 0.75rem;
+  border: 1px solid ${colors.line2};
+  border-radius: ${radius.sm};
+  font-size: ${fontSizes.Body};
+  color: ${colors.text};
+  background: white;
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: inherit;
+  line-height: 1.4;
+
+  &:focus {
+    outline: none;
+    border-color: ${colors.primary};
+  }
+
+  &::placeholder {
+    color: ${colors.gray};
+  }
+  
+  ${mq.mobile} {
+    min-height: 80px;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+`;
+
+export const EditImageSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  
+  ${mq.mobile} {
+    gap: 0.5rem;
+  }
+`;
+
+export const EditImageTitle = styled.h4`
+  font-size: ${fontSizes.Body};
+  font-weight: 600;
+  color: ${colors.text};
+  margin: 0;
+  
+  ${mq.mobile} {
+    font-size: 0.875rem;
+  }
+`;
+
+export const EditImageGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+  
+  ${mq.mobile} {
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 0.375rem;
+    max-height: 150px;
+  }
+`;
+
+export const EditImageItem = styled.div`
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: ${radius.sm};
+  overflow: hidden;
+  background: ${colors.line2};
+`;
+
+export const EditImageRemoveBtn = styled.button`
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:hover {
+    background: rgba(0, 0, 0, 0.8);
+  }
+  
+  ${mq.mobile} {
+    width: 16px;
+    height: 16px;
+    font-size: 12px;
+    top: 2px;
+    right: 2px;
+  }
+`;
+
+export const EditImageUploadBtn = styled.div`
+  aspect-ratio: 1;
+  border: 2px dashed ${colors.line2};
+  border-radius: ${radius.sm};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: ${colors.gray};
+  font-size: ${fontSizes.Caption};
+  gap: 0.25rem;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: ${colors.primary};
+    color: ${colors.primary};
+  }
+
+  label {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+  }
+  
+  ${mq.mobile} {
+    font-size: 0.6rem;
+    gap: 0.125rem;
+    
+    label {
+      gap: 0.125rem;
+    }
+  }
+`;
+
+export const EditImageUploadIcon = styled.div`
+  font-size: 24px;
+  font-weight: 300;
+  
+  ${mq.mobile} {
+    font-size: 18px;
+  }
+`;
+
+export const EditPostButtons = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  
+  ${mq.mobile} {
+    gap: 0.375rem;
+    justify-content: center;
+  }
 `;

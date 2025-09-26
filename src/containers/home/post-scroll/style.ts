@@ -130,7 +130,7 @@ export const Arrow = styled.div<{ status: boolean, isHover: boolean }>`
       ? "translate(50%, -50%)"
       : "translate(-50%, -50%) rotateY(180deg)"};
   cursor: pointer;
-  z-index: ${zIndex.modal};
+  z-index: ${zIndex.dropdown};
   width: 1.8rem;
   height: 1.8rem;
   border-radius: ${radius.full};
