@@ -193,9 +193,6 @@ export default function RegisterContainer() {
 			<S.Content>
 				{renderStepContent()}
 				<S.ButtonGroup>
-					{currentStep === 0 && (
-						<Square text='돌아가기' onClick={() => router.back()} status={false} width="100%" />
-					)}
 					<Square
 						text={currentStep === effectiveSteps.length - 1 ? (loading ? '가입 중...' : '가입완료') : '다음'}
 						onClick={handleNext}
