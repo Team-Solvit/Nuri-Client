@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { colors, fontSizes, radius } from '@/styles/theme';
+import { colors, fontSizes, radius, zIndex } from '@/styles/theme';
 import { mq } from '@/styles/media';
 
 export const Overlay = styled.div`
@@ -12,7 +12,7 @@ export const Overlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: -1;
 `
 
 export const Image = styled.div`
@@ -368,7 +368,7 @@ export const ButtonRow = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 42%;
+  margin-top: auto;
   margin-right: 1rem;
 
   ${mq.mobile} {
