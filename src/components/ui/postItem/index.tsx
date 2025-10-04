@@ -5,20 +5,22 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
 interface PostCardProps {
-  id: number;
+  id: string;
   user: string;
+  userId: string;
   title: string;
   //region: string;
   price: string;
   thumbnail: string;
   userProfile: string;
-  onClick: (id: number) => void;
+  onClick: (id: string) => void;
   hideProfile?: boolean;
 }
 
 export default function PostItem({
   id,
   user,
+  userId,
   title,
   //region,
   price,
@@ -38,11 +40,29 @@ export default function PostItem({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // 유효한 URL인지 확인하는 함수
+  const isValidUrl = (url: string): boolean => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  // thumbnail이 유효한 URL인지 확인하고, 그렇지 않으면 기본 이미지 사용
+  const imageSrc = thumbnail && isValidUrl(thumbnail) ? thumbnail : '/post/post-example.png';
+
   return (
     <S.PostItem onClick={() => onClick(id)}>
       <S.Post>
         <S.PostThumbnail>
-          <Image src={thumbnail} alt={user} fill style={{ objectFit: 'cover' }} />
+          <Image 
+            src={imageSrc} 
+            alt={title} 
+            fill 
+            style={{ objectFit: 'cover' }} 
+          />
         </S.PostThumbnail>
         <S.PostMain>
           <S.PostTitle>{title}</S.PostTitle>
@@ -55,13 +75,32 @@ export default function PostItem({
 
       {!hideProfile && (
         <S.Profile>
-          <Image
-            src={userProfile}
-            alt={user}
-            width={isMobile ? 40 : 70}
-            height={isMobile ? 40 : 70}
-            style={{ borderRadius: '50%', objectFit: 'cover' }}
-          />
+          {userProfile && isValidUrl(userProfile) ? (
+            <Image
+              src={userProfile}
+              alt="프로필"
+              width={isMobile ? 40 : 70}
+              height={isMobile ? 40 : 70}
+              style={{ borderRadius: '50%', objectFit: 'cover' }}
+            />
+          ) : (
+            <div
+              style={{
+                width: isMobile ? 40 : 70,
+                height: isMobile ? 40 : 70,
+                borderRadius: '50%',
+                background: '#e0e0e0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 700,
+                fontSize: isMobile ? 16 : 24,
+                color: '#666',
+              }}
+            >
+              {(userId && userId[0]) || '?'}
+            </div>
+          )}
           <S.PostUser>{user}</S.PostUser>
         </S.Profile>
       )}

@@ -1,18 +1,12 @@
 export interface BoardingRoom {
   roomId: string;
   name: string;
-  description?: string;
   monthlyRent: number;
-  headCount: number;
-  likeCount: number;
-  isLiked: boolean;
-  commentCount: number;
-  status: string;
-  day: string;
   boardingHouse: {
     host: {
       user: {
         name: string;
+        userId: string;
         profile?: string;
       };
     };
@@ -20,6 +14,7 @@ export interface BoardingRoom {
   };
   boardingRoomFile: {
     fileId: string;
+    url?: string;
   }[];
 }
 
@@ -50,7 +45,7 @@ export interface BoardingRoomSearchFilter {
 }
 
 export interface PostItemData {
-  id: number;
+  id: string;
   user: string;
   title: string;
   //region: string;

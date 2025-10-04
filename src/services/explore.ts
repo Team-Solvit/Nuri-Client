@@ -5,25 +5,20 @@ export const SEARCH_BOARDING_ROOM = gql`
     searchBoardingRoom(boardingRoomSearchFilter: $boardingRoomSearchFilter) {
       roomId
       name
-      description
       monthlyRent
-      headCount
-      likeCount
-      isLiked
-      commentCount
-      status
-      day
       boardingHouse {
         host {
           user {
             name
             profile
+            userId
           }
         }
         location
       }
       boardingRoomFile {
         fileId
+        url
       }
     }
   }

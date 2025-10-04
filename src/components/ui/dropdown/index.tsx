@@ -11,7 +11,7 @@ interface DropdownProps {
     isOpen: boolean;
     onOpen: () => void;
     onClose: () => void;
-    onSelect?: (item: string, radius: string) => void; // 옵셔널 제거
+    onSelect?: (item: string, radius: string) => void;
     showRadius?: boolean;
 }
 

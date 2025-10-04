@@ -18,6 +18,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
   const [allPosts, setAllPosts] = useState<PostItemData[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const observerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -25,7 +26,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
       setDebouncedFilter(searchFilter);
       setAllPosts([]);
       setHasMore(true);
-    }, 500);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [searchFilter]);
@@ -34,48 +35,73 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     variables: {
       boardingRoomSearchFilter: { ...debouncedFilter, start: 0 }
     },
-    skip: Object.keys(debouncedFilter).length === 0,
+    skip: !debouncedFilter || Object.keys(debouncedFilter).length === 0 || (Object.keys(debouncedFilter).length === 1 && debouncedFilter.start === 0),
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: 'cache-and-network',
     onCompleted: (data) => {
-      const rooms = data?.searchBoardingRoom || [];
-      const postList = rooms.map(convertToPostItem);
-      setAllPosts(postList);
-      setHasMore(postList.length === 20);
+      if (data?.searchBoardingRoom) {
+        const rooms = data.searchBoardingRoom;
+        const postList = rooms.map(convertToPostItem);
+        setAllPosts(postList);
+        setHasMore(postList.length === 20);
+        setIsInitialized(true);
+      }
+    },
+    onError: (error) => {
+      console.error('GraphQL 쿼리 오류:', error);
+      setHasMore(false);
     }
   });
+  
+  const isValidUrl = (url: string): boolean => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
 
-  const convertToPostItem = (room: BoardingRoom): PostItemData => ({
-    id: room.roomId && !isNaN(Number(room.roomId))
-      ? Number(room.roomId)
-      : Math.random(),
-    user: room.boardingHouse?.host?.user?.name || '알 수 없음',
-    title: room.name,
-    price: room.monthlyRent?.toString() ?? '0',
-    thumbnail: room.boardingRoomFile?.[0]?.fileId,
-    userProfile: room.boardingHouse?.host?.user?.profile || '/profile/profile.svg',
-  });
+  const convertToPostItem = (room: BoardingRoom): PostItemData => {
+    const thumbnailUrl = room.boardingRoomFile?.[0]?.url || room.boardingRoomFile?.[0]?.fileId;
+    const userProfileUrl = room.boardingHouse?.host?.user?.profile;
+    
+    return {
+      id: room.roomId || `room_${Math.random().toString(36).substr(2, 9)}`,
+      user: room.boardingHouse?.host?.user?.name || '알 수 없음',
+      title: room.name,
+      price: room.monthlyRent?.toString() ?? '0',
+      thumbnail: thumbnailUrl && isValidUrl(thumbnailUrl) ? thumbnailUrl : '',
+      userProfile: userProfileUrl && isValidUrl(userProfileUrl) ? userProfileUrl : '/profile/profile.svg',
+    };
+  };
 
   const loadMorePosts = useCallback(async () => {
-    if (isLoadingMore || !hasMore) return;
+    if (isLoadingMore || !hasMore || loading) return;
 
     setIsLoadingMore(true);
     try {
       const result = await fetchMore({
         variables: {
-          boardingRoomSearchFilter: { ...debouncedFilter, start: allPosts.length + 1 }
+          boardingRoomSearchFilter: { ...debouncedFilter, start: allPosts.length }
         }
       });
 
       const newRooms = result.data?.searchBoardingRoom || [];
-      const newPosts = newRooms.map(convertToPostItem);
-      
-      setAllPosts(prev => [...prev, ...newPosts]);
-      setHasMore(newPosts.length === 20);
+      if (newRooms.length > 0) {
+        const newPosts = newRooms.map(convertToPostItem);
+        setAllPosts(prev => [...prev, ...newPosts]);
+        setHasMore(newPosts.length === 20);
+      } else {
+        setHasMore(false);
+      }
     } catch (error) {
       console.error('추가 데이터 로드 실패:', error);
+      setHasMore(false);
     } finally {
       setIsLoadingMore(false);
     }
-  }, [debouncedFilter, allPosts.length, isLoadingMore, hasMore, fetchMore]);
+  }, [debouncedFilter, allPosts.length, isLoadingMore, hasMore, fetchMore, loading]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -98,25 +124,21 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     };
   }, [loadMorePosts, hasMore, isLoadingMore]);
 
-  if (loading) {
-    return (
-      <S.PostList>
-        <div>검색 중...</div>
-      </S.PostList>
-    );
-  }
+  const isInitialLoading = loading && !isInitialized;
 
-  if (error) {
+  if (error && !isInitialized) {
     return (
       <S.PostList>
-        <div>검색 중 오류가 발생했습니다.</div>
+        <div>검색 중 오류가 발생했습니다. 다시 시도해주세요.</div>
       </S.PostList>
     );
   }
 
   return (
     <S.PostList>
-      {allPosts.length === 0 ? (
+      {isInitialLoading ? (
+        <div>검색 중...</div>
+      ) : allPosts.length === 0 && isInitialized ? (
         <div>검색 결과가 없습니다.</div>
       ) : (
         <>

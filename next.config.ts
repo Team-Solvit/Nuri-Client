@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
 	output: 'standalone',
 	images: {
-		domains: ["localhost", "*"],
+		domains: ["localhost", "teachmon.kro.kr"],
 	},
 	compiler: {
 		emotion: true
