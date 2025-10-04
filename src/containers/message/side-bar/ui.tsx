@@ -208,6 +208,7 @@ export default function MessageSideBar() {
 						</S.ChatBox>
 					)
 				})}
+				{isDone && roomDataList?.length === 0 && <p>채팅방이 없습니다</p>}
 			</S.CategoryList>
 		</S.MessageContainer>
 	)

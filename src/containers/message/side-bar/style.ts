@@ -60,7 +60,7 @@ export const ChatBox = styled.div<{ isRead: boolean }>`
   width: 100%;
   border-bottom: 1px solid ${colors.line};
   display: flex;
-  padding: 1.5rem 2rem;
+  padding: 1.5rem 0;
   align-items: center;
   background-color: ${(props) => props.isRead ? "#f8f8f8" : colors.background};
   transition: 0.2s;
@@ -106,6 +106,7 @@ export const Info = styled.div`
 `;
 
 export const CategoryList = styled.div`
+	padding: 0 2rem;
   width: 100%;
   height: 100%;
   overflow-y: scroll;
