@@ -69,7 +69,13 @@ export default function InteractionBar({
                   </S.MenuItem>
                 </>
               )}
-              {!isPostOwner && <S.MenuItem onClick={() => console.log("신고")}>신고</S.MenuItem>}
+              {!isPostOwner && (
+                <S.MenuItem
+                  onClick={() => window.open('https://forms.gle/kFGiF6KmmCyaDwos5', '_blank')}
+                >
+                  신고
+                </S.MenuItem>
+              )}
             </S.MenuDropdown>
           )}
         </S.MenuButton>

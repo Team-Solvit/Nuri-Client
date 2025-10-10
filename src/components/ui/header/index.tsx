@@ -187,7 +187,7 @@ export default function Header() {
 					<span>{userId || '로그인을 해주세요'}</span>
 				</S.Profile>
 				
-				<S.Report>
+				<S.Report onClick={() => window.open('https://forms.gle/kFGiF6KmmCyaDwos5', '_blank')}>
 					<Image src="/icons/warningBell.svg" alt="신고하기" width={24} height={24} />
 					<span>신고하기</span>
 				</S.Report>
