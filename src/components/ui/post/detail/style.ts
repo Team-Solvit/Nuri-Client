@@ -152,6 +152,7 @@ export const Right = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  width: 600px;
   ${mq.mobile} {
     flex: none;
     width: 100%;
