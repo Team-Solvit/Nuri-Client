@@ -71,7 +71,7 @@ export default function InteractionBar({
               )}
               {!isPostOwner && (
                 <S.MenuItem
-                  onClick={() => window.open('https://forms.gle/kFGiF6KmmCyaDwos5', '_blank')}
+                  onClick={() => window.open('https://forms.gle/kFGiF6KmmCyaDwos5', '_blank', 'noopener,noreferrer')}
                 >
                   신고
                 </S.MenuItem>
