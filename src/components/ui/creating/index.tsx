@@ -351,9 +351,9 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                         placeholder="글을 작성하세요. (#을 사용하여 해시태그를 추가할 수 있습니다.)"
                         value={content}
                         onChange={e => setContent(e.target.value)}
-                        maxLength={9999}
+                        maxLength={10000}
                     />
-                    <S.CharCount>{content.length}/10000</S.CharCount>
+                    <S.CharCount>{content.length}/9999</S.CharCount>
 
                     <S.ButtonRow>
                         <Square
