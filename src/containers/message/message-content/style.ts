@@ -96,42 +96,38 @@ export const ReceivedMsgAndTimeWrapper = styled.div<{ isHaveReply: boolean  }>`
   gap: 6px;
   position: relative;
 
-  &:hover .msg-hover-icons,
-  .msg-hover-icons:hover {
+  /* 메시지 바로 옆(오른쪽)에 아이콘이 나오도록, 부모에 여유 공간을 주지 않음(오버플로우 허용) */
+  /* 부모 hover 시 아이콘을 보이게 하고 제자리로 이동시킴 */
+  &:hover .msg-hover-icons {
     opacity: 1;
     pointer-events: auto;
+    transform: translate(0, -50%);
   }
 `;
 
 export const MsgHoverIcons = styled.div`
   position: absolute;
-  bottom: 0;
-  right: -2.4rem;
-  display: flex;
-  gap: 0.5rem;
-  cursor: pointer;
-  background: ${colors.background};
-  border-radius: ${radius.md};
-  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.06);
-  padding: 0.25rem 0.5rem;
-  margin-bottom: 0.5rem;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.5s, right 0.15s;
-  z-index: 2;
-
-  ${ReceivedMsgAndTimeWrapper}:hover &,
-  &:hover {
+  left: 100%; /* 메시지 바로 옆: 부모 너비의 바로 다음 위치 */
+  top: 50%;
+   display: flex;
+   gap: 0.5rem;
+   cursor: pointer;
+   background: ${colors.background};
+   border-radius: ${radius.md};
+   box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.06);
+   padding: 0.25rem 0.5rem;
+   transform: translate(8px, -50%); /* 숨김 시 약간 오른쪽으로 밀고 수직 중앙 정렬 */
+   opacity: 0;
+   pointer-events: none;
+   transition: opacity 0.18s ease, transform 0.16s ease;
+   z-index: 2;
+ 
+   /* 아이콘 자체에 hover 시 즉시 유지되도록 약간의 안정성 추가 */
+   &:hover {
     opacity: 1;
     pointer-events: auto;
-    transition-delay: 0s; /* hover될 때는 딜레이 없이 즉시 */
-  }
-
-  /* hover 해제 시 1초 후 사라지게 */
-
-  ${ReceivedMsgAndTimeWrapper} & {
-    transition-delay: 1s; /* hover가 풀리면 사라지는 딜레이 */
-  }
+    transform: translate(0, -50%);
+   }
 `;
 
 export const SentMsgAndTimeWrapper = styled.div<{ isHaveReply: boolean | null }>`

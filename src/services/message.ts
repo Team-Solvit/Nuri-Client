@@ -98,25 +98,34 @@ export const MessageService = {
 		});
 		return response;
 	},
-	inviteUserInChatRoom: async (client: ApolloClient<any>, roomInviteInput: RoomInviteRequestDto) => {
+	inviteUserInChatRoom: async (client: ApolloClient<any>, roomInviteInput: RoomInviteRequestDto, onSuccess: (num:number) => void) => {
 		return client.mutate({
 			mutation: MessageMutations.INVITE,
 			variables: {
 				input: roomInviteInput,
 			},
+		}).then(()=>{
+			onSuccess(roomInviteInput?.users?.length)
 		})
 	},
-	exitChatRoom: async (client: ApolloClient<any>, roomId: string) => {
+	exitChatRoom: async (
+		client: ApolloClient<any>,
+		roomId: string,
+		page: number
+	) => {
+		console.log("refetch page:", page);
+		
 		return client.mutate({
 			mutation: MessageMutations.EXIT,
-			variables: {
-				roomId: roomId,
-			},
+			variables: { roomId },
 			refetchQueries: [
-				{query: MessageQueries.GET_ROOMS_CHAT_LIST, variables: {page: 0, size: 10}}
+				{
+					query: MessageQueries.GET_ROOMS_CHAT_LIST,
+					variables: { page: page ?? 0, size: 10 },
+				},
 			],
 			awaitRefetchQueries: true,
-		})
+		});
 	},
 	kickChatRoom: async (client: ApolloClient<any>, roomId: string, userId: string) => {
 		await client.mutate({

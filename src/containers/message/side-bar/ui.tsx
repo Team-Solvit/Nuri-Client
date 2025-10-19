@@ -17,12 +17,14 @@ import {imageCheck} from "@/utils/imageCheck";
 import {useAlertStore} from "@/store/alert";
 import {useLoadingEffect} from "@/hooks/useLoading";
 import {messageRequestCheck} from "@/utils/messageRequestCheck";
+import { useMessagePageStore } from "@/store/messagePage";
 const IMAGE_BASE = process.env.NEXT_PUBLIC_IMAGE_URL;
 
 export default function MessageSideBar() {
 	const size = 10;
-	const [page, setPage] = useState(0);
-	
+	const page = useMessagePageStore((s) => s.page);
+	const setPage = useMessagePageStore((s) => s.setPage);
+
 	const { data, loading, fetchMore } = useQuery(MessageQueries.GET_ROOMS_CHAT_LIST, {
 		variables: { page, size },
 		fetchPolicy: "no-cache",
@@ -76,6 +78,7 @@ export default function MessageSideBar() {
 						setIsDone(true);
 						return prev;
 					}
+					// 전역 상태에 페이지 업데이트
 					setPage(newPage);
 					return {
 						...prev,
@@ -169,6 +172,24 @@ export default function MessageSideBar() {
 		const idx = decoded.lastIndexOf(":");
 		return idx !== -1 ? decoded.substring(idx + 1) : decoded;
 	};
+
+	const [searchTerm, setSearchTerm] = useState("");
+	const [searchResults, setSearchResults] = useState<RoomReadResponseDto[] | null>(null);
+
+	const performSearch = () => {
+		const q = searchTerm.trim().toLowerCase();
+		if (!q) {
+			setSearchResults(null);
+			return;
+		}
+		const results = (roomDataList || []).filter((room) => {
+			const name = (room.roomDto?.name || "").toLowerCase();
+			const latest = (room.latestMessage || "").toLowerCase();
+			return name.includes(q) || latest.includes(q);
+		});
+		setSearchResults(results);
+	};
+
 	return (
 		<S.MessageContainer id={typeof params.id === 'string' ? params.id : params.id?.[0] ?? ''}>
 			<S.AddRoom>
@@ -187,18 +208,33 @@ export default function MessageSideBar() {
 				/>
 			</S.AddRoom>
 			<S.Search>
-				<input type={"text"} placeholder={"채팅방을 입력하세요"}/>
-				<Image src={Search} alt={"search-icon"} width={16} height={16}/>
+				<input
+					type={"text"}
+					placeholder={"채팅방 이름 또는 메시지로 검색하세요"}
+					value={searchTerm}
+					onChange={(e) => setSearchTerm(e.target.value)}
+					onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+						if (e.key === "Enter") {
+							performSearch();
+						}
+					}}
+				/>
+				<Image
+					src={Search}
+					alt={"search-icon"}
+					width={16}
+					height={16}
+					onClick={() => performSearch()}
+				/>
 			</S.Search>
 			<S.CategoryList
 			>
-				{roomDataList && roomDataList?.map((room, index) => {
-					// 변경: 현재 선택 여부와 멤버 수 계산 (멤버 수가 2명 초과일 때만 표시)
+				{(searchResults ?? roomDataList) && (searchResults ?? roomDataList)!.map((room, index) => {
 					const isActive = decodeURIComponent(params.id as string) === room.roomDto.id || changeParamsId(params.id as string) === room.roomDto.id;
-					console.log(room.roomDto.name)
 					return (
 						<S.ChatBox
-							ref={roomDataList && index === roomDataList.length - 1 ? lastPostElementRef : undefined}
+							/* 검색 중일 때는 무한스크롤(마지막 요소 관찰)을 비활성화 */
+							ref={(!searchResults && roomDataList) && index === roomDataList.length - 1 ? lastPostElementRef : undefined}
 							key={room.roomDto.id}
 							onClick={() => handleRouter(room.roomDto.id, room.roomDto.name, room.roomDto.profile ?? "", room.roomDto.memberCount)}
 							isRead={isActive}
@@ -215,7 +251,9 @@ export default function MessageSideBar() {
 						</S.ChatBox>
 					)
 				})}
-				{isDone && roomDataList?.length === 0 && <p>채팅방이 없습니다</p>}
+				{/* 검색 결과가 없을 때 메시지 표시 */}
+				{searchResults && searchResults.length === 0 && <p>검색 결과가 없습니다</p>}
+				{isDone && !searchResults && roomDataList?.length === 0 && <p>채팅방이 없습니다</p>}
 			</S.CategoryList>
 		</S.MessageContainer>
 	)

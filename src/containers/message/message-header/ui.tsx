@@ -13,6 +13,7 @@ import {useApollo} from "@/lib/apolloClient";
 import {useAlertStore} from "@/store/alert";
 import {useMessageHeaderStore} from "@/store/messageHeader";
 import {imageCheck} from "@/utils/imageCheck";
+import {useMessagePageStore} from "@/store/messagePage";
 
 interface FadeBoxProps {
 	onClose: () => void;
@@ -69,9 +70,11 @@ export default function MessageHeaderUI() {
 	const roomId = typeof params.id === 'string' ? params.id : params.id?.[0] ?? '';
 	
 	const {success, error} = useAlertStore();
+	const page = useMessagePageStore(s => s.page);
+	
 	const confirmExit = async () => {
 		try {
-			await MessageService.exitChatRoom(apolloClient, roomId);
+			await MessageService.exitChatRoom(apolloClient, roomId, page);
 			router.push('/message');
 			setShowExitConfirm(false);
 			success("대화방 나가기에 성공하였습니다.")

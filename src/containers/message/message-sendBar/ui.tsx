@@ -84,6 +84,7 @@ export default function MessageSendBar() {
 	const {error} = useAlertStore();
 	const {reply, clearReply} = useMessageReplyStore()
 	const handleSendMessage = () => {
+		console.log(id)
 		if (!message.trim()) return;
 		const type = checkType(id as string);
 		if (Array.isArray(type)) {

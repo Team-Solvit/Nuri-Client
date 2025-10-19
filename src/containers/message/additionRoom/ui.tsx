@@ -17,6 +17,7 @@ import {useMessageConnectStore} from "@/store/messageConnect";
 import { client } from "@/lib/socketClient";
 import {useMessageReflectStore} from "@/store/messageReflect";
 import {useMessageAlertStore} from "@/store/messageAlert";
+import {useMessageHeaderStore} from "@/store/messageHeader";
 
 interface User {
 	userId: string;
@@ -91,6 +92,14 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 	const params = useParams();
 	const roomId = typeof params.id === "string" ? params.id : params.id?.[0] ?? "";
 	
+	const {setValues : setHeader, chatProfile, chatRoomName, memberCount} = useMessageHeaderStore()
+	const inviteSuccess = (num:number) =>{
+		setHeader({
+			chatProfile,
+			chatRoomName,
+			memberCount : memberCount+num
+		})
+	}
 	const handleInviteChatMember = async (roomId: string) => {
 		const inviteChatMemberInput = {
 			users: selectedUsers.map(user => user.userId),
@@ -99,7 +108,8 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 		try {
 			await MessageService.inviteUserInChatRoom(
 				apolloClient,
-				inviteChatMemberInput
+				inviteChatMemberInput,
+				inviteSuccess
 			)
 			success("채팅방 초대에 성공하였습니다.")
 			handleClose();

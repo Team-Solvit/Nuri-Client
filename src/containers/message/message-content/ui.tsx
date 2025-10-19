@@ -28,7 +28,6 @@ import {useMessageReplyStore} from "@/store/messageReply";
 import {imageCheck} from "@/utils/imageCheck";
 import {messageRequestCheck} from "@/utils/messageRequestCheck";
 import {Contract, RoomTour} from "@/types/message";
-import {parseKST} from "@/utils/dateTime";
 
 export default function MessageContent() {
 	const {message: newMessageReflect} = useMessageReflectStore();
@@ -66,6 +65,7 @@ export default function MessageContent() {
 	
 	useEffect(() => {
 		if (!newMessageReflect) return;
+		console.log("새로 온 메시지 : ", newMessageReflect)
 		if (newMessageReflect.roomId !== roomId) return;
 		const newSetMessage: ChatMessage = {
 			roomId: newMessageReflect.roomId,
@@ -216,6 +216,9 @@ export default function MessageContent() {
 							</>
 						);
 					};
+					const regex = /^https:\/\/cdn\.solvit-nuri\.com\/file\/[0-9a-fA-F-]{36}$/;
+					const request = messageRequestCheck(msg.contents)
+					const isValid = request?.type !== "roomTour" && request?.type !== "contract" && !regex?.test(msg.contents);
 					return (
 						<div key={msg.id}>
 							{showDate && <S.DateDivider>{msg.createdAt.date} {msg.createdAt.time}</S.DateDivider>}
@@ -234,16 +237,17 @@ export default function MessageContent() {
 									)}
 									<S.ReceivedMsgAndTimeWrapper isHaveReply={!!msg.replyChat?.contents}>
 										{renderMessageBody()}
-										{!msg.contract && !msg.roomTour && !msg.img && (
+										{isValid && (
 											<S.MsgHoverIcons className="msg-hover-icons"
+											                 style={{cursor: 'pointer'}}
 											                 onClick={() => setReplyInfo({chatId : msg.id ,name: msg.sender.name || '', contents: msg.contents})}
 											>
 												<Image
+													style={{cursor: 'pointer'}}
 													src={Reply}
 													width={20}
 													height={20}
 													alt="reply"
-													style={{cursor: 'pointer'}}
 												/>
 											</S.MsgHoverIcons>
 										)}

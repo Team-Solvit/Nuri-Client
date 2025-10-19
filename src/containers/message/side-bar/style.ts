@@ -51,7 +51,9 @@ export const Search = styled.div`
     border: none;
     font-size: ${fontSizes.Body};
   }
-
+	& > img{
+		cursor: pointer;
+	}
   & > input::placeholder {
     color: #DDDDDD;
   }
