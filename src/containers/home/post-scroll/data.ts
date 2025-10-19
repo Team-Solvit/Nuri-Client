@@ -6,7 +6,7 @@ export const fakeData = [
 		desc: '그랜마 하우스에서 함께살기',
 		price: '300,000',
 		subject: '하숙집',
-		user: {userId: 'zuu3333', thumbnail: '/post/post-example.png'},
+		user: {userId: 'doh2', thumbnail: '/post/post-example.png'},
 		date: '2025-07-13',
 	},
 	{
@@ -14,7 +14,7 @@ export const fakeData = [
 		thumbnail: ['/post/post-example2.png'],
 		title: '봄 나들이',
 		desc: '봄 나들이 떠나기~',
-		user: {userId: 'dohun', thumbnail: '/post/post-example.png'},
+		user: {userId: 'doh1', thumbnail: '/post/post-example.png'},
 		date: '2025-07-13',
 	},
 ]
