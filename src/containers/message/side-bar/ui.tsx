@@ -41,11 +41,12 @@ export default function MessageSideBar() {
 	
 	const router = useRouter();
 	const {setValues: setHeader} = useMessageHeaderStore()
-	const handleRouter = (id: string, name: string, profile: string) => {
+	const handleRouter = (id: string, name: string, profile: string, memberCount : number) => {
 		if (decodeURIComponent(params.id as string) === id) return;
 		setHeader({
 			chatProfile: profile,
 			chatRoomName: name,
+			memberCount:memberCount
 		})
 		NProgress.start()
 		router.push(`/message/${id}`, {scroll: false});
@@ -139,6 +140,7 @@ export default function MessageSideBar() {
 								name: chatRoomName,
 								id: chatRoomId,
 								profile: chatProfile,
+								memberCount : 0
 							},
 						},
 						...prev,
@@ -191,18 +193,23 @@ export default function MessageSideBar() {
 			<S.CategoryList
 			>
 				{roomDataList && roomDataList?.map((room, index) => {
+					// 변경: 현재 선택 여부와 멤버 수 계산 (멤버 수가 2명 초과일 때만 표시)
+					const isActive = decodeURIComponent(params.id as string) === room.roomDto.id || changeParamsId(params.id as string) === room.roomDto.id;
+					console.log(room.roomDto.name)
 					return (
 						<S.ChatBox
 							ref={roomDataList && index === roomDataList.length - 1 ? lastPostElementRef : undefined}
 							key={room.roomDto.id}
-							onClick={() => handleRouter(room.roomDto.id, room.roomDto.name, room.roomDto.profile ?? "")}
-							isRead={decodeURIComponent(params.id as string) === room.roomDto.id || changeParamsId(params.id as string) === room.roomDto.id}
+							onClick={() => handleRouter(room.roomDto.id, room.roomDto.name, room.roomDto.profile ?? "", room.roomDto.memberCount)}
+							isRead={isActive}
 						>
 							<S.Profile>
 								<Image src={imageCheck(room?.roomDto?.profile || "")} alt={"profile"} fill/>
 							</S.Profile>
 							<S.Info>
-								<h4>{room.roomDto.name}</h4>
+								<h4>
+									{room.roomDto.name}
+								</h4>
 								<p>{room.latestMessage?.startsWith(IMAGE_BASE || "") ? "이미지" : messageRequestCheck(room?.latestMessage || "") ? "계약" : room.latestMessage}</p>
 							</S.Info>
 						</S.ChatBox>

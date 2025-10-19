@@ -48,6 +48,7 @@ export default function PostScroll() {
 		setMessageHeader({
 			chatProfile: user.thumbnail,
 			chatRoomName: user.userId,
+			memberCount : 2,
 		})
 		setValues({
 			chatProfile: user.thumbnail,

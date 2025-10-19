@@ -87,14 +87,24 @@ export default function MessageHeaderUI() {
 	const [isAddition, setIsAddition] = useState(false);
 	const iconRef = useRef<HTMLImageElement>(null);
 	
-	const {chatProfile, chatRoomName} = useMessageHeaderStore()
+	const {chatProfile, chatRoomName, memberCount} = useMessageHeaderStore()
 	return (
 		<S.MessageHeaderContainer className="message-header">
 			<S.ProfileBox>
 				<S.Profile>
 					<Image src={imageCheck(chatProfile || "") || "/post/default.png"} alt="message" fill priority/>
 				</S.Profile>
-				<p>{chatRoomName}</p>
+				<p>
+					{chatRoomName}
+					{memberCount && memberCount > 2 && (
+						<S.MemberCount aria-hidden>
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+								<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+							</svg>
+							<span>{memberCount}명</span>
+						</S.MemberCount>
+					)}
+				</p>
 			</S.ProfileBox>
 			<S.EllipsisIconBox ref={iconRef} onClick={handleEllipsisClick}>
 				<Image
