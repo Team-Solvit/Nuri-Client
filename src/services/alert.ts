@@ -5,10 +5,11 @@ export const AlertQueries = {
 		query GetNotificationList($start: Int!) {
 		  getNotificationList(start: $start) {
 		    notificationId
-		    content
-		    checked
-		    link
-		    createAt
+				content
+				checked
+				redirectType
+				redirectId
+				createAt
 		  }
 		}
 	`,

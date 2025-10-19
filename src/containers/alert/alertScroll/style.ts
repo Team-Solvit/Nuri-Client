@@ -59,6 +59,9 @@ export const Profile = styled.div`
   align-items: center;
   width: 4rem;
   height: 4rem;
+	& > img{
+		object-fit: cover;
+	}
 `
 
 export const Title = styled.h3`
@@ -74,3 +77,10 @@ export const Info = styled.div`
   gap: 0.5rem;
   padding: 0 1rem;
 `
+
+export const CreatedDate = styled.time`
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #888888;
+`;

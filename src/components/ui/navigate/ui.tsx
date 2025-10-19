@@ -1,4 +1,5 @@
 "use client";
+import React, { useEffect, useState } from "react";
 import {usePathname} from "next/navigation";
 import Image from "next/image";
 import Alert from "@/assets/icon/alert.svg"
@@ -10,6 +11,8 @@ import Login from "../login";
 import LoginModal from "@/components/layout/loginModal";
 import {useLoginModalStore} from "@/store/loginModal";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import { AlertQueries } from "@/services/alert";
+import { useQuery } from "@apollo/client";
 
 export default function Navigate() {
 	const navigate = useNavigationWithProgress();
@@ -60,6 +63,34 @@ export default function Navigate() {
 			onClick: () => navigate("/register"),
 		},
 	] as const
+
+	const [alertCount, setAlertCount] = useState<number>(0);
+	const { data: alertData, refetch: refetchAlert } = useQuery(AlertQueries.GET_ALERT_COUNT, {
+		fetchPolicy: "no-cache",
+		nextFetchPolicy: "no-cache",
+		skip: !id,
+	});
+
+	useEffect(() => {
+		const count = (alertData?.getAlertCount?.count ?? alertData?.getAlertCount ?? alertData?.alertCount) || 0;
+		setAlertCount(Number(count) || 0);
+	}, [alertData]);
+
+	useEffect(() => {
+		if (!id) {
+			setAlertCount(0);
+			return;
+		}
+		const onFocus = () => {
+			if (typeof refetchAlert === "function") {
+				try { refetchAlert(); } catch (e) {
+					console.error(e) }
+			}
+		};
+		window.addEventListener("focus", onFocus);
+		return () => window.removeEventListener("focus", onFocus);
+	}, [id, refetchAlert]);
+	
 	return (
 		<S.NavigateCon>
 			<S.NavigateContainer>
@@ -85,7 +116,10 @@ export default function Navigate() {
 							>
 								<S.IconBox>
 									<Image src={item.icon} alt={item.label} width={32} height={32}/>
-									{/*<S.Count>1</S.Count>*/}
+									{/* 알림 아이템일 때만, 경로가 /alert가 아니면 표시 */}
+									{item.label === "알림" && alertCount > 0 && pathname !== "/alert" && (
+										<S.Count>{alertCount > 99 ? "99+" : alertCount}</S.Count>
+									)}
 								</S.IconBox>
 								<p>{item.label}</p>
 							</S.NavigateBtn>
