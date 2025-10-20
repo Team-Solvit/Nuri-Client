@@ -27,11 +27,10 @@ export const Alert = styled.article<{ isRead: boolean }>`
   width: 100%;
   align-items: center;
   border-bottom: 1px solid ${colors.line};
-  background-color: ${(props) => props.isRead ? colors.line2 : colors.background};
+  background-color: ${(props) => props.isRead ? "#fafafa" : colors.background};
   transition: 0.2s;
   border-radius: ${radius.md};
   cursor: pointer;
-  transition: 0.2s;
 
   &:hover {
     background-color: ${(props) => props.isRead ? colors.line : "#f8f8f8"};
