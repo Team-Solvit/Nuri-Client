@@ -1,6 +1,6 @@
 // Author (SnsPost)
 export type Author = {
-	profile: string;
+	profile: string | null;
 	userId: string;
 	__typename: "Author";
 };

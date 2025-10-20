@@ -65,15 +65,14 @@ export default function Navigate() {
 	] as const
 
 	const [alertCount, setAlertCount] = useState<number>(0);
-	const { data: alertData, refetch: refetchAlert } = useQuery(AlertQueries.GET_ALERT_COUNT, {
+	const { data: alertData, refetch: refetchAlert } = useQuery<{ getNotificationCount: number }>(AlertQueries.GET_ALERT_COUNT, {
 		fetchPolicy: "no-cache",
 		nextFetchPolicy: "no-cache",
 		skip: !id,
 	});
-
+	
 	useEffect(() => {
-		const count = (alertData?.getAlertCount?.count ?? alertData?.getAlertCount ?? alertData?.alertCount) || 0;
-		setAlertCount(Number(count) || 0);
+		setAlertCount(Number(alertData?.getNotificationCount ?? 0));
 	}, [alertData]);
 
 	useEffect(() => {
