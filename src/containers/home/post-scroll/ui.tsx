@@ -38,11 +38,15 @@ export default function PostScroll() {
 	useLoadingEffect(loading)
 	const posts = postData?.getPostList;
 	const { error } = useAlertStore();
+	const isFirstLoad = useRef(true);
 	
 	const loadMore = async () => {
 		if (isFetchingMore || isDone) return;
-		if (!postData?.getPostList || postData.getPostList.length === 0) return;
-		
+		if (!postData?.getPostList) return;
+		if (isFirstLoad.current) {
+			isFirstLoad.current = false;
+			return;
+		}
 		setIsFetchingMore(true);
 		const newPage = page + 1;
 		setPage(newPage);
@@ -52,21 +56,28 @@ export default function PostScroll() {
 				variables: { start: newPage },
 				updateQuery: (prev, { fetchMoreResult }) => {
 					if (!fetchMoreResult || fetchMoreResult.getPostList.length === 0) {
+						// 새로운 게시물이 아예 없을 경우
 						return prev;
 					}
-					return {
+					
+					const merged = {
 						...prev,
 						getPostList: [
-							...(prev.getPostList ?? []), // 기존 데이터
-							...fetchMoreResult.getPostList, // 새로 가져온 데이터
+							...(prev.getPostList ?? []),
+							...fetchMoreResult.getPostList,
 						],
 					};
+					
+					return merged;
 				},
 			});
-			if (!res.data || res.data.getPostList.length === 0) {
-				    error("더 이상 불러올 게시물이 없습니다");
-				    setIsDone(true);
-				  }
+			
+			const newPosts = res.data?.getPostList ?? [];
+			
+			if (newPosts.length === 0 || newPosts.length < 20 ) {
+				setIsDone(true);
+				error("더 이상 불러올 게시물이 없습니다");
+			}
 		} finally {
 			setIsFetchingMore(false);
 		}
@@ -144,7 +155,7 @@ export default function PostScroll() {
 					date = postItem.day;
 					user = {
 						userId: postItem.author.userId,
-						thumbnail: postItem.author.profile,
+						thumbnail: postItem.author.profile ?? "",
 					};
 				} else if (postItem.__typename === "BoardingPost") {
 					id = postItem.room.roomId;
@@ -157,7 +168,7 @@ export default function PostScroll() {
 					date = postItem.room.day || null;
 					user = {
 						userId: postItem.room.boardingHouse.host.user.userId,
-						thumbnail: postItem.room.boardingHouse.host.user.profile,
+						thumbnail: postItem.room.boardingHouse.host.user.profile ?? "",
 					};
 				}
 

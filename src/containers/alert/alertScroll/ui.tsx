@@ -114,6 +114,15 @@ export default function AlertScroll() {
 		try {
 			const res = await fetchMore({
 				variables: { start: alerts.length },
+				updateQuery: (prev, { fetchMoreResult }) => {
+					if (!fetchMoreResult) return prev;
+					return {
+						getNotificationList: [
+							...prev.getNotificationList,
+							...fetchMoreResult.getNotificationList,
+						],
+					};
+				},
 			});
 			const more: AlertType[] = res?.data?.getNotificationList ?? [];
 			if (!more.length) {
@@ -160,7 +169,6 @@ export default function AlertScroll() {
 					return <AlertBox key={alert.notificationId} alert={alert} />;
 				})
 			)}
-			{isFetchingMore && <p>로딩 중...</p>}
 		</S.AlertScrollContainer>
 	);
 }
