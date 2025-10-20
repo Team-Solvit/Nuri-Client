@@ -28,7 +28,7 @@ export type SnsPost = {
 
 // BoardingPost 관련 타입
 export type BoardingUser = {
-	profile: string;
+	profile: string | null;
 	userId: string;
 };
 
