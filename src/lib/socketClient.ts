@@ -25,24 +25,24 @@ export const sendGroupChatMessage = (roomId: string, message: string, replyChat 
 	};
 	
 	client.publish({
-		destination: `/chat/group`,
+		destination: `/messages/group`,
 		body: JSON.stringify(payload),
 	});
 };
 
-export const sendDmChatMessage = (userId: string[], message: string) => {
+export const sendDmChatMessage = (roomId: string[], message: string, userId : string, replyChat : ReplyChatInput | null) => {
 	if (!client.active) {
 		console.error("❌ 소켓 연결 안 됨");
 		return;
 	}
 	if (!userId || !message) return;
 	const payload: ChatRecordRequestDto = {
-		roomId: userId[0] + ":" + userId[1],
+		roomId: roomId[0] + ":" + roomId[1],
 		contents: message,
-		replyChat: null,
+		replyChat: replyChat,
 	};
 	client.publish({
-		destination: `/chat/${userId[0] + ":" + userId[1]}`,
+		destination: `/messages/${userId}`,
 		body: JSON.stringify(payload),
 	});
 };

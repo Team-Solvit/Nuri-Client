@@ -156,19 +156,14 @@ export const ConfirmButton = styled(CancelButton)`
 `;
 
 export const MemberCount = styled.span`
-  margin-left: 8px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: ${fontSizes.Caption};
-  color: ${colors.gray};
+  margin-left: 8px;
+  font-size: 12px;
+  color: #444;
   background: #f1f3f5;
   padding: 4px 8px;
   border-radius: 12px;
-  line-height: 1;
-
-  svg {
-    display: block;
-    color: ${colors.gray};
-  }
+  svg { display: block; color: #666; }
 `;

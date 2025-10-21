@@ -1,7 +1,7 @@
 "use client";
 
 import {useEffect} from 'react';
-import {soketClient} from '@/lib/socketClient';
+import {client} from '@/lib/socketClient';
 import {useUserStore} from '@/store/user';
 
 export default function ChatComponent() {
@@ -11,10 +11,10 @@ export default function ChatComponent() {
 		if (!id) return;
 		if (typeof window === "undefined") return;
 		
-		soketClient.activate();
+		client.activate();
 		
 		return () => {
-			soketClient.deactivate();
+			client.deactivate();
 		};
 	}, [id]);
 	

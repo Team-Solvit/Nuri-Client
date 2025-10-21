@@ -12,7 +12,7 @@ import {useMessageAlertStore} from "@/store/messageAlert";
 
 export default function ChatConnect() {
 	const {token} = useUserStore();
-	const {addSubscription} = useMessageConnectStore();
+	const {addSubscription, subscriptions} = useMessageConnectStore();
 	const isLoggedIn = typeof token === "string" || false;
 	const { setMessage } = useMessageReflectStore();
 	const { fadeIn } = useMessageAlertStore();
@@ -23,12 +23,14 @@ export default function ChatConnect() {
 			isGroup: isLoggedIn,
 		}
 	});
+	
 	const connectRooms = () => {
 		if (!client.connected) return;
 		data?.getRoomsGroupChat?.forEach((room : string) => {
 			if (!room) return;
+			if (subscriptions[room]) return;
+			
 			addSubscription(room, client.subscribe(`/chat/messages/${room}`, (message) => {
-				console.log(message)
 				const messageData = JSON.parse(message.body);
 				setMessage(messageData);
 				fadeIn(
@@ -40,12 +42,14 @@ export default function ChatConnect() {
 			}));
 		});
 	}
+	
 	useSocketConnect();
+	
 	useEffect(() => {
 		if(data?.getRoomsGroupChat){
-			console.log("data : ", data);
 			connectRooms();
 		}
 	}, [data?.getRoomsGroupChat, client.connected]);
+	
 	return null;
 }

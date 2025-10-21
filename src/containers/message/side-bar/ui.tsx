@@ -24,6 +24,8 @@ export default function MessageSideBar() {
 	const size = 10;
 	const page = useMessagePageStore((s) => s.page);
 	const setPage = useMessagePageStore((s) => s.setPage);
+	const roomDataList = useMessagePageStore((s) => s.roomDataList);
+	const setRoomDataList = useMessagePageStore((s) => s.setRoomDataList);
 
 	const { data, loading, fetchMore } = useQuery(MessageQueries.GET_ROOMS_CHAT_LIST, {
 		variables: { page, size },
@@ -39,7 +41,6 @@ export default function MessageSideBar() {
 	
 	useLoadingEffect(loading)
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
-	const [roomDataList, setRoomDataList] = useState<RoomReadResponseDto[]>(data?.getRooms || []);
 	
 	const router = useRouter();
 	const {setValues: setHeader} = useMessageHeaderStore()
@@ -114,49 +115,45 @@ export default function MessageSideBar() {
 	
 	useEffect(() => {
 		if (data?.getRooms && data.getRooms.length > 0) {
-			setRoomDataList((prev) => {
-				const merged = [...prev, ...data.getRooms];
-				
-				const unique = merged.reduceRight((acc, cur) => {
-					if (!acc.some((r : RoomReadResponseDto) => r.roomDto.name === cur.roomDto.name)) {
-						acc.push(cur);
-					}
-					return acc;
-				}, [] as typeof merged);
-				
-				return unique.reverse();
-			});
+			const merged = [...roomDataList, ...data.getRooms];
+			
+			const unique = merged.reduceRight((acc, cur) => {
+				if (!acc.some((r : RoomReadResponseDto) => r.roomDto.name === cur.roomDto.name)) {
+					acc.push(cur);
+				}
+				return acc;
+			}, [] as typeof merged);
+			
+			setRoomDataList(unique.reverse());
 		}
 	}, [data?.getRooms]);
 	
 	useEffect(() => {
 		if (isOpen && chatRoomId) {
-			setRoomDataList((prev) => {
-				const roomExists = prev.some(room => room.roomDto.id === chatRoomId);
-				const next = roomExists
-					? prev
-					: [
-						{
-							latestMessage: "",
-							latestCreatedAt: "",
-							roomDto: {
-								name: chatRoomName,
-								id: chatRoomId,
-								profile: chatProfile,
-								memberCount : 0
-							},
+			const roomExists = roomDataList.some(room => room.roomDto.id === chatRoomId);
+			const next = roomExists
+				? roomDataList
+				: [
+					{
+						latestMessage: "",
+						latestCreatedAt: "",
+						roomDto: {
+							name: chatRoomName,
+							id: chatRoomId,
+							profile: chatProfile,
+							memberCount : 0
 						},
-						...prev,
-					];
-				const unique = next.reduceRight((acc, cur) => {
-					if (!acc.some(r => r.roomDto.name === cur.roomDto.name)) {
-						acc.push(cur);
-					}
-					return acc;
-				}, [] as typeof next);
-				
-				return unique.reverse();
-			});
+					},
+					...roomDataList,
+				];
+			const unique = next.reduceRight((acc, cur) => {
+				if (!acc.some(r => r.roomDto.name === cur.roomDto.name)) {
+					acc.push(cur);
+				}
+				return acc;
+			}, [] as typeof next);
+			
+			setRoomDataList(unique.reverse());
 			
 			setDmRoom({
 				isOpen: false,

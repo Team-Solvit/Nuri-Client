@@ -70,10 +70,11 @@ export default function MessageContent() {
 		const newSetMessage: ChatMessage = {
 			roomId: newMessageReflect.roomId,
 			contents: newMessageReflect.contents,
+			replyChat : newMessageReflect.replyChat,
 			id: newMessageReflect.id,
 			sender: {
-				name: newMessageReflect.userId,
-				profile: newMessageReflect.picture,
+				name: newMessageReflect.sender.name,
+				profile: newMessageReflect.sender.profile,
 			},
 			createdAt: formatKoreanDateTime(newMessageReflect.sendAt)
 		};

@@ -5,7 +5,7 @@ import * as S from "./style"
 import Image from "next/image"
 import EllipsisIcon from '@/assets/post/ellipsis.svg';
 import StateModal from "@/components/layout/stateModal";
-import {useParams, useRouter} from "next/navigation";
+import {useParams} from "next/navigation";
 import Square from "@/components/ui/button/square";
 import AdditionRoom from "@/containers/message/additionRoom/ui";
 import {MessageService} from "@/services/message";
@@ -14,6 +14,8 @@ import {useAlertStore} from "@/store/alert";
 import {useMessageHeaderStore} from "@/store/messageHeader";
 import {imageCheck} from "@/utils/imageCheck";
 import {useMessagePageStore} from "@/store/messagePage";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {useLoadingEffect} from "@/hooks/useLoading";
 
 interface FadeBoxProps {
 	onClose: () => void;
@@ -48,7 +50,8 @@ export const FadeBox = ({onClose, onInvite, onExit}: FadeBoxProps) => {
 export default function MessageHeaderUI() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [showExitConfirm, setShowExitConfirm] = useState(false);
-	const router = useRouter();
+	const navigate = useNavigationWithProgress()
+	const [isLoading, setIsLoading] = useState(false)
 	
 	const handleEllipsisClick = (e: React.MouseEvent) => {
 		e.stopPropagation();
@@ -71,16 +74,21 @@ export default function MessageHeaderUI() {
 	
 	const {success, error} = useAlertStore();
 	const page = useMessagePageStore(s => s.page);
+	const setRoomDataList = useMessagePageStore(s=>s.setRoomDataList)
 	
 	const confirmExit = async () => {
 		try {
-			await MessageService.exitChatRoom(apolloClient, roomId, page);
-			router.push('/message');
+			setIsLoading(true)
+			const res = await MessageService.exitChatRoom(apolloClient, roomId, page);
+			setRoomDataList(res.data.getRooms);
+			navigate('/message');
 			setShowExitConfirm(false);
 			success("대화방 나가기에 성공하였습니다.")
 		} catch (e) {
 			console.log(e)
 			error("대화방 나가기에 실패하였습니다.")
+		}finally {
+			setIsLoading(false)
 		}
 	};
 	
@@ -90,6 +98,7 @@ export default function MessageHeaderUI() {
 	const [isAddition, setIsAddition] = useState(false);
 	const iconRef = useRef<HTMLImageElement>(null);
 	
+	useLoadingEffect(isLoading)
 	const {chatProfile, chatRoomName, memberCount} = useMessageHeaderStore()
 	return (
 		<S.MessageHeaderContainer className="message-header">

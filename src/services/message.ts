@@ -113,19 +113,20 @@ export const MessageService = {
 		roomId: string,
 		page: number
 	) => {
-		console.log("refetch page:", page);
-		
-		return client.mutate({
+		// EXIT mutation 실행
+		await client.mutate({
 			mutation: MessageMutations.EXIT,
 			variables: { roomId },
-			refetchQueries: [
-				{
-					query: MessageQueries.GET_ROOMS_CHAT_LIST,
-					variables: { page: page ?? 0, size: 10 },
-				},
-			],
-			awaitRefetchQueries: true,
 		});
+
+		// GET_ROOMS_CHAT_LIST 쿼리 실행 후 결과 반환
+		const result = await client.query({
+			query: MessageQueries.GET_ROOMS_CHAT_LIST,
+			variables: { page: page ?? 0, size: 10 },
+			fetchPolicy: 'network-only', // 최신 데이터 가져오기
+		});
+
+		return result;
 	},
 	kickChatRoom: async (client: ApolloClient<any>, roomId: string, userId: string) => {
 		await client.mutate({

@@ -8,6 +8,7 @@ import { ChatMessageResponse } from "@/containers/message/message-content/type";
 import { useMessageAlertStore } from "@/store/messageAlert";
 import { useAlertStore } from "@/store/alert";
 import {useMessageConnectStore} from "@/store/messageConnect";
+import {useMessageHeaderStore} from "@/store/messageHeader";
 
 export default function useSocketConnect() {
 	const { userId, token: accessToken, clear } = useUserStore();
@@ -15,6 +16,7 @@ export default function useSocketConnect() {
 	const { fadeIn } = useMessageAlertStore();
 	const { success, error } = useAlertStore();
 	const { addSubscription, removeSubscription, clearSubscriptions} = useMessageConnectStore();
+	const {decrementMemberCount} = useMessageHeaderStore()
 	
 	useEffect(() => {
 		if (!userId || !accessToken) return;
@@ -27,10 +29,9 @@ export default function useSocketConnect() {
 			
 			addSubscription("user-message", client.subscribe(`/user/${userId}/messages`, (message) => {
 				const messageData: ChatMessageResponse = JSON.parse(message.body);
-				console.log("ddd",messageData)
 				fadeIn(
 					"https://storage.googleapis.com/ploytechcourse-version3/391b0b82-c522-4fd5-9a75-5a1488c21b7e",
-					messageData.userId,
+					messageData.sender.name,
 					messageData.contents,
 					messageData.sendAt
 				);
@@ -41,13 +42,12 @@ export default function useSocketConnect() {
 				try {
 					const subMessage = message.body.split(" ");
 					if (subMessage.length === 2 && subMessage[0] === "UNSUB") {
-						console.log("UNSUB", subMessage[1]);
 						removeSubscription(subMessage[1]);
 					}
 					if (subMessage.length === 2 && subMessage[0] === "SUB") {
-						console.log("SUB", subMessage[1]);
-						addSubscription(subMessage[1], client.subscribe(`/messages/${subMessage[1]}`, (msg) => {
+						addSubscription(subMessage[1], client.subscribe(`/chat/messages/${subMessage[1]}`, (msg) => {
 							const msgData = JSON.parse(msg.body);
+							console.log("msg그룹즈의 새로운 메시지", msgData)
 							setMessage(msgData);
 							fadeIn(
 								"https://storage.googleapis.com/ploytechcourse-version3/391b0b82-c522-4fd5-9a75-5a1488c21b7e",

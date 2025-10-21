@@ -358,7 +358,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 				>
 					{loading ?
 						"로딩중입니다" :
-						selectedUsers.length + type === "add" ? "명의 대화상대와 채팅방 만들기" : "명의 대화상대 초대하기"
+						selectedUsers.length + type === "add" ? "명의 대화상대와 채팅방 만들기" : `${selectedUsers.length}명의 대화상대 초대하기`
 					}
 				</S.ActionButton>
 			</S.Content>
