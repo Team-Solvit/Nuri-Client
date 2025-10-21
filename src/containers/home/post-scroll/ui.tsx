@@ -38,7 +38,7 @@ export default function PostScroll() {
 	useLoadingEffect(loading)
 	const posts = postData?.getPostList;
 	const { error } = useAlertStore();
-	const isFirstLoad = useRef(true);
+	const isFirstLoad = useRef(posts && posts?.length<3);
 	
 	const loadMore = async () => {
 		if (isFetchingMore || isDone) return;
@@ -56,7 +56,6 @@ export default function PostScroll() {
 				variables: { start: newPage },
 				updateQuery: (prev, { fetchMoreResult }) => {
 					if (!fetchMoreResult || fetchMoreResult.getPostList.length === 0) {
-						// 새로운 게시물이 아예 없을 경우
 						return prev;
 					}
 					
@@ -98,11 +97,15 @@ export default function PostScroll() {
 		);
 		if (node) observer.current.observe(node);
 	}, [loading, isFetchingMore, posts?.length]);
-
-	const {id : userId} = useUserStore()
-	function handleChatJoinTwoIds(id1:string, id2:string) {
-		const chatId = [id1, id2].sort().join(":");
-		navigateClick(`/chat/${chatId}`);
+	
+	const { userId: currentUserId } = useUserStore();
+	function handleChatJoinTwoIds(id1: string, id2: string) {
+		  if (!id1 || !id2 || id1 === id2) {
+			    error("채팅 대상을 확인해 주세요");
+			    return;
+			  }
+		  const chatId = [id1, id2].sort().join(":");
+		  navigateClick(`/chat/${chatId}`);
 	}
 	const handleMouseEnter = (id: number) => setHoverIndex(id);
 	const handleMouseLeave = () => setHoverIndex(null);
@@ -215,7 +218,7 @@ export default function PostScroll() {
 							<S.Nav onClick={(e) => e.stopPropagation()}>
 								<p>{postData.price ? "하숙집" : ""}</p>
 								<Square text={"채팅"} onClick={() => {
-									handleChatJoinTwoIds(userId ?? "", postData?.user?.userId ?? "")
+									handleChatJoinTwoIds(currentUserId ?? "", postData?.user?.userId ?? "")
 								}} status={true} width={"100px"}/>
 							</S.Nav>
 						</S.PostTitle>
