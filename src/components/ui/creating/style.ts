@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { colors, fontSizes, radius } from '@/styles/theme';
+import { colors, fontSizes } from '@/styles/theme';
 import { mq } from '@/styles/media';
 
 export const Overlay = styled.div`
@@ -12,7 +12,7 @@ export const Overlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 1000;
 `
 
 export const Image = styled.div`
@@ -71,13 +71,18 @@ export const Left = styled.div`
 export const Main = styled.div`
   display: flex;
   flex-direction: column;
-  padding:  1.5rem 0.5rem;
+  padding:  1.5rem 1rem 1.5rem 0.6rem;
+  width: 100%;
+
+  ${mq.mobile} {
+    padding:  1rem 1rem 1.5rem 0.6rem;
+  }
 `
 
 export const Modal = styled.div`
   background: #fff;
   min-width: 70vw;
-  min-height: 80vh;
+  max-height: 80vh;
   box-shadow: 0 4px 24px rgba(0,0,0,0.12);
   display: flex;
   gap: 1.5rem;
@@ -101,13 +106,18 @@ export const HeaderM = styled.div`
   }
 `
 
+export const Top = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`
+
 export const Header = styled.div`
   font-size: ${fontSizes.H3};
   font-weight: 600;
   margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
-  gap: 9rem;
 `
 
 export const Title = styled.h2`
@@ -184,6 +194,18 @@ export const Row = styled.div`
   gap: 1rem;
 `
 
+export const PublicSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`
+
+export const PublicTitle = styled.span`
+  font-size: ${fontSizes.Small};
+  color: ${colors.gray};
+  font-weight: 400;
+`
+
 
 export const ImageWrapper = styled.div`
   position: relative;
@@ -242,10 +264,11 @@ export const NextBtn = styled.button`
 export const CharCount = styled.div`
   font-size: ${fontSizes.Small};
   color: ${colors.gray};
-  margin-left: 19rem;
+  text-align: right;
+  margin-right: 1.1rem;
 
   ${mq.mobile} {
-    margin-left:  19rem;
+    margin-right: 0rem;
   }
 `
 
@@ -300,8 +323,6 @@ export const ToggleButton = styled.button`
 export const Dropdown = styled.div`
   position: absolute;
   top: 2rem;
-  left: 0.5rem;
-  width: 100px;
   background: white;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -325,13 +346,13 @@ export const PublicWrap = styled.div`
   position: relative;
   padding: 8px 12px;
   width: fit-content;
-  min-width: 120px;
   cursor: pointer;
 `
 
 export const PublicLabel = styled.span`
   white-space: nowrap;
   font-size: 14px;
+  color: ${colors.gray};
 `
 
 
@@ -347,7 +368,8 @@ export const ButtonRow = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 10rem;
+  margin-top: auto;
+  margin-right: 1rem;
 
   ${mq.mobile} {
     display: none;
@@ -398,5 +420,29 @@ export const AddMoreText = styled.span`
 
   ${mq.mobile} {
     font-size: 12px;
+  }
+`
+
+// 제목 입력 필드
+export const TitleInput = styled.input`
+  width: 100%;
+  border: none;
+  font-size: ${fontSizes.Body};
+  outline: none;
+  margin-top: 0.5rem;
+
+  &::placeholder {
+    color: ${colors.gray};
+    font-family: "SCoreDream", sans-serif;
+  }
+
+  &:focus {
+    border-color: ${colors.primary};
+  }
+
+  ${mq.mobile} {
+    margin-left: 0.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
   }
 `
