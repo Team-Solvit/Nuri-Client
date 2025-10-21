@@ -5,7 +5,6 @@ import * as S from './style';
 import Square from '@/components/ui/button/square';
 import Image from "next/image";
 import {useModalStore} from "@/store/modal";
-import {fakeData} from "./data";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import LeaveModal from "@/containers/myHouse/leave-modal/ui";
 import {useQuery} from "@apollo/client";
@@ -100,8 +99,7 @@ const HouseScroll = () => {
 				</S.InfoRow>
 				<S.InfoRow>
 					<S.InfoLabel>식사제공여부</S.InfoLabel>
-					<S.InfoValue>{fakeData.roomInfo.meal ? "제공" : "미제공"}</S.InfoValue>
-				</S.InfoRow>
+					<S.InfoValue>{boardingHouse?.isMealProvided ? "제공" : "미제공"}</S.InfoValue>				</S.InfoRow>
 				<S.InfoRow>
 					<S.InfoLabel>가까운 역</S.InfoLabel>
 					<S.InfoValue>{boardingHouse?.nearestStation}</S.InfoValue>

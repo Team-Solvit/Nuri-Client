@@ -44,8 +44,7 @@ export default function PostScroll() {
 	
 	const posts = postData?.getPostList;
 	const { error } = useAlertStore();
-	const isFirstLoad = useRef(posts && posts?.length<3);
-	
+	const isFirstLoad = useRef<boolean>((posts?.length ?? 0) < 3);
 	const loadMore = async () => {
 		if (isFetchingMore || isDone) return;
 		if (!postData?.getPostList) return;
@@ -58,6 +57,7 @@ export default function PostScroll() {
 		setPage(newPage);
 		
 		try {
+			const prevCount = posts?.length ?? 0;
 			const res = await fetchMore({
 				variables: { start: newPage },
 				updateQuery: (prev, { fetchMoreResult }) => {
@@ -77,9 +77,9 @@ export default function PostScroll() {
 				},
 			});
 			
-			const newPosts = res.data?.getPostList ?? [];
-			
-			if (newPosts.length === 0 || newPosts.length < 20 ) {
+			const totalCount = res.data?.getPostList?.length ?? prevCount;
+			const added = totalCount - prevCount;
+			if (added <= 0 || added < 20) {
 				setIsDone(true);
 				error("더 이상 불러올 게시물이 없습니다");
 			}
@@ -201,10 +201,10 @@ export default function PostScroll() {
 				
 				const profileSrc: string =
 					!user?.thumbnail
-						? "/post/default.png"
-						: /^https:\/\//.test(user?.thumbnail)
-							? user?.thumbnail
-							: process.env.NEXT_PUBLIC_IMAGE_URL + user?.thumbnail;
+					    ? "/post/default.png"
+						    : /^https?:\/\//.test(user.thumbnail)
+					      ? user.thumbnail
+						      : `${process.env.NEXT_PUBLIC_IMAGE_URL ?? ""}${user.thumbnail}`;
 
 				return (
 					<S.Post

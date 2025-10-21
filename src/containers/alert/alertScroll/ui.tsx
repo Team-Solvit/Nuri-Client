@@ -75,7 +75,7 @@ export const AlertBox = ({ alert }: { alert: AlertType }) => {
 			</S.Profile>
 			<S.Info>
 				<S.Title>{alert.content}</S.Title>
-				{formattedDate && <S.CreatedDate aria-hidden>{formattedDate}</S.CreatedDate>}
+				{formattedDate && <S.CreatedDate>{formattedDate}</S.CreatedDate>}
 			</S.Info>
 		</S.Alert>
 	);
