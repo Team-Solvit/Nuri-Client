@@ -30,13 +30,13 @@ export default function Login() {
 	const [id, setId] = useState("");
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
-
 	const [codeSent, setCodeSent] = useState(false);
+	
 	const client = useApollo();
 	const alertStore = useAlertStore();
 	const loginModal = useLoginModalStore();
 	const setAuth = useUserStore(s => s.setAuth);
-
+	
 	const {
 		loading: findLoading,
 		sendCode: handleSendCode,
@@ -44,7 +44,7 @@ export default function Login() {
 		changePassword: handleChangePassword,
 		ticket: findTicket,
 	} = usePasswordReset();
-
+	
 	const handleLogin = useCallback(async () => {
 		if (loading) return;
 		if (!id.trim() || !password.trim()) {
@@ -67,7 +67,7 @@ export default function Login() {
 			}
 			
 			localStorage.setItem('AT', headerToken);
-			setToken(headerToken)
+			
 			if (!user) {
 				throw new Error('로그인 유저 정보가 없습니다.');
 			}
@@ -102,13 +102,13 @@ export default function Login() {
 			sessionStorage.removeItem('oauth_provider');
 		}
 	}, [client, alertStore]);
-
+	
 	// sendCode 래핑해서 발송 후 codeSent true로
 	const handleSendCodeAndSet = useCallback(async (email: string) => {
 		await handleSendCode(email);
 		setCodeSent(true);
 	}, [handleSendCode]);
-
+	
 	// 인증 성공 시 codeSent false로 초기화
 	const handleVerifyCodeAndSet = useCallback(async (email: string, code: string) => {
 		const ok = await handleVerifyCode(email, code);
@@ -117,7 +117,7 @@ export default function Login() {
 			setCodeSent(false);
 		}
 	}, [handleVerifyCode]);
-
+	
 	return (
 		<Wrapper>
 			<Image src="/logo.svg" alt="로고" width={80} height={80} priority />
@@ -166,7 +166,6 @@ export default function Login() {
 					</SocialList>
 				</>
 			)}
-
 			{step === 'find-email' && (
 				<>
 					<FormGroup>
@@ -197,7 +196,6 @@ export default function Login() {
 					</FormGroup>
 				</>
 			)}
-
 			{step === 'find-reset' && (
 				<>
 					<FormGroup>
