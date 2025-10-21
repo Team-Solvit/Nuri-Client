@@ -14,6 +14,7 @@ import {useLoadingEffect} from "@/hooks/useLoading";
 import {useAlertStore} from "@/store/alert";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import {useUserStore} from "@/store/user";
+import PostScrollSkeleton from "@/components/ui/skeleton/PostScrollSkeleton";
 
 export default function PostScroll() {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null);
@@ -35,7 +36,12 @@ export default function PostScroll() {
 			notifyOnNetworkStatusChange: true
 		}
 	);
-	useLoadingEffect(loading)
+	
+	// 초기 로딩만 체크 (loadMore 시에는 스켈레톤 안보여주기)
+	const isInitialLoading = loading && !postData?.getPostList;
+	useLoadingEffect(isInitialLoading);
+	
+	
 	const posts = postData?.getPostList;
 	const { error } = useAlertStore();
 	const isFirstLoad = useRef(posts && posts?.length<3);
@@ -132,6 +138,11 @@ export default function PostScroll() {
 			return {...prev, [postId]: next};
 		});
 	};
+	
+	// 초기 로딩 중이면 스켈레톤 컴포넌트 렌더링
+	if (isInitialLoading) {
+		return <PostScrollSkeleton />;
+	}
 	return (
 		<S.PostScrollContainer>
 			{!loading && posts?.length === 0 && <p>생성된 게시물이 없습니다.</p>}

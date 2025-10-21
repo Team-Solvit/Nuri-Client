@@ -8,6 +8,7 @@ import { AlertType, RedirectType } from "@/types/alert";
 import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 import { useLoadingEffect } from "@/hooks/useLoading";
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import AlertScrollSkeleton from "@/components/ui/skeleton/AlertScrollSkeleton";
 
 export const AlertBox = ({ alert }: { alert: AlertType }) => {
 	const navigate = useNavigationWithProgress();
@@ -152,6 +153,11 @@ export default function AlertScroll() {
 		},
 		[loading, isFetchingMore, loadMore]
 	);
+	
+	// 로딩 중이면 스켈레톤 컴포넌트 렌더링
+	if (loading) {
+		return <AlertScrollSkeleton />;
+	}
 	
 	return (
 		<S.AlertScrollContainer>

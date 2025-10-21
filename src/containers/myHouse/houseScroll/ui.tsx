@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import * as S from './style';
 import Square from '@/components/ui/button/square';
 import Image from "next/image";
@@ -12,11 +12,15 @@ import {useQuery} from "@apollo/client";
 import {BoardingHouseQueries} from "@/services/boardingHouse";
 import {BoardingHouseType, BoardingRoomAndBoardersType} from "@/types/boardinghouse";
 import {useUpdateRoomNumber} from "@/store/updateRoomNumber";
+import {useLoadingEffect} from "@/hooks/useLoading";
+import HouseScrollSkeleton from "@/components/ui/skeleton/HouseScrollSkeleton";
+import {useAlertStore} from "@/store/alert";
 
 const HouseScroll = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	
 	const navigate = useNavigationWithProgress();
+	const {error} = useAlertStore();
 	
 	const [leaveInfo, setLeaveInfo] = useState([{
 		boarderName: "",
@@ -33,11 +37,22 @@ const HouseScroll = () => {
 		
 		setLeaveInfo(newBoarders)
 	}
-	const {data: boardingHouseInfo} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_INFO);
-	const {data: boardingHouseRooms, refetch} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOMS);
+	const {data: boardingHouseInfo, loading : boardingHouseInfoLoading} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_INFO);
+	const {data: boardingHouseRooms, refetch, loading : boardingHouseRoomsLoading} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOMS);
+	
+	const isLoading = boardingHouseRoomsLoading || boardingHouseInfoLoading;
+	useLoadingEffect(isLoading);
 	
 	const boardingHouse: BoardingHouseType = boardingHouseInfo?.getMyBoardingHouse;
 	const boardingHouseRoomsList: BoardingRoomAndBoardersType[] = boardingHouseRooms?.getBoardingRoomAndBoardersInfoList;
+	
+	// 로딩이 끝났는데 데이터가 없으면 에러 처리
+	useEffect(() => {
+		if (!isLoading && !boardingHouse) {
+			error("현재 하숙집이 설정되어있지 않습니다. 하숙집을 설정해주세요");
+			navigate("/setting/host");
+		}
+	}, [isLoading, boardingHouse, error, navigate]);
 	
 	const {setRoomNumber, setRefetch} = useUpdateRoomNumber()
 	const [roomId, setRoomId] = useState<string>("");
@@ -58,6 +73,10 @@ const HouseScroll = () => {
 			room.room?.name ?? "",
 			room.room?.roomId ?? ""
 		)
+	}
+	
+	if (isLoading) {
+		return <HouseScrollSkeleton />;
 	}
 	return (
 		<S.Container>
