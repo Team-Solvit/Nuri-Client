@@ -1,13 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { shimmer } from './animations';
-
-const SkeletonBase = styled.div`
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200px 100%;
-  animation: ${shimmer} 1.5s infinite;
-  border-radius: 4px;
-`;
+import { SkeletonBase } from './animations';
 
 const Container = styled.div`
   padding: 20px;
@@ -40,6 +33,8 @@ const InfoSectionSkeleton = styled.div`
 
 const InfoRowSkeleton = styled.div`
   display: flex;
+	width: 100%;
+	justify-content: space-between;
   gap: 20px;
   align-items: center;
 `;

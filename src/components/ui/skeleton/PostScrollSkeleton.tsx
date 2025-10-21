@@ -1,15 +1,8 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { shimmer } from './animations';
+import { SkeletonBase } from './animations';
 import { colors, radius } from "@/styles/theme";
 import { mq } from "@/styles/media";
-
-const SkeletonBase = styled.div`
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200px 100%;
-  animation: ${shimmer} 1.5s infinite;
-  border-radius: 4px;
-`;
 
 const Container = styled.section`
   display: flex;
