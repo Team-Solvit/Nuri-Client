@@ -21,6 +21,7 @@ export function usePostDetail(id: string) {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
+  const [likeLoading, setLikeLoading] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -52,18 +53,27 @@ export function usePostDetail(id: string) {
   }, [postInfo]);
 
   const handleLikeToggle = async () => {
-    if (!postInfo) return;
+    if (!postInfo || likeLoading) return;
+
+    setLikeLoading(true);
+    const previousIsLiked = isLiked;
+    const previousLikeCount = likeCount;
+
+    if (isLiked) {
+      setLikeCount((prev) => prev - 1);
+      setIsLiked(false);
+    } else {
+      setLikeCount((prev) => prev + 1);
+      setIsLiked(true);
+    }
+
     try {
-      await PostDetailService.toggleLike(client, postInfo, isLiked);
-      if (isLiked) {
-        setLikeCount((prev) => prev - 1);
-        setIsLiked(false);
-      } else {
-        setLikeCount((prev) => prev + 1);
-        setIsLiked(true);
-      }
-    } catch (e) {
-      console.error("좋아요 처리 중 오류:", e);
+      await PostDetailService.toggleLike(client, postInfo, previousIsLiked);
+    } catch {
+      setIsLiked(previousIsLiked);
+      setLikeCount(previousLikeCount);
+    } finally {
+      setLikeLoading(false);
     }
   };
 
@@ -80,8 +90,7 @@ export function usePostDetail(id: string) {
       await PostDetailService.deletePost(client, postToDelete);
       success("게시물이 삭제되었습니다.");
       router.back();
-    } catch (e) {
-      console.error("게시물 삭제 실패:", e);
+    } catch {
       error("게시물 삭제에 실패했습니다.");
     } finally {
       setPostToDelete(null);
