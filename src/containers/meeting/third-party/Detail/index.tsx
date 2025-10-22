@@ -161,6 +161,7 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
       }, 1000);
 
     } catch (error) {
+      console.error('일정 수정 실패:', error);
       showAlert('일정 수정에 실패했습니다.');
     } finally {
       setUpdating(false);

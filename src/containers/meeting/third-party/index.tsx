@@ -54,6 +54,7 @@ export default function MeetingThirdPartyContainer() {
       try {
         groupStatus = await GroupService.getGroupStatus(client);
       } catch (err) {
+        console.error('그룹 상태 조회 실패:', err);
         groupStatus = null;
       }
 
@@ -67,6 +68,7 @@ export default function MeetingThirdPartyContainer() {
         return;
       }
     } catch (err) {
+      console.error('그룹 정보 로드 실패:', err);
       error('그룹 정보를 불러올 수 없습니다.');
       setHasGroup(false);
     } finally {
@@ -87,6 +89,7 @@ export default function MeetingThirdPartyContainer() {
       setPastSchedules(past);
 
     } catch (err) {
+      console.error('일정 정보 로드 실패:', err);
       error('일정 정보를 불러올 수 없습니다.');
     }
   };
@@ -156,6 +159,7 @@ export default function MeetingThirdPartyContainer() {
       success('모임이 삭제되었습니다.');
       router.push('/meeting/third-party/create');
     } catch (err) {
+      console.error('모임 삭제 실패:', err);
       error('모임 삭제에 실패했습니다.');
     }
   };

@@ -30,11 +30,8 @@ export default function CreateModal({
   // 모임 생성 관련 상태
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
-  const [groupIntroduce, setGroupIntroduce] = useState("");
   const [maxParticipation, setMaxParticipation] = useState(10);
   const [area, setArea] = useState("부산광역시 부산진구");
-  const [latitude, setLatitude] = useState(35.1595);
-  const [longitude, setLongitude] = useState(129.0756);
 
   // 일정 생성 관련 상태 (기존)
   const [scheduleName, setScheduleName] = useState("");
@@ -62,8 +59,8 @@ export default function CreateModal({
         description: groupDescription,
         position: {
           area,
-          latitude,
-          longitude
+          latitude: 35.1796,
+          longitude: 129.0756
         },
         maxParticipation
       };
