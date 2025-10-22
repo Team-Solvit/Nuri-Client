@@ -249,10 +249,10 @@ export default function MeetingThirdPartyContainer() {
           </div>
         )}
       </S.Section>
-      {isOpenList && (
+      {isOpenList && currentGroup && (
         <Modal>
           <MemberModal
-            groupId={currentGroup?.groupId}
+            groupId={currentGroup.groupId}
             onDone={handleMemberModalClose}
           />
         </Modal>
