@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useState, useRef, useEffect} from "react"
+import React, {useState, useRef, useEffect, useMemo} from "react"
 import * as S from "./style"
 import Image from "next/image"
 import EllipsisIcon from '@/assets/post/ellipsis.svg';
@@ -8,7 +8,7 @@ import StateModal from "@/components/layout/stateModal";
 import {useParams} from "next/navigation";
 import Square from "@/components/ui/button/square";
 import AdditionRoom from "@/containers/message/additionRoom/ui";
-import {MessageService} from "@/services/message";
+import {MessageService, MessageQueries} from "@/services/message";
 import {useApollo} from "@/lib/apolloClient";
 import {useAlertStore} from "@/store/alert";
 import {useMessageHeaderStore} from "@/store/messageHeader";
@@ -16,6 +16,7 @@ import {imageCheck} from "@/utils/imageCheck";
 import {useMessagePageStore} from "@/store/messagePage";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import {useLoadingEffect} from "@/hooks/useLoading";
+import {useQuery} from "@apollo/client";
 
 interface FadeBoxProps {
 	onClose: () => void;
@@ -50,8 +51,47 @@ export const FadeBox = ({onClose, onInvite, onExit}: FadeBoxProps) => {
 export default function MessageHeaderUI() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [showExitConfirm, setShowExitConfirm] = useState(false);
+	const [showMemberList, setShowMemberList] = useState(false);
 	const navigate = useNavigationWithProgress()
 	const [isLoading, setIsLoading] = useState(false)
+	
+	const params = useParams();
+	const roomId = typeof params.id === 'string' ? params.id : params.id?.[0] ?? '';
+	
+	// GET_ROOM_MEMBER 쿼리를 사용하여 실제 멤버 수 가져오기
+	const {data: roomMemberData} = useQuery(MessageQueries.GET_ROOM_MEMBER, {
+		variables: { roomId },
+		skip: !roomId,
+	});
+	
+	const memberIds = useMemo(() => {
+		return roomMemberData?.getUserIds || [];
+	}, [roomMemberData?.getUserIds]);
+	
+	
+	const memberListRef = useRef<HTMLDivElement>(null);
+	
+	// 멤버 목록 외부 클릭 시 닫기
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (memberListRef.current && !memberListRef.current.contains(event.target as Node)) {
+				setShowMemberList(false);
+			}
+		};
+		
+		if (showMemberList) {
+			document.addEventListener('mousedown', handleClickOutside);
+		}
+		
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [showMemberList]);
+	
+	const handleMemberCountClick = (e: React.MouseEvent) => {
+		e.stopPropagation();
+		setShowMemberList(!showMemberList);
+	};
 	
 	const handleEllipsisClick = (e: React.MouseEvent) => {
 		e.stopPropagation();
@@ -68,13 +108,12 @@ export default function MessageHeaderUI() {
 		setShowExitConfirm(true);
 	};
 	
-	const apolloClient = useApollo()
-	const params = useParams();
-	const roomId = typeof params.id === 'string' ? params.id : params.id?.[0] ?? '';
+	const apolloClient = useApollo();
 	
 	const {success, error} = useAlertStore();
 	const page = useMessagePageStore(s => s.page);
 	const setRoomDataList = useMessagePageStore(s=>s.setRoomDataList)
+	const memberCount = useMessageHeaderStore(s=>s.memberCount)
 	
 	const confirmExit = async () => {
 		try {
@@ -99,24 +138,35 @@ export default function MessageHeaderUI() {
 	const iconRef = useRef<HTMLImageElement>(null);
 	
 	useLoadingEffect(isLoading)
-	const {chatProfile, chatRoomName, memberCount} = useMessageHeaderStore()
+	const {chatProfile, chatRoomName} = useMessageHeaderStore()
 	return (
 		<S.MessageHeaderContainer className="message-header">
 			<S.ProfileBox>
 				<S.Profile>
 					<Image src={imageCheck(chatProfile || "") || "/post/default.png"} alt="message" fill priority/>
 				</S.Profile>
-				<p>
-					{chatRoomName}
-					{memberCount && memberCount > 2 && (
-						<S.MemberCount aria-hidden>
-							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-								<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
-							</svg>
-							<span>{memberCount}명</span>
-						</S.MemberCount>
+				<div style={{ position: 'relative' }}>
+					<p>
+						{chatRoomName}
+						{memberCount > 2 && (
+							<S.MemberCount onClick={handleMemberCountClick}>
+								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+								</svg>
+								<span>{memberCount}명</span>
+							</S.MemberCount>
+						)}
+					</p>
+					{showMemberList && memberCount > 2 && (
+						<S.MemberListContainer ref={memberListRef}>
+							{memberIds.map((memberId: string, index: number) => (
+								<S.MemberItem key={index}>
+									{memberId}
+								</S.MemberItem>
+							))}
+						</S.MemberListContainer>
 					)}
-				</p>
+				</div>
 			</S.ProfileBox>
 			<S.EllipsisIconBox ref={iconRef} onClick={handleEllipsisClick}>
 				<Image
@@ -137,6 +187,7 @@ export default function MessageHeaderUI() {
 					setIsAddition={setIsAddition}
 					iconRef={iconRef as React.RefObject<HTMLImageElement>}
 					type={"update"}
+					existingMembers={memberIds}
 				/>
 				{showExitConfirm && (
 					<StateModal close={cancelExit} isOpen={showExitConfirm}>

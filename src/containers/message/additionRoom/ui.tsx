@@ -25,11 +25,12 @@ interface User {
 	profile: string;
 }
 
-export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}: {
+export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, existingMembers = []}: {
 	isAddition: boolean;
 	setIsAddition: (value: boolean) => void;
 	iconRef: React.RefObject<HTMLImageElement>;
-	type: "add" | "update"
+	type: "add" | "update";
+	existingMembers?: string[];
 }) {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
@@ -54,9 +55,15 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type}:
 			skip: !debouncedTerm,
 		}
 	);
+	
 	useEffect(() => {
-		setUsers(searchUserResult?.queryUsers || []);
-	}, [searchUserResult]);
+		const searchResults = searchUserResult?.queryUsers || [];
+		// 이미 초대된 멤버들을 검색 결과에서 제외
+		const filteredUsers = searchResults.filter((user: User) =>
+			!existingMembers.includes(user.userId)
+		);
+		setUsers(filteredUsers);
+	}, [searchUserResult, existingMembers.join(',')]); // 배열을 문자열로 변환하여 안정적인 의존성 만들기
 	
 	// Close dropdown when clicking outside
 	useEffect(() => {

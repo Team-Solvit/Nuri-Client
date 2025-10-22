@@ -158,12 +158,59 @@ export const ConfirmButton = styled(CancelButton)`
 export const MemberCount = styled.span`
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-left: 8px;
-  font-size: 12px;
-  color: #444;
-  background: #f1f3f5;
-  padding: 4px 8px;
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background-color: ${colors.line};
   border-radius: 12px;
-  svg { display: block; color: #666; }
+  font-size: 12px;
+  color: ${colors.text};
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: ${colors.primary}20;
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+`;
+
+export const MemberListContainer = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid ${colors.line};
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: ${zIndex.modal};
+  max-height: 200px;
+  overflow-y: auto;
+`;
+
+export const MemberListHeader = styled.div`
+  padding: 12px 16px;
+  border-bottom: 1px solid ${colors.line};
+  font-weight: 600;
+  font-size: 14px;
+  color: ${colors.text};
+`;
+
+export const MemberItem = styled.div`
+  padding: 8px 16px;
+  border-bottom: 1px solid ${colors.line};
+  font-size: 14px;
+  color: ${colors.text};
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  &:hover {
+    background-color: ${colors.background};
+  }
 `;

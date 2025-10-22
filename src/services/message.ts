@@ -2,6 +2,11 @@ import {ApolloClient, gql} from "@apollo/client";
 import {RoomCreateRequestDto, RoomInviteRequestDto} from "@/types/message";
 
 export const MessageQueries = {
+	GET_ROOM_MEMBER:gql`
+		query getUserIds($roomId: String!) {
+			getUserIds(roomId: $roomId)
+		}
+	`,
 	GET_ROOMS_CHAT_LIST: gql`
     query GetRooms($page: Int!, $size: Int!) {
       getRooms(page: $page, size: $size) {
