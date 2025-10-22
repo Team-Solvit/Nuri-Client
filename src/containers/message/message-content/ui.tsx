@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as S from "./style"
@@ -158,6 +157,32 @@ export default function MessageContent() {
 						messages[idx - 1].sender.name !== msg.sender.name;
 					
 					const renderMessageBody = () => {
+						// 입장/퇴장 메시지 체크
+						if (msg.sender.name === "nuri") {
+							// 입장 메시지 처리 (join: [usernames...])
+							const joinMatch = msg.contents.match(/\[([^\]]+)\]\s*join/i);
+							if (joinMatch) {
+								const joinedUsers = joinMatch[1]
+									.split(',')
+									.map(user => user.trim());
+								
+								const joinedText = `${joinedUsers.join('님, ')}님이 들어왔습니다.`;
+								
+								return <S.SystemMessage>{joinedText}</S.SystemMessage>;
+							}
+							
+							// 퇴장 메시지 처리 (username exit)
+							const exitMatch = msg.contents.match(/^(\w+)\s+exit$/);
+							if (exitMatch) {
+								const exitedUser = exitMatch[1];
+								return (
+									<S.SystemMessage>
+										{exitedUser}님이 나갔습니다.
+									</S.SystemMessage>
+								);
+							}
+						}
+						
 						const request = messageRequestCheck(msg.contents)
 						if (request && request.type === "contract") {
 							return (
@@ -220,6 +245,17 @@ export default function MessageContent() {
 					const regex = /^https:\/\/cdn\.solvit-nuri\.com\/file\/[0-9a-fA-F-]{36}$/;
 					const request = messageRequestCheck(msg.contents)
 					const isValid = request?.type !== "roomTour" && request?.type !== "contract" && !regex?.test(msg.contents);
+					
+					// nuri 메시지인 경우 시스템 메시지로만 표시 (프로필 없이)
+					if (msg.sender.name === "nuri") {
+						return (
+							<div key={msg.id}>
+								{showDate && <S.DateDivider>{msg.createdAt.date} {msg.createdAt.time}</S.DateDivider>}
+								{renderMessageBody()}
+							</div>
+						);
+					}
+					
 					return (
 						<div key={msg.id}>
 							{showDate && <S.DateDivider>{msg.createdAt.date} {msg.createdAt.time}</S.DateDivider>}

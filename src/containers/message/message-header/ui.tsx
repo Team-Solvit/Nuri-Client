@@ -17,6 +17,7 @@ import {useMessagePageStore} from "@/store/messagePage";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import {useLoadingEffect} from "@/hooks/useLoading";
 import {useQuery} from "@apollo/client";
+import {useMessageReflectStore} from "@/store/messageReflect";
 
 interface FadeBoxProps {
 	onClose: () => void;
@@ -59,15 +60,25 @@ export default function MessageHeaderUI() {
 	const roomId = typeof params.id === 'string' ? params.id : params.id?.[0] ?? '';
 	
 	// GET_ROOM_MEMBER 쿼리를 사용하여 실제 멤버 수 가져오기
-	const {data: roomMemberData} = useQuery(MessageQueries.GET_ROOM_MEMBER, {
+	const {data: roomMemberData, refetch} = useQuery(MessageQueries.GET_ROOM_MEMBER, {
 		variables: { roomId },
 		skip: !roomId,
 	});
+	const {message} = useMessageReflectStore()
 	
 	const memberIds = useMemo(() => {
 		return roomMemberData?.getUserIds || [];
 	}, [roomMemberData?.getUserIds]);
 	
+	useEffect(() => {
+		if (!message || !refetch) return;
+		
+		const exitMatch = message.contents?.match(/^(\w+)\s+exit$/);
+		if (exitMatch) {
+			console.log("Exit message detected in header, refetching members");
+			refetch();
+		}
+	}, [message, refetch]);
 	
 	const memberListRef = useRef<HTMLDivElement>(null);
 	
@@ -92,28 +103,27 @@ export default function MessageHeaderUI() {
 		e.stopPropagation();
 		setShowMemberList(!showMemberList);
 	};
+	// 채팅방 멤버 초대
+	const handleInvite = () => {
+		setIsAddition(true);
+		setIsMenuOpen(false);
+	};
+	
+	// 채팅방 나가기
+	const handleExitClick = () => {
+		setIsMenuOpen(false);
+		setShowExitConfirm(true);
+	};
+	
 	
 	const handleEllipsisClick = (e: React.MouseEvent) => {
 		e.stopPropagation();
 		setIsMenuOpen(!isMenuOpen);
 	};
 	
-	const handleInvite = () => {
-		setIsAddition(true);
-		setIsMenuOpen(false);
+	const handleMemberClick = (memberId: string) => {
+		navigate(`/profile/${memberId}`);
 	};
-	
-	const handleExitClick = () => {
-		setIsMenuOpen(false);
-		setShowExitConfirm(true);
-	};
-	
-	const apolloClient = useApollo();
-	
-	const {success, error} = useAlertStore();
-	const page = useMessagePageStore(s => s.page);
-	const setRoomDataList = useMessagePageStore(s=>s.setRoomDataList)
-	const memberCount = useMessageHeaderStore(s=>s.memberCount)
 	
 	const confirmExit = async () => {
 		try {
@@ -134,6 +144,13 @@ export default function MessageHeaderUI() {
 	const cancelExit = () => {
 		setShowExitConfirm(false);
 	};
+	
+	const apolloClient = useApollo();
+	
+	const {success, error} = useAlertStore();
+	const page = useMessagePageStore(s => s.page);
+	const setRoomDataList = useMessagePageStore(s=>s.setRoomDataList)
+	const memberCount = useMessageHeaderStore(s=>s.memberCount)
 	const [isAddition, setIsAddition] = useState(false);
 	const iconRef = useRef<HTMLImageElement>(null);
 	
@@ -153,14 +170,17 @@ export default function MessageHeaderUI() {
 								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 									<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
 								</svg>
-								<span>{memberCount}명</span>
+								<span>{memberIds?.length}명</span>
 							</S.MemberCount>
 						)}
 					</p>
 					{showMemberList && memberCount > 2 && (
 						<S.MemberListContainer ref={memberListRef}>
 							{memberIds.map((memberId: string, index: number) => (
-								<S.MemberItem key={index}>
+								<S.MemberItem
+									key={index}
+									onClick={()=>handleMemberClick(memberId)}
+								>
 									{memberId}
 								</S.MemberItem>
 							))}
@@ -188,6 +208,7 @@ export default function MessageHeaderUI() {
 					iconRef={iconRef as React.RefObject<HTMLImageElement>}
 					type={"update"}
 					existingMembers={memberIds}
+					refetchMembers={refetch}
 				/>
 				{showExitConfirm && (
 					<StateModal close={cancelExit} isOpen={showExitConfirm}>

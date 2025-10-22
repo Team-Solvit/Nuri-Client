@@ -202,6 +202,7 @@ export const MemberListHeader = styled.div`
 
 export const MemberItem = styled.div`
   padding: 8px 16px;
+	cursor: pointer;
   border-bottom: 1px solid ${colors.line};
   font-size: 14px;
   color: ${colors.text};

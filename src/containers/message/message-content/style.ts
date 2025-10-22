@@ -51,8 +51,7 @@ export const DateDivider = styled.div`
     content: "";
     flex: 1;
     height: 1px;
-    background: ${colors.line};
-    opacity: 0.7;
+    background-color: ${colors.line};
   }
 `;
 
@@ -172,4 +171,17 @@ export const ReplyPreviewCloseBtn = styled.button`
   padding: 0;
   display: flex;
   align-items: center;
+`;
+
+export const SystemMessage = styled.div`
+  width: 100%;
+  text-align: center;
+  color: ${colors.gray};
+  font-size: ${fontSizes.Body};
+  font-weight: 400;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0;
+  background-color: ${colors.background};
+  border-radius: ${radius.sm};
+  line-height: 1.4;
 `;

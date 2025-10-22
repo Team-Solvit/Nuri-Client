@@ -25,12 +25,13 @@ interface User {
 	profile: string;
 }
 
-export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, existingMembers = []}: {
+export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, existingMembers = [], refetchMembers}: {
 	isAddition: boolean;
 	setIsAddition: (value: boolean) => void;
 	iconRef: React.RefObject<HTMLImageElement>;
 	type: "add" | "update";
 	existingMembers?: string[];
+	refetchMembers?: () => void;
 }) {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
@@ -119,6 +120,10 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 				inviteSuccess
 			)
 			success("채팅방 초대에 성공하였습니다.")
+			// 초대 완료 후 멤버 목록 refetch
+			if (refetchMembers) {
+				refetchMembers();
+			}
 			handleClose();
 		} catch (e) {
 			console.log(e)
@@ -160,6 +165,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 					addSubscription(roomId,
 						client.subscribe(`/chat/messages/${roomId}`, (msg) => {
 							const msgData = JSON.parse(msg.body);
+							console.log(msgData)
 							setMessage(msgData);
 							fadeIn(
 								"https://storage.googleapis.com/ploytechcourse-version3/391b0b82-c522-4fd5-9a75-5a1488c21b7e",

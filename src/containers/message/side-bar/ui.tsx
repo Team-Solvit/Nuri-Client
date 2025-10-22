@@ -228,6 +228,41 @@ export default function MessageSideBar() {
 			>
 				{(searchResults ?? roomDataList) && (searchResults ?? roomDataList)!.map((room, index) => {
 					const isActive = decodeURIComponent(params.id as string) === room.roomDto.id || changeParamsId(params.id as string) === room.roomDto.id;
+					
+					// 최신 메시지 처리 함수
+					const getLatestMessageDisplay = (message: string) => {
+						// 이미지 메시지 체크
+						if (message?.startsWith(IMAGE_BASE || "")) {
+							return "이미지";
+						}
+						
+						// 계약 메시지 체크
+						if (messageRequestCheck(message || "")) {
+							return "계약";
+						}
+						
+						// 입장 메시지 처리 ([id1, id2] join)
+						const joinMatch = message?.match(/\[([^\]]+)\]\s*join/i);
+						if (joinMatch) {
+							const joinedUsers = joinMatch[1].split(',').map(user => user.trim());
+							if (joinedUsers.length === 1) {
+								return `${joinedUsers[0]}님이 들어왔습니다`;
+							} else {
+								return `${joinedUsers.join(', ')}님이 들어왔습니다`;
+							}
+						}
+						
+						// 퇴장 메시지 처리 (id1 exit)
+						const exitMatch = message?.match(/^(\w+)\s+exit$/);
+						if (exitMatch) {
+							const exitedUser = exitMatch[1];
+							return `${exitedUser}님이 나갔습니다`;
+						}
+						
+						// 일반 메시지
+						return message;
+					};
+					
 					return (
 						<S.ChatBox
 							/* 검색 중일 때는 무한스크롤(마지막 요소 관찰)을 비활성화 */
@@ -243,14 +278,14 @@ export default function MessageSideBar() {
 								<h4>
 									{room.roomDto.name}
 								</h4>
-								<p>{room.latestMessage?.startsWith(IMAGE_BASE || "") ? "이미지" : messageRequestCheck(room?.latestMessage || "") ? "계약" : room.latestMessage}</p>
+								<p>{getLatestMessageDisplay(room.latestMessage)}</p>
 							</S.Info>
 						</S.ChatBox>
 					)
 				})}
 				{/* 검색 결과가 없을 때 메시지 표시 */}
-				{searchResults && searchResults.length === 0 && <p>검색 결과가 없습니다</p>}
-				{isDone && !searchResults && roomDataList?.length === 0 && <p>채팅방이 없습니다</p>}
+				{searchResults && searchResults.length === 0 && <S.NoText>검색 결과가 없습니다</S.NoText>}
+				{isDone && !searchResults && roomDataList?.length === 0 && <S.NoText>채팅방이 없습니다</S.NoText>}
 			</S.CategoryList>
 		</S.MessageContainer>
 	)

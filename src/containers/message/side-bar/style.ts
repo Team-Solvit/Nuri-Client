@@ -116,22 +116,6 @@ export const CategoryList = styled.div`
   -ms-overflow-style: none;
 `
 
-
-export const MemberCount = styled.span`
-  position: absolute;
-  top: 10px;
-  right: 16px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: #444;
-  background: #f1f3f5;
-  padding: 4px 8px;
-  border-radius: 14px;
-  line-height: 1;
-  svg {
-    display: block;
-    color: #666;
-  }
-`;
+export const NoText = styled.p`
+padding: 0 1rem;
+`
