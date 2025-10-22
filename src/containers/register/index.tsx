@@ -173,7 +173,7 @@ export default function RegisterContainer() {
 								current={idx === currentStep}
 							>
 								{visibleCompletedSteps.includes(idx)
-									? <Image src="icons/check.svg" alt="완료" width={18} height={18} />
+									? <Image src="/icons/check.svg" alt="완료" width={18} height={18} />
 									: idx + 1}
 							</S.StepCircle>
 							<S.StepLabel
@@ -193,9 +193,6 @@ export default function RegisterContainer() {
 			<S.Content>
 				{renderStepContent()}
 				<S.ButtonGroup>
-					{currentStep === 0 && (
-						<Square text='돌아가기' onClick={() => router.back()} status={false} width="100%" />
-					)}
 					<Square
 						text={currentStep === effectiveSteps.length - 1 ? (loading ? '가입 중...' : '가입완료') : '다음'}
 						onClick={handleNext}
