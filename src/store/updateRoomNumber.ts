@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 interface UpdateRoomNumber {
 	roomNumber: string | null;
@@ -8,10 +9,21 @@ interface UpdateRoomNumber {
 	setRefetch: (fn: () => void) => void;
 }
 
-export const useUpdateRoomNumber = create<UpdateRoomNumber>((set) => ({
-	roomNumber: null,
-	setRoomNumber: (num: string) => set({ roomNumber: num }),
-	
-	refetch: null,
-	setRefetch: (fn: () => void) => set({ refetch: fn }),
-}));
+export const useUpdateRoomNumber = create<UpdateRoomNumber>()(
+	persist(
+		(set) => ({
+			roomNumber: null,
+			setRoomNumber: (num: string) => set({ roomNumber: num }),
+			
+			refetch: null,
+			setRefetch: (fn: () => void) => set({ refetch: fn }),
+		}),
+		{
+			name: 'room-storage',
+			storage: createJSONStorage(() => sessionStorage), // ✅ 세션스토리지 사용
+			partialize: (state) => ({
+				roomNumber: state.roomNumber,
+			}),
+		}
+	)
+);

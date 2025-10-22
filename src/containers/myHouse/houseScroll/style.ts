@@ -37,6 +37,10 @@ export const Title = styled.h1`
   font-size: ${fontSizes.H2};
   color: ${colors.text};
   text-align: center;
+	
+	${mq.mobile} {
+		font-size: ${fontSizes.H3};
+	}
 `;
 
 export const Setting = styled.button`
@@ -107,7 +111,6 @@ export const RoomList = styled.div`
   gap: 24px;
   margin-top: 16px;
 `;
-
 export const RoomCard = styled.div`
   display: grid;
   grid-template-columns: 1fr 2fr;
@@ -116,16 +119,19 @@ export const RoomCard = styled.div`
   border: 1px solid ${colors.line};
   width: 100%;
   padding: 16px;
-	transition: all 0.2s ease-in-out;
-	cursor: pointer;
-	&:hover{
-		background: ${colors.line2};
-	}
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+
+  &:hover {
+    background: ${colors.line2};
+  }
+
   ${mq.mobile} {
-    padding: 0;
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    padding: 0 1rem;
   }
 `;
-
 export const RoomHeader = styled.div`
   display: flex;
   width: 100%;
@@ -185,10 +191,6 @@ export const RoomImage = styled.div`
   margin-top: 8px;
   position: relative;
   overflow: hidden;
-
-  ${mq.mobile} {
-    display: none;
-  }
 `
 
 export const EmptyMessage = styled.div`

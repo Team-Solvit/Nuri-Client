@@ -203,12 +203,9 @@ export default function Addition(){
 			setIsLoading(false)
 		}
 	};
-	console.log(selectedFacilities)
-	console.log(selectedContracts)
-	console.log(contractOptions)
 	return (
 		<S.Container style={{ position: 'relative' }}>
-			<S.Title>방추가</S.Title>
+			<S.Title>{roomId ? "방수정" : "방추가"}</S.Title>
 			<S.Section>
 				<S.Label>사진 추가</S.Label>
 				<S.PhotoUploadList>
@@ -325,7 +322,7 @@ export default function Addition(){
 				<S.Label>시설</S.Label>
 				<S.FacilityWrap>
 					{FACILITY_CATEGORIES.map((cat, idx) => (
-						<div key={cat.label} style={{ width: '100%', marginTop: idx !== 0 ? 24 : 0 }}>
+						<div key={cat.label} style={{ width: '100%', marginTop: idx !== 0 ? 10 : 0 }}>
 							<S.FacilityCategory>
 								<label htmlFor={`cat-${idx}`}>{cat.label}</label>
 							</S.FacilityCategory>

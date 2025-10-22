@@ -36,15 +36,16 @@ export const AlertBox = ({ alert }: { alert: AlertType }) => {
 	
 	const handleMove = async () => {
 		await mutate();
+		console.log("alert", alert.redirectId)
 		switch (alert.redirectType) {
 			case RedirectType.POST_DETAIL:
 				navigate(`/post/${alert.redirectId}`);
 				break;
 			case RedirectType.MESSAGE:
-				navigate(`/message/${alert.redirectId}`);
+				navigate(`/message`);
 				break;
 			case RedirectType.GROUP:
-				navigate(`/meetings/${alert.redirectId}`);
+				navigate(`/meetings`);
 				break;
 			case RedirectType.USER:
 				navigate(`/profile/${alert.redirectId}`);
@@ -53,7 +54,7 @@ export const AlertBox = ({ alert }: { alert: AlertType }) => {
 				navigate(`/boarding/third-party`);
 				break;
 			case RedirectType.GROUP_MANAGE:
-				navigate(`/meeting/third-party/detail/${alert.redirectId}`);
+				navigate(`/meeting/third-party`);
 				break;
 			default:
 				navigate("/");
