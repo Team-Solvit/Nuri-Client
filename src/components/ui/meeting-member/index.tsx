@@ -1,5 +1,4 @@
 import * as S from "./style"
-import Profile from "@/assets/meeting/member-profile.png"
 import Image from "next/image"
 import Square from "@/components/ui/button/square";
 import React from "react";
@@ -37,12 +36,20 @@ export const MeetingMember = ({groupId}: { groupId: string }) => {
 	
 	const {userId} = useUserStore()
 	const {find} = useOtherMeetingFind()
+	
 	useLoadingEffect(loading)
 	return (
 		<S.MeetingMemberContainer>
 			{loading ?
 				 <p>불러오는 중 입니다....</p>
-				: meetingMember?.getGroupMembers && meetingMember?.getGroupMembers?.length > 0 ? meetingMember?.getGroupMembers?.map((member : MeetingMemberType) => (
+				: meetingMember?.getGroupMembers && meetingMember?.getGroupMembers?.length > 0 ? meetingMember?.getGroupMembers?.map((member : MeetingMemberType) => {
+						const profileSrc: string =
+							!member?.profile
+								? "/post/default.png"
+								: /^https?:\/\//.test(member.profile)
+									? member.profile
+									: `${process.env.NEXT_PUBLIC_IMAGE_URL ?? ""}${member.profile}`;
+					return (
 						<S.Member
 							key={member.userId}
 							onClick={() => memberClick(member.userId)}
@@ -50,7 +57,7 @@ export const MeetingMember = ({groupId}: { groupId: string }) => {
 							tabIndex={0}
 						>
 							<S.ImgBox>
-								<Image src={Profile} alt="meeting" fill/>
+								<Image style={{objectFit: "cover"}} src={profileSrc} alt="meeting" fill/>
 							</S.ImgBox>
 							<S.NameBox>
 								<S.Name>{member.name}</S.Name>
@@ -61,7 +68,8 @@ export const MeetingMember = ({groupId}: { groupId: string }) => {
                   </S.Leave>}
 							</S.NameBox>
 						</S.Member>
-					))
+					)
+					})
 					: <p>모임원이 존재하지 않습니다.</p>
 			}
 		</S.MeetingMemberContainer>

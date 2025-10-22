@@ -13,6 +13,7 @@ import {useQuery} from "@apollo/client";
 import {MeetingQueries} from "@/services/meeting";
 import {useSelectOtherMeetingDetailStore} from "@/store/selectOtherMeetingDetail";
 import {useMeetingAccessionStore} from "@/store/meetingAccessionData";
+import MeetingModalSkeleton from "@/components/ui/skeleton/MeetingModalSkeleton";
 
 export const Banner = ({bannerImage}: { bannerImage: string | StaticImageData }) => {
 	return (
@@ -75,15 +76,15 @@ export const Nav = ({isModal, selected, setSelected}: { isModal: boolean, select
 }
 
 export default function MeetingModal({
-	                                     setIsAccessionAction
-                                     }: {
-	setIsAccessionAction: (bool: boolean) => void
+	setIsAccessionAction,
+}: {
+	setIsAccessionAction: (isAccession: boolean) => void;
 }) {
 	const {isOpen} = useModalStore();
 	const [selected, setSelected] = useState(1);
 	const {meetingId} = useSelectOtherMeetingDetailStore()
 	
-	const {data: meetingInfo} = useQuery(MeetingQueries.GET_MEETING_INFO, {
+	const {data: meetingInfo, loading} = useQuery(MeetingQueries.GET_MEETING_INFO, {
 		variables: {
 			groupId: meetingId
 		},
@@ -94,6 +95,12 @@ export default function MeetingModal({
 	const props = {...meetingInfoData, setIsAccessionAction};
 	
 	if (!isOpen) return null
+	
+	// 로딩 중이면 스켈레톤 모달 표시
+	if (loading) {
+		return <MeetingModalSkeleton />;
+	}
+	
 	return (
 		<Modal>
 			<S.ModalContainer>

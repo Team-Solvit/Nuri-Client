@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Arrow from "@/assets/meeting/arrow.svg"
 import {useModalStore} from "@/store/modal";
 import {useSelectOtherMeetingDetailStore} from "@/store/selectOtherMeetingDetail";
-
+import MeetingsSidebarSkeleton from "@/components/ui/skeleton/MeetingsSidebarSkeleton";
 
 
 interface MeetingsSidebarProps {
@@ -29,7 +29,10 @@ export default function MeetingsSidebar({rooms, meetings, isLoading}: MeetingsSi
 		setMeetingId(id)
 		setSelect(name)
 	}
-	if(isLoading) return <p>불러오는 중 입니다...</p>
+	
+	// 로딩 중이면 스켈레톤 사이드바 표시
+	if(isLoading) return <MeetingsSidebarSkeleton />
+	
 	return createPortal(
 		<S.SidebarContainer isOpen={true}>
 			<S.Head>
@@ -50,7 +53,7 @@ export default function MeetingsSidebar({rooms, meetings, isLoading}: MeetingsSi
 							<S.Desc>{meeting.description}</S.Desc>
 						</S.Info>
 					</S.Meeting>
-				)) : <p>해당 지역에는 모임이 존재하지 않습니다.</p>}
+				)): <p>등록된 모임이 없습니다.</p>}
 			</S.Content>
 		</S.SidebarContainer>,
 		document.body

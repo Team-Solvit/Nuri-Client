@@ -16,6 +16,7 @@ import {useParams} from "next/navigation";
 import {useLoadingEffect} from "@/hooks/useLoading";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import {useIsMakeGroupPostStore} from "@/store/isMakeGroupPost";
+import MeetingSkeleton from "@/components/ui/skeleton/MeetingSkeleton";
 
 export default function Meeting() {
 	const [selected, setSelected] = useState(1);
@@ -39,7 +40,10 @@ export default function Meeting() {
 		setGroup()
 	}
 	useLoadingEffect(loading)
-	if(loading || !meeting) return null;
+
+	// 로딩 중이면 스켈레톤 컴포넌트 렌더링
+	if(loading || !meeting) return <MeetingSkeleton />;
+
 	return (
 		<S.ModalContainer>
 			<S.Banner>

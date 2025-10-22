@@ -73,6 +73,7 @@ export const MeetingQueries = {
 		  getGroupMembers(groupId: $groupId) {
 		    userId
 		    name
+		    profile
 		  }
 		}
 	`,
