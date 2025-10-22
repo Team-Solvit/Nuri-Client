@@ -40,7 +40,6 @@ export default function MeetingThirdPartyContainer() {
   useEffect(() => {
     const refresh = searchParams.get('refresh');
     if (refresh === 'true' && currentGroup) {
-      console.log('refresh 파라미터 감지 - 데이터 새로고침');
       loadGroupSchedules(currentGroup.groupId);
       router.replace('/meeting/third-party');
     }
@@ -53,8 +52,7 @@ export default function MeetingThirdPartyContainer() {
       let groupStatus;
       try {
         groupStatus = await GroupService.getGroupStatus(client);
-      } catch (err) {
-        console.error('그룹 상태 조회 실패:', err);
+      } catch {
         groupStatus = null;
       }
 
@@ -67,8 +65,7 @@ export default function MeetingThirdPartyContainer() {
         router.push('/meeting/third-party/create');
         return;
       }
-    } catch (err) {
-      console.error('그룹 정보 로드 실패:', err);
+    } catch {
       error('그룹 정보를 불러올 수 없습니다.');
       setHasGroup(false);
     } finally {
@@ -88,8 +85,7 @@ export default function MeetingThirdPartyContainer() {
       const past = (all || []).filter((schedule: GroupSchedule) => new Date(schedule.scheduledAt) < now);
       setPastSchedules(past);
 
-    } catch (err) {
-      console.error('일정 정보 로드 실패:', err);
+    } catch {
       error('일정 정보를 불러올 수 없습니다.');
     }
   };
@@ -158,8 +154,7 @@ export default function MeetingThirdPartyContainer() {
       setPastSchedules([]);
       success('모임이 삭제되었습니다.');
       router.push('/meeting/third-party/create');
-    } catch (err) {
-      console.error('모임 삭제 실패:', err);
+    } catch {
       error('모임 삭제에 실패했습니다.');
     }
   };
