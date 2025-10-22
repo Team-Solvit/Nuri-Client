@@ -7,7 +7,10 @@ export const Wrapper = styled.div`
   flex-direction: column;
   gap: 3.5rem;
   width: 100%;
+  height: 100vh;
   padding: 2.5rem 2.5rem;
+  overflow-y: auto;
+  box-sizing: border-box;
   ${mq.mobile} {
     padding: 1.25rem 1rem;
     gap: 1.75rem;
@@ -321,4 +324,70 @@ export const DateInput = styled.input`
     border: 1.5px solid #4b8fff;
     background: #fff;
   }
+`;
+
+export const ParticipantsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+`;
+
+export const ParticipantItem = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: #fafbfc;
+  border: 1px solid #e3e3e3;
+  transition: background 0.2s;
+  &:hover {
+    background: #f0f1f2;
+    cursor: pointer;
+  }
+`;
+
+export const ParticipantProfile = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+`;
+
+export const ProfileImage = styled.img`
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #e3e3e3;
+`;
+
+export const ProfilePlaceholder = styled.div`
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: ${colors.primary};
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: ${fontSizes.Body};
+  font-weight: 600;
+`;
+
+export const ParticipantInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`;
+
+export const ParticipantName = styled.div`
+  font-size: ${fontSizes.Body};
+  font-weight: 600;
+  color: ${colors.text};
+`;
+
+export const ParticipantEmail = styled.div`
+  font-size: ${fontSizes.Small};
+  color: ${colors.gray};
 `;

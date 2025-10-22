@@ -7,7 +7,7 @@ import { GroupSchedule } from '@/types/group';
 import { useAlertStore } from '@/store/alert';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { useRouter } from 'next/navigation';
-
+import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 import * as S from "./style";
 import Square from '@/components/ui/button/square';
 
@@ -16,10 +16,12 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
   const { error: showAlert, success: showSuccess } = useAlertStore();
   const { upload: uploadFile, loading: uploadLoading } = useFileUpload();
   const router = useRouter();
+  const navigate = useNavigationWithProgress();
 
   const [schedule, setSchedule] = useState<GroupSchedule | null>(null);
   const [loading, setLoading] = useState(true);
   const [scheduleRecords, setScheduleRecords] = useState<any[]>([]);
+  const [participants, setParticipants] = useState<any[]>([]);
   const [groupId, setGroupId] = useState<string>('');
 
   const fetchSchedule = async () => {
@@ -36,6 +38,12 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
             setScheduleRecords(records);
           } catch (recordError) {
             console.error('기록 조회 실패:', recordError);
+          }
+          try {
+            const participantsList = await GroupService.getGroupScheduleParticipants(client, id);
+            setParticipants(participantsList);
+          } catch (participantError) {
+            console.error('참가자 조회 실패:', participantError);
           }
         } else {
           showAlert('일정을 찾을 수 없습니다.');
@@ -120,9 +128,9 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
       showAlert('일정 정보가 없습니다.');
       return;
     }
-    
+
     setUpdating(true);
-    
+
     try {
       let hour24 = hour;
       if (ampm === 'AM' && hour === 12) {
@@ -132,7 +140,7 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
       }
       const currentDate = new Date(schedule.scheduledAt);
       currentDate.setHours(hour24, minute, 0, 0);
-      
+
       const input = {
         scheduleId: id,
         title,
@@ -143,7 +151,7 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
         file: schedule.file || '',
         expense: expense || 0
       };
-      
+
       const updateResult = await GroupService.updateGroupSchedule(client, input);
       console.log('일정 수정 결과:', updateResult);
 
@@ -154,7 +162,7 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
       setTimeout(() => {
         router.replace('/meeting/third-party?refresh=true');
       }, 1000);
-      
+
     } catch (error) {
       console.error('일정 수정 실패:', error);
       showAlert('일정 수정에 실패했습니다.');
@@ -169,7 +177,7 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
       return;
     }
     if (!window.confirm('정말로 이 일정을 삭제하시겠습니까?')) return;
-    
+
     try {
       await GroupService.deleteGroupSchedule(client, id);
 
@@ -178,7 +186,7 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
       setTimeout(() => {
         router.replace('/meeting/third-party?refresh=true');
       }, 1000);
-      
+
     } catch (error) {
       console.error('일정 삭제 실패:', error);
       showAlert('일정 삭제에 실패했습니다.');
@@ -213,11 +221,15 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
       setScheduleRecords(records);
 
       showSuccess(`파일 "${fileToUse.name}"이 성공적으로 업로드되었습니다.`);
-      
+
     } catch (error) {
       console.error('기록 업로드 실패:', error);
       showAlert('기록 업로드에 실패했습니다.');
     }
+  };
+
+  const handleParticipantClick = (userId: string) => {
+    navigate(`/profile/${userId}`);
   };
 
   if (loading) return <S.Wrapper>로딩 중...</S.Wrapper>;
@@ -309,15 +321,15 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
               disabled={updating}
             />
             <S.AmPmRow>
-              <S.AmPmBtn 
-                active={ampm === 'AM'} 
+              <S.AmPmBtn
+                active={ampm === 'AM'}
                 onClick={() => !updating && setAmpm('AM')}
                 disabled={updating}
               >
                 오전
               </S.AmPmBtn>
-              <S.AmPmBtn 
-                active={ampm === 'PM'} 
+              <S.AmPmBtn
+                active={ampm === 'PM'}
                 onClick={() => !updating && setAmpm('PM')}
                 disabled={updating}
               >
@@ -328,9 +340,9 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
           <div style={{ marginTop: 12 }}>
             <S.TimeGrid>
               {hours.map(h => (
-                <S.TimeCell 
-                  key={h} 
-                  active={h === hour} 
+                <S.TimeCell
+                  key={h}
+                  active={h === hour}
                   onClick={() => !updating && setHour(h)}
                   disabled={updating}
                 >
@@ -342,9 +354,9 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
           <div>
             <S.TimeGrid>
               {minutes.map(m => (
-                <S.TimeCell 
-                  key={m} 
-                  active={m === minute} 
+                <S.TimeCell
+                  key={m}
+                  active={m === minute}
                   onClick={() => !updating && setMinute(m)}
                   disabled={updating}
                 >
@@ -428,6 +440,36 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
           <S.RecordBox style={{ justifyContent: 'center' }}>
             <S.RecordInfoText style={{ color: '#8c8c8c' }}>
               아직 등록된 모임 기록이 없습니다.<br />업로드 또는 형식 받기로 기록을 추가해보세요.
+            </S.RecordInfoText>
+          </S.RecordBox>
+        )}
+      </S.RecordSection>
+      <S.RecordSection>
+        <S.RecordHeader>
+          <S.RecordTitle>참가 희망자</S.RecordTitle>
+        </S.RecordHeader>
+        {participants?.length > 0 ? (
+          <S.ParticipantsList>
+            {participants.map((participant) => (
+              <S.ParticipantItem key={participant.userId} onClick={() => handleParticipantClick(participant.userId)}>
+                <S.ParticipantProfile>
+                  {participant.profile ? (
+                    <S.ProfileImage src={participant.profile} alt={participant.name} />
+                  ) : (
+                    <S.ProfilePlaceholder>{participant.name?.[0] || '?'}</S.ProfilePlaceholder>
+                  )}
+                  <S.ParticipantInfo>
+                    <S.ParticipantName>{participant.name}</S.ParticipantName>
+                    <S.ParticipantEmail>{participant.userId}</S.ParticipantEmail>
+                  </S.ParticipantInfo>
+                </S.ParticipantProfile>
+              </S.ParticipantItem>
+            ))}
+          </S.ParticipantsList>
+        ) : (
+          <S.RecordBox style={{ justifyContent: 'center' }}>
+            <S.RecordInfoText style={{ color: '#8c8c8c' }}>
+              아직 참가 희망자가 없습니다.
             </S.RecordInfoText>
           </S.RecordBox>
         )}

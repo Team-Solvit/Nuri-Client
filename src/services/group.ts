@@ -143,6 +143,15 @@ export const GroupGQL = {
           createdAt
         }
       }
+    `,
+    GET_GROUP_SCHEDULE_PARTICIPANTS: gql`
+      query GetGroupScheduleParticipants($scheduleId: String!) {
+        getGroupScheduleParticipants(scheduleId: $scheduleId) {
+          userId
+          name
+          profile
+        }
+      }
     `
   },
   MUTATIONS: {
@@ -397,6 +406,15 @@ export const GroupService = {
       fetchPolicy: 'no-cache'
     });
     return data.getGroupScheduleRecords;
+  },
+
+  getGroupScheduleParticipants: async (client: ApolloClient<any>, scheduleId: string) => {
+    const { data } = await client.query({
+      query: GroupGQL.QUERIES.GET_GROUP_SCHEDULE_PARTICIPANTS,
+      variables: { scheduleId },
+      fetchPolicy: 'no-cache'
+    });
+    return data.getGroupScheduleParticipants;
   },
 
   leaveGroup: async (client: ApolloClient<any>) => {
