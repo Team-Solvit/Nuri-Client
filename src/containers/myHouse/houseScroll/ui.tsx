@@ -118,49 +118,55 @@ const HouseScroll = () => {
 				<Square text='방추가' status={true} width='100px' onClick={handleRoomAdd}/>
 			</S.RoomInfoContainer>
 			<S.RoomList>
-				{boardingHouseRoomsList?.map((room, idx) => (
-					<S.RoomCard
-						onClick={()=>handleModifyRoom(room.room?.roomId ?? "")}
-						key={idx}
-					>
-						<S.RoomImage>
-							{room?.room?.boardingRoomFile?.[0]?.url && process.env.NEXT_PUBLIC_IMAGE_URL ? (
-																<Image
-																	src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${room.room.boardingRoomFile[0].url}`}
-																	alt="room"
-																	fill
-																	style={{ objectFit: "cover" }}
-																/>
-															) : (
-																<div style={{ width: "100%", height: "100%", background: "#f2f2f2" }} />
-													)}
-						</S.RoomImage>
-						<S.RoomHeader>
-							<S.RoomInfo>
-								<S.RoomName>{room.room?.name}</S.RoomName>
-								{room?.contractInfo.boarders && room?.contractInfo.boarders.map(boarder => {
-									return (
-										<S.ProfileWrap key={boarder.id}>
-											<S.ProfileImg>
-												<Image src={boarder.profile} alt={"profile"} fill style={{objectFit: "cover"}}/>
-											</S.ProfileImg>
-											<S.UserId>{boarder.name}</S.UserId>
-										</S.ProfileWrap>
-									)
-								})
-								}
-								{room.room?.status === "EMPTY_ROOM" && (
-									<S.UserId color="#8c8c8c">비어있음</S.UserId>
+				{boardingHouseRoomsList && boardingHouseRoomsList.length > 0 ? (
+					boardingHouseRoomsList.map((room, idx) => (
+						<S.RoomCard
+							onClick={()=>handleModifyRoom(room.room?.roomId ?? "")}
+							key={idx}
+						>
+							<S.RoomImage>
+								{room?.room?.boardingRoomFile?.[0]?.url && process.env.NEXT_PUBLIC_IMAGE_URL ? (
+									<Image
+										src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${room.room.boardingRoomFile[0].url}`}
+										alt="room"
+										fill
+										style={{ objectFit: "cover" }}
+									/>
+								) : (
+									<div style={{ width: "100%", height: "100%", background: "#f2f2f2" }} />
 								)}
-							</S.RoomInfo>
-							{room.room?.status !== "EMPTY_ROOM" && (
-								<Square text={"계약 종료"}
-								        onClick={(e : React.MouseEvent) =>handleLeaveOpenModal(e, room)} status={true}
-								        width={"max-content"}/>
-							)}
-						</S.RoomHeader>
-					</S.RoomCard>
-				))}
+							</S.RoomImage>
+							<S.RoomHeader>
+								<S.RoomInfo>
+									<S.RoomName>{room.room?.name}</S.RoomName>
+									{room?.contractInfo.boarders && room?.contractInfo.boarders.map(boarder => {
+										return (
+											<S.ProfileWrap key={boarder.id}>
+												<S.ProfileImg>
+													<Image src={boarder.profile} alt={"profile"} fill style={{objectFit: "cover"}}/>
+												</S.ProfileImg>
+												<S.UserId>{boarder.name}</S.UserId>
+											</S.ProfileWrap>
+										)
+									})
+									}
+									{room.room?.status === "EMPTY_ROOM" && (
+										<S.UserId color="#8c8c8c">비어있음</S.UserId>
+									)}
+								</S.RoomInfo>
+								{room.room?.status !== "EMPTY_ROOM" && (
+									<Square text={"계약 종료"}
+									        onClick={(e : React.MouseEvent) =>handleLeaveOpenModal(e, room)} status={true}
+									        width={"max-content"}/>
+								)}
+							</S.RoomHeader>
+						</S.RoomCard>
+					))
+				) : (
+					<S.EmptyMessage>
+						등록된 방이 없습니다. 방을 추가해보세요!
+					</S.EmptyMessage>
+				)}
 			</S.RoomList>
 		</S.Container>
 	);

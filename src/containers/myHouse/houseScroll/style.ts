@@ -190,3 +190,10 @@ export const RoomImage = styled.div`
     display: none;
   }
 `
+
+export const EmptyMessage = styled.div`
+  font-weight: 500;
+  font-size: ${fontSizes.Body};
+  color: ${colors.text};
+  text-align: center;
+`
