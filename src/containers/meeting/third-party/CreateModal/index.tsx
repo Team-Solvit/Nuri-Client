@@ -49,7 +49,7 @@ export default function CreateModal({
   const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
 
   const createGroup = async () => {
-    if (!groupName.trim() || !groupDescription.trim() || !groupIntroduce.trim()) {
+    if (!groupName.trim() || !groupDescription.trim()) {
       error('모든 필드를 입력해주세요.');
       return;
     }

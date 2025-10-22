@@ -268,7 +268,13 @@ export default function CreateThirdPartyContainer() {
           <S.Input
             type="number"
             value={formData.maxParticipation}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('maxParticipation', parseInt(e.target.value) || 1)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              const parsed = parseInt(e.target.value);
+              const newValue = Number.isNaN(parsed)
+                ? Math.max(formData.maxParticipation ?? 2, 2)
+                : Math.max(parsed, 2);
+              handleInputChange('maxParticipation', newValue);
+            }}
             min={2}
             max={100}
           />

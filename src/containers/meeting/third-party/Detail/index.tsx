@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useApolloClient } from '@apollo/client';
 import { GroupService } from '@/services/group';
-import { GroupSchedule } from '@/types/group';
+import { GroupSchedule, GroupScheduleRecord } from '@/types/group';
 import { useAlertStore } from '@/store/alert';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { useRouter } from 'next/navigation';
@@ -20,15 +20,13 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
 
   const [schedule, setSchedule] = useState<GroupSchedule | null>(null);
   const [loading, setLoading] = useState(true);
-  const [scheduleRecords, setScheduleRecords] = useState<any[]>([]);
-  const [participants, setParticipants] = useState<any[]>([]);
-  const [groupId, setGroupId] = useState<string>('');
+  const [scheduleRecords, setScheduleRecords] = useState<GroupScheduleRecord[]>([]);
+  const [participants, setParticipants] = useState<Array<{ userId: string; name: string; profile?: string }>>([]);
 
   const fetchSchedule = async () => {
     try {
       const groupStatus = await GroupService.getGroupStatus(client);
       if (groupStatus?.groupId) {
-        setGroupId(groupStatus.groupId);
         const schedules = await GroupService.getAllSchedules(client, groupStatus.groupId);
         const foundSchedule = schedules.find((s: GroupSchedule) => s.scheduleId === id);
         if (foundSchedule) {
@@ -152,8 +150,7 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
         expense: expense || 0
       };
 
-      const updateResult = await GroupService.updateGroupSchedule(client, input);
-      console.log('일정 수정 결과:', updateResult);
+      await GroupService.updateGroupSchedule(client, input);
 
       await fetchSchedule();
 
@@ -164,7 +161,6 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
       }, 1000);
 
     } catch (error) {
-      console.error('일정 수정 실패:', error);
       showAlert('일정 수정에 실패했습니다.');
     } finally {
       setUpdating(false);
@@ -212,6 +208,7 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
       const recordInput = {
         scheduleId: id,
         fileUrl: uploadResult[0],
+        title: recordTitle || fileToUse.name.replace(/\.[^/.]+$/, ''),
       };
 
       await GroupService.createGroupScheduleRecord(client, recordInput);

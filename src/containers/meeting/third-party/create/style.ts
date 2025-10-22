@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { colors, fontSizes, radius } from '@/styles/theme';
+import { colors } from '@/styles/theme';
 import { mq } from '@/styles/media';
 
 export const CreatePageWrapper = styled.div`

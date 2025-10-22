@@ -294,21 +294,13 @@ export const GroupService = {
   },
 
   createGroup: async (client: ApolloClient<any>, groupInput: any) => {
-    console.log('GraphQL 요청 전체:', {
-      mutation: 'CreateGroup',
-      variables: { groupCreateRequestDto: groupInput },
-      inputData: groupInput
-    });
-
     try {
       const { data } = await client.mutate({
         mutation: GroupGQL.MUTATIONS.CREATE_GROUP,
         variables: { groupCreateRequestDto: groupInput }
       });
-      console.log('GraphQL 응답:', data);
       return data.createGroup;
     } catch (error) {
-      console.error('GraphQL 에러 상세:', error);
       throw error;
     }
   },

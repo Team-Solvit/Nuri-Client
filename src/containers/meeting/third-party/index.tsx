@@ -95,7 +95,7 @@ export default function MeetingThirdPartyContainer() {
     return schedules.map((schedule) => ({
       id: schedule.scheduleId,
       title: schedule.title,
-      time: new Date(schedule.scheduledAt).toLocaleDateString('ko-KR', {
+      time: new Date(schedule.scheduledAt).toLocaleString('ko-KR', {
         month: 'long',
         day: 'numeric',
         weekday: 'short',
