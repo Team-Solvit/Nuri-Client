@@ -167,6 +167,10 @@ export default function Addition(){
 			
 			return years * 12 + months;
 		});
+		if (contractPeriod.some(p => p <= 0)) {
+			setIsLoading(false);
+			return error('계약 기간은 1개월 이상으로 선택해주세요');
+		}
 		const roomInput : CreateBoardingHouseType = {
 			boardingRoomInfo :{
 				name,

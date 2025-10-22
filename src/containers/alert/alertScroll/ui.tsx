@@ -131,7 +131,6 @@ export default function AlertScroll() {
 				setIsDone(true);
 				return;
 			}
-			setAlerts((prev) => [...prev, ...more]);
 		} catch (e) {
 			console.error(e);
 		} finally {
