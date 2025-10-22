@@ -8,7 +8,6 @@ import { ChatMessageResponse } from "@/containers/message/message-content/type";
 import { useMessageAlertStore } from "@/store/messageAlert";
 import { useAlertStore } from "@/store/alert";
 import {useMessageConnectStore} from "@/store/messageConnect";
-import {useMessageHeaderStore} from "@/store/messageHeader";
 
 export default function useSocketConnect() {
 	const { userId, token: accessToken, clear } = useUserStore();
@@ -16,17 +15,15 @@ export default function useSocketConnect() {
 	const { fadeIn } = useMessageAlertStore();
 	const { success, error } = useAlertStore();
 	const { addSubscription, removeSubscription, clearSubscriptions} = useMessageConnectStore();
-	const {decrementMemberCount} = useMessageHeaderStore()
 	
 	useEffect(() => {
+		console.log(userId, accessToken)
 		if (!userId || !accessToken) return;
 		client.connectHeaders = {
 			Authorization: `Bearer ${accessToken}`,
 		};
 		
 		client.onConnect = () => {
-			success("✅ 연결완료");
-			
 			addSubscription("user-message", client.subscribe(`/user/${userId}/messages`, (message) => {
 				const messageData: ChatMessageResponse = JSON.parse(message.body);
 				fadeIn(
@@ -71,7 +68,6 @@ export default function useSocketConnect() {
 			
 		};
 		client.activate();
-		
 		return () => {
 			clearSubscriptions();
 			client.deactivate();

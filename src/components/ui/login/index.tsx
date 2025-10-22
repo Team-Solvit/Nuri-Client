@@ -36,6 +36,7 @@ export default function Login() {
 	const alertStore = useAlertStore();
 	const loginModal = useLoginModalStore();
 	const setAuth = useUserStore(s => s.setAuth);
+	const setToken = useUserStore(s=>s.setToken)
 	
 	const {
 		loading: findLoading,
@@ -72,6 +73,7 @@ export default function Login() {
 				throw new Error('로그인 유저 정보가 없습니다.');
 			}
 			setAuth(user);
+			setToken(headerToken)
 			alertStore.success('로그인 성공');
 			loginModal.close();
 		} catch (e: any) {
