@@ -6,7 +6,7 @@ import { mq } from "@/styles/media";
 
 const Wrapper = styled.div`
   width: 100%;
-  max-height: 300px;
+  max-height: 290px;
   overflow-y: auto;
 
   ${mq.mobile} {

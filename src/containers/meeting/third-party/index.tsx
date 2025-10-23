@@ -240,15 +240,28 @@ export default function MeetingThirdPartyContainer() {
         </S.HeaderRight>
       </S.Header>
       <S.Section>
-        {hasGroup ? (
+        {!hasGroup ? (
+          <S.LoadingState>
+            <p>그룹 데이터를 불러오는 중입니다...</p>
+          </S.LoadingState>
+        ) : currentMeetingList.length === 0 && previousMeetingList.length === 0 ? (
+          <S.EmptyState>
+            <S.EmptyStateText>
+              <h3>참여중인 모임이 없습니다</h3>
+              <p>새로운 모임 일정을 만들어 시작해보세요!</p>
+            </S.EmptyStateText>
+            <Square
+              text="일정 만들기"
+              onClick={handleOpenCreate}
+              status={true}
+              width="200px"
+            />
+          </S.EmptyState>
+        ) : (
           <>
             <MeetingList title="현재 진행중인 모임" meetingList={currentMeetingList} />
             <MeetingList title="이전에 진행되었던 모임" meetingList={previousMeetingList} />
           </>
-        ) : (
-          <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
-            <p>그룹 데이터를 불러오는 중입니다...</p>
-          </div>
         )}
       </S.Section>
       {isOpenList && currentGroup && (
