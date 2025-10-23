@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import * as S from "../style";
 import EllipsisIcon from "@/assets/post/ellipsis.svg";
+import CommentsSkeleton from "./CommentsSkeleton";
 import type { PostComment } from "@/types/postDetail";
 
 interface CommentsPanelProps {
@@ -49,7 +50,7 @@ export default function CommentsPanel({
       </S.CommentsHeader>
       <S.CommentsList>
         {commentsLoading ? (
-          <div style={{ padding: "20px", textAlign: "center" }}>댓글을 불러오는 중...</div>
+          <CommentsSkeleton count={3} />
         ) : (
           comments.map((comment: PostComment) => (
             <S.CommentItem key={comment.commentId}>
