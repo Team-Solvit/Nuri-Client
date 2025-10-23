@@ -22,6 +22,7 @@ import { useContract } from "@/hooks/post-detail/useContract";
 import ContractPeriodModal from "./ContractPeriodModal";
 import { useAlertStore } from "@/store/alert";
 import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
+import PostDetailSkeleton from "./PostDetailSkeleton";
 
 interface PostDetailProps { id: string; isModal?: boolean; }
 
@@ -132,7 +133,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
     return () => document.removeEventListener("click", onDocClick);
   }, [menuOpen, showRoomTour, showContractPeriods, openCommentMenuId]);
 
-  if (loading) return <div>불러오는 중...</div>;
+  if (loading) return <PostDetailSkeleton isModal={isModal} />;
   if (!postInfo) return <div>게시물을 불러올 수 없습니다.</div>;
 
   return (
