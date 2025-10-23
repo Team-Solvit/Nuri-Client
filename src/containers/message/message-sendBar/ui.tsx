@@ -19,6 +19,7 @@ export default function MessageSendBar() {
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const [isComposing, setIsComposing] = useState(false);
 	
+	const {error} = useAlertStore();
 	const {upload, result, loading} = useFileUpload()
 	useLoadingEffect(loading)
 	// 이미지 전송 관련
@@ -30,7 +31,7 @@ export default function MessageSendBar() {
 		// 유효하지 않은 파일 필터링
 		const invalidFiles = Array.from(files).filter(file => !allowedTypes.includes(file.type));
 		if (invalidFiles.length > 0) {
-			alert('이미지 파일은 jpg, jpeg, png 형식만 업로드할 수 있습니다.');
+			error('이미지 파일은 jpg, jpeg, png 형식만 업로드할 수 있습니다.');
 			return;
 		}
 		const imageFiles = Array.from(files).filter(file => allowedTypes.includes(file.type));
@@ -90,7 +91,7 @@ export default function MessageSendBar() {
 	
 	const {chatRoomName} = useMessageHeaderStore()
 	// 메시지 전송 버튼
-	const {error} = useAlertStore();
+	
 	const {reply, clearReply} = useMessageReplyStore()
 	const handleSendMessage = () => {
 		if (!message.trim()) return;
