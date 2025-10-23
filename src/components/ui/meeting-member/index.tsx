@@ -13,7 +13,8 @@ interface MeetingMemberType {
 	userId: string;
 	name: string;
 	profile: string;
-	joinedAt : string;
+	joinedAt: string;
+	role: "USER" | "INTERNATIONAL_STUDENT" | "HOST" | "THIRD_PARTY";
 }
 
 export const MeetingMember = ({groupId}: { groupId: string }) => {
@@ -38,6 +39,15 @@ export const MeetingMember = ({groupId}: { groupId: string }) => {
 	const {find} = useOtherMeetingFind()
 	
 	useLoadingEffect(loading)
+
+	const roleLabels: Record<string, string> = {
+		USER: "회원",
+		INTERNATIONAL_STUDENT: "유학생",
+		HOST: "호스트",
+		THIRD_PARTY: "관리자"
+	}
+	const getRoleLabel = (role?: string) => role ? (roleLabels[role] ?? role) : ""
+
 	return (
 		<S.MeetingMemberContainer>
 			{loading ?
@@ -61,11 +71,12 @@ export const MeetingMember = ({groupId}: { groupId: string }) => {
 							</S.ImgBox>
 							<S.NameBox>
 								<S.Name>{member.name}</S.Name>
-								{/*<S.Count>게시물 {member["게시물"]} 팔로워 {member["팔로워"]} 팔로우 {member["팔로우"]}</S.Count>*/}
+								{/* role 표시 추가 */}
+								<S.Role>{getRoleLabel(member.role)}</S.Role>
 								{member.userId === userId && !find &&
-                  <S.Leave onClick={(e) => leaveCheck(e)}>
-                    <Square text={"탈퇴"} status={true} width={"max-content"}/>
-                  </S.Leave>}
+				                  <S.Leave onClick={(e) => leaveCheck(e)}>
+				                    <Square text={"탈퇴"} status={true} width={"max-content"}/>
+				                  </S.Leave>}
 							</S.NameBox>
 						</S.Member>
 					)

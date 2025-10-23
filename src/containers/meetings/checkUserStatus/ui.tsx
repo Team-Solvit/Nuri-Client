@@ -32,19 +32,20 @@ export default function CheckUserStatus({children}: { children: React.ReactNode}
 			setIsLoading(false);
 			return;
 		}
-		if(!find){
-			navigate(`/meetings/${status.groupId}`)
-			setEnteringMeeting(status?.groupName || "")
-		}
 		setMeetingId(status.groupId || "")
 		if(status.hasGroup){
-			navigate(`/meetings/${status.groupId}`)
-			setEnteringMeeting(status?.groupName || "")
+			// 모임에 가입되어있을 때
+			if(!find){
+				navigate(`/meetings/${status.groupId}`)
+				setEnteringMeeting(status?.groupName || "")
+			}
 		}else if(!status.hasGroup){
 			if(status.groupId){
+				// 모임에 가입되어있지 않을 때 모임요청만 보냈을 때
 				setSendRequest(status?.groupName || "")
 			}
 			else{
+				// 아무것도 없을 때
 				setFree()
 			}
 		}

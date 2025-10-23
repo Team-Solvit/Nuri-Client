@@ -74,6 +74,7 @@ export const MeetingQueries = {
 		    userId
 		    name
 		    profile
+		    role
 		  }
 		}
 	`,
