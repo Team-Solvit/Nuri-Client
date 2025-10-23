@@ -37,6 +37,7 @@ export default function CreateModal({
   const [scheduleName, setScheduleName] = useState("");
   const [place, setPlace] = useState("");
   const [expense, setExpense] = useState(0);
+  const [durationMinutes, setDurationMinutes] = useState(120);
   const [date, setDate] = useState<Date | null>(new Date());
   const [ampm, setAmpm] = useState<'AM' | 'PM'>('AM');
   const [hour, setHour] = useState(6);
@@ -108,7 +109,7 @@ export default function CreateModal({
         location: place,
         scheduledAt: scheduleDateTime.toISOString(),
         expense: expense,
-        durationMinutes: 120 // 기본 2시간
+        durationMinutes: durationMinutes
       };
 
       await GroupService.createSchedule(client, scheduleInput);
@@ -193,88 +194,126 @@ export default function CreateModal({
           </S.Section>
         </>
       ) : (
-        // 일정 생성 폼 (기존)
         <>
+          <S.FormGrid>
+            <S.Section>
+              <S.Label htmlFor="schedule-name">일정 이름</S.Label>
+              <S.InputBox>
+                <S.Input
+                  id="schedule-name"
+                  placeholder="일정 이름을 입력해주세요."
+                  value={scheduleName}
+                  onChange={e => setScheduleName(e.target.value)}
+                />
+              </S.InputBox>
+            </S.Section>
+
+            <S.Section>
+              <S.Label htmlFor="schedule-place">일정 장소</S.Label>
+              <S.InputBox>
+                <S.Input
+                  id="schedule-place"
+                  placeholder="일정 장소를 입력해주세요."
+                  value={place}
+                  onChange={e => setPlace(e.target.value)}
+                />
+              </S.InputBox>
+            </S.Section>
+
+            <S.Section>
+              <S.Label htmlFor="schedule-expense">예상 비용 (원)</S.Label>
+              <S.InputBox>
+                <S.Input
+                  id="schedule-expense"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="비용을 입력해주세요. (빈 칸일 경우 0원)"
+                  value={expense === 0 ? '' : expense}
+                  onChange={e => {
+                    const value = e.target.value.replace(/[^0-9]/g, '');
+                    if (value === '') {
+                      setExpense(0);
+                    } else {
+                      const parsed = parseInt(value);
+                      setExpense(parsed);
+                    }
+                  }}
+                />
+              </S.InputBox>
+            </S.Section>
+
+            <S.Section>
+              <S.Label htmlFor="schedule-duration">일정 소요 시간 (분)</S.Label>
+              <S.InputBox>
+                <S.Input
+                  id="schedule-duration"
+                  type="number"
+                  placeholder="분 단위로 입력 (예: 120)"
+                  value={durationMinutes === 0 ? '' : durationMinutes}
+                  onChange={e => {
+                    const value = parseInt(e.target.value);
+                    if (!isNaN(value) && value > 0) {
+                      setDurationMinutes(value);
+                    } else if (e.target.value === '') {
+                      setDurationMinutes(0);
+                    }
+                  }}
+                />
+              </S.InputBox>
+            </S.Section>
+          </S.FormGrid>
+
           <S.Section>
-            <S.Label htmlFor="schedule-name">일정 이름</S.Label>
+            <S.Label>일정 시작 날짜 및 시간</S.Label>
             <S.InputBox>
               <S.Input
-                id="schedule-name"
-                placeholder="일정 이름을 입력해주세요."
-                value={scheduleName}
-                onChange={e => setScheduleName(e.target.value)}
+                type="date"
+                value={date ? date.toISOString().slice(0, 10) : ''}
+                onChange={e => {
+                  const val = e.target.value;
+                  setDate(val ? new Date(val) : null);
+                }}
+                placeholder="날짜를 선택해주세요."
+                min={new Date().toISOString().slice(0, 10)}
               />
             </S.InputBox>
           </S.Section>
 
           <S.Section>
-            <S.Label>일정 시간 설정</S.Label>
-            <S.DateRow>
-              <S.InputBox>
-                <S.Input
-                  type="date"
-                  value={date ? date.toISOString().slice(0, 10) : ''}
-                  onChange={e => {
-                    const val = e.target.value;
-                    setDate(val ? new Date(val) : null);
-                  }}
-                  placeholder="날짜를 선택해주세요."
-                  min={new Date().toISOString().slice(0, 10)}
-                />
-              </S.InputBox>
-            </S.DateRow>
             <S.TimeRow>
               <S.TimeBtn active={ampm === 'AM'} onClick={() => setAmpm('AM')}>오전</S.TimeBtn>
               <S.TimeBtn active={ampm === 'PM'} onClick={() => setAmpm('PM')}>오후</S.TimeBtn>
             </S.TimeRow>
-            <S.TimeGrid>
-              {hours.map(h => (
-                <S.TimeCell key={h} active={h === hour} onClick={() => setHour(h)}>{h}</S.TimeCell>
-              ))}
-            </S.TimeGrid>
-            <S.TimeGrid>
-              {minutes.map(m => (
-                <S.TimeCell key={m} active={m === minute} onClick={() => setMinute(m)}>
-                  {m.toString().padStart(2, '0')}
-                </S.TimeCell>
-              ))}
-            </S.TimeGrid>
           </S.Section>
 
-          <S.Section>
-            <S.Label htmlFor="schedule-place">일정 장소</S.Label>
-            <S.InputBox>
-              <S.Input
-                id="schedule-place"
-                placeholder="일정 장소를 입력해주세요."
-                value={place}
-                onChange={e => setPlace(e.target.value)}
-              />
-            </S.InputBox>
-          </S.Section>
+          <S.TimeSection>
+            <S.TimeLeftPanel>
+              <S.Label>시간 선택</S.Label>
+              <S.TimeGrid>
+                {hours.map(h => (
+                  <S.TimeCell key={h} active={h === hour} onClick={() => setHour(h)}>
+                    {h}
+                  </S.TimeCell>
+                ))}
+              </S.TimeGrid>
+            </S.TimeLeftPanel>
 
-          <S.Section>
-            <S.Label htmlFor="schedule-expense">예상 비용 (원)</S.Label>
-            <S.InputBox>
-              <S.Input
-                id="schedule-expense"
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                placeholder="비용을 입력해주세요. (빈 칸일 경우 0원)"
-                value={expense === 0 ? '' : expense}
-                onChange={e => {
-                  const value = e.target.value.replace(/[^0-9]/g, '');
-                  if (value === '') {
-                    setExpense(0);
-                  } else {
-                    const parsed = parseInt(value);
-                    setExpense(parsed);
-                  }
-                }}
-              />
-            </S.InputBox>
-          </S.Section>
+            <S.TimeRightPanel>
+              <S.Label>분 선택</S.Label>
+              <S.TimeGrid>
+                {minutes.map(m => (
+                  <S.TimeCell key={m} active={m === minute} onClick={() => setMinute(m)}>
+                    {m.toString().padStart(2, '0')}
+                  </S.TimeCell>
+                ))}
+              </S.TimeGrid>
+            </S.TimeRightPanel>
+          </S.TimeSection>
+
+          <S.TimePreview>
+            선택한 시작 시간: <strong>{ampm === 'AM' ? '오전' : '오후'} {hour}시 {minute.toString().padStart(2, '0')}분</strong>
+          </S.TimePreview>
         </>
       )}
 

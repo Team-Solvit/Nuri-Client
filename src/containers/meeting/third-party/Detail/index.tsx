@@ -96,6 +96,7 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
   const [minute, setMinute] = useState<number>(0);
   const [expense, setExpense] = useState<number>(0);
   const [description, setDescription] = useState<string>('');
+  const [durationMinutes, setDurationMinutes] = useState<number>(120);
   const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
@@ -107,6 +108,7 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
       setMinute(parsedTime.minute);
       setExpense(schedule.expense || 0);
       setDescription(schedule.description || '');
+      setDurationMinutes(schedule.durationMinutes || 120);
     }
   }, [schedule, parsedTime]);
 
@@ -139,7 +141,7 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
         description,
         location,
         scheduledAt: currentDate.toISOString(),
-        durationMinutes: schedule.durationMinutes || 60,
+        durationMinutes: durationMinutes,
         file: schedule.file || '',
         expense: expense || 0
       };
@@ -306,6 +308,25 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
           </S.Field>
         </S.Content>
         <S.TimePanel>
+          <S.Field>
+            <S.FieldLabel htmlFor="meeting-duration">소요 시간 (분)</S.FieldLabel>
+            <S.FieldInputBox>
+              <S.FieldInput
+                id="meeting-duration"
+                type="number"
+                min="30"
+                max="480"
+                step="30"
+                value={durationMinutes}
+                onChange={e => {
+                  const value = parseInt(e.target.value) || 120;
+                  setDurationMinutes(Math.max(30, Math.min(480, value)));
+                }}
+                placeholder="분 단위로 입력 (예: 120)"
+                disabled={updating}
+              />
+            </S.FieldInputBox>
+          </S.Field>
           <S.TimeRow>
             <S.DateInput
               id="meeting-date"

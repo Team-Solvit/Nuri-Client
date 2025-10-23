@@ -391,3 +391,47 @@ export const ParticipantEmail = styled.div`
   font-size: ${fontSizes.Small};
   color: ${colors.gray};
 `;
+
+export const DurationRow = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+`;
+
+export const DurationBtn = styled.button<{ active?: boolean }>`
+  flex: 1;
+  min-width: 4rem;
+  background: ${({ active }) => (active ? colors.primary : colors.line)};
+  color: ${({ active }) => (active ? '#fff' : colors.text)};
+  border: none;
+  border-radius: 0.5rem;
+  font-size: ${fontSizes.Small};
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  ${mq.mobile} {
+    min-width: 3.5rem;
+    font-size: ${fontSizes.Small};
+  }
+`;
+
+export const DurationUnit = styled.span`
+  font-size: ${fontSizes.Body};
+  color: ${colors.gray};
+  margin-left: 0.5rem;
+  white-space: nowrap;
+
+  ${mq.mobile} {
+    font-size: ${fontSizes.Small};
+  }
+`;
