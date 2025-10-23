@@ -156,7 +156,7 @@ export default function RoomTourModal({ boardingRoomId, onSuccess }: RoomTourMod
 					</Select>
 					<Span>:</Span>
 					<Select value={minute} onChange={(e) => setMinute(+e.target.value)}>
-						{Array.from({ length: 60 }, (_, i) => i).map((m) => (
+						{Array.from({ length: 12 }, (_, i) => i * 5).map((m) => (
 							<option key={m} value={m}>
 								{m.toString().padStart(2, '0')}
 							</option>
@@ -164,10 +164,10 @@ export default function RoomTourModal({ boardingRoomId, onSuccess }: RoomTourMod
 					</Select>
 					<PeriodButtons>
 						<PeriodButton active={period === 'AM'} onClick={() => setPeriod('AM')}>
-							AM
+							오전
 						</PeriodButton>
 						<PeriodButton active={period === 'PM'} onClick={() => setPeriod('PM')}>
-							PM
+							오후
 						</PeriodButton>
 					</PeriodButtons>
 				</TimeSelector>
@@ -350,6 +350,7 @@ const PeriodButton = styled.button<{ active?: boolean }>`
   font-weight: 600;
   color: ${({ active }) => (active ? colors.primary : colors.gray)};
   cursor: pointer;
+	white-space: nowrap;
 
   &:hover {
     background: ${({ active }) => (active ? '#FFEDEF' : colors.line2)};
