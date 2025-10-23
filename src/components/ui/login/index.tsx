@@ -69,6 +69,7 @@ export default function Login() {
 			if (!user) {
 				throw new Error('로그인 유저 정보가 없습니다.');
 			}
+			localStorage.setItem("AT", headerToken)
 			setAuth(user);
 			setToken(headerToken)
 			alertStore.success('로그인 성공');
