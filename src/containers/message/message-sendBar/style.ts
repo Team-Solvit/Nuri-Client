@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import {colors, fontSizes} from "@/styles/theme";
+import {colors, fontSizes, zIndex} from "@/styles/theme";
 import {mq} from "@/styles/media";
 
 export const MessageSendBarContainer = styled.section`
@@ -14,6 +14,7 @@ export const MessageSendBarContainer = styled.section`
   background-color: ${colors.background};
 
   ${mq.mobile} {
+	  z-index: ${zIndex.overlay+1};
     position: fixed;
     bottom: 0;
     left: 0;

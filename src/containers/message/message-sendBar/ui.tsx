@@ -24,11 +24,18 @@ export default function MessageSendBar() {
 	// 이미지 전송 관련
 	const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const files = e.target.files;
-		if (!files || files.length === 0) return
-		const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
-		if (imageFiles.length === 0) {
+		if (!files || files.length === 0) return;
+		const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+		
+		// 유효하지 않은 파일 필터링
+		const invalidFiles = Array.from(files).filter(file => !allowedTypes.includes(file.type));
+		if (invalidFiles.length > 0) {
+			alert('이미지 파일은 jpg, jpeg, png 형식만 업로드할 수 있습니다.');
 			return;
 		}
+		const imageFiles = Array.from(files).filter(file => allowedTypes.includes(file.type));
+		if (imageFiles.length === 0) return;
+		
 		await upload(imageFiles);
 	};
 	

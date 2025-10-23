@@ -63,7 +63,7 @@ export default function MessageSideBar() {
 	const {error} = useAlertStore()
 	const loadMore = async () => {
 		if (isFetchingMore || isDone) return;
-		if (!data?.getRooms || data?.getRooms?.length === 0) {
+		if (!data?.getRooms || data?.getRooms?.length === 0 || data?.getRooms?.length < size) {
 			setIsDone(true);
 			return;
 		}
@@ -120,7 +120,7 @@ export default function MessageSideBar() {
 			const merged = [...roomDataList, ...data.getRooms];
 			
 			const unique = merged.reduceRight((acc, cur) => {
-				if (!acc.some((r : RoomReadResponseDto) => r.roomDto.name === cur.roomDto.name)) {
+				if (!acc.some((r: RoomReadResponseDto) => r.roomDto.id === cur.roomDto.id)) {
 					acc.push(cur);
 				}
 				return acc;

@@ -18,6 +18,7 @@ import { client } from "@/lib/socketClient";
 import {useMessageReflectStore} from "@/store/messageReflect";
 import {useMessageAlertStore} from "@/store/messageAlert";
 import {useMessageHeaderStore} from "@/store/messageHeader";
+import {imageCheck} from "@/utils/imageCheck";
 
 interface User {
 	userId: string;
@@ -150,6 +151,10 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 			error("채팅방 이름을 입력해주세요.");
 			return;
 		}
+		if(selectedUsers.length < 2){
+			error("채팅방의 인원수가 부족합니다.")
+			return ;
+		}
 		const inputData: RoomCreateRequestDto = {
 			roomDto: {
 				name: roomName,
@@ -158,13 +163,12 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 			users: [...selectedUsers.map(user => user.userId), id || ""],
 			isTeam: false
 		}
-		console.log("inputData :", inputData)
 		try {
 			setLoading(true)
 			const res = await MessageService.createChatRoom(apolloClient, inputData);
 			const roomId = res?.data?.createRoom?.id
 			if (roomId) {
-				success("채팅방을 생성했습니다. 새로생긴 채팅방에 아무 채팅이나 남겨주셔야 채팅방이 저장됩니다.");
+				success("채팅방을 생성했습니다.");
 				if(inputData.users.length > 10){
 					console.log("success")
 					addSubscription(roomId,
@@ -275,7 +279,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 				<S.SearchBar>
 					<S.SearchInput
 						type="text"
-						placeholder="이름 또는 이메일로 검색"
+						placeholder="id를 입력해주세요"
 						value={searchTerm}
 						onChange={handleSearch}
 					/>
@@ -347,7 +351,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 								<S.UserAvatar>
 									{user.profile ? (
 										<Image
-											src={user.profile}
+											src={imageCheck(user.profile)}
 											alt={user.name}
 											width={40}
 											height={40}
