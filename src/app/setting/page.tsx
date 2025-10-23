@@ -13,21 +13,26 @@ import { AuthService } from '@/services/auth';
 import { useApollo } from '@/lib/apolloClient';
 import { useRouter } from 'next/navigation';
 import Logout from '@/components/ui/logout';
+import Leave from '@/components/ui/leave';
+import { useAlertStore } from '@/store/alert';
+import Alert from '@/components/ui/alert';
 
 export default function SettingPage() {
-    const { email, id, clear } = useUserStore(s => s);
+    const { email, phoneNumber, id, clear } = useUserStore(s => s);
     const apolloClient = useApollo();
     const router = useRouter();
+    const { success, error } = useAlertStore();
     const [isMobile, setIsMobile] = useState(false)
     const [isClient, setIsClient] = useState(false)
     const [showLogoutModal, setShowLogoutModal] = useState(false)
+    const [showLeaveModal, setShowLeaveModal] = useState(false)
     const [isLoggingOut, setIsLoggingOut] = useState(false)
     const [currentPw, setCurrentPw] = useState('');
     const [newPw, setNewPw] = useState('');
     const [confirmPw, setConfirmPw] = useState('');
 
     const contactData = [
-        { type: 'phone', value: '010-1234-5678', icon: '/icons/call.svg' },
+        { type: 'phone', value: phoneNumber || '전화번호 없음', icon: '/icons/call.svg' },
         { type: 'email', value: email || '이메일 없음', icon: '/icons/mail.svg' },
     ]
 
@@ -37,12 +42,12 @@ export default function SettingPage() {
         setIsLoggingOut(true)
         try {
             await AuthService.logout(apolloClient);
-            clear(); // 사용자 스토어 초기화
-            alert('로그아웃되었습니다.');
+            clear();
+            success('로그아웃되었습니다.');
             router.push('/');
-        } catch (error) {
-            console.error('로그아웃 실패:', error);
-            alert('로그아웃 중 오류가 발생했습니다.');
+        } catch (err) {
+            console.error('로그아웃 실패:', err);
+            error('로그아웃 중 오류가 발생했습니다.');
             setIsLoggingOut(false)
         }
         setShowLogoutModal(false)
@@ -50,7 +55,7 @@ export default function SettingPage() {
 
     const handleChangePassword = async () => {
         if (newPw !== confirmPw) {
-            alert('새 비밀번호가 일치하지 않습니다.');
+            error('새 비밀번호가 일치하지 않습니다.');
             return;
         }
         try {
@@ -58,13 +63,13 @@ export default function SettingPage() {
                 variables: { passwordRequestDto: { password: currentPw, newPassword: newPw } },
             });
             if (data.changePassword) {
-                alert('비밀번호가 성공적으로 변경되었습니다.');
+                success('비밀번호가 성공적으로 변경되었습니다.');
             } else {
-                alert('비밀번호 변경에 실패했습니다.');
+                error('비밀번호 변경에 실패했습니다.');
             }
         } catch (err) {
             console.error(err);
-            alert('오류가 발생했습니다.');
+            error('오류가 발생했습니다.');
         }
     };
 
@@ -81,22 +86,20 @@ export default function SettingPage() {
     // 로그인 상태 확인 (클라이언트 사이드에서만)
     useEffect(() => {
         if (isClient && !id && !isLoggingOut) {
-            alert('로그인이 필요합니다.');
+            error('로그인이 필요합니다.');
             router.push('/');
+            return;
         }
-    }, [isClient, id, router, isLoggingOut])
-
-    // 클라이언트 사이드 로딩 중이거나 로그인하지 않은 경우
-    if (!isClient || (isClient && !id)) {
-        return <div>로딩 중...</div>;
-    }
-
+    }, [isClient, id, router, isLoggingOut, error])
     return (
         <S.Layout>
             {isMobile && <SettingHeader />}
 
             <S.NavArea>
-                <SettingNav onLogoutClick={() => setShowLogoutModal(true)} />
+                <SettingNav 
+                    onLogoutClick={() => setShowLogoutModal(true)}
+                    onLeaveClick={() => setShowLeaveModal(true)}
+                />
             </S.NavArea>
 
             <S.ContentArea>
@@ -153,6 +156,16 @@ export default function SettingPage() {
                     onClose={() => setShowLogoutModal(false)}
                 />
             )}
+            {showLeaveModal && (
+                <Leave
+                    onLeave={() => {
+                        console.log('회원탈퇴 처리 완료')
+                        setShowLeaveModal(false)
+                    }}
+                    onClose={() => setShowLeaveModal(false)}
+                />
+            )}
+            <Alert />
         </S.Layout>
     )
 }

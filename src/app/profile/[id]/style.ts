@@ -65,14 +65,6 @@ export const ProfileImage2 = styled.div`
     object-fit: cover;
   }
 
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.4);
-    z-index: 1;
-  }
-
   ${mq.mobile} {
     width: 31vw;
     margin-left: 1.5rem;

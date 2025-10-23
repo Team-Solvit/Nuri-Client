@@ -15,15 +15,10 @@ const MENU_SECTIONS = [
 		],
 	},
 	{
-		title: '언어',
-		items: [
-			{label: '언어 설정', path: '/setting/language', icon: '/icons/language.svg'},
-		],
-	},
-	{
 		title: '인증',
 		items: [
 			{label: '호스트 인증', path: '/setting/host', icon: '/icons/host.svg'},
+			{label: '하숙생 인증', path: '/setting/boarder', icon: '/icons/host.svg'},
 		],
 	},
 	{

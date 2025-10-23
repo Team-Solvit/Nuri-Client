@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { AuthService } from '@/services/auth';
 import { EMAIL_PATTERN } from '@/constants/register';
 import { useAlertStore } from '@/store/alert';
@@ -8,7 +8,7 @@ export function useEmailVerification(client: ApolloClient<NormalizedCacheObject>
   const alertStore = useAlertStore();
   const [state, setState] = useState<{ phase: 'idle' | 'sending' | 'sent' | 'verifying' | 'verified'; ticket?: string; message?: string }>({ phase: 'idle' });
 
-  const reset = () => setState({ phase: 'idle' });
+  const reset = useCallback(() => setState({ phase: 'idle' }), []);
 
   const sendCode = async (email: string) => {
     if (!email.trim()) { alertStore.error('이메일을 입력해주세요.'); return; }

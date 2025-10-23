@@ -13,18 +13,59 @@ import { useUserStore } from '@/store/user'
 import { AuthService } from '@/services/auth';
 import { useApollo } from '@/lib/apolloClient';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@apollo/client';
+import { ProfileGQL, updateProfile } from '@/services/profile';
+import { UserProfileResponseDto } from '@/types/profile';
+import { useAlertStore } from '@/store/alert';
+import Alert from '@/components/ui/alert';
+import { useFileUpload } from '@/hooks/useFileUpload';
 
 export default function ProfilePage() {
     const { userId, name, profile, email, clear, id } = useUserStore(s => s);
     const apolloClient = useApollo();
     const router = useRouter();
+    const { success, error } = useAlertStore();
     const [isClient, setIsClient] = useState(false)
     const [isLoggingOut, setIsLoggingOut] = useState(false)
-    
-    const [profileImg, setProfileImg] = useState(profile || '/profile/profile.svg')
+    const { upload, loading: uploadingImage } = useFileUpload();
+
+    const convertToCdnUrl = (uuid: string) => {
+        if (!uuid) return '';
+        if (uuid.startsWith('http')) return uuid;
+        if (uuid.startsWith('blob:')) return uuid;
+
+        const rawCdn =
+            process.env.NEXT_PUBLIC_IMAGE_CDN_URL ||
+            process.env.NEXT_PUBLIC_IMAGE_URL?.replace('/upload', '') ||
+            '';
+        const cdnBase = rawCdn.replace(/\/+$/, '');
+        const cleanUuid = uuid.replace(/^\/+/, '');
+
+        return cdnBase ? `${cdnBase}/${cleanUuid}` : cleanUuid;
+    };
+
+
+    const { data: profileData } = useQuery<{ getUserProfile: UserProfileResponseDto }>(
+        ProfileGQL.QUERIES.GET_USER_PROFILE,
+        {
+            variables: { userId: userId || '' },
+            skip: !userId,
+            fetchPolicy: 'network-only',
+        }
+    );
+
+    const [profileImg, setProfileImg] = useState(profile || '')
+    const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [userid, setUserid] = useState(userId || '')
     const [nickname, setNickname] = useState(name || '')
     const [introduction, setIntroduction] = useState('소개글이 없습니다.')
+
+    const [initialValues, setInitialValues] = useState({
+        profileImg: profile || '',
+        userid: userId || '',
+        nickname: name || '',
+        introduction: '소개글이 없습니다.'
+    })
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [showLeaveModal, setShowLeaveModal] = useState(false);
     const [showFollowerModal, setShowFollowerModal] = useState(false);
@@ -41,35 +82,50 @@ export default function ProfilePage() {
     }, [])
 
     useEffect(() => {
-        if (profile) setProfileImg(profile)
-        if (userId) setUserid(userId)
-        if (name) setNickname(name)
-    }, [profile, userId, name])
+        const gqlProfile = profileData?.getUserProfile?.profile;
+        const gqlIntro = profileData?.getUserProfile?.introduce;
 
-    // 로그인 상태 확인 (클라이언트 사이드에서만)
+        if (gqlProfile && gqlProfile !== profileImg) {
+            setProfileImg(convertToCdnUrl(gqlProfile));
+        } else if (profile && profile !== profileImg) {
+            setProfileImg(convertToCdnUrl(profile));
+        }
+
+        if (userId) setUserid(userId);
+        if (name) setNickname(name);
+        if (gqlIntro) {
+            setIntroduction(gqlIntro);
+        }
+
+        if (profile || gqlProfile || userId || name || gqlIntro) {
+            setInitialValues({
+                profileImg: convertToCdnUrl(gqlProfile || profile || ''),
+                userid: userId || '',
+                nickname: name || '',
+                introduction: gqlIntro || '소개글이 없습니다.',
+            });
+        }
+    }, [profile, userId, name, profileData]);
+
+
     useEffect(() => {
         if (isClient && !id && !isLoggingOut) {
-            alert('로그인이 필요합니다.');
+            error('로그인이 필요합니다.');
             router.push('/');
         }
-    }, [isClient, id, router, isLoggingOut])
-
-    // 클라이언트 사이드 로딩 중이거나 로그인하지 않은 경우
-    if (!isClient || (isClient && !id)) {
-        return <div>로딩 중...</div>;
-    }
+    }, [isClient, id, router, isLoggingOut, error])
 
 
     const handleLogout = async () => {
         setIsLoggingOut(true)
         try {
             await AuthService.logout(apolloClient);
-            clear(); // 사용자 스토어 초기화
-            alert('로그아웃되었습니다.');
+            clear();
+            success('로그아웃되었습니다.');
             router.push('/');
-        } catch (error) {
-            console.error('로그아웃 실패:', error);
-            alert('로그아웃 중 오류가 발생했습니다.');
+        } catch (err) {
+            console.error('로그아웃 실패:', err);
+            error('로그아웃 중 오류가 발생했습니다.');
             setIsLoggingOut(false)
         }
         setShowLogoutModal(false)
@@ -77,14 +133,73 @@ export default function ProfilePage() {
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
-        if (file) {
-            const reader = new FileReader()
-            reader.onloadend = () => {
-                if (typeof reader.result === 'string') {
-                    setProfileImg(reader.result)
-                }
+        if (!file) return
+        setSelectedFile(file)
+        const previewUrl = URL.createObjectURL(file)
+        setProfileImg(previewUrl)
+    }
+
+    const handleSave = async () => {
+        const hasChanges =
+            profileImg !== initialValues.profileImg ||
+            userid !== initialValues.userid ||
+            nickname !== initialValues.nickname ||
+            introduction !== initialValues.introduction;
+
+        if (!hasChanges) {
+            error('변경된 내용이 없습니다.');
+            return;
+        }
+
+        console.log('프로필 저장 시작:', {
+            introduce: introduction,
+            profile: profileImg,
+            userId: userid,
+            username: nickname
+        });
+
+        try {
+            let finalProfile = profileImg;
+            if (selectedFile) {
+                const [cdnUrl] = await upload([selectedFile]);
+                if (!cdnUrl) throw new Error('이미지 업로드 실패');
+                finalProfile = cdnUrl;
+                setProfileImg(cdnUrl);
+                setSelectedFile(null);
             }
-            reader.readAsDataURL(file)
+            const updateResult = await updateProfile(apolloClient, {
+                introduce: introduction,
+                profile: finalProfile,
+                userId: userid,
+                username: nickname
+            });
+
+            console.log('프로필 저장 결과:', updateResult);
+
+            if (updateResult) {
+                success('프로필이 성공적으로 저장되었습니다.');
+                useUserStore.getState().setAuth({
+                    id: id || '',
+                    userId: userid,
+                    country: useUserStore.getState().country || '',
+                    name: nickname,
+                    email: email || '',
+                    profile: profileImg,
+                    role: useUserStore.getState().role || '',
+                    language: useUserStore.getState().language || ''
+                });
+                setInitialValues({
+                    profileImg,
+                    userid,
+                    nickname,
+                    introduction
+                });
+            } else {
+                error('프로필 저장에 실패했습니다.');
+            }
+        } catch (err) {
+            console.error('프로필 저장 오류:', err);
+            error('프로필 저장 중 오류가 발생했습니다.');
         }
     }
 
@@ -103,13 +218,32 @@ export default function ProfilePage() {
                 <S.Title>프로필 편집</S.Title>
                 <S.ProfileRow>
                     <S.ProfileImageWrap>
-                        <Image
-                            src={profileImg}
-                            alt="프로필"
-                            fill
-                            style={{ objectFit: 'cover', zIndex: 0 }}
-                            unoptimized
-                        />
+                        {profileImg ? (
+                            <Image
+                                src={profileImg}
+                                alt="프로필"
+                                fill
+                                style={{ objectFit: 'cover', zIndex: 0 }}
+                                unoptimized
+                            />
+                        ) : (
+                            <div
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    borderRadius: '50%',
+                                    background: '#e0e0e0',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: 700,
+                                    fontSize: 24,
+                                    color: '#666',
+                                }}
+                            >
+                                {(userid && userid[0]) || '?'}
+                            </div>
+                        )}
                     </S.ProfileImageWrap>
 
                     <S.ProfileInfo>
@@ -148,7 +282,7 @@ export default function ProfilePage() {
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setIntroduction(e.target.value)}
                     />
                 </S.BioSection>
-                <Square text='저장하기' status={true} width='100%'/>
+                <Square text={uploadingImage ? '업로드 중...' : '저장하기'} status={!uploadingImage} width='100%' onClick={handleSave} />
             </S.MainContent>
             {showLogoutModal && <Logout
                 onLogout={handleLogout}
@@ -166,6 +300,7 @@ export default function ProfilePage() {
             {showFollowerModal && (
                 <Follow onClose={() => setShowFollowerModal(false)} userId={userid} />
             )}
+            <Alert />
 
         </S.Container>
     )

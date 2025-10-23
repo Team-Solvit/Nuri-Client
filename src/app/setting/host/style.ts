@@ -13,6 +13,61 @@ export const Guide = styled.div`
   }
 `;
 
+export const AuthSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 2rem;
+  border: 2px solid ${colors.primary};
+  border-radius: ${radius.md};
+  text-align: center;
+  background: rgba(0, 123, 255, 0.05);
+`;
+
+export const AuthTitle = styled.h3`
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: ${colors.text};
+  margin: 0;
+`;
+
+export const AuthDescription = styled.p`
+  font-size: 0.875rem;
+  color: ${colors.gray};
+  margin: 0;
+  line-height: 1.5;
+`;
+
+export const AuthButtonWrapper = styled.div`
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+`;
+
+export const VerifiedSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border: 2px solid #4CAF50;
+  border-radius: ${radius.md};
+  text-align: center;
+  background: rgba(76, 175, 80, 0.05);
+`;
+
+export const VerifiedTitle = styled.h3`
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #4CAF50;
+  margin: 0;
+`;
+
+export const VerifiedDescription = styled.p`
+  font-size: 0.875rem;
+  color: ${colors.text};
+  margin: 0;
+`;
+
 export const Section = styled.section`
   display: flex;
   flex-direction: column;
@@ -169,61 +224,5 @@ export const Radio = styled.input`
     width: 20px;
     height: 20px;
   }
-`;
-
-// 휴대폰 인증 관련 스타일
-export const AuthSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 2rem;
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 0.5rem;
-  text-align: center;
-`;
-
-export const AuthTitle = styled.h2`
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #495057;
-  margin: 0;
-`;
-
-export const AuthDescription = styled.p`
-  font-size: 0.9rem;
-  color: #6c757d;
-  margin: 0;
-  line-height: 1.5;
-`;
-
-export const AuthButtonWrapper = styled.div`
-  width: 100%;
-  max-width: 300px;
-  margin: 0 auto;
-`;
-
-export const VerifiedSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 1rem;
-  background-color: #d4edda;
-  border: 1px solid #c3e6cb;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-`;
-
-export const VerifiedTitle = styled.h3`
-  font-size: 1rem;
-  font-weight: 600;
-  color: #155724;
-  margin: 0;
-`;
-
-export const VerifiedDescription = styled.p`
-  font-size: 0.875rem;
-  color: #155724;
-  margin: 0;
 `;
 

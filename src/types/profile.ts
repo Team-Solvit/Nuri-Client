@@ -25,6 +25,20 @@ export interface PasswordChangeInput {
 
 export type ChangePasswordResponse = boolean;
 
+export interface UserPostListReadInput {
+  userId: string;
+  start: number;
+}
+
+export interface UserPost {
+  postId: string;
+  thumbnail: string;
+}
+
+export interface UserPostListResponse {
+  getUserPostList: UserPost[] | null;
+}
+
 // 기존 인터페이스들을 새로운 타입으로 alias
 export type FollowUserInfo = FollowUserInfoResponseDto;
 export type FollowerUserInfo = FollowUserInfoResponseDto;

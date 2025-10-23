@@ -9,7 +9,7 @@ export const FullScreenOverlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
+  z-index: 100;
   align-items: center;
   justify-content: center;
 `
@@ -27,7 +27,7 @@ export const ModalBox = styled.div`
 
   ${mq.mobile} {
     width: 75vw;
-    height: 45vh;
+    height: 63vh;
   }
 `
 
@@ -100,4 +100,34 @@ export const AlertContainer = styled.span`
     display: flex;
     flex-direction: column;
     margin-top: 1rem;
+`
+
+export const EmailSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+`
+
+export const EmailText = styled.span`
+  font-size: ${fontSizes.Body};
+  color: ${colors.text};
+  font-weight: 500;
+`
+
+export const VerificationSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+`
+
+export const SuccessText = styled.span`
+  font-size: ${fontSizes.Body};
+  color: #4CAF50;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 `

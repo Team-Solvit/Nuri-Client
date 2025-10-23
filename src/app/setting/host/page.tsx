@@ -10,10 +10,8 @@ import SettingHeader from "@/components/ui/settingHeader";
 import AddressInput from "@/components/ui/addressInput/AddressInput";
 import Square from "@/components/ui/button/square";
 import PhoneAuth from "@/components/ui/phoneAuth";
-import { useSearchParams } from 'next/navigation';
 
 export default function Host() {
-  const searchParams = useSearchParams();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [showPhoneAuth, setShowPhoneAuth] = useState(false);
@@ -31,22 +29,30 @@ export default function Host() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // URL 파라미터에서 auth=true가 있으면 휴대폰 인증 모달 자동 열기
+  // 새로고침 시 휴대폰 인증 상태 복원
   useEffect(() => {
-    if (searchParams.get('auth') === 'true') {
-      setShowPhoneAuth(true);
+    const savedPhoneVerified = localStorage.getItem('hostPhoneVerified');
+    const savedPhoneNumber = localStorage.getItem('hostPhoneNumber');
+    
+    if (savedPhoneVerified === 'true' && savedPhoneNumber) {
+      setIsPhoneVerified(true);
+      setVerifiedPhoneNumber(savedPhoneNumber);
     }
-  }, [searchParams]);
+  }, [])
 
   const handleLogout = () => {
     console.log('로그아웃 처리 완료')
     setShowLogoutModal(false)
   }
 
-  const handlePhoneVerifySuccess = (phoneNumber: string) => {
+  const handlePhoneVerifySuccess = (callNumber: string, agency: string) => {
     setIsPhoneVerified(true);
-    setVerifiedPhoneNumber(phoneNumber);
+    setVerifiedPhoneNumber(callNumber);
     setShowPhoneAuth(false);
+    
+    // localStorage에 인증 상태 저장
+    localStorage.setItem('hostPhoneVerified', 'true');
+    localStorage.setItem('hostPhoneNumber', callNumber);
   }
   return (
     <S.Con>
@@ -77,13 +83,6 @@ export default function Host() {
           </S.AuthSection>
         ) : (
           <>
-            <S.VerifiedSection>
-              <S.VerifiedTitle>✅ 휴대폰 인증 완료</S.VerifiedTitle>
-              <S.VerifiedDescription>
-                인증된 휴대폰: {verifiedPhoneNumber}
-              </S.VerifiedDescription>
-            </S.VerifiedSection>
-
             <S.Section>
               <S.SectionTitle>하숙집 정보</S.SectionTitle>
           <S.Home>
@@ -142,8 +141,8 @@ export default function Host() {
               아니요
             </S.RadioLabel>
           </S.RadioRow>
-            </S.Section>
-            <Square text="저장하기" status={true} onClick={() => {}} width="50vw" />
+        </S.Section>
+        <Square text="저장하기" status={true} onClick={() => {}} width="50vw" />
           </>
         )}
       </S.Container>
@@ -164,6 +163,7 @@ export default function Host() {
         <PhoneAuth
           onVerifySuccess={handlePhoneVerifySuccess}
           onClose={() => setShowPhoneAuth(false)}
+          role="HOST"
         />
       )}
     </S.Con>

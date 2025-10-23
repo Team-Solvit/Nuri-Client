@@ -1,25 +1,29 @@
-import { gql } from 'apollo-server';
+import {gql} from 'apollo-server';
 
 export const typeDefs = gql`
-  # --- User 관련 타입 ---
-  type User {
-    id: ID!
-    name: String!
-    profileImage: String
-    bio: String
-    followerCount: Int!
-    followingCount: Int!
+  # --- Post 관련 타입 ---
+  enum ShareRange {
+    ALL
+    FRIENDS
+    PRIVATE
   }
 
-  # --- Post 관련 타입 ---
+  input CreatePostInput {
+    postInfo: PostInfoInput!
+    files: [String!]!
+    hashTags: [String!]!
+  }
+
+  input PostInfoInput {
+    title: String!
+    contents: String!
+    shareRange: ShareRange!
+    isGroup: Boolean!
+  }
+
   type Author {
     id: ID!
     name: String!
-  }
-
-  input PasswordChangeInput {
-    oldPassword: String!
-    newPassword: String!
   }
 
   type SnsPostInfo {
@@ -56,54 +60,15 @@ export const typeDefs = gql`
     alertNavigate: String
   }
 
-  type FollowUserInfoResponseDto {
-    id: ID!
-    userId: String!
-    profile: String
-  }
-
-  type UserProfileResponseDto {
-    postCount: Int!
-    followerCount: Int!
-    followingCount: Int!
-    profile: String
-    userId: String
-    introduce: String
-    isFollowing: boolean;
-  }
-
   # --- Query ---
   type Query {
     getPostList(start: Int!): [Post]!
     getAlertList: [Alert]!
     getAlertCount: Int!
-    getUser(id: ID!): User
-    getFollowStatus(followerId: ID!, followingId: ID!): Boolean!
-    getFollowerInfo(userId: String!): [FollowUserInfoResponseDto!]!
-    getFollowingInfo(userId: String!): [FollowUserInfoResponseDto!]!
-    getUserProfile(userId: String!): UserProfileResponseDto!
-  }
-
-  # --- SMS 인증 관련 타입 ---
-  type SendSmsResponse {
-    success: Boolean!
-    message: String!
-    verificationCode: String
-  }
-
-  type VerifyPhoneResponse {
-    success: Boolean!
-    message: String!
-    isVerified: Boolean!
   }
 
   # --- Mutation ---
   type Mutation {
-    follow(userId: String!): Boolean
-    unfollow(userId: String!): Boolean
-    changeProfile(profile: String!): Boolean!
-    changePassword(input: PasswordChangeInput!): Boolean!
-    sendSms(phoneNumber: String!): SendSmsResponse!
-    verifyPhone(phoneNumber: String!, verificationCode: String!): VerifyPhoneResponse!
+    createPost(createPostInput: CreatePostInput!): Boolean!
   }
 `;

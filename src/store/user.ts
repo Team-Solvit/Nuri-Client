@@ -9,6 +9,7 @@ type State = {
 	language: string | null;
 	name: string | null;
 	email: string | null;
+	phoneNumber: string | null;
 	profile: string | null;
 	role: string | null;
 	setAuth: (user: LoginUserResponse) => void;
@@ -24,6 +25,7 @@ export const useUserStore = create<State>()(
 			language: null,
 			name: null,
 			email: null,
+			phoneNumber: null,
 			profile: null,
 			role: null,
 			setAuth: (user) =>
@@ -34,6 +36,7 @@ export const useUserStore = create<State>()(
 					language: user.language,
 					name: user.name,
 					email: user.email,
+					phoneNumber: user.phoneNumber,
 					profile: user.profile,
 					role: user.role,
 				}),
@@ -45,6 +48,7 @@ export const useUserStore = create<State>()(
 					language: null,
 					name: null,
 					email: null,
+					phoneNumber: null,
 					profile: null,
 					role: null,
 				}),

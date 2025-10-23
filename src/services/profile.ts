@@ -25,6 +25,14 @@ export const ProfileGQL = {
         }
       }
     `,
+    GET_USER_POST_LIST: gql`
+      query GetUserPostList($userPostListReadInput: UserPostListReadInput!) {
+        getUserPostList(userPostListReadInput: $userPostListReadInput) {
+          postId
+          thumbnail
+        }
+      }
+    `,
     GET_FOLLOWING: gql`
       query GetFollowingInfo($userId: String!) {
         getFollowingInfo(userId: $userId) {
@@ -55,6 +63,11 @@ export const ProfileGQL = {
     CHANGE_PASSWORD: gql`
       mutation ChangePassword($passwordRequestDto: PasswordChangeInput!) {
         changePassword(passwordRequestDto: $passwordRequestDto)
+      }
+    `,
+    UPDATE_PROFILE: gql`
+      mutation UpdateProfile($introduce: String!, $profile: String!, $userId: String!, $username: String!) {
+        updateProfile(profileUpdateRequest: {introduce: $introduce, profile: $profile, userId: $userId, username: $username})
       }
     `,
   },
@@ -122,4 +135,25 @@ export const changePassword = async (
     variables: { input },
   });
   return data.changePassword;
+};
+
+export const updateProfile = async (
+  client: ApolloClient<any>,
+  profileUpdateRequest: {
+    introduce: string;
+    profile: string;
+    userId: string;
+    username: string;
+  }
+): Promise<boolean> => {
+  const { data } = await client.mutate({
+    mutation: ProfileGQL.MUTATIONS.UPDATE_PROFILE,
+    variables: {
+      introduce: profileUpdateRequest.introduce,
+      profile: profileUpdateRequest.profile,
+      userId: profileUpdateRequest.userId,
+      username: profileUpdateRequest.username
+    },
+  });
+  return data.updateProfile;
 };
