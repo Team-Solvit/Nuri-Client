@@ -8,7 +8,6 @@ import {ConfirmRejectModal} from "./ConfirmRejectModal";
 import {convertToContractString} from "@/utils/periodCarculate";
 import {isContract} from "@/types/message";
 
-
 export default function ContractModal() {
 	const {isOpen, messageType, master, close, contractData} = useMessageModalStore();
 	const { openConfirm} = useConfirmStore();
@@ -22,7 +21,7 @@ export default function ContractModal() {
 				{/* 이미지 */}
 				<S.TopImageWrapper>
 					<Image
-						src={contractData?.thumbnail || ""}
+						src={process.env.NEXT_PUBLIC_IMAGE_URL + contractData?.thumbnail || "/post/default.png"}
 						alt="계약 이미지"
 						fill
 						style={{objectFit: "cover"}}

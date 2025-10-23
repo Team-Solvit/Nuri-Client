@@ -11,6 +11,8 @@ export const messageRequestCheck = (contents: string): Contract |RoomTour| null 
 				console.error("Invalid contract data structure:", data);
 				return null;
 			}
+			data.time = parseKST(data?.time);
+			return data as Contract;
 		} else if (data.type === "roomTour") {
 			if (!data.roomId || !data.time || !data.status) {
 				console.error("Invalid roomTour data structure:", data);

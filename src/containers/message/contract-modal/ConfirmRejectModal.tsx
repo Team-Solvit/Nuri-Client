@@ -8,6 +8,7 @@ import {useMutation} from "@apollo/client";
 import {ContractMutations} from "@/services/contract";
 import {RoomTourMutations} from "@/services/roomTour";
 import {useMessageModalStore} from "@/store/messageModal";
+import {useMessageContentReadFetchStore} from "@/store/messageContentReadFetch";
 
 const Black = styled.div`
   position: fixed;
@@ -67,6 +68,7 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 	                                                                      type
                                                                       }) => {
 	const {isOpen, type : status, closeConfirm : onClose} = useConfirmStore()
+	const {setActivate} = useMessageContentReadFetchStore();
 	const {error, success} = useAlertStore();
 	const {contractData} = useMessageModalStore()
 	const closeModal = () =>{
@@ -116,16 +118,23 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 		if (!contractData) { error("유효하지 않은 요청입니다."); return; }
 		if(type === "룸투어" && contractData?.type === "roomTour"){
 			if (!contractData.roomTourId) { error("룸투어 ID가 없습니다."); return; }
-			if(status === "sure") await acceptRoomTour({
-				variables:{
-					roomTourId : contractData?.roomTourId
-				}
-			});
+			if(status === "sure") {
+				await acceptRoomTour({
+					variables:{
+						roomTourId : contractData?.roomTourId
+					}
+				}).finally(()=>{
+					console.log(1)
+					setActivate()
+				})
+			}
 			else if(status === "delete") await rejectRoomTour({
 				variables:{
 					roomTourId : contractData?.roomTourId
 				}
-			});
+			}).finally(()=>{
+				setActivate()
+			})
 		}
 		else if(type === "결제" && contractData?.type === "contract"){
 			if (!contractData.contractId) { error("계약 ID가 없습니다."); return; }
@@ -133,12 +142,16 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 				variables:{
 					contractId : contractData?.contractId
 				}
-			});
+			}).finally(()=>{
+				setActivate()
+			})
 			else if(status === "delete") await rejectContract({
 				variables:{
 					contractId : contractData?.contractId
 				}
-			});
+			}).finally(()=>{
+				setActivate()
+			})
 		}
 		else {
 			error("처리할 수 없는 요청입니다.");

@@ -28,7 +28,6 @@ export default function RoomTourModal() {
 	if(contractData?.type !== "roomTour") return null;
 	const roomTour: RoomTourResponseDto = data?.getRoomTour;
 	const status = roomTour?.status;
-	console.log(status)
 	return isOpen && messageType === "roomtour" && (
 		<Modal>
 			<S.ModalContainer>

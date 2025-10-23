@@ -27,6 +27,7 @@ import {useMessageReplyStore} from "@/store/messageReply";
 import {imageCheck} from "@/utils/imageCheck";
 import {messageRequestCheck} from "@/utils/messageRequestCheck";
 import {Contract, RoomTour} from "@/types/message";
+import {useMessageContentReadFetchStore} from "@/store/messageContentReadFetch";
 
 export default function MessageContent() {
 	const {message: newMessageReflect} = useMessageReflectStore();
@@ -44,9 +45,10 @@ export default function MessageContent() {
 		const newRoomId = decodeURIComponent(id as string);
 		setRoomId(newRoomId);
 	}, [id, roomId]);
+	const {isActivate} = useMessageContentReadFetchStore()
 	
 	const { data } = useQuery(MessageQueries.READ_MESSAGES, {
-		variables: { roomId: roomId as string },
+		variables: { roomId: roomId as string, isActivate },
 		skip: !roomId,
 		fetchPolicy: "no-cache",
 		nextFetchPolicy: "no-cache",
@@ -257,7 +259,7 @@ export default function MessageContent() {
 					}
 					
 					return (
-						<div key={msg.id}>
+						<div key={msg.id + idx}>
 							{showDate && <S.DateDivider>{msg.createdAt.date} {msg.createdAt.time}</S.DateDivider>}
 							
 							{msg.sender.name !== userId ? (
