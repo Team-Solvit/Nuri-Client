@@ -177,7 +177,7 @@ export interface MeetingListItem {
   title: string;
   time: string;
   location: string;
-  scheduleId?: string; // 실제 일정 ID (수정/삭제용)
+  scheduleId: string; // 실제 일정 ID (수정/삭제용) - 필수
 }
 
 export interface MeetingListProps {
