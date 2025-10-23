@@ -85,7 +85,7 @@ export default function MessageSideBar() {
 					setPage(newPage);
 					return {
 						...prev,
-						getRooms: [...(prev?.getRooms ?? []), ...fetchMoreResult?.getRooms],
+						getRooms: [...(prev?.getRooms || []), ...(fetchMoreResult?.getRooms || [])],
 					};
 				},
 			});

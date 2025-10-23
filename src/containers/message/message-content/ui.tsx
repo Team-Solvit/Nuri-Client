@@ -43,7 +43,7 @@ export default function MessageContent() {
 		
 		const newRoomId = decodeURIComponent(id as string);
 		setRoomId(newRoomId);
-	}, [id]);
+	}, [id, roomId]);
 	
 	const { data } = useQuery(MessageQueries.READ_MESSAGES, {
 		variables: { roomId: roomId as string },
@@ -193,7 +193,7 @@ export default function MessageContent() {
 									button={
 										<Square
 											text="자세히보기"
-											onClick={() => openContract("contract", msg.sender.name !== userId || request.status === "ACTIVE", request)}
+											onClick={() => openContract("contract", msg.sender.name !== userId && request.status === "PENDING", request)}
 											status={true}
 											width="100%"
 										/>

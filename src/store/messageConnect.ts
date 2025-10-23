@@ -14,16 +14,16 @@ interface MessageConnectState {
 export const useMessageConnectStore = create<MessageConnectState>((set) => ({
 	subscriptions: {},
 	
-	addSubscription: (id : string, item : SubscriptionItem) =>
+	addSubscription: (id: string, item: SubscriptionItem) =>
 		set((state) => {
-			return ({
-				subscriptions: {
-					...state.subscriptions,
-					[id]: {id, unsubscribe: item.unsubscribe} ,
-				},
-			})
+			const next = { ...state.subscriptions };
+			const prev = next[id];
+			if (prev) {
+				try { prev.unsubscribe(); } catch (e) { console.error("prev unsubscribe 실패:", e); }
+			}
+			next[id] = { id, unsubscribe: item.unsubscribe };
+			return { subscriptions: next };
 		}),
-	
 	removeSubscription: (id) =>
 		set((state) => {
 			const newSubs = { ...state.subscriptions };

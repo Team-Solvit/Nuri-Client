@@ -35,7 +35,7 @@ export default function ChatConnect() {
 				console.log("ddd",messageData)
 				setMessage(messageData);
 				fadeIn(
-					"https://storage.googleapis.com/ploytechcourse-version3/391b0b82-c522-4fd5-9a75-5a1488c21b7e",
+					messageData.sender?.profile ?? "/post/default.png",
 					messageData.userId,
 					messageData.contents,
 					messageData.sendAt
