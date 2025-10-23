@@ -3,6 +3,7 @@
 import Square from "@/components/ui/button/square";
 import * as S from "./style";
 import MeetingList from "@/components/ui/third-party/MeetingList";
+import MeetingListSkeleton from "@/components/ui/skeleton/MeetingListSkeleton";
 import { useModalStore } from "@/store/modal";
 import Modal from "@/components/layout/modal";
 import MemberModal from "./MemberModal";
@@ -187,9 +188,10 @@ export default function MeetingThirdPartyContainer() {
   if (loading) {
     return (
       <S.Wrapper>
-        <div style={{ textAlign: 'center', padding: '50px' }}>
-          로딩 중...
-        </div>
+        <S.Section>
+          <MeetingListSkeleton count={2} />
+          <MeetingListSkeleton count={2} />
+        </S.Section>
       </S.Wrapper>
     );
   }
