@@ -45,7 +45,9 @@ export default function MessageSideBar() {
 	const router = useRouter();
 	const {setValues: setHeader} = useMessageHeaderStore()
 	const handleRouter = (id: string, name: string, profile: string, memberCount : number) => {
-		if (decodeURIComponent(params.id as string) === id) return;
+		const raw = typeof params.id === "string" ? params.id : Array.isArray(params.id) ? params.id[0] : null;
+		const current = raw ? decodeURIComponent(raw) : null;
+		if (current === id) return;
 		setHeader({
 			chatProfile: profile,
 			chatRoomName: name,
@@ -232,7 +234,10 @@ export default function MessageSideBar() {
 					// 최신 메시지 처리 함수
 					const getLatestMessageDisplay = (message: string) => {
 						// 이미지 메시지 체크
-						if (message?.startsWith(IMAGE_BASE || "")) {
+						if (IMAGE_BASE && message?.startsWith(IMAGE_BASE)) {
+							return "이미지";
+						}
+						if (typeof message === "string" && /\.(png|jpe?g|gif|webp|bmp|svg)(\?.*)?$/i.test(message)) {
 							return "이미지";
 						}
 						
@@ -278,7 +283,7 @@ export default function MessageSideBar() {
 								<h4>
 									{room.roomDto.name}
 								</h4>
-								<p>{getLatestMessageDisplay(room.latestMessage)}</p>
+								<p>{getLatestMessageDisplay(room?.latestMessage as string)}</p>
 							</S.Info>
 						</S.ChatBox>
 					)

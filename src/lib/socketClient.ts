@@ -35,7 +35,10 @@ export const sendDmChatMessage = (roomId: string[], message: string, userId : st
 		console.error("❌ 소켓 연결 안 됨");
 		return;
 	}
-	if (!userId || !message) return;
+	if (!userId || !message || roomId.length < 2) {
+		console.error("유효하지 않은 roomId 배열");
+		return;
+	}
 	const payload: ChatRecordRequestDto = {
 		roomId: roomId[0] + ":" + roomId[1],
 		contents: message,

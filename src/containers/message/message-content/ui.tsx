@@ -53,6 +53,7 @@ export default function MessageContent() {
 	});
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	useEffect(() => {
+		if (!data?.readMessages) return;
 		const newMessage = data?.readMessages.map((message: ChatReadMessageResponse) => {
 			return {
 				...message,
@@ -64,7 +65,6 @@ export default function MessageContent() {
 	
 	useEffect(() => {
 		if (!newMessageReflect) return;
-		console.log("새로 온 메시지 : ", newMessageReflect)
 		if (newMessageReflect.roomId !== roomId) return;
 		const newSetMessage: ChatMessage = {
 			roomId: newMessageReflect.roomId,

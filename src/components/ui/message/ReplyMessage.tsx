@@ -48,7 +48,7 @@ const ReplyBubbleText = styled.div<{ type: 'sent' | 'received' }>`
 	width: max-content;
   word-break: break-all;
 `;
-const ReplyContentBox = styled.div<{ type: { type: 'sent' | 'received' } }>`
+const ReplyContentBox = styled.div<{ type: 'sent' | 'received' } >`
 	display: flex;
 	align-items: flex-end;
   justify-content: flex-start;
@@ -56,7 +56,7 @@ const ReplyContentBox = styled.div<{ type: { type: 'sent' | 'received' } }>`
 	height: 100%;
 	gap: 0.5rem;
 	position: relative;
-	${({type}) => type.type === 'sent' && `
+	${({type}) => type === 'sent' && `
 		justify-content: flex-end;
 	`}
 `
@@ -74,7 +74,7 @@ interface ReplyMessageProps {
 	time?: string;
 }
 
-const ReplyMessage: React.FC<ReplyMessageProps> = ({type, name, text, icon, time}) => {
+const ReplyMessage: React.FC<ReplyMessageProps> = ({type, name, text, icon}) => {
 	return (
 		<ReplyBubbleWrapper type={type}>
 			<ReplyBox>
@@ -82,7 +82,7 @@ const ReplyMessage: React.FC<ReplyMessageProps> = ({type, name, text, icon, time
 				<ReplyBubbleName>{name}님에게 답장</ReplyBubbleName>
 				{type === 'received' && icon}
 			</ReplyBox>
-			<ReplyContentBox type={{type}}>
+			<ReplyContentBox type={type}>
 				{type === 'received' && <ReplyLine />}
 				<ReplyBubble type={type}>
 					<ReplyBubbleText type={type}>{text}</ReplyBubbleText>

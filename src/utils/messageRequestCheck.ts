@@ -7,8 +7,15 @@ export const messageRequestCheck = (contents: string): Contract |RoomTour| null 
 	try {
 		const data = JSON.parse(contents);
 		if (data.type === "contract") {
-			return data as Contract;
+			if (!data.roomId || !data.hostId || !data.status) {
+				console.error("Invalid contract data structure:", data);
+				return null;
+			}
 		} else if (data.type === "roomTour") {
+			if (!data.roomId || !data.time || !data.status) {
+				console.error("Invalid roomTour data structure:", data);
+				return null;
+			}
 			data.time = parseKST(data?.time);
 			return data as RoomTour;
 		}

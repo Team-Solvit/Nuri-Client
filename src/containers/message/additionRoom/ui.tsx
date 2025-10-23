@@ -28,7 +28,7 @@ interface User {
 export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, existingMembers = [], refetchMembers}: {
 	isAddition: boolean;
 	setIsAddition: (value: boolean) => void;
-	iconRef: React.RefObject<HTMLImageElement>;
+	iconRef: React.RefObject<HTMLDivElement>;
 	type: "add" | "update";
 	existingMembers?: string[];
 	refetchMembers?: () => void;
@@ -90,6 +90,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 		setIsAddition(false);
 		setSearchTerm('');
 		setSelectedUsers([]);
+		if (profilePreview) URL.revokeObjectURL(profilePreview);
 		setProfilePreview(null);
 		setProfileDataUrl(null);
 	};
@@ -145,6 +146,10 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 	const { setMessage } = useMessageReflectStore();
 	const { fadeIn } = useMessageAlertStore();
 	const handleCreateRoom = async () => {
+		if (!roomName.trim()) {
+			error("채팅방 이름을 입력해주세요.");
+			return;
+		}
 		const inputData: RoomCreateRequestDto = {
 			roomDto: {
 				name: roomName,
@@ -207,12 +212,14 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 	const handleProfileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
 		if (!file) {
+			if (profilePreview) URL.revokeObjectURL(profilePreview);
 			setProfilePreview(null);
 			setProfileDataUrl(null);
 			return;
 		}
 		// 미리보기는 object URL, 전송은 base64 DataURL 사용
 		const objectUrl = URL.createObjectURL(file);
+		if (profilePreview) URL.revokeObjectURL(profilePreview);
 		setProfilePreview(objectUrl);
 		try {
 			const [uploaded] = await upload([file]);
@@ -298,6 +305,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 						{profilePreview ? (
 								<S.RemoveImageButton
 									onClick={() => {
+										if (profilePreview) URL.revokeObjectURL(profilePreview);
 										setProfilePreview(null);
 										setProfileDataUrl(null);
 									}}
@@ -367,12 +375,13 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 				
 				<S.ActionButton
 					onClick={handleAddition}
-					disabled={selectedUsers.length === 0 || loading}
+					disabled={selectedUsers.length === 0 || loading || (type === "add" && !roomName.trim())}
 				>
-					{loading ?
-						"로딩중입니다" :
-						selectedUsers.length + type === "add" ? "명의 대화상대와 채팅방 만들기" : `${selectedUsers.length}명의 대화상대 초대하기`
-					}
+					{loading
+						? "로딩중입니다"
+						: (type === "add"
+							? `${selectedUsers.length}명의 대화상대와 채팅방 만들기`
+							: `${selectedUsers.length}명의 대화상대 초대하기`)}
 				</S.ActionButton>
 			</S.Content>
 		</S.DropdownContainer>

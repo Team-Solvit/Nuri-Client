@@ -17,10 +17,10 @@ export const useMessageReflectStore = create<MessageReflectState>((set) => ({
 	setLoading: (loadingState) =>
 		set((state) => {
 			const newLoadingState = {...state.isLoading};
-			Object.entries(loadingState).forEach(([key, value]) => {
-				newLoadingState[key] = {
-					...state.isLoading[key],
-					...value
+				Object.entries(loadingState).forEach(([key, value]) => {
+					newLoadingState[key] = {
+						...(state.isLoading[key] ?? {}),
+				...(value ?? {}),
 				};
 			});
 			return {...state, isLoading: newLoadingState};

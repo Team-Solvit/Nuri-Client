@@ -133,7 +133,7 @@ export const AvatarFallback = styled.div`
   justify-content: center;
   background-color: #e0e0e0;
   color: #666;
-  font-size: 16px
+  font-size: 16px;
 `
 export const UserInfo = styled.div`
   flex: 1;

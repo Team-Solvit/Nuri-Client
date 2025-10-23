@@ -73,7 +73,7 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 		onConfirm();
 		onClose();
 	}
-	const [acceptContract] = useMutation(ContractMutations.ACCEPT_CONTRACT, {
+	const [acceptContract, { loading: accContractLoading }] = useMutation(ContractMutations.ACCEPT_CONTRACT, {
 			onCompleted: () => {
 				success("계약에 성공하였습니다.")
 				closeModal()
@@ -83,7 +83,7 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 			}
 		}
 	);
-	const [rejectContract] = useMutation(ContractMutations.REJECT_CONTRACT, {
+	const [rejectContract, { loading: rejContractLoading }] = useMutation(ContractMutations.REJECT_CONTRACT, {
 		onCompleted: () => {
 			success("계약을 반려하였습니다.")
 			closeModal()
@@ -92,7 +92,7 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 			error(err.message)
 		}
 	})
-	const [rejectRoomTour] = useMutation(RoomTourMutations.REJECT_ROOM_TOUR, {
+	const [rejectRoomTour, { loading: rejRoomTourLoading }] = useMutation(RoomTourMutations.REJECT_ROOM_TOUR, {
 		onCompleted: () => {
 			success("룸투어 취소에 성공하였습니다.")
 			closeModal()
@@ -101,7 +101,7 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 			error(err.message)
 		}
 	})
-	const [acceptRoomTour] = useMutation(RoomTourMutations.ACCEPT_ROOM_TOUR, {
+	const [acceptRoomTour, { loading: accRoomTourLoading }] = useMutation(RoomTourMutations.ACCEPT_ROOM_TOUR, {
 		onCompleted : () =>{
 			closeModal()
 			success("룸투어 반영에 성공하였습니다.")
@@ -111,8 +111,11 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 		}
 	})
 	const handleBtnClick = async () =>{
-		console.log(status)
+		const isMutating = accContractLoading || rejContractLoading || rejRoomTourLoading || accRoomTourLoading;
+		if (isMutating) return
+		if (!contractData) { error("유효하지 않은 요청입니다."); return; }
 		if(type === "룸투어" && contractData?.type === "roomTour"){
+			if (!contractData.roomTourId) { error("룸투어 ID가 없습니다."); return; }
 			if(status === "sure") await acceptRoomTour({
 				variables:{
 					roomTourId : contractData?.roomTourId
@@ -125,6 +128,7 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 			});
 		}
 		else if(type === "결제" && contractData?.type === "contract"){
+			if (!contractData.contractId) { error("계약 ID가 없습니다."); return; }
 			if(status === "sure") await acceptContract({
 				variables:{
 					contractId : contractData?.contractId
@@ -135,6 +139,9 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 					contractId : contractData?.contractId
 				}
 			});
+		}
+		else {
+			error("처리할 수 없는 요청입니다.");
 		}
 	}
 	if (!isOpen) return null;

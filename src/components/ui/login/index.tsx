@@ -43,7 +43,6 @@ export default function Login() {
 		sendCode: handleSendCode,
 		verifyCode: handleVerifyCode,
 		changePassword: handleChangePassword,
-		ticket: findTicket,
 	} = usePasswordReset();
 	
 	const handleLogin = useCallback(async () => {
@@ -67,8 +66,6 @@ export default function Login() {
 				throw new Error(`토큰이 응답에 없습니다. status=${status ?? 'N/A'}`);
 			}
 			
-			localStorage.setItem('AT', headerToken);
-			
 			if (!user) {
 				throw new Error('로그인 유저 정보가 없습니다.');
 			}
@@ -81,7 +78,7 @@ export default function Login() {
 		} finally {
 			setLoading(false);
 		}
-	}, [id, password, client, alertStore, loginModal, loading, setAuth]);
+	}, [id, password, client, alertStore, loginModal, loading, setAuth, setToken]);
 	
 	const handleSocialLogin = useCallback(async (provider: 'kakao' | 'google' | 'facebook' | 'tiktok') => {
 		try {

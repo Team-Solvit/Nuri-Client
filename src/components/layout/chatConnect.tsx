@@ -13,7 +13,7 @@ import {useMessageAlertStore} from "@/store/messageAlert";
 export default function ChatConnect() {
 	const {token} = useUserStore();
 	const {addSubscription, subscriptions} = useMessageConnectStore();
-	const isLoggedIn = typeof token === "string" || false;
+	const isLoggedIn = Boolean(token);
 	const { setMessage } = useMessageReflectStore();
 	const { fadeIn } = useMessageAlertStore();
 	

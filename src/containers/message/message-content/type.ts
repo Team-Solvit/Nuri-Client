@@ -13,7 +13,7 @@ export interface ChatMessage {
 	
 	img?: string;
 	roomTour?: RoomTour
-	replyChat?:  ReplyTo
+	replyChat?:  ReplyTo | null
 	contract?: Contract
 }
 
@@ -26,7 +26,7 @@ export interface ChatMessageResponse {
 	id: string;
 	name: string;
 	picture: string;
-	replyChat: ReplyTo;
+	replyChat?: ReplyTo | null;
 	roomId: string;
 	sendAt: string;
 	sender: {

@@ -6,15 +6,17 @@ import {useMessageModalStore} from "@/store/messageModal";
 import {useConfirmStore} from "@/store/confirm";
 import {ConfirmRejectModal} from "./ConfirmRejectModal";
 import {convertToContractString} from "@/utils/periodCarculate";
+import {isContract} from "@/types/message";
+
 
 export default function ContractModal() {
 	const {isOpen, messageType, master, close, contractData} = useMessageModalStore();
 	const { openConfirm} = useConfirmStore();
-	
+
 	const closeModal = () => {
 		close();
 	}
-	return isOpen && messageType === "contract"  && (
+	return isOpen && messageType === "contract" && isContract(contractData) && (
 		<Modal>
 			<S.ModalContainer>
 				{/* 이미지 */}
@@ -41,7 +43,7 @@ export default function ContractModal() {
 						</S.InfoRow>
 						<S.InfoRow>
 							<S.Label>기간</S.Label>
-							<S.Value>{convertToContractString([contractData?.contractPeriod || 0])}</S.Value>
+							<S.Value>{convertToContractString([ contractData?.contractPeriod || 0])}</S.Value>
 						</S.InfoRow>
 						<S.InfoRow>
 							<S.Label>위치</S.Label>

@@ -19,7 +19,6 @@ export default function useSocketConnect() {
 	const {id : roomId} = useParams()
 	
 	useEffect(() => {
-		console.log(userId, accessToken)
 		if (!userId || !accessToken) return;
 		client.connectHeaders = {
 			Authorization: `Bearer ${accessToken}`,
@@ -112,6 +111,8 @@ export default function useSocketConnect() {
 				clear();
 				localStorage.removeItem("AT");
 				localStorage.removeItem("nuri-user");
+				clearSubscriptions();
+				client.deactivate();
 			}));
 			
 		};

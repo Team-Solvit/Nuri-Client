@@ -8,7 +8,7 @@ import {useConfirmStore} from "@/store/confirm";
 import {useQuery} from "@apollo/client";
 import {RoomTourQueries} from "@/services/roomTour";
 import {imageCheck} from "@/utils/imageCheck";
-import {RoomTourResponseDto} from "@/types/message";
+import {isRoomTour, RoomTourResponseDto} from "@/types/message";
 import React from "react";
 
 export default function RoomTourModal() {
@@ -17,12 +17,15 @@ export default function RoomTourModal() {
 		close()
 	}
 	const { openConfirm} = useConfirmStore();
-	const {data} = useQuery(RoomTourQueries.GET_ROOM_TOUR, {
-		variables: {
-			roomTourId : contractData!.roomTourId!
-		}
-	})
-	if(contractData?.type === "contract") return null;
+	const shouldFetch = isRoomTour(contractData);
+	
+	const { data } = useQuery(RoomTourQueries.GET_ROOM_TOUR, {
+		variables: { roomTourId: shouldFetch ? contractData.roomTourId : "" },
+	  skip: !shouldFetch,
+			fetchPolicy: "cache-first",
+		});
+	if (!shouldFetch) return null;
+	if(contractData?.type !== "roomTour") return null;
 	const roomTour: RoomTourResponseDto = data?.getRoomTour;
 	const status = roomTour?.status;
 	console.log(status)
@@ -49,7 +52,7 @@ export default function RoomTourModal() {
 						<S.SubTitle>하숙집</S.SubTitle>
 						<S.InfoRow>
 							<S.Label>이름</S.Label>
-							<S.Value>{roomTour?.boarderRoom.boardingHouse.name} {roomTour?.boarderRoom.name}</S.Value>
+							<S.Value>{roomTour?.boarderRoom?.boardingHouse?.name} {roomTour?.boarderRoom?.name}</S.Value>
 						</S.InfoRow>
 						<S.InfoRow>
 							<S.Label>날짜</S.Label>
@@ -61,7 +64,7 @@ export default function RoomTourModal() {
 						</S.InfoRow>
 						<S.InfoRow>
 							<S.Label>연락처</S.Label>
-							<S.Value>{roomTour?.host.callNumber}</S.Value>
+							<S.Value>{roomTour?.host?.callNumber}</S.Value>
 						</S.InfoRow>
 					</S.SubSection>
 					
@@ -70,11 +73,11 @@ export default function RoomTourModal() {
 						<S.SubTitle>방문자</S.SubTitle>
 						<S.InfoRow>
 							<S.Label>이름</S.Label>
-							<S.Value>{roomTour?.user.name}</S.Value>
+							<S.Value>{roomTour?.user?.name}</S.Value>
 						</S.InfoRow>
 						<S.InfoRow>
 							<S.Label>아이디</S.Label>
-							<S.Value>{roomTour?.user.userId}</S.Value>
+							<S.Value>{roomTour?.user?.userId}</S.Value>
 						</S.InfoRow>
 					</S.SubSection>
 				</S.Section>

@@ -152,7 +152,7 @@ export default function MessageHeaderUI() {
 	const setRoomDataList = useMessagePageStore(s=>s.setRoomDataList)
 	const memberCount = useMessageHeaderStore(s=>s.memberCount)
 	const [isAddition, setIsAddition] = useState(false);
-	const iconRef = useRef<HTMLImageElement>(null);
+	const iconRef = useRef<HTMLDivElement>(null);
 	
 	useLoadingEffect(isLoading)
 	const {chatProfile, chatRoomName} = useMessageHeaderStore()
@@ -188,7 +188,10 @@ export default function MessageHeaderUI() {
 					)}
 				</div>
 			</S.ProfileBox>
-			<S.EllipsisIconBox ref={iconRef} onClick={handleEllipsisClick}>
+			<S.EllipsisIconBox
+				ref={iconRef}
+				onClick={handleEllipsisClick}
+			>
 				<Image
 					src={EllipsisIcon}
 					fill
@@ -205,7 +208,7 @@ export default function MessageHeaderUI() {
 				<AdditionRoom
 					isAddition={isAddition}
 					setIsAddition={setIsAddition}
-					iconRef={iconRef as React.RefObject<HTMLImageElement>}
+					iconRef={iconRef as React.RefObject<HTMLDivElement>}
 					type={"update"}
 					existingMembers={memberIds}
 					refetchMembers={refetch}

@@ -49,6 +49,7 @@ export const useUserStore = create<State>()(
 					email: null,
 					profile: null,
 					role: null,
+					token: null
 				}),
 			token : null,
 			setToken : (token : string) =>

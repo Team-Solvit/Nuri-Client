@@ -105,8 +105,17 @@ const ContractMessage: React.FC<ContractMessageProps> = ({contract, time, isSent
 	const status = contract.status;
 	return (
 		<div style={{position: 'relative', display: 'inline-block'}}>
-			{status !== "PENDING" && <Status isAgree = {status === "ACTIVE"}>{status === "ACTIVE" ? "수락" : "거절"}</Status>}
-			<ContractBubble>
+			{status !== "PENDING" && (
+				   (() => {
+					     const map = {
+						       ACTIVE: { text: "수락", isAgree: true },
+					       REJECTED: { text: "거절", isAgree: false },
+					       EXPIRED: { text: "만료", isAgree: false },
+					     } as const;
+					     const m = map[status as keyof typeof map];
+					     return m ? <Status isAgree={m.isAgree}>{m.text}</Status> : null;
+					   })()
+				 )}			<ContractBubble>
 				<ContractThumbnail src={contract?.thumbnail} alt="contract-img"/>
 				<ContractContent>
 					<ContractHouse>{contract?.boardingHouseName} {contract?.roomName}</ContractHouse>

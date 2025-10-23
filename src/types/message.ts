@@ -33,7 +33,7 @@ export interface ChatRecordRequestDto {
 // === Types ===
 export interface Sender {
 	name: string;
-	profile: string;
+	profile: string | null;
 }
 
 export interface ReplyChat {
@@ -103,7 +103,23 @@ export interface Contract {
 	boarderName: string;
 	price: number;
 	area: string;
-	
+}
+
+//type
+export function isContract(obj: Contract|RoomTour|null|undefined): obj is Contract {
+	return (
+		typeof obj === "object" &&
+		obj !== null &&
+		obj.type === "contract"
+	);
+}
+
+export function isRoomTour(obj: Contract|RoomTour|null|undefined): obj is RoomTour {
+	return (
+		typeof obj === "object" &&
+		obj !== null &&
+		obj.type === "roomTour"
+	);
 }
 
 type RequestStatus = "PENDING" | "ACTIVE" | "EXPIRED" | "REJECTED" | "APPROVED" | "CANCELLED";

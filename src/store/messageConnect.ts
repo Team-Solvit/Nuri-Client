@@ -27,7 +27,13 @@ export const useMessageConnectStore = create<MessageConnectState>((set) => ({
 	removeSubscription: (id) =>
 		set((state) => {
 			const newSubs = { ...state.subscriptions };
-			state.subscriptions[id].unsubscribe();
+			const sub = newSubs[id];
+			if (!sub) return { subscriptions: newSubs };
+			try {
+				sub.unsubscribe();
+			} catch (e) {
+				console.error("unsubscribe 실패:", e);
+			}
 			delete newSubs[id];
 			return { subscriptions: newSubs };
 		}),

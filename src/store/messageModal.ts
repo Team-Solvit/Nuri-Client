@@ -7,6 +7,7 @@ export type type = "sent" | "received"
 interface ModalState {
 	contractData ?: Contract | RoomTour | null;
 	setContractData : (data : Contract | RoomTour)=>void;
+	clearContractData: () => void;
 	isOpen: boolean;
 	open: () => void;
 	close: () => void;
@@ -25,6 +26,7 @@ export const useMessageModalStore = create<ModalState>((set) => ({
 	isOpen: false,
 	messageType : null,
 	master : false,
+	clearContractData: () => set({contractData: null}),
 	setMaster : ()=>set({master : true}),
 	unSetMaster : () =>set({master : false}),
 	setMessageType : (type)=>set({messageType : type}),
