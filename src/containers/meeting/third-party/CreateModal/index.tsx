@@ -78,8 +78,7 @@ export default function CreateModal({
         success('모임이 생성되었습니다!');
         onDone?.();
       }
-    } catch (err) {
-      console.error('모임 생성 실패:', err);
+    } catch {
       error('모임 생성에 실패했습니다.');
     } finally {
       setLoading(false);
@@ -118,8 +117,11 @@ export default function CreateModal({
       onScheduleCreated?.();
       onDone?.();
     } catch (err) {
-      console.error('일정 생성 실패:', err);
-      error('일정 생성에 실패했습니다.');
+      if (err instanceof Error && err.message === "일정 시각이 현재 시각보다 과거입니다.") {
+        error('과거 시각으로 일정을 생성할 수 없습니다.');
+      } else {
+        error('일정 생성에 실패했습니다.');
+      }
     } finally {
       setLoading(false);
     }
@@ -256,11 +258,20 @@ export default function CreateModal({
             <S.InputBox>
               <S.Input
                 id="schedule-expense"
-                type="number"
-                min="0"
-                placeholder="예상 비용을 입력해주세요."
-                value={expense}
-                onChange={e => setExpense(parseInt(e.target.value) || 0)}
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                placeholder="비용을 입력해주세요. (빈 칸일 경우 0원)"
+                value={expense === 0 ? '' : expense}
+                onChange={e => {
+                  const value = e.target.value.replace(/[^0-9]/g, '');
+                  if (value === '') {
+                    setExpense(0);
+                  } else {
+                    const parsed = parseInt(value);
+                    setExpense(parsed);
+                  }
+                }}
               />
             </S.InputBox>
           </S.Section>

@@ -106,7 +106,7 @@ export interface GroupScheduleCreateInput {
 
 export interface GroupScheduleRecordCreateInput {
   scheduleId: string;
-  title: string;
+  // title: string;
   content?: string;
   fileUrl: string;
 }

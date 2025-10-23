@@ -66,6 +66,7 @@ export const GroupGQL = {
           durationMinutes
           file
           createdAt
+          expense
         }
       }
     `,
@@ -82,6 +83,7 @@ export const GroupGQL = {
           durationMinutes
           file
           createdAt
+          expense
         }
       }
     `,
@@ -212,17 +214,13 @@ export const GroupGQL = {
       }
     `,
     CREATE_GROUP_SCHEDULE_RECORD: gql`
-      mutation CreateGroupScheduleRecord($groupScheduleRecordCreateRequestDto: GroupScheduleRecordCreateInput!) {
-        createGroupScheduleRecord(groupScheduleRecordCreateRequestDto: $groupScheduleRecordCreateRequestDto) {
-          recordId
+      mutation AddScheduleRecord($groupScheduleRecordCreateRequestDto: GroupScheduleRecordCreateInput!) {
+        addScheduleRecord(groupScheduleRecordCreateRequestDto: $groupScheduleRecordCreateRequestDto) {
           scheduleId
-          scheduleTitle
-          writerUserId
-          writerName
           title
-          content
-          fileUrls
-          createdAt
+          location
+          scheduledAt
+          file
         }
       }
     `,
@@ -397,7 +395,7 @@ export const GroupService = {
       variables: { scheduleId },
       fetchPolicy: 'no-cache'
     });
-    return data.getGroupScheduleRecords;
+    return data.getGroupScheduleRecords || [];
   },
 
   getGroupScheduleParticipants: async (client: ApolloClient<any>, scheduleId: string) => {
@@ -420,13 +418,8 @@ export const GroupService = {
     const { data } = await client.mutate({
       mutation: GroupGQL.MUTATIONS.CREATE_GROUP_SCHEDULE_RECORD,
       variables: { groupScheduleRecordCreateRequestDto: recordInput },
-      refetchQueries: [{
-        query: GroupGQL.QUERIES.GET_GROUP_SCHEDULE_RECORDS,
-        variables: { scheduleId: recordInput.scheduleId }
-      }],
-      awaitRefetchQueries: true
     });
-    return data.createGroupScheduleRecord;
+    return data.addScheduleRecord;
   },
 
   updateGroupSchedule: async (client: ApolloClient<any>, updateInput: any) => {

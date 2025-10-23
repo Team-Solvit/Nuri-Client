@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useApolloClient } from '@apollo/client';
 import { GroupService } from '@/services/group';
-import { GroupSchedule, GroupScheduleRecord } from '@/types/group';
+import { GroupSchedule } from '@/types/group';
 import { useAlertStore } from '@/store/alert';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { useRouter } from 'next/navigation';
@@ -20,7 +20,6 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
 
   const [schedule, setSchedule] = useState<GroupSchedule | null>(null);
   const [loading, setLoading] = useState(true);
-  const [scheduleRecords, setScheduleRecords] = useState<GroupScheduleRecord[]>([]);
   const [participants, setParticipants] = useState<Array<{ userId: string; name: string; profile?: string }>>([]);
 
   const fetchSchedule = async () => {
@@ -31,12 +30,7 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
         const foundSchedule = schedules.find((s: GroupSchedule) => s.scheduleId === id);
         if (foundSchedule) {
           setSchedule(foundSchedule);
-          try {
-            const records = await GroupService.getGroupScheduleRecords(client, id);
-            setScheduleRecords(records);
-          } catch (recordError) {
-            console.error('기록 조회 실패:', recordError);
-          }
+
           try {
             const participantsList = await GroupService.getGroupScheduleParticipants(client, id);
             setParticipants(participantsList);
@@ -156,13 +150,14 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
 
       showSuccess('일정이 수정되었습니다.');
 
-      setTimeout(() => {
-        router.replace('/meeting/third-party?refresh=true');
-      }, 1000);
+      router.replace('/meeting/third-party?refresh=true');
 
     } catch (error) {
-      console.error('일정 수정 실패:', error);
-      showAlert('일정 수정에 실패했습니다.');
+      if (error instanceof Error && error.message === "일정 시각이 현재 시각보다 과거입니다.") {
+        showAlert('과거 일정은 수정할 수 없습니다.');
+      } else {
+        showAlert('일정 수정에 실패했습니다.');
+      }
     } finally {
       setUpdating(false);
     }
@@ -209,16 +204,24 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
       const recordInput = {
         scheduleId: id,
         fileUrl: uploadResult[0],
-        title: recordTitle || fileToUse.name.replace(/\.[^/.]+$/, ''),
       };
 
-      await GroupService.createGroupScheduleRecord(client, recordInput);
+      try {
+        await GroupService.createGroupScheduleRecord(client, recordInput);
 
-      const records = await GroupService.getGroupScheduleRecords(client, id);
+        showSuccess(`파일이 성공적으로 업로드되었습니다.`);
 
-      setScheduleRecords(records);
+        setRecord(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
 
-      showSuccess(`파일 "${fileToUse.name}"이 성공적으로 업로드되었습니다.`);
+        await fetchSchedule();
+
+      } catch (recordError) {
+        console.error('기록 생성 실패:', recordError);
+        showAlert('기록 생성에 실패했습니다.');
+      }
 
     } catch (error) {
       console.error('기록 업로드 실패:', error);
@@ -399,41 +402,35 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
             }}
           />
         </S.RecordHeader>
-        {scheduleRecords?.length > 0 ? (
-          <div>
-            {scheduleRecords.map((recordItem) => (
-              <S.RecordBox key={recordItem.recordId}>
-                <S.RecordMain>
-                  <S.RecordTitleText>{recordItem.title}</S.RecordTitleText>
-                  <S.RecordInfo>
-                    <S.RecordInfoRow>
-                      <S.RecordInfoIcon src="/icons/meeting-time.svg" alt="시간" />
-                      <S.RecordInfoText>
-                        {schedule ? new Date(schedule.scheduledAt).toLocaleString('ko-KR') : '-'}
-                      </S.RecordInfoText>
-                    </S.RecordInfoRow>
-                    <S.RecordInfoRow>
-                      <S.RecordInfoIcon src="/icons/meeting-location.svg" alt="장소" />
-                      <S.RecordInfoText>{location}</S.RecordInfoText>
-                    </S.RecordInfoRow>
-                    <S.RecordInfoRow>
-                      <S.RecordInfoIcon src="/icons/person.svg" alt="작성자" />
-                      <S.RecordInfoText>{recordItem.writerName}</S.RecordInfoText>
-                    </S.RecordInfoRow>
-                  </S.RecordInfo>
-                </S.RecordMain>
-                <Square
-                  text="다운로드"
-                  onClick={() => {
-                    // TODO: 실제 파일 다운로드 구현
-                    showAlert('다운로드 기능은 개발 중입니다.');
-                  }}
-                  status={true}
-                  width="max-content"
-                />
-              </S.RecordBox>
-            ))}
-          </div>
+        {schedule?.file ? (
+          <S.RecordBox>
+            <S.RecordMain>
+              <S.RecordTitleText>{schedule.groupName}</S.RecordTitleText>
+              <S.RecordInfo>
+                <S.RecordInfoRow>
+                  <S.RecordInfoIcon src="/icons/meeting-time.svg" alt="시간" />
+                  <S.RecordInfoText>
+                    {new Date(schedule.scheduledAt).toLocaleString('ko-KR')}
+                  </S.RecordInfoText>
+                </S.RecordInfoRow>
+                <S.RecordInfoRow>
+                  <S.RecordInfoIcon src="/icons/meeting-location.svg" alt="장소" />
+                  <S.RecordInfoText>{schedule.location}</S.RecordInfoText>
+                </S.RecordInfoRow>
+              </S.RecordInfo>
+            </S.RecordMain>
+            <Square
+              text="다운로드"
+              onClick={() => {
+                if (schedule.file) {
+                  const fileUrl = `https://cdn.solvit-nuri.com/file/${schedule.file}`;
+                  window.open(fileUrl, '_blank');
+                }
+              }}
+              status={true}
+              width="max-content"
+            />
+          </S.RecordBox>
         ) : (
           <S.RecordBox style={{ justifyContent: 'center' }}>
             <S.RecordInfoText style={{ color: '#8c8c8c' }}>
