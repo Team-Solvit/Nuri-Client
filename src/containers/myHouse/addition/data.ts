@@ -21,5 +21,4 @@ export const DEFAULT_CONTRACT_OPTIONS = [
   '1개월',
   '6개월',
   '1년',
-  '자유',
 ];

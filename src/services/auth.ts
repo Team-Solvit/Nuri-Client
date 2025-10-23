@@ -23,10 +23,9 @@ export const AuthGQL = {
         validateUserId(userId: $userId)
       }
     `,
-
-	},
-	MUTATIONS: {
-		LOCAL_LOGIN: gql`
+  },
+  MUTATIONS: {
+	  LOCAL_LOGIN: gql`
       mutation LocalLogin($input: LocalLoginInput!) {
         localLogin(localLoginInput: $input) {
           id
