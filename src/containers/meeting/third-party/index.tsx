@@ -31,6 +31,7 @@ export default function MeetingThirdPartyContainer() {
   const { isOpen: isOpenList, open: openListStore, close: closeListStore } = useModalStore();
   const [isOpenCreate, setIsOpenCreate] = useState(false);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   const currentArea = "부산광역시 부산진구";
 
@@ -140,12 +141,13 @@ export default function MeetingThirdPartyContainer() {
     setIsOpenCreate(true);
   };
 
-  const handleDeleteGroup = async () => {
+  const handleDeleteGroup = () => {
     if (!currentGroup) return;
+    setIsDeleteConfirmOpen(true);
+  };
 
-    if (!confirm('정말로 모임을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-      return;
-    }
+  const handleDeleteConfirm = async () => {
+    if (!currentGroup) return;
 
     try {
       await GroupService.deleteGroup(client, currentGroup.groupId);
@@ -153,9 +155,11 @@ export default function MeetingThirdPartyContainer() {
       setHasGroup(false);
       setUpcomingSchedules([]);
       setPastSchedules([]);
+      setIsDeleteConfirmOpen(false);
       success('모임이 삭제되었습니다.');
       router.push('/meeting/third-party/create');
     } catch {
+      setIsDeleteConfirmOpen(false);
       error('모임 삭제에 실패했습니다.');
     }
   };
@@ -290,6 +294,32 @@ export default function MeetingThirdPartyContainer() {
             onDone={() => setIsOpenEdit(false)}
             onUpdated={handleGroupUpdated}
           />
+        </StateModal>
+      )}
+      {isDeleteConfirmOpen && (
+        <StateModal isOpen={isDeleteConfirmOpen} close={() => setIsDeleteConfirmOpen(false)}>
+          <S.DeleteConfirmModal>
+            <S.DeleteConfirmTitle>모임 삭제</S.DeleteConfirmTitle>
+            <S.DeleteConfirmMessage>
+              정말로 모임을 삭제하시겠습니까?
+              <br />
+              이 작업은 되돌릴 수 없습니다.
+            </S.DeleteConfirmMessage>
+            <S.DeleteConfirmButtons>
+              <Square
+                text="취소"
+                onClick={() => setIsDeleteConfirmOpen(false)}
+                status={true}
+                width="120px"
+              />
+              <Square
+                text="삭제"
+                onClick={handleDeleteConfirm}
+                status={true}
+                width="120px"
+              />
+            </S.DeleteConfirmButtons>
+          </S.DeleteConfirmModal>
         </StateModal>
       )}
 

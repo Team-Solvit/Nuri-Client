@@ -180,6 +180,58 @@ export const LoadingState = styled.div`
   }
 `;
 
+export const DeleteConfirmModal = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px;
+  background: #fff;
+  border-radius: 12px;
+  min-width: 400px;
+
+  ${mq.mobile} {
+    min-width: 280px;
+    padding: 24px;
+    gap: 20px;
+  }
 `;
 
+export const DeleteConfirmTitle = styled.h2`
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+  text-align: center;
+
+  ${mq.mobile} {
+    font-size: 20px;
+  }
+`;
+
+export const DeleteConfirmMessage = styled.p`
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+  text-align: center;
+  line-height: 1.6;
+
+  ${mq.mobile} {
+    font-size: 14px;
+  }
+`;
+
+export const DeleteConfirmButtons = styled.div`
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 8px;
+
+  ${mq.mobile} {
+    flex-direction: column;
+    gap: 8px;
+
+    button {
+      width: 100% !important;
+    }
+  }
 `;
