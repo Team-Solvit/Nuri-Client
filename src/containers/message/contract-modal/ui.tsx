@@ -7,6 +7,7 @@ import {useConfirmStore} from "@/store/confirm";
 import {ConfirmRejectModal} from "./ConfirmRejectModal";
 import {convertToContractString} from "@/utils/periodCarculate";
 import {isContract} from "@/types/message";
+import {imageCheck} from "@/utils/imageCheck";
 
 export default function ContractModal() {
 	const {isOpen, messageType, master, close, contractData} = useMessageModalStore();
@@ -21,7 +22,7 @@ export default function ContractModal() {
 				{/* 이미지 */}
 				<S.TopImageWrapper>
 					<Image
-						src={process.env.NEXT_PUBLIC_IMAGE_URL + contractData?.thumbnail || "/post/default.png"}
+						src={imageCheck(contractData?.thumbnail) || "/post/default.png"}
 						alt="계약 이미지"
 						fill
 						style={{objectFit: "cover"}}
@@ -81,7 +82,7 @@ export default function ContractModal() {
 			</S.ModalContainer>
 			<ConfirmRejectModal
 				onConfirm={close}
-				type={"결제"}
+				type={"계약"}
 			/>
 		</Modal>
 	);

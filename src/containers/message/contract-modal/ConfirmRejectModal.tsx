@@ -60,7 +60,7 @@ export const ButtonContainer = styled.div`
 
 interface ConfirmRejectModalProps {
 	onConfirm: () => void;
-	type: '결제' | '룸투어'
+	type: '계약' | '룸투어'
 }
 
 export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
@@ -136,7 +136,7 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 				setActivate()
 			})
 		}
-		else if(type === "결제" && contractData?.type === "contract"){
+		else if(type === "계약" && contractData?.type === "contract"){
 			if (!contractData.contractId) { error("계약 ID가 없습니다."); return; }
 			if(status === "sure") await acceptContract({
 				variables:{

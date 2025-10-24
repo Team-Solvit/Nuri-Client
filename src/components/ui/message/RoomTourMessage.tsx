@@ -8,6 +8,7 @@ import { useQuery } from "@apollo/client";
 import { RoomTourQueries } from "@/services/roomTour";
 import * as S from "@/containers/message/roomtour-modal/style";
 import { useMessageContentReadFetchStore } from "@/store/messageContentReadFetch";
+import {imageCheck} from "@/utils/imageCheck";
 
 const RoomTourBubble = styled.div`
   background: #fff;
@@ -146,7 +147,7 @@ const RoomTourMessage: React.FC<RoomTourMessageProps> = ({
 			
 			<RoomTourBubble>
 				<RoomTourImage
-					src={process.env.NEXT_PUBLIC_IMAGE_URL + roomTour?.thumbnail}
+					src={imageCheck(roomTour?.thumbnail)}
 					alt="roomtour-img"
 				/>
 				<RoomTourContent>

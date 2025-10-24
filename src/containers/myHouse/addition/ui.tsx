@@ -14,6 +14,7 @@ import {CreateBoardingHouseType, GetBoardingRoomByRoomId} from "@/types/boarding
 import {useFileUpload} from "@/hooks/useFileUpload";
 import {useLoadingEffect} from "@/hooks/useLoading";
 import {useUpdateRoomNumber} from "@/store/updateRoomNumber";
+import {imageCheck} from "@/utils/imageCheck";
 
 export default function Addition(){
 	const [contractOptions, setContractOptions] = useState<string[]>(DEFAULT_CONTRACT_OPTIONS);
@@ -216,7 +217,7 @@ export default function Addition(){
 				<S.PhotoUploadList>
 					{images?.map((img, idx) => (
 						<S.PhotoThumb key={idx} onClick={() => handleRemoveImage(idx)} style={{ cursor: 'pointer' }}>
-							<img src={process.env.NEXT_PUBLIC_IMAGE_URL + img} alt={`추가된 사진${idx + 1}`} />
+							<img src={imageCheck(img)} alt={`추가된 사진${idx + 1}`} />
 						</S.PhotoThumb>
 					))}
 					<S.PhotoUploadBox onClick={handleAddImageClick} style={{ cursor: 'pointer' }}>

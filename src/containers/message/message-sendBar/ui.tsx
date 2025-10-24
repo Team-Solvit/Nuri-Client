@@ -12,6 +12,7 @@ import {useFileUpload} from "@/hooks/useFileUpload";
 import {useLoadingEffect} from "@/hooks/useLoading";
 import {useMessageReplyStore} from "@/store/messageReply";
 import {useMessageHeaderStore} from "@/store/messageHeader";
+import {imageCheck} from "@/utils/imageCheck";
 
 export default function MessageSendBar() {
 	const {id} = useParams();
@@ -80,9 +81,9 @@ export default function MessageSendBar() {
 		if (!result || result.length === 0) return;
 		const type = checkType(id as string);
 		if (Array.isArray(type)) {
-			sendDmChatMessage(type, process.env.NEXT_PUBLIC_IMAGE_URL + result[0], chatRoomName, reply);
+			sendDmChatMessage(type, imageCheck(result[0]), chatRoomName, reply);
 		} else if (type === "UUID 형식") {
-			sendGroupChatMessage(id as string, process.env.NEXT_PUBLIC_IMAGE_URL + result[0], reply);
+			sendGroupChatMessage(id as string, imageCheck(result[0]), reply);
 		} else {
 			error("메시지 전송실패")
 		}
@@ -115,17 +116,20 @@ export default function MessageSendBar() {
 			e.preventDefault();
 			if (!message.trim() || isSending) return;
 			setIsSending(true);
-			const type = checkType(id as string);
-			if (Array.isArray(type)) {
-				await sendDmChatMessage(type, message, chatRoomName, reply);
-			} else if (type === "UUID 형식") {
-				await sendGroupChatMessage(id as string, message, reply);
-			} else {
-				error("메시지 전송에 실패")
+			try{
+				const type = checkType(id as string);
+				if (Array.isArray(type)) {
+					await sendDmChatMessage(type, message, chatRoomName, reply);
+				} else if (type === "UUID 형식") {
+					await sendGroupChatMessage(id as string, message, reply);
+				} else {
+					error("메시지 전송에 실패")
+				}
+				setMessage("");
+				clearReply();
+			}finally {
+				setIsSending(false);
 			}
-			setMessage("");
-			clearReply();
-			setIsSending(false);
 		}
 	};
 	return (

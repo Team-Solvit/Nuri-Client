@@ -55,11 +55,11 @@ export default function RoomTourModal() {
 						</S.InfoRow>
 						<S.InfoRow>
 							<S.Label>날짜</S.Label>
-							<S.Value>{contractData?.time?.month}월 {contractData?.time.day}일</S.Value>
+							<S.Value>{contractData?.time?.month}월 {contractData?.time?.day}일</S.Value>
 						</S.InfoRow>
 						<S.InfoRow>
 							<S.Label>시간</S.Label>
-							<S.Value>{contractData?.time.hour}시 {contractData?.time?.minute}분</S.Value>
+							<S.Value>{contractData?.time?.hour}시 {contractData?.time?.minute}분</S.Value>
 						</S.InfoRow>
 						<S.InfoRow>
 							<S.Label>연락처</S.Label>

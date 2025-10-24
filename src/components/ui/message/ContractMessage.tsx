@@ -4,6 +4,7 @@ import React from "react";
 import { MESSAGE_MAX_WIDTH_MOBILE } from "@/constants/constant";
 import { mq } from "@/styles/media";
 import { Contract } from "@/types/message";
+import {imageCheck} from "@/utils/imageCheck";
 
 const ContractBubble = styled.div`
   background: #fff;
@@ -138,7 +139,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
 			
 			<ContractBubble>
 				<ContractThumbnail
-					src={process.env.NEXT_PUBLIC_IMAGE_URL + contract?.thumbnail}
+					src={imageCheck(contract?.thumbnail)}
 					alt="contract-img"
 				/>
 				<ContractContent>

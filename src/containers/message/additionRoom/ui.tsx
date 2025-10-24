@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useMemo} from 'react';
 import Image from 'next/image';
 import * as S from './style';
 import {MessageQueries, MessageService} from "@/services/message";
@@ -58,6 +58,10 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 		}
 	);
 	
+	const existingMembersKey = useMemo(
+		() => existingMembers.join(','),
+		[existingMembers]
+	);
 	useEffect(() => {
 		const searchResults = searchUserResult?.queryUsers || [];
 		// 이미 초대된 멤버들을 검색 결과에서 제외
@@ -65,7 +69,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 			!existingMembers.includes(user.userId)
 		);
 		setUsers(filteredUsers);
-	}, [searchUserResult, existingMembers.join(',')]); // 배열을 문자열로 변환하여 안정적인 의존성 만들기
+	}, [searchUserResult, existingMembersKey]); // 배열을 문자열로 변환하여 안정적인 의존성 만들기
 	
 	// Close dropdown when clicking outside
 	useEffect(() => {
@@ -203,6 +207,14 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 	};
 	
 	
+	// 컴포넌트 언마운트 시 Object URL 정리
+	useEffect(() => {
+		return () => {
+			if (profilePreview) {
+				URL.revokeObjectURL(profilePreview);
+			}
+		};
+	}, [profilePreview]);
 	// 이미지 관리
 	const profileRef = useRef<HTMLInputElement | null>(null);
 	
