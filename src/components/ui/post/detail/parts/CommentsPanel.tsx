@@ -51,6 +51,11 @@ export default function CommentsPanel({
       <S.CommentsList>
         {commentsLoading ? (
           <CommentsSkeleton count={3} />
+        ) : comments.length === 0 ? (
+          <S.CommentsEmpty>
+            아직 댓글이 없습니다.<br />
+            첫 댓글을 작성해보세요!
+          </S.CommentsEmpty>
         ) : (
           comments.map((comment: PostComment) => (
             <S.CommentItem key={comment.commentId}>

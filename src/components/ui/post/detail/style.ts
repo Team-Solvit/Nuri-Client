@@ -374,6 +374,17 @@ export const RightFacilityText = styled.span`
   ${mq.mobile} { font-size: 0.75rem; }
 `;
 
+export const RightEmptyMessage = styled.div`
+  padding: 2rem 1rem;
+  text-align: center;
+  color: ${colors.gray};
+  font-size: 0.875rem;
+  ${mq.mobile} {
+    padding: 1.5rem 1rem;
+    font-size: 0.8rem;
+  }
+`;
+
 export const CommentsSection = styled.div<{ show: boolean; isModal?: boolean }>`
   position: absolute;
   top: 0;
@@ -429,6 +440,22 @@ export const CommentsList = styled.div`
   padding: 1rem 1.5rem;
   ${mq.mobile} {
     padding: 0.75rem 1rem 1rem;
+  }
+`;
+
+export const CommentsEmpty = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 200px;
+  text-align: center;
+  color: ${colors.gray};
+  font-size: 0.875rem;
+  line-height: 1.6;
+  ${mq.mobile} {
+    min-height: 150px;
+    font-size: 0.8rem;
   }
 `;
 

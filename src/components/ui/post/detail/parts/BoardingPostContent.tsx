@@ -117,21 +117,25 @@ export default function BoardingPostContent({
       </S.RightFeatureList>
       <S.RightDivider />
       <S.RightLabel>시설</S.RightLabel>
-      <S.RightFacilityGrid>
-        {options.map((opt) => {
-          const iconName = getFacilityIcon(opt.name);
-          return (
-            <S.RightFacility key={opt.optionId}>
-              {iconName && (
-                <S.RightFacilityIcon>
-                  <Image src={`/icons/post-detail/${iconName}.svg`} alt={opt.name} width={32} height={32} />
-                </S.RightFacilityIcon>
-              )}
-              <S.RightFacilityText>{opt.name}</S.RightFacilityText>
-            </S.RightFacility>
-          );
-        })}
-      </S.RightFacilityGrid>
+      {options.length === 0 ? (
+        <S.RightEmptyMessage>등록된 시설 정보가 없습니다.</S.RightEmptyMessage>
+      ) : (
+        <S.RightFacilityGrid>
+          {options.map((opt) => {
+            const iconName = getFacilityIcon(opt.name);
+            return (
+              <S.RightFacility key={opt.optionId}>
+                {iconName && (
+                  <S.RightFacilityIcon>
+                    <Image src={`/icons/post-detail/${iconName}.svg`} alt={opt.name} width={32} height={32} />
+                  </S.RightFacilityIcon>
+                )}
+                <S.RightFacilityText>{opt.name}</S.RightFacilityText>
+              </S.RightFacility>
+            );
+          })}
+        </S.RightFacilityGrid>
+      )}
     </>
   );
 }
