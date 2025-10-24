@@ -6,7 +6,7 @@ import Square from "@/components/ui/button/square";
 import Heart from "@/assets/post/heart.svg";
 import Comment from "@/assets/post/comment.svg";
 import Arrow from "@/assets/post/arrow-right.svg";
-import {useState, useRef, useCallback, useEffect} from "react";
+import {useState, useRef, useCallback} from "react";
 import {useQuery} from "@apollo/client";
 import {PostQueries} from "@/services/post";
 import type {GetPostListResponse, GetPostListVariables} from "@/types/post";
