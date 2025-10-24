@@ -1,7 +1,26 @@
 import {gql} from 'apollo-server';
 
 export const typeDefs = gql`
-  # --- Author 타입 ---
+  # --- Post 관련 타입 ---
+  enum ShareRange {
+    ALL
+    FRIENDS
+    PRIVATE
+  }
+
+  input CreatePostInput {
+    postInfo: PostInfoInput!
+    files: [String!]!
+    hashTags: [String!]!
+  }
+
+  input PostInfoInput {
+    title: String!
+    contents: String!
+    shareRange: ShareRange!
+    isGroup: Boolean!
+  }
+
   type Author {
     profile: String
     userId: Int!
@@ -95,7 +114,12 @@ export const typeDefs = gql`
   type BoardingRoomAndBoarders {
     room: BoardingRoom!
     boarders: [Boarder!]!
-  }
+  contractInfo: [ContractInfo!]!
+ }
+
+type ContractInfo {
+  boarder: Boarder!
+}
 
   type BoardingPost {
     likeCount: Int
@@ -129,5 +153,10 @@ export const typeDefs = gql`
     getMyBoardingHouse: BoardingHouse
     getBoardingRoomAndBoardersInfoList(userId: String): [BoardingRoomAndBoarders!]!
     getBoardingRoom(roomId: String!): BoardingRoom
+  }
+
+  # --- Mutation ---
+  type Mutation {
+    createPost(createPostInput: CreatePostInput!): Boolean!
   }
 `;

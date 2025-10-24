@@ -1,4 +1,4 @@
-import {ApolloClient, gql} from '@apollo/client';
+import {ApolloClient, gql, NormalizedCacheObject} from '@apollo/client';
 import {CreateBoardingHouseType} from "@/types/boardinghouse";
 
 export const BoardingHouseQueries = {
@@ -7,9 +7,18 @@ export const BoardingHouseQueries = {
 		  getMyBoardingHouse {
 		    houseId
 		    host {
-		      id
-		      name
-		      email
+		     callNumber
+         user {
+          id
+			    userId
+			    country
+			    language
+			    name
+			    email
+			    introduce
+			    profile
+			    role
+         }
 		    }
 		    name
 		    location
@@ -23,8 +32,8 @@ export const BoardingHouseQueries = {
 		}
 	`,
 	GET_BOARDING_HOUSE_ROOMS: gql`
-		query GetRoomsAndBoarders($userId: String) {
-		  getBoardingRoomAndBoardersInfoList(userId: $userId) {
+		query getBoardingRoomAndBoardersInfoList {
+		  getBoardingRoomAndBoardersInfoList {
 		    room {
 		      roomId
 		      name
@@ -34,11 +43,18 @@ export const BoardingHouseQueries = {
 		        url
 		      }
 		    }
-		    boarders {
-		      id
-		      name
-		      profile
-		    }
+        contractInfo {
+          boarder{
+             callNumber
+				     gender
+				     user{
+						    id
+					      userId
+					      name
+					      profile
+				     }
+          }
+        }
 		  }
 		}
 	`,
@@ -70,8 +86,8 @@ export const BoardingHouseQueries = {
 
 export const BoardingHouseMutations = {
 	CREATE_BOARDING_ROOM: gql`
-		mutation CreateBoardingRoom($input: CreateBoardingRoomRequest!) {
-		  createBoardingRoom(createBoardingRoomInput: $input)
+		mutation CreateBoardingRoom($input: BoardingRoomCreateInput!) {
+		  createBoardingRoom(boardingRoomCreateInput: $input)
 		}
 	`,
 	DELETE_BOARDING_ROOM: gql`
@@ -85,15 +101,15 @@ export const BoardingHouseMutations = {
 		}
 	`,
 	PATCH_BOARDING_ROOM: gql`
-		mutation PatchBoardingRoom($roomId: String!, $input: PatchBoardingRoomRequest!) {
-		  patchBoardingRoom(roomId: $roomId, patchBoardingRoomInput: $input)
-		}
-	`,
+	mutation updateBoardingRoom($boardingRoomUpdateInput: BoardingRoomUpdateInput!) {
+	  updateBoardingRoom(boardingRoomUpdateInput: $boardingRoomUpdateInput)
+	}
+`,
 };
 
 export const BoardingHouseService = {
 	createBoardingRoom: async (
-		client: ApolloClient<any>,
+		client: ApolloClient<NormalizedCacheObject>,
 		input: CreateBoardingHouseType
 	): Promise<string> => {
 		const {data} = await client.mutate<{ createBoardingRoom: string }>({
@@ -104,7 +120,7 @@ export const BoardingHouseService = {
 	},
 	
 	deleteBoardingRoom: async (
-		client: ApolloClient<any>,
+		client: ApolloClient<NormalizedCacheObject>,
 		roomId: string
 	): Promise<string> => {
 		const {data} = await client.mutate<{ deleteBoardingRoom: string }>({
@@ -115,7 +131,7 @@ export const BoardingHouseService = {
 	},
 	
 	endBoardingRoomContract: async (
-		client: ApolloClient<any>,
+		client: ApolloClient<NormalizedCacheObject>,
 		roomId: string
 	): Promise<string> => {
 		const {data} = await client.mutate<{ endBoardingRoomContract: string }>({
@@ -126,13 +142,13 @@ export const BoardingHouseService = {
 	},
 	
 	patchBoardingRoom: async (
-		client: ApolloClient<any>,
-		input: CreateBoardingHouseType & { roomId: string }
+		client: ApolloClient<NormalizedCacheObject>,
+		input: CreateBoardingHouseType
 	): Promise<string> => {
-		const {data} = await client.mutate<{ patchBoardingRoom: string }>({
+		const { data } = await client.mutate<{ updateBoardingRoom: string }>({
 			mutation: BoardingHouseMutations.PATCH_BOARDING_ROOM,
-			variables: {input},
+			variables: { boardingRoomUpdateInput: input },
 		});
-		return data?.patchBoardingRoom ?? "";
+		return data?.updateBoardingRoom ?? "";
 	},
 };

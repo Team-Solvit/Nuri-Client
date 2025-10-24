@@ -77,13 +77,41 @@ export interface BoarderType {
 
 export interface BoardingRoomAndBoardersType {
 	room?: BoardingRoomType;
-	boarders?: BoarderType[];
+	contractInfo : {
+		boarders?: BoarderType[];
+	}
 }
 
 export interface CreateBoardingHouseType {
-	name: string,
-	description: string,
-	images: string[],
-	contracts: string[],
-	facilities: string[],
+	boardingRoomInfo : {
+		name: string
+		monthlyRent: number
+		headCount: number
+		description: string
+	}
+	roomId ?: string
+	files : string[]
+	contractPeriod : number[]
+	options:string[]
+}
+
+export interface GetBoardingRoomByRoomId{
+	roomId : string
+	name : string
+	description : string
+	monthlyRent : number
+	headCount : number
+	boardingRoomOption :{
+		optionId : string
+		name : string
+	}[]
+boardingRoomFile  : {
+	fileId : string
+	url : string
+}[]
+contractPeriod : {
+	contractPeriodId : string
+	contractPeriod : number
+}[]
+day : string
 }

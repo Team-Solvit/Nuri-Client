@@ -1,6 +1,6 @@
 // Author (SnsPost)
 export type Author = {
-	profile: string;
+	profile: string | null;
 	userId: string;
 	__typename: "Author";
 };
@@ -28,7 +28,7 @@ export type SnsPost = {
 
 // BoardingPost 관련 타입
 export type BoardingUser = {
-	profile: string;
+	profile: string | null;
 	userId: string;
 };
 
@@ -62,12 +62,12 @@ export type BoardingRoom = {
 	monthlyRent?: number;
 	name: string;
 	roomId: string;
+	likeCount: number;
+	commentCount: number;
 };
 
 export type BoardingPost = {
 	__typename: "BoardingPost";
-	likeCount: number;
-	commentCount: number;
 	room: BoardingRoom;
 };
 
@@ -85,3 +85,27 @@ export type GetPostListVariables = {
 export type GetPostListResponse = {
 	getPostList: Post[];
 };
+
+export enum ShareRange {
+    ALL = 'ALL',
+    FRIENDS = 'FRIENDS',
+    PRIVATE = 'PRIVATE'
+  }
+  
+  export interface PostCreateInput {
+    postInfo: PostInfo;
+    files: string[];
+    hashTags: string[];
+  }
+  
+  export interface CreatePostResponse {
+    createPost: boolean;
+  }
+  
+  export interface PostInfo {
+    title: string;
+    contents: string;
+    shareRange: ShareRange;
+    isGroup: boolean;
+  }
+

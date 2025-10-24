@@ -1,34 +1,133 @@
 "use client";
 
 import * as S from "./style";
-import {fakeData} from "@/containers/home/post-scroll/data";
 import Image from "next/image";
 import Square from "@/components/ui/button/square";
 import Heart from "@/assets/post/heart.svg";
 import Comment from "@/assets/post/comment.svg";
 import Arrow from "@/assets/post/arrow-right.svg";
-import {useState} from "react";
-import {useRouter} from "next/navigation";
+import {useState, useRef, useCallback} from "react";
 import {useQuery} from "@apollo/client";
 import {PostQueries} from "@/services/post";
 import type {GetPostListResponse, GetPostListVariables} from "@/types/post";
+import {useLoadingEffect} from "@/hooks/useLoading";
+import {useAlertStore} from "@/store/alert";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {useUserStore} from "@/store/user";
+import PostScrollSkeleton from "@/components/ui/skeleton/PostScrollSkeleton";
 
 export default function PostScroll() {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null);
-	const navigate = useRouter();
+	const navigate = useNavigationWithProgress();
 	const navigateClick = (path: string) => {
-		navigate.push(path);
+		navigate(path);
 	}
 	const [imageIndexMap, setImageIndexMap] = useState<Record<number, number>>({});
+	const [isFetchingMore, setIsFetchingMore] = useState(false);
+
 	
+	
+	const [page, setPage] = useState(0);
+	const [isDone, setIsDone] = useState(false);
+	const { data: postData, loading, fetchMore } = useQuery<GetPostListResponse, GetPostListVariables>(
+		PostQueries.GET_POST_LIST,
+		{
+			variables: { start: 0 },
+			notifyOnNetworkStatusChange: true
+		}
+	);
+	
+	// 초기 로딩만 체크 (loadMore 시에는 스켈레톤 안보여주기)
+	const isInitialLoading = loading && !postData?.getPostList;
+	useLoadingEffect(isInitialLoading);
+	
+	
+	const posts = postData?.getPostList;
+	const { error } = useAlertStore();
+	const isFirstLoad = useRef<boolean>((posts?.length ?? 0) < 3);
+	const loadMore = async () => {
+		if (isFetchingMore || isDone) return;
+		if (!postData?.getPostList) return;
+		if (isFirstLoad.current) {
+			isFirstLoad.current = false;
+			return;
+		}
+		setIsFetchingMore(true);
+		const newPage = page + 1;
+		setPage(newPage);
+		
+		try {
+			const prevCount = posts?.length ?? 0;
+			const res = await fetchMore({
+				variables: { start: newPage },
+				updateQuery: (prev, { fetchMoreResult }) => {
+					if (!fetchMoreResult || fetchMoreResult.getPostList.length === 0) {
+						return prev;
+					}
+					
+					const merged = {
+						...prev,
+						getPostList: [
+							...(prev.getPostList ?? []),
+							...fetchMoreResult.getPostList,
+						],
+					};
+					
+					return merged;
+				},
+			});
+			
+			const totalCount = res.data?.getPostList?.length ?? prevCount;
+			const added = totalCount - prevCount;
+			if (added <= 0 || added < 20) {
+				setIsDone(true);
+				error("더 이상 불러올 게시물이 없습니다");
+			}
+		} finally {
+			setIsFetchingMore(false);
+		}
+	};
+
+	// IntersectionObserver to detect when the last post is visible
+	const observer = useRef<IntersectionObserver | null>(null);
+	const lastPostElementRef = useCallback((node: HTMLDivElement | null) => {
+		if (loading || isFetchingMore) return;
+		if (observer.current) observer.current.disconnect();
+		observer.current = new IntersectionObserver(
+			  (entries) => {
+			    if (entries[0].isIntersecting) {
+				      loadMore();
+				    }
+			  },
+		  { root: null, rootMargin: "300px 0px", threshold: 0 }
+		);
+		if (node) observer.current.observe(node);
+	}, [loading, isFetchingMore, posts?.length]);
+	
+	const { userId: currentUserId } = useUserStore();
+	function handleChatJoinTwoIds(id1: string, id2: string) {
+		  if (!id1 || !id2 || id1 === id2) {
+			    error("채팅 대상을 확인해 주세요");
+			    return;
+			  }
+		  const chatId = [id1, id2].sort().join(":");
+		  navigateClick(`/chat/${chatId}`);
+	}
 	const handleMouseEnter = (id: number) => setHoverIndex(id);
 	const handleMouseLeave = () => setHoverIndex(null);
 	
 	const handleSlide = (postId: number, direction: "next" | "prev") => {
-		if (postId === null) return;
+		if (!posts) return;
 		setImageIndexMap(prev => {
 			const current = prev[postId] || 0;
-			const images = fakeData.find(p => p.id === postId)?.thumbnail || [];
+			const postItem = posts[postId].postInfo
+			const images =
+				posts[postId]
+					? postItem.__typename === "SnsPost"
+						? postItem.files.map(f => f.url)
+						: postItem.room.boardingRoomFile.map(f => f.url)
+					: [];
+			
 			const max = images.length - 1;
 			
 			const next =
@@ -40,15 +139,14 @@ export default function PostScroll() {
 		});
 	};
 	
-	const {data: postData} = useQuery<GetPostListResponse, GetPostListVariables>(
-		PostQueries.GET_POST_LIST,
-		{variables: {start: 0}}
-	);
-	const posts = postData?.getPostList;
-	console.log(posts, postData);
+	// 초기 로딩 중이면 스켈레톤 컴포넌트 렌더링
+	if (isInitialLoading) {
+		return <PostScrollSkeleton />;
+	}
 	return (
 		<S.PostScrollContainer>
-			{posts && posts.map(post => {
+			{!loading && posts?.length === 0 && <p>생성된 게시물이 없습니다.</p>}
+			{posts && posts.map((post, index) => {
 				const postItem = post.postInfo;
 				let id: string | null = null;
 				let title: string | null = null;
@@ -57,31 +155,37 @@ export default function PostScroll() {
 				let price: string | null = null;
 				let date: string | null = null;
 				let user: { userId: string; thumbnail: string } | null = null;
-				
+				let commentCount : number | null = null;
+				let likeCount : number | null = null;
+
 				if (postItem.__typename === "SnsPost") {
 					id = postItem.postId;
 					title = postItem.title;
 					desc = postItem.contents;
+					commentCount = postItem.commentCount;
+					likeCount = postItem.likeCount;
 					thumbnail = postItem.files.map(f => f.url);
 					price = null;
 					date = postItem.day;
 					user = {
 						userId: postItem.author.userId,
-						thumbnail: postItem.author.profile,
+						thumbnail: postItem.author.profile ?? "",
 					};
 				} else if (postItem.__typename === "BoardingPost") {
 					id = postItem.room.roomId;
 					title = postItem.room.name;
+					commentCount = postItem.room.commentCount;
+					likeCount = postItem.room.likeCount;
 					desc = postItem.room.description || null;
 					thumbnail = postItem.room.boardingRoomFile.map(f => f.url);
 					price = postItem.room.monthlyRent?.toLocaleString() || null;
 					date = postItem.room.day || null;
 					user = {
 						userId: postItem.room.boardingHouse.host.user.userId,
-						thumbnail: postItem.room.boardingHouse.host.user.profile,
+						thumbnail: postItem.room.boardingHouse.host.user.profile ?? "",
 					};
 				}
-				
+
 				const postData = {
 					id,
 					title,
@@ -90,21 +194,28 @@ export default function PostScroll() {
 					price,
 					date,
 					user,
+					commentCount,
+					likeCount
 				};
-				let currentIndex = null
-				if (postData.id) {
-					currentIndex = imageIndexMap[Number(postData.id)];
-				}
+				const currentIndex = imageIndexMap[index] || 0;
 				
+				const profileSrc: string =
+					!user?.thumbnail
+					    ? "/post/default.png"
+						    : /^https?:\/\//.test(user.thumbnail)
+					      ? user.thumbnail
+						      : `${process.env.NEXT_PUBLIC_IMAGE_URL ?? ""}${user.thumbnail}`;
+
 				return (
 					<S.Post
 						key={postData.id}
+						ref={posts && index === posts.length - 1 ? lastPostElementRef : undefined}
 					>
 						<S.PostTitle>
 							<S.Profile onClick={(e) => e.stopPropagation()}>
 								<S.Thumbnail>
 									<Image
-										src={postData.user?.thumbnail ? postData.user.thumbnail : "/post/default.png"}
+										src={profileSrc}
 										alt={"user thumbnail"}
 										fill
 										style={{objectFit: "cover"}}
@@ -112,30 +223,31 @@ export default function PostScroll() {
 								</S.Thumbnail>
 								<S.User>
 									<p>{postData.user?.userId}</p>
-									<p>{postData.desc}</p>
+									<p>{postData.date}</p>
 								</S.User>
 							</S.Profile>
 							<S.Nav onClick={(e) => e.stopPropagation()}>
 								<p>{postData.price ? "하숙집" : ""}</p>
 								<Square text={"채팅"} onClick={() => {
+									handleChatJoinTwoIds(currentUserId ?? "", postData?.user?.userId ?? "")
 								}} status={true} width={"100px"}/>
 							</S.Nav>
 						</S.PostTitle>
 						<S.PostImg
 							onClick={(e) => e.stopPropagation()}
 							onMouseEnter={() => {
-								if (postData.id !== null) handleMouseEnter(Number(postData.id));
+								handleMouseEnter(index);
 							}}
 							onMouseLeave={handleMouseLeave}
 						>
 							{/* Left Arrow: index > 0일 때만 */}
 							{currentIndex && currentIndex > 0 && (
 								<S.Arrow
-									isHover={hoverIndex === postData.id}
+									isHover={hoverIndex === index}
 									status={false}
 									onClick={() => {
 										if (postData.id !== null) {
-											handleSlide(Number(postData.id), "prev");
+											handleSlide(index, "prev");
 										}
 									}}
 								>
@@ -149,7 +261,11 @@ export default function PostScroll() {
 									{postData?.thumbnail.map((src, i) => (
 										<S.Slide key={i}>
 											<Image
-												src={src ? "https://cdn.solvit-nuri.com/file/"+src : "/post/default.png"}
+												src={
+													    src
+													      ? (/^https?:\/\//.test(src) ? src : `${process.env.NEXT_PUBLIC_IMAGE_URL ?? ""}${src}`)
+														      : "/post/default.png"
+														  }
 												alt={`slide-${i}`}
 												fill
 												style={{objectFit: "cover"}}
@@ -160,13 +276,13 @@ export default function PostScroll() {
 							</S.SliderWrapper>
 							
 							{/* Right Arrow: index < 마지막일 때만 */}
-							{currentIndex && currentIndex < postData.thumbnail.length - 1 && (
+							{currentIndex < postData.thumbnail.length - 1 && (
 								<S.Arrow
-									isHover={hoverIndex === postData.id}
+									isHover={hoverIndex === index}
 									status={true}
 									onClick={() => {
 										if (postData.id !== null) {
-											handleSlide(Number(postData.id), "next");
+											handleSlide(index, "next");
 										}
 									}}
 								>
@@ -179,11 +295,11 @@ export default function PostScroll() {
 								<S.Interactive>
 									<S.Inter>
 										<Image src={Heart} alt="like" width={28} height={28}/>
-										<p>0</p>
+										<p>{postData.likeCount}</p>
 									</S.Inter>
 									<S.Inter>
 										<Image src={Comment} alt="comment" width={24} height={24}/>
-										<p>0</p>
+										<p>{postData.commentCount}</p>
 									</S.Inter>
 								</S.Interactive>
 								{postData.price && <p>₩ 월 / {postData.price}</p>}
