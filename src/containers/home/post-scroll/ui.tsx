@@ -26,7 +26,6 @@ export default function PostScroll() {
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
 	
 	const [page, setPage] = useState(0);
-	const [isDone, setIsDone] = useState(false);
 	const { data: postData, loading, fetchMore } = useQuery<GetPostListResponse, GetPostListVariables>(
 		PostQueries.GET_POST_LIST,
 		{
@@ -36,24 +35,21 @@ export default function PostScroll() {
 	);
 	
 	const isInitialLoading = loading && !postData?.getPostList;
-	useLoadingEffect(isInitialLoading);
+	
+	useLoadingEffect(isInitialLoading || isFetchingMore);
 	
 	const posts = postData?.getPostList;
 	const { error } = useAlertStore();
-	const isFirstLoad = useRef<boolean>((posts?.length ?? 0) < 3);
-	
+  
+	const isCompleted= useRef<boolean>(false)
 	const loadMore = async () => {
-		if (isFetchingMore || isDone) return;
+		if (isFetchingMore || isCompleted.current) return;
 		if (!postData?.getPostList) return;
-		if (isFirstLoad.current) {
-			isFirstLoad.current = false;
-			return;
-		}
+		if(postData?.getPostList.length < 3) return;
 		setIsFetchingMore(true);
 		const newPage = page + 1;
 		setPage(newPage);
 		try {
-			const prevCount = posts?.length ?? 0;
 			const res = await fetchMore({
 				variables: { start: newPage },
 				updateQuery: (prev, { fetchMoreResult }) => {
@@ -64,11 +60,10 @@ export default function PostScroll() {
 					};
 				},
 			});
-			const totalCount = res.data?.getPostList?.length ?? prevCount;
-			const added = totalCount - prevCount;
-			if (added <= 0 || added < 20) {
-				setIsDone(true);
-				error("더 이상 불러올 게시물이 없습니다");
+			const totalCount = res.data?.getPostList?.length
+			if(totalCount < 1){
+				error("더 이상 게시물이 없습니다")
+				isCompleted.current = true
 			}
 		} finally {
 			setIsFetchingMore(false);
@@ -180,7 +175,12 @@ export default function PostScroll() {
 						ref={index === posts.length - 1 ? lastPostElementRef : undefined}
 					>
 						<S.PostTitle>
-							<S.Profile onClick={(e) => e.stopPropagation()}>
+							<S.Profile onClick={(e) => {
+								e.stopPropagation();
+								if (postData.user?.userId) {
+									navigateClick(`/profile/${postData.user?.userId}`);
+								}
+							}}>
 								<S.Thumbnail>
 									<Image src={profileSrc} alt="user thumbnail" fill style={{ objectFit: "cover" }} />
 								</S.Thumbnail>
@@ -201,15 +201,26 @@ export default function PostScroll() {
 						</S.PostTitle>
 						
 						<S.PostImg
-							onClick={(e) => e.stopPropagation()}
-							onMouseEnter={() => handleMouseEnter(index)}
+              onClick={() => {
+								if (postData.id) {
+									navigateClick(`/post/${postData.id}`);
+								}
+							}}
+							onMouseEnter={() => {
+								handleMouseEnter(index);
+							}}
 							onMouseLeave={handleMouseLeave}
 						>
 							{currentIndex > 0 && (
 								<S.Arrow
 									isHover={hoverIndex === index}
 									status={false}
-									onClick={() => handleSlide(index, "prev")}
+									onClick={(e) => {
+										e.stopPropagation();
+										if (postData.id !== null) {
+											handleSlide(index, "prev");
+										}
+									}}
 								>
 									<Image src={Arrow} alt="arrow" fill style={{ objectFit: "cover" }} />
 								</S.Arrow>
@@ -233,8 +244,13 @@ export default function PostScroll() {
 							{currentIndex < thumbnail.length - 1 && (
 								<S.Arrow
 									isHover={hoverIndex === index}
-									status
-									onClick={() => handleSlide(index, "next")}
+									status={true}
+									onClick={(e) => {
+										e.stopPropagation();
+										if (postData.id !== null) {
+											handleSlide(index, "next");
+										}
+									}}
 								>
 									<Image src={Arrow} alt="arrow" fill style={{ objectFit: "cover" }} />
 								</S.Arrow>
