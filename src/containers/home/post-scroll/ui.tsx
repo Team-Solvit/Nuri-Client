@@ -214,7 +214,9 @@ export default function PostScroll() {
 						<S.PostTitle>
 							<S.Profile onClick={(e) => {
 								e.stopPropagation();
-								navigateClick(`/profile/${postData.user?.userId}`);
+								if (postData.user?.userId) {
+									navigateClick(`/profile/${postData.user?.userId}`);
+								}
 							}}>
 								<S.Thumbnail>
 									<Image
@@ -237,7 +239,11 @@ export default function PostScroll() {
 							</S.Nav>
 						</S.PostTitle>
 						<S.PostImg
-							onClick={() => navigateClick(`/post/${postData.id}`)}
+							onClick={() => {
+								if (postData.id) {
+									navigateClick(`/post/${postData.id}`);
+								}
+							}}
 							onMouseEnter={() => {
 								handleMouseEnter(index);
 							}}
