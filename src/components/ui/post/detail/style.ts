@@ -652,9 +652,9 @@ export const CommentInput = styled.textarea`
     border-color: ${colors.primary};
   }
   ${mq.mobile} {
-    font-size: 0.75rem;
-    padding: 0.6rem 0.75rem;
-    min-height: 36px;
+    font-size: 0.875rem;
+    padding: 0.85rem 1rem;
+    min-height: 48px;
   }
 `;
 
@@ -681,8 +681,8 @@ export const SendButton = styled.button<{ disabled?: boolean }>`
   }
   
   ${mq.mobile} {
-    width: 36px;
-    height: 36px;
+    width: 48px;
+    height: 48px;
   }
 `;
 
