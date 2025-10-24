@@ -2,12 +2,12 @@
 
 import React, { Fragment, useState } from 'react'
 import {
-  useJsApiLoader,
   GoogleMap,
   Marker,
   OverlayView,
 } from '@react-google-maps/api'
 import { colors, fontSizes } from '@/styles/theme'
+import { useGoogleMaps } from '@/components/layout/GoogleMapsProvider'
 
 const containerStyle = { width: '100%', height: '100vh' }
 const MARKER_SIZE = 48
@@ -27,10 +27,7 @@ interface MapProps {
 }
 
 export default function Map({ markers, label, renderPopup, onMarkerSelect }: MapProps) {
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-  })
+  const { isLoaded } = useGoogleMaps()
   const [hoveredId, setHoveredId] = useState<number | null>(null)
   const [selectedId, setSelectedId] = useState<number | null>(null)
 

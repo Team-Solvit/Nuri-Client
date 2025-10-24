@@ -142,7 +142,7 @@ export default function Host() {
             </S.RadioLabel>
           </S.RadioRow>
         </S.Section>
-        <Square text="저장하기" status={true} onClick={() => {}} width="50vw" />
+        <Square text="저장하기" status={true} onClick={() => {}} width="100%" />
           </>
         )}
       </S.Container>

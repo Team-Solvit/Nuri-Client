@@ -53,4 +53,4 @@ export interface LoginUserResponse {
   phoneNumber?: string;
   profile: string;
   role: string;
-}
+} 
