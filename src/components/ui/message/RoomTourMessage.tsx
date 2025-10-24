@@ -6,7 +6,6 @@ import { MESSAGE_MAX_WIDTH_MOBILE } from "@/constants/constant";
 import { RoomTour, RoomTourResponseDto } from "@/types/message";
 import { useQuery } from "@apollo/client";
 import { RoomTourQueries } from "@/services/roomTour";
-import * as S from "@/containers/message/roomtour-modal/style";
 import { useMessageContentReadFetchStore } from "@/store/messageContentReadFetch";
 import {imageCheck} from "@/utils/imageCheck";
 

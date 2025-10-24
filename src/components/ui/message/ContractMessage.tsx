@@ -115,7 +115,12 @@ interface ContractMessageProps {
 	onDetail?: () => void;
 	button?: React.ReactNode;
 }
-
+const STATUS_MAP = {
+	ACTIVE: { text: "수락", isAgree: true },
+  REJECTED: { text: "거절", isAgree: false },
+	EXPIRED: { text: "만료", isAgree: false },
+// PENDING: PENDING 상태에서는 뱃지를 표시하지 않습니다
+} as const;
 const ContractMessage: React.FC<ContractMessageProps> = ({
 	                                                         contract,
 	                                                         time,
@@ -124,14 +129,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
 	                                                         button,
                                                          }) => {
 	const status = contract.status;
-	
-	const statusMap = {
-		ACTIVE: { text: "수락", isAgree: true },
-		REJECTED: { text: "거절", isAgree: false },
-		EXPIRED: { text: "만료", isAgree: false },
-	} as const;
-	
-	const m = statusMap[status as keyof typeof statusMap];
+	const m = STATUS_MAP[status as keyof typeof STATUS_MAP];
 	
 	return (
 		<div style={{ position: "relative", display: "inline-block" }}>

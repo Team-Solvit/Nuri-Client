@@ -233,6 +233,20 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 			setProfileDataUrl(null);
 			return;
 		}
+		
+		// 형식/용량 검증
+		const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
+		const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+		if (!ALLOWED.includes(file.type)) {
+			error("지원되지 않는 파일 형식입니다.");
+			e.currentTarget.value = "";
+			return;
+		}
+		if (file.size > MAX_SIZE) {
+			error("파일 용량은 5MB 이하여야 합니다.");
+			e.currentTarget.value = "";
+			return;
+		}
 		// 미리보기는 object URL, 전송은 base64 DataURL 사용
 		const objectUrl = URL.createObjectURL(file);
 		if (profilePreview) URL.revokeObjectURL(profilePreview);
@@ -391,7 +405,11 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 				
 				<S.ActionButton
 					onClick={handleAddition}
-					disabled={selectedUsers.length === 0 || loading || (type === "add" && !roomName.trim())}
+					disabled={
+					selectedUsers.length === 0 ||
+						loading ||
+						(type === "add" && selectedUsers.length !== 1 && !roomName.trim())
+					}
 				>
 					{loading
 						? "로딩중입니다"
