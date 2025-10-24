@@ -23,7 +23,7 @@ export const PostScrollContainer = styled.section`
   width: 100%;
   height: 100%;
   overflow-y: scroll;
-  padding: 0 1rem 2rem 1rem;
+  padding: 0 1rem 20rem 1rem;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE, Edge */
 
