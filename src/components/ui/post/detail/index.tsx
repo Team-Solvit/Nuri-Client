@@ -35,6 +35,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
     isLiked,
     likeCount,
     isOpen,
+    postToDelete,
     isHousePost,
     images,
     commentCount,
@@ -85,6 +86,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
     setEditingText,
     openCommentMenuId,
     actionMenuRef,
+    commentToDelete,
     setShowComments,
     setCommentText,
     setOpenCommentMenuId,
@@ -281,7 +283,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
       </S.Right>
 
       <ConfirmModal
-        visible={Boolean(isOpen && editingCommentId === null && false)}
+        visible={Boolean(isOpen && commentToDelete !== null)}
         title="댓글 삭제"
         message={<>정말 댓글을 삭제하시겠습니까?</>}
         confirmText="삭제"
@@ -291,7 +293,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
       />
 
       <ConfirmModal
-        visible={Boolean(isOpen)}
+        visible={Boolean(isOpen && postToDelete !== null)}
         title="게시물 삭제"
         message={<>정말 게시물을 삭제하시겠습니까?<br />삭제된 게시물은 복구할 수 없습니다.</>}
         confirmText="삭제"
