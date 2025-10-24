@@ -6,7 +6,7 @@ import Square from "@/components/ui/button/square";
 import Heart from "@/assets/post/heart.svg";
 import Comment from "@/assets/post/comment.svg";
 import Arrow from "@/assets/post/arrow-right.svg";
-import {useState, useRef, useCallback} from "react";
+import {useState, useRef, useCallback, useEffect} from "react";
 import {useQuery} from "@apollo/client";
 import {PostQueries} from "@/services/post";
 import type {GetPostListResponse, GetPostListVariables} from "@/types/post";
@@ -28,7 +28,6 @@ export default function PostScroll() {
 	
 	
 	const [page, setPage] = useState(0);
-	const [isDone, setIsDone] = useState(false);
 	const { data: postData, loading, fetchMore } = useQuery<GetPostListResponse, GetPostListVariables>(
 		PostQueries.GET_POST_LIST,
 		{
@@ -39,25 +38,22 @@ export default function PostScroll() {
 	
 	// 초기 로딩만 체크 (loadMore 시에는 스켈레톤 안보여주기)
 	const isInitialLoading = loading && !postData?.getPostList;
-	useLoadingEffect(isInitialLoading);
+	
+	useLoadingEffect(isInitialLoading || isFetchingMore);
 	
 	
 	const posts = postData?.getPostList;
 	const { error } = useAlertStore();
-	const isFirstLoad = useRef<boolean>((posts?.length ?? 0) < 3);
+	
+	const isCompleted= useRef<boolean>(false)
 	const loadMore = async () => {
-		if (isFetchingMore || isDone) return;
+		if (isFetchingMore || isCompleted.current) return;
 		if (!postData?.getPostList) return;
-		if (isFirstLoad.current) {
-			isFirstLoad.current = false;
-			return;
-		}
+		if(postData?.getPostList.length < 3) return;
 		setIsFetchingMore(true);
 		const newPage = page + 1;
 		setPage(newPage);
-		
 		try {
-			const prevCount = posts?.length ?? 0;
 			const res = await fetchMore({
 				variables: { start: newPage },
 				updateQuery: (prev, { fetchMoreResult }) => {
@@ -77,17 +73,16 @@ export default function PostScroll() {
 				},
 			});
 			
-			const totalCount = res.data?.getPostList?.length ?? prevCount;
-			const added = totalCount - prevCount;
-			if (added <= 0 || added < 20) {
-				setIsDone(true);
-				error("더 이상 불러올 게시물이 없습니다");
+			const totalCount = res.data?.getPostList?.length
+			if(totalCount < 1){
+				error("더 이상 게시물이 없습니다")
+				isCompleted.current = true
 			}
 		} finally {
 			setIsFetchingMore(false);
 		}
 	};
-
+	
 	// IntersectionObserver to detect when the last post is visible
 	const observer = useRef<IntersectionObserver | null>(null);
 	const lastPostElementRef = useCallback((node: HTMLDivElement | null) => {
