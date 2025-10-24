@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { mq } from '@/styles/media';
 
 export const Wrapper = styled.div`
   padding: 24px;
@@ -6,6 +7,14 @@ export const Wrapper = styled.div`
   max-width: 600px;
   max-height: 80vh;
   overflow-y: auto;
+
+  ${mq.mobile} {
+    min-width: unset;
+    width: 100%;
+    max-width: 100%;
+    padding: 20px;
+    max-height: 90vh;
+  }
 `;
 
 export const Title = styled.h3`
@@ -81,4 +90,9 @@ export const BtnRow = styled.div`
   display: flex;
   gap: 12px;
   margin-top: 16px;
+
+  ${mq.mobile} {
+    flex-direction: column;
+    gap: 8px;
+  }
 `;

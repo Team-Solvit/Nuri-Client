@@ -4,6 +4,7 @@ import { GroupService } from '@/services/group';
 import { useAlertStore } from '@/store/alert';
 import { useApolloClient } from '@apollo/client';
 import { useFileUpload } from '@/hooks/useFileUpload';
+import GroupEditModalSkeleton from '@/components/ui/skeleton/GroupEditModalSkeleton';
 import type { Group, GroupUpdateInput, Area } from '@/types/group';
 import * as S from './style';
 
@@ -128,6 +129,10 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
       setLoading(false);
     }
   };
+
+  if (loadingAreas) {
+    return <GroupEditModalSkeleton />;
+  }
 
   return (
     <S.Wrapper>

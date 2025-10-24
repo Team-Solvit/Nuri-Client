@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import * as S from "./style";
 import Square from "@/components/ui/button/square";
 import Modal from "@/components/layout/modal";
+import MemberModalSkeleton from "@/components/ui/skeleton/MemberModalSkeleton";
 import { useApollo } from "@/lib/apolloClient";
 import { GroupService } from "@/services/group";
 import type { GroupMember, GroupParticipationRequest } from "@/types/group";
@@ -101,14 +102,7 @@ export default function MemberModal({ groupId, onDone }: MemberModalProps) {
   };
 
   if (loading) {
-    return (
-      <S.MemberModalWrapper>
-        <S.ModalTitle>모임원 목록</S.ModalTitle>
-        <div style={{ textAlign: 'center', padding: '50px' }}>
-          로딩 중...
-        </div>
-      </S.MemberModalWrapper>
-    );
+    return <MemberModalSkeleton />;
   }
 
   return (

@@ -8,6 +8,7 @@ import { useAlertStore } from '@/store/alert';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { useRouter } from 'next/navigation';
 import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
+import ThirdPartyDetailSkeleton from "@/components/ui/skeleton/ThirdPartyDetailSkeleton";
 import * as S from "./style";
 import Square from '@/components/ui/button/square';
 
@@ -235,7 +236,7 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
     navigate(`/profile/${userId}`);
   };
 
-  if (loading) return <S.Wrapper>로딩 중...</S.Wrapper>;
+  if (loading) return <ThirdPartyDetailSkeleton />;
   if (!schedule) return <S.Wrapper>일정 정보를 찾을 수 없습니다.</S.Wrapper>;
 
   return (

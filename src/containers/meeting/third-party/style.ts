@@ -169,8 +169,6 @@ export const LoadingState = styled.div`
     margin: 0;
   }
 
-    }
-
   ${mq.mobile} {
     padding: 30px 16px;
 
@@ -222,16 +220,8 @@ export const DeleteConfirmMessage = styled.p`
 
 export const DeleteConfirmButtons = styled.div`
   display: flex;
+  flex-direction: row;
   gap: 12px;
   justify-content: center;
   margin-top: 8px;
-
-  ${mq.mobile} {
-    flex-direction: column;
-    gap: 8px;
-
-    button {
-      width: 100% !important;
-    }
-  }
 `;

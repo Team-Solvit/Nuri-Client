@@ -4,6 +4,7 @@ import Square from "@/components/ui/button/square";
 import * as S from "./style";
 import MeetingList from "@/components/ui/third-party/MeetingList";
 import MeetingListSkeleton from "@/components/ui/skeleton/MeetingListSkeleton";
+import ThirdPartyMeetingSkeleton from "@/components/ui/skeleton/ThirdPartyMeetingSkeleton";
 import { useModalStore } from "@/store/modal";
 import Modal from "@/components/layout/modal";
 import MemberModal from "./MemberModal";
@@ -190,14 +191,7 @@ export default function MeetingThirdPartyContainer() {
   };
 
   if (loading) {
-    return (
-      <S.Wrapper>
-        <S.Section>
-          <MeetingListSkeleton count={2} />
-          <MeetingListSkeleton count={2} />
-        </S.Section>
-      </S.Wrapper>
-    );
+    return <ThirdPartyMeetingSkeleton />;
   }
 
   return (
@@ -309,14 +303,14 @@ export default function MeetingThirdPartyContainer() {
               <Square
                 text="취소"
                 onClick={() => setIsDeleteConfirmOpen(false)}
-                status={true}
-                width="120px"
+                status={false}
+                width="100%"
               />
               <Square
                 text="삭제"
                 onClick={handleDeleteConfirm}
                 status={true}
-                width="120px"
+                width="100%"
               />
             </S.DeleteConfirmButtons>
           </S.DeleteConfirmModal>
