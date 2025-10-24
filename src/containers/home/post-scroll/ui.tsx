@@ -212,7 +212,10 @@ export default function PostScroll() {
 						ref={posts && index === posts.length - 1 ? lastPostElementRef : undefined}
 					>
 						<S.PostTitle>
-							<S.Profile onClick={(e) => e.stopPropagation()}>
+							<S.Profile onClick={(e) => {
+								e.stopPropagation();
+								navigateClick(`/profile/${postData.user?.userId}`);
+							}}>
 								<S.Thumbnail>
 									<Image
 										src={profileSrc}
@@ -234,7 +237,7 @@ export default function PostScroll() {
 							</S.Nav>
 						</S.PostTitle>
 						<S.PostImg
-							onClick={(e) => e.stopPropagation()}
+							onClick={() => navigateClick(`/post/${postData.id}`)}
 							onMouseEnter={() => {
 								handleMouseEnter(index);
 							}}
@@ -245,7 +248,8 @@ export default function PostScroll() {
 								<S.Arrow
 									isHover={hoverIndex === index}
 									status={false}
-									onClick={() => {
+									onClick={(e) => {
+										e.stopPropagation();
 										if (postData.id !== null) {
 											handleSlide(index, "prev");
 										}
@@ -280,7 +284,8 @@ export default function PostScroll() {
 								<S.Arrow
 									isHover={hoverIndex === index}
 									status={true}
-									onClick={() => {
+									onClick={(e) => {
+										e.stopPropagation();
 										if (postData.id !== null) {
 											handleSlide(index, "next");
 										}

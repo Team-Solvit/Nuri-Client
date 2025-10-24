@@ -77,7 +77,7 @@ export const PostImg = styled.div`
   overflow: hidden;
   border-radius: ${radius.md};
   position: relative;
-  cursor: default;
+  cursor: pointer;
 
   ${mq.mobile} {
     height: 30vh;
@@ -168,6 +168,7 @@ export const Profile = styled.div`
   width: 70%;
   height: 100%;
   gap: 0.8rem;
+  cursor: pointer;
 `
 export const User = styled.div`
   display: flex;
