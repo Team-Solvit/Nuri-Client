@@ -160,7 +160,7 @@ export default function MessageSideBar() {
 					...roomDataList,
 				];
 			const unique = next.reduceRight((acc, cur) => {
-				if (!acc.some(r => r.roomDto.name === cur.roomDto.name)) {
+				if (!acc.some(r => r.roomDto.id === cur.roomDto.id)) {
 					acc.push(cur);
 				}
 				return acc;

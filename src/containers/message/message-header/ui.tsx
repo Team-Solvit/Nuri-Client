@@ -73,7 +73,7 @@ export default function MessageHeaderUI() {
 	useEffect(() => {
 		if (!message || !refetch) return;
 		
-		const exitMatch = message.contents?.match(/^(\w+)\s+exit$/);
+		const exitMatch = message.contents?.match(/^(.+?)\s+exit$/);
 		if (exitMatch) {
 			console.log("Exit message detected in header, refetching members");
 			refetch();
@@ -151,7 +151,6 @@ export default function MessageHeaderUI() {
 	const {success, error} = useAlertStore();
 	const page = useMessagePageStore(s => s.page);
 	const setRoomDataList = useMessagePageStore(s=>s.setRoomDataList)
-	const memberCount = useMessageHeaderStore(s=>s.memberCount)
 	const [isAddition, setIsAddition] = useState(false);
 	const iconRef = useRef<HTMLImageElement>(null);
 	
@@ -170,7 +169,7 @@ export default function MessageHeaderUI() {
 				<div style={{ position: 'relative' }}>
 					<p>
 						{chatRoomName}
-						{memberCount > 2 && (
+						{memberIds?.length > 2 && (
 							<S.MemberCount onClick={handleMemberCountClick}>
 								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 									<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
@@ -179,7 +178,7 @@ export default function MessageHeaderUI() {
 							</S.MemberCount>
 						)}
 					</p>
-					{showMemberList && memberCount > 2 && (
+					{showMemberList && memberIds?.length > 2 && (
 						<S.MemberListContainer ref={memberListRef}>
 							{memberIds.map((memberId: string, index: number) => (
 								<S.MemberItem
@@ -213,7 +212,8 @@ export default function MessageHeaderUI() {
 				<AdditionRoom
 					isAddition={isAddition}
 					setIsAddition={setIsAddition}
-					iconRef={iconRef as React.RefObject<HTMLDivElement>}
+					iconRef={iconRef as React.RefObject<HTMLImageElement
+					>}
 					type={"update"}
 					existingMembers={memberIds}
 					refetchMembers={refetch}

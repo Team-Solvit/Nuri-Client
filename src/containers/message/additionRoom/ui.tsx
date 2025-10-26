@@ -29,7 +29,7 @@ interface User {
 export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, existingMembers = [], refetchMembers}: {
 	isAddition: boolean;
 	setIsAddition: (value: boolean) => void;
-	iconRef: React.RefObject<HTMLDivElement>;
+	iconRef: React.RefObject<HTMLImageElement>;
 	type: "add" | "update";
 	existingMembers?: string[];
 	refetchMembers?: () => void;
