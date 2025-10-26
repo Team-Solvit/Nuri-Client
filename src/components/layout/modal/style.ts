@@ -13,6 +13,10 @@ export const Black = styled.div`
   align-items: center;
   background-color: rgba(116, 116, 116, 0.5);
   z-index: ${zIndex.modal};
+
+  ${mq.mobile} {
+    padding: 20px;
+  }
 `
 export const Content = styled.div`
   background-color: white;

@@ -59,7 +59,7 @@ export const PostQueries = {
 export const PostGQL = {
   MUTATIONS: {
     CREATE_POST: gql`
-      mutation CreatePost($postCreateInput: PostCreateInput!) {
+       mutation CreatePost($postCreateInput: PostCreateInput!) {
         createPost(postCreateInput: $postCreateInput)
       }
     `,

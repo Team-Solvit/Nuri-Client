@@ -18,6 +18,10 @@ export const PostImg = styled.div`
   overflow: hidden;
   cursor: pointer;
 
+	${mq.mobile} {
+    width: 46vw;
+		height: 21vh;
+	}
   &:hover::after {
     content: '';
     position: absolute;

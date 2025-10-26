@@ -10,6 +10,7 @@ import { useApollo } from '@/lib/apolloClient';
 import { createPost } from '@/services/post';
 import { ShareRange } from '@/types/post';
 import { imageService } from '@/services/image';
+import {useIsMakeGroupPostStore} from "@/store/isMakeGroupPost";
 import { useUserStore } from '@/store/user';
 import { useAlertStore } from '@/store/alert';
 
@@ -62,7 +63,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
     };
 
 
-    // 게시물 생성
+		const {isGroup} = useIsMakeGroupPostStore()
     const handleSubmit = async () => {
         if (isSubmitting) return;
         if (!content.trim() || !title.trim()) {
@@ -107,7 +108,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                     title: title,
                     contents: cleanedContent,
                     shareRange: getShareRange(publicTarget),
-                    isGroup: publicTarget === '모임'
+                    isGroup: isGroup
                 },
                 files: imageUrls,
                 hashTags: hashtags

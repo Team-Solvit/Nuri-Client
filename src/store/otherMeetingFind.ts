@@ -6,6 +6,6 @@ interface OtherMeetingFind {
 }
 
 export const useOtherMeetingFind = create<OtherMeetingFind>((set) => ({
-	find: true,
+	find: false,
 	setFind: (find: boolean) => set({find}),
 }));
