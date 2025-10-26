@@ -41,6 +41,14 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     onCompleted: (data) => {
       if (data?.searchBoardingRoom) {
         const rooms = data.searchBoardingRoom;
+        console.log('🎉 초기 로드 완료:', rooms.length, '개');
+        console.log('📋 전체 방 데이터 (첫 3개):', rooms.slice(0, 3).map((r: BoardingRoom) => ({
+          roomId: r.roomId,
+          name: r.name,
+          imageCount: r.boardingRoomFile?.length,
+          firstImageUrl: r.boardingRoomFile?.[0]?.url,
+          firstImageFileId: r.boardingRoomFile?.[0]?.fileId,
+        })));
         const postList = rooms.map(convertToPostItem);
         setAllPosts(postList);
         setHasMore(postList.length === 20);
@@ -63,15 +71,36 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
   };
 
   const convertToPostItem = (room: BoardingRoom): PostItemData => {
-    const thumbnailUrl = room.boardingRoomFile?.[0]?.url || room.boardingRoomFile?.[0]?.fileId;
+    // 첫 번째 이미지 파일의 URL 가져오기
+    const firstImage = room.boardingRoomFile?.[0];
+    
+    // url 필드를 우선 사용, 없으면 fileId 사용 → 둘 다 ID이므로 CDN URL로 변환
+    let thumbnailUrl = '';
+    if (firstImage) {
+      const imageId = firstImage.url || firstImage.fileId;
+      if (imageId) {
+        thumbnailUrl = `https://cdn.solvit-nuri.com/file/${imageId}`;
+      }
+    }
+    
     const userProfileUrl = room.boardingHouse?.host?.user?.profile;
+    
+    // 디버깅: 이미지 데이터 확인
+    console.log('🖼️ 방 이미지 변환:', {
+      roomId: room.roomId,
+      name: room.name,
+      url: firstImage?.url,
+      fileId: firstImage?.fileId,
+      finalThumbnail: thumbnailUrl
+    });
     
     return {
       id: room.roomId || `room_${Math.random().toString(36).substr(2, 9)}`,
       user: room.boardingHouse?.host?.user?.name || '알 수 없음',
+      userId: room.boardingHouse?.host?.user?.userId || '',
       title: room.name,
       price: room.monthlyRent?.toString() ?? '0',
-      thumbnail: thumbnailUrl && isValidUrl(thumbnailUrl) ? thumbnailUrl : '',
+      thumbnail: thumbnailUrl,
       userProfile: userProfileUrl && isValidUrl(userProfileUrl) ? userProfileUrl : '/profile/profile.svg',
     };
   };
@@ -79,6 +108,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
   const loadMorePosts = useCallback(async () => {
     if (isLoadingMore || !hasMore || loading) return;
 
+    console.log('🔄 loadMorePosts 시작 - 현재 게시물 수:', allPosts.length);
     setIsLoadingMore(true);
     try {
       const result = await fetchMore({
@@ -88,15 +118,29 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
       });
 
       const newRooms = result.data?.searchBoardingRoom || [];
+      console.log('📦 API 응답:', newRooms.length, '개 받음');
+      
       if (newRooms.length > 0) {
         const newPosts = newRooms.map(convertToPostItem);
-        setAllPosts(prev => [...prev, ...newPosts]);
-        setHasMore(newPosts.length === 20);
+        
+        // 중복 제거: 기존 id와 중복되지 않는 항목만 추가
+        setAllPosts(prev => {
+          const existingIds = new Set(prev.map(p => p.id));
+          const uniqueNewPosts = newPosts.filter((p: PostItemData) => !existingIds.has(p.id));
+          console.log('✅ 중복 제거 후:', uniqueNewPosts.length, '개 추가 (원본:', newPosts.length, '개)');
+          console.log('📊 전체 게시물 수:', prev.length, '→', prev.length + uniqueNewPosts.length);
+          return [...prev, ...uniqueNewPosts];
+        });
+        
+        // 중요: 원본 응답이 20개 미만이면 더 이상 없음
+        setHasMore(newRooms.length === 20);
+        console.log('🎯 hasMore 설정:', newRooms.length === 20);
       } else {
+        console.log('⚠️ 응답 데이터 없음 - 더 이상 로드 안 함');
         setHasMore(false);
       }
     } catch (error) {
-      console.error('추가 데이터 로드 실패:', error);
+      console.error('❌ 추가 데이터 로드 실패:', error);
       setHasMore(false);
     } finally {
       setIsLoadingMore(false);

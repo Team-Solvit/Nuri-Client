@@ -47,6 +47,7 @@ export interface BoardingRoomSearchFilter {
 export interface PostItemData {
   id: string;
   user: string;
+  userId: string;
   title: string;
   //region: string;
   price: string;
