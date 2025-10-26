@@ -61,16 +61,17 @@ export default function MemberModal({ groupId, onDone }: MemberModalProps) {
     const memberToExpel = members[expelIdx];
     if (!memberToExpel) return;
 
+    setMembers(prev => prev.filter((_, idx) => idx !== expelIdx));
+    setModalOpen(false);
+    setExpelIdx(null);
+
     try {
       await GroupService.removeMember(client, groupId, memberToExpel.userId);
-      await loadMemberData();
       success('멤버가 추방되었습니다.');
     } catch (err) {
       console.error('멤버 추방 실패:', err);
       error('멤버 추방에 실패했습니다.');
-    } finally {
-      setModalOpen(false);
-      setExpelIdx(null);
+      loadMemberData();
     }
   };
 
@@ -80,24 +81,42 @@ export default function MemberModal({ groupId, onDone }: MemberModalProps) {
   };
 
   const handleAcceptRequest = async (requestId: string) => {
+    const requestToAccept = requests.find(r => r.requestId === requestId);
+    
+    if (requestToAccept && requestToAccept.requesterId && requestToAccept.requesterName) {
+      setRequests(prev => prev.filter(r => r.requestId !== requestId));
+      
+      const newMember: GroupMember = {
+        userId: requestToAccept.requesterId,
+        name: requestToAccept.requesterName,
+        email: '',
+        joinedAt: new Date().toISOString(),
+        profile: undefined
+      };
+      
+      setMembers(prev => [...prev, newMember]);
+    }
+
     try {
       await GroupService.approveParticipationRequest(client, requestId);
-      await loadMemberData();
       success('참가 요청을 수락했습니다.');
     } catch (err) {
       console.error('참가 요청 수락 실패:', err);
       error('참가 요청 수락에 실패했습니다.');
+      loadMemberData();
     }
   };
 
   const handleRejectRequest = async (requestId: string) => {
+    setRequests(prev => prev.filter(r => r.requestId !== requestId));
+
     try {
       await GroupService.rejectParticipationRequest(client, requestId);
-      await loadMemberData();
       success('참가 요청을 거절했습니다.');
     } catch (err) {
       console.error('참가 요청 거절 실패:', err);
       error('참가 요청 거절에 실패했습니다.');
+      loadMemberData();
     }
   };
 

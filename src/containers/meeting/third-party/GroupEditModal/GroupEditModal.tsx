@@ -87,6 +87,16 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
       return;
     }
 
+    if (maxParticipation < 2 || maxParticipation > 50) {
+      error('최대 참여 인원은 2명에서 50명 사이여야 합니다.');
+      return;
+    }
+
+    if (maxParticipation < group.currentParticipation) {
+      error(`현재 참여 중인 인원(${group.currentParticipation}명)보다 작게 설정할 수 없습니다.`);
+      return;
+    }
+
     setLoading(true);
     try {
       const input: GroupUpdateInput = {
@@ -237,11 +247,13 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
           <S.Label>최대 참여 인원</S.Label>
           <S.TextInput
             type="number"
-            min="2"
-            max="50"
-            value={maxParticipation}
-            onChange={e => setMaxParticipation(parseInt(e.target.value) || 2)}
+            value={maxParticipation || ''}
+            onChange={e => {
+              const val = e.target.value === '' ? '' : parseInt(e.target.value);
+              setMaxParticipation(val as number);
+            }}
             disabled={loading}
+            placeholder="2~50명"
           />
         </div>
         <S.BtnRow>

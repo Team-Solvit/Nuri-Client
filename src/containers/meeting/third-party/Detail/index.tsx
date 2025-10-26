@@ -222,8 +222,13 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
         await fetchSchedule();
 
       } catch (recordError) {
-        console.error('기록 생성 실패:', recordError);
-        showAlert('기록 생성에 실패했습니다.');
+        if (recordError instanceof Error) {
+          if (recordError.message === "일정이 아직 진행되지 않았습니다.") {
+            showAlert('일정이 아직 진행되지 않았습니다.');
+          } else {
+            showAlert('기록 생성에 실패했습니다.');
+          }
+        }
       }
 
     } catch (error) {
