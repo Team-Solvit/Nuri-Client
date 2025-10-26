@@ -15,8 +15,11 @@ import {useAlertStore} from "@/store/alert";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import {useUserStore} from "@/store/user";
 import PostScrollSkeleton from "@/components/ui/skeleton/PostScrollSkeleton";
+
 import {useMessageDmManageStore} from "@/store/messageDmManage";
 import {useMessageHeaderStore} from "@/store/messageHeader";
+import {usePermissionGuard} from "@/hooks/usePermissionGuard";
+
 
 export default function PostScroll() {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null);
@@ -123,8 +126,12 @@ export default function PostScroll() {
 		});
 	};
 	
-	if (isInitialLoading) return <PostScrollSkeleton />;
-	
+	const {withPermission} = usePermissionGuard()
+	// 초기 로딩 중이면 스켈레톤 컴포넌트 렌더링
+	if (isInitialLoading) {
+		return <PostScrollSkeleton />;
+	}
+
 	return (
 		<S.PostScrollContainer>
 			{!loading && posts?.length === 0 && <p>생성된 게시물이 없습니다.</p>}
@@ -195,7 +202,10 @@ export default function PostScroll() {
 									text="채팅"
 									width="100px"
 									status
-									onClick={() => user && moveChatRoom(user)}
+									onClick={() => {
+                    if(!user) return ;
+                    withPermission(moveChatRoom(user))
+                  }}
 								/>
 							</S.Nav>
 						</S.PostTitle>

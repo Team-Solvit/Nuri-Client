@@ -64,7 +64,7 @@ export const Alert = styled.div<{ isLeaving: boolean }>`
   padding: 1.25rem 0;
   top: 3rem;
   right: 3rem;
-  z-index: ${zIndex.modal};
+  z-index: ${zIndex.modal + 1000};
   background-color: white;
   border-radius: ${radius.md};
   animation: ${({isLeaving}) =>
