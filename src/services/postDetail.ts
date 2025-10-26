@@ -93,6 +93,52 @@ export const PostDetailGQL = {
           }
         }
       }
+    `,
+    GET_POST: gql`
+      query GetPost($postId: String!) {
+        getPost(postId: $postId) {
+          __typename
+          postId
+          title
+          contents
+          day
+          likeCount
+          isLiked
+          commentCount
+          hashtags { hashtagId name postId }
+          author { userId profile name }
+          files { fileId url }
+        }
+      }
+    `,
+    GET_BOARDING_ROOM: gql`
+      query GetBoardingRoom($roomId: String!) {
+        getBoardingRoom(roomId: $roomId) {
+          roomId
+          name
+          description
+          monthlyRent
+          day
+          status
+          headCount
+          likeCount
+          isLiked
+          commentCount
+          boardingHouse {
+            houseId
+            name
+            location
+            nearestStation
+            nearestSchool
+            gender
+            isMealProvided
+            host { user { userId profile name } callNumber }
+          }
+          contractPeriod { contractPeriod contractPeriodId }
+          boardingRoomFile { fileId url }
+          boardingRoomOption { optionId name }
+        }
+      }
     `
   },
   MUTATIONS: {
@@ -200,13 +246,46 @@ export const PostDetailService = {
   },
 
   getPostById: async (client: ApolloClient<any>, id: string): Promise<PostDetailUnion | null> => {
-    const posts = await PostDetailService.getPostList(client, 0);
-    const found = posts.find(p => {
-      if (p.postInfo.__typename === 'SnsPost') return (p.postInfo as SnsPostDetail).postId === id;
-      if (p.postInfo.__typename === 'BoardingPost') return (p.postInfo as BoardingPostDetail).room.roomId === id;
-      return false;
-    });
-    return found?.postInfo as PostDetailUnion || null;
+    try {
+      // 먼저 SNS 게시물로 조회 시도
+      try {
+        const { data } = await client.query({
+          query: PostDetailGQL.QUERIES.GET_POST,
+          variables: { postId: id },
+          fetchPolicy: 'no-cache'
+        });
+        
+        if (data?.getPost) {
+          return data.getPost as SnsPostDetail;
+        }
+      } catch (snsError) {
+        // SNS 게시물이 아니면 하숙방으로 조회
+        console.log('Not an SNS post, trying boarding room...');
+      }
+      
+      // 하숙방 게시물로 조회 시도
+      try {
+        const { data } = await client.query({
+          query: PostDetailGQL.QUERIES.GET_BOARDING_ROOM,
+          variables: { roomId: id },
+          fetchPolicy: 'no-cache'
+        });
+        
+        if (data?.getBoardingRoom) {
+          return {
+            __typename: 'BoardingPost' as const,
+            room: data.getBoardingRoom
+          } as BoardingPostDetail;
+        }
+      } catch (roomError) {
+        console.log('Not a boarding room either');
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('게시물 조회 오류:', error);
+      return null;
+    }
   },
 
   likePost: async (client: ApolloClient<any>, postId: string): Promise<boolean> => {

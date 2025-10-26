@@ -57,17 +57,24 @@ export default function CommentsPanel({
             첫 댓글을 작성해보세요!
           </S.CommentsEmpty>
         ) : (
-          comments.map((comment: PostComment) => (
-            <S.CommentItem key={comment.commentId}>
-              <S.CommentAvatar>
-                {comment.commenter.profile ? (
-                  <Image src={comment.commenter.profile} alt={comment.commenter.userId} fill style={{ objectFit: "cover" }} />
-                ) : (
-                  <S.CommentAvatarFallback>
-                    {(comment.commenter.name || comment.commenter.userId || "?").charAt(0)}
-                  </S.CommentAvatarFallback>
-                )}
-              </S.CommentAvatar>
+          comments.map((comment: PostComment) => {
+            const profileSrc = comment.commenter.profile
+              ? /^https?:\/\//.test(comment.commenter.profile)
+                ? comment.commenter.profile
+                : `https://cdn.solvit-nuri.com/file/${comment.commenter.profile}`
+              : null;
+            
+            return (
+              <S.CommentItem key={comment.commentId}>
+                <S.CommentAvatar>
+                  {profileSrc ? (
+                    <Image src={profileSrc} alt={comment.commenter.userId} fill style={{ objectFit: "cover" }} />
+                  ) : (
+                    <S.CommentAvatarFallback>
+                      {(comment.commenter.name || comment.commenter.userId || "?").charAt(0)}
+                    </S.CommentAvatarFallback>
+                  )}
+                </S.CommentAvatar>
               <S.CommentContent>
                 <S.CommentAuthor>{comment.commenter.userId}</S.CommentAuthor>
                 {editingCommentId === comment.commentId ? (
@@ -123,7 +130,8 @@ export default function CommentsPanel({
                 </S.MenuButton>
               )}
             </S.CommentItem>
-          ))
+            );
+          })
         )}
       </S.CommentsList>
     </S.CommentsSection>
