@@ -130,6 +130,7 @@ export const PublicIconWrap = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
+  margin-left: -0.5rem;
 
   ${mq.mobile} {
     margin-left: -0.1rem;

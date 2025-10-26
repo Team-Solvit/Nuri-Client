@@ -36,6 +36,14 @@ export const Alert = styled.article<{ isRead: boolean }>`
     background-color: ${(props) => props.isRead ? colors.line : "#f8f8f8"};
   }
 
+  border-radius: ${radius.md};
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    background-color: ${colors.line2};
+  }
+
   &:first-of-type {
     ${mq.mobile} {
       margin-top: 6rem;

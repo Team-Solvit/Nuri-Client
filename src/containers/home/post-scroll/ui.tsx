@@ -15,6 +15,7 @@ import {useAlertStore} from "@/store/alert";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import {useUserStore} from "@/store/user";
 import PostScrollSkeleton from "@/components/ui/skeleton/PostScrollSkeleton";
+import {usePermissionGuard} from "@/hooks/usePermissionGuard";
 
 export default function PostScroll() {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null);
@@ -28,7 +29,6 @@ export default function PostScroll() {
 	
 	
 	const [page, setPage] = useState(0);
-	const [isDone, setIsDone] = useState(false);
 	const { data: postData, loading, fetchMore } = useQuery<GetPostListResponse, GetPostListVariables>(
 		PostQueries.GET_POST_LIST,
 		{
@@ -39,25 +39,22 @@ export default function PostScroll() {
 	
 	// 초기 로딩만 체크 (loadMore 시에는 스켈레톤 안보여주기)
 	const isInitialLoading = loading && !postData?.getPostList;
-	useLoadingEffect(isInitialLoading);
+	
+	useLoadingEffect(isInitialLoading || isFetchingMore);
 	
 	
 	const posts = postData?.getPostList;
 	const { error } = useAlertStore();
-	const isFirstLoad = useRef<boolean>((posts?.length ?? 0) < 3);
+	
+	const isCompleted= useRef<boolean>(false)
 	const loadMore = async () => {
-		if (isFetchingMore || isDone) return;
+		if (isFetchingMore || isCompleted.current) return;
 		if (!postData?.getPostList) return;
-		if (isFirstLoad.current) {
-			isFirstLoad.current = false;
-			return;
-		}
+		if(postData?.getPostList.length < 3) return;
 		setIsFetchingMore(true);
 		const newPage = page + 1;
 		setPage(newPage);
-		
 		try {
-			const prevCount = posts?.length ?? 0;
 			const res = await fetchMore({
 				variables: { start: newPage },
 				updateQuery: (prev, { fetchMoreResult }) => {
@@ -77,17 +74,16 @@ export default function PostScroll() {
 				},
 			});
 			
-			const totalCount = res.data?.getPostList?.length ?? prevCount;
-			const added = totalCount - prevCount;
-			if (added <= 0 || added < 20) {
-				setIsDone(true);
-				error("더 이상 불러올 게시물이 없습니다");
+			const totalCount = res.data?.getPostList?.length
+			if(totalCount < 1){
+				error("더 이상 게시물이 없습니다")
+				isCompleted.current = true
 			}
 		} finally {
 			setIsFetchingMore(false);
 		}
 	};
-
+	
 	// IntersectionObserver to detect when the last post is visible
 	const observer = useRef<IntersectionObserver | null>(null);
 	const lastPostElementRef = useCallback((node: HTMLDivElement | null) => {
@@ -139,6 +135,7 @@ export default function PostScroll() {
 		});
 	};
 	
+	const {withPermission} = usePermissionGuard()
 	// 초기 로딩 중이면 스켈레톤 컴포넌트 렌더링
 	if (isInitialLoading) {
 		return <PostScrollSkeleton />;
@@ -212,7 +209,12 @@ export default function PostScroll() {
 						ref={posts && index === posts.length - 1 ? lastPostElementRef : undefined}
 					>
 						<S.PostTitle>
-							<S.Profile onClick={(e) => e.stopPropagation()}>
+							<S.Profile onClick={(e) => {
+								e.stopPropagation();
+								if (postData.user?.userId) {
+									navigateClick(`/profile/${postData.user?.userId}`);
+								}
+							}}>
 								<S.Thumbnail>
 									<Image
 										src={profileSrc}
@@ -229,12 +231,16 @@ export default function PostScroll() {
 							<S.Nav onClick={(e) => e.stopPropagation()}>
 								<p>{postData.price ? "하숙집" : ""}</p>
 								<Square text={"채팅"} onClick={() => {
-									handleChatJoinTwoIds(currentUserId ?? "", postData?.user?.userId ?? "")
+									withPermission(()=>handleChatJoinTwoIds(currentUserId ?? "", postData?.user?.userId ?? ""))
 								}} status={true} width={"100px"}/>
 							</S.Nav>
 						</S.PostTitle>
 						<S.PostImg
-							onClick={(e) => e.stopPropagation()}
+							onClick={() => {
+								if (postData.id) {
+									navigateClick(`/post/${postData.id}`);
+								}
+							}}
 							onMouseEnter={() => {
 								handleMouseEnter(index);
 							}}
@@ -245,7 +251,8 @@ export default function PostScroll() {
 								<S.Arrow
 									isHover={hoverIndex === index}
 									status={false}
-									onClick={() => {
+									onClick={(e) => {
+										e.stopPropagation();
 										if (postData.id !== null) {
 											handleSlide(index, "prev");
 										}
@@ -280,7 +287,8 @@ export default function PostScroll() {
 								<S.Arrow
 									isHover={hoverIndex === index}
 									status={true}
-									onClick={() => {
+									onClick={(e) => {
+										e.stopPropagation();
 										if (postData.id !== null) {
 											handleSlide(index, "next");
 										}
