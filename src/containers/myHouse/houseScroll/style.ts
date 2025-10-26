@@ -117,6 +117,9 @@ export const ActionWrap = styled.div`
 	top: 50%;
 	right: 0;
 	transform: translateY(-50%);
+	${mq.mobile} {
+		position: static;
+	}
 `
 export const RoomCard = styled.div`
   display: grid;

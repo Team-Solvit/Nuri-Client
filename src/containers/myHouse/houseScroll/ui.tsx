@@ -69,7 +69,7 @@ const HouseScroll = () => {
 	// open modal for a single boarder (individual contract end)
 	const handleBoarderLeaveOpen = (e: React.MouseEvent, boarderEntry: BoarderType | null | undefined, roomName?: string) => {
 		e.stopPropagation();
-		if (!boarderEntry) return;
+		if (!boarderEntry || !boarderEntry.contractId) return;
 		const name = boarderEntry.boarder?.user?.name ?? "";
 		const contractId = boarderEntry.contractId ?? "";
 		openModal([name], roomName ?? "", contractId);
@@ -146,8 +146,9 @@ const HouseScroll = () => {
 												{room.contractInfo.map((entry) => {
 													const { contractId, boarder } = entry;
 													const { user, callNumber } = boarder ?? {};
+													if (!contractId) return null;
 													return (
-														<S.ProfileWrap key={contractId ?? user?.id}>
+														<S.ProfileWrap key={contractId}>
 															<S.ProfileImg>
 																<Image
 																	src={imageCheck(user?.profile)}
