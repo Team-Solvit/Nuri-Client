@@ -236,7 +236,7 @@ export default function PostScroll() {
 							onMouseLeave={handleMouseLeave}
 						>
 							{/* Left Arrow: index > 0일 때만 */}
-							{currentIndex && currentIndex > 0 && (
+							{currentIndex > 0 && (
 								<S.Arrow
 									isHover={hoverIndex === index}
 									status={false}

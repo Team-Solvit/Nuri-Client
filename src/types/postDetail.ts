@@ -8,7 +8,7 @@ export type SnsPostDetail = {
   isLiked: boolean;
   commentCount: number;
   hashtags: { hashtagId: string; name: string; postId: string }[];
-  author: { userId: string; profile: string | null };
+  author: { userId: string; profile: string | null; name?: string };
   files: { fileId: string; url: string }[];
 };
 
@@ -37,7 +37,7 @@ export type BoardingPostDetail = {
       nearestSchool?: string;
       gender?: string;
       isMealProvided?: boolean;
-      host: { callNumber?: string; user: { userId: string; profile: string | null } };
+      host: { callNumber?: string; user: { userId: string; profile: string | null; name?: string } };
     };
     contractPeriod: BoardingContractPeriod[];
     boardingRoomFile: BoardingRoomFile[];
@@ -63,4 +63,4 @@ export type PostComment = {
 };
 
 export type PostCommentListResponse = { getPostCommentList: PostComment[] };
-export type PostCommentListVars = { start: number; postId: string };
+export type PostCommentListVars = { start: number; size: number; postId: string };

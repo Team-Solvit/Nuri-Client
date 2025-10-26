@@ -55,10 +55,11 @@ export const PostDetailGQL = {
   `,
     // 댓글 조회 쿼리들을 QUERIES로 이동
     GET_POST_COMMENT_LIST: gql`
-      query GetPostCommentList($start: Int!, $postId: String!) {
+      query GetPostCommentList($start: Int!, $size: Int!, $postId: String!) {
         getPostCommentList(
           postCommentListReadInput: {
             start: $start
+            size: $size
             postId: $postId
           }
         ) {
@@ -75,10 +76,11 @@ export const PostDetailGQL = {
       }
     `,
     GET_BOARDING_ROOM_COMMENT_LIST: gql`
-      query GetBoardingRoomCommentList($start: Int!, $roomId: String!) {
+      query GetBoardingRoomCommentList($start: Int!, $size: Int!, $roomId: String!) {
         getBoardingRoomCommentList(
           boardingRoomCommentListReadInput: {
             start: $start
+            size: $size
             roomId: $roomId
           }
         ) {
@@ -258,9 +260,8 @@ export const PostDetailService = {
         if (data?.getPost) {
           return data.getPost as SnsPostDetail;
         }
-      } catch (snsError) {
+      } catch {
         // SNS 게시물이 아니면 하숙방으로 조회
-        console.log('Not an SNS post, trying boarding room...');
       }
       
       // 하숙방 게시물로 조회 시도
@@ -277,8 +278,8 @@ export const PostDetailService = {
             room: data.getBoardingRoom
           } as BoardingPostDetail;
         }
-      } catch (roomError) {
-        console.log('Not a boarding room either');
+      } catch {
+        // 하숙방도 아님
       }
       
       return null;
@@ -341,11 +342,11 @@ export const PostDetailService = {
     }
   },
 
-  getComments: async (client: ApolloClient<any>, postId: string, start: number = 0) => {
+  getComments: async (client: ApolloClient<any>, postId: string, start: number = 0, size: number = 5) => {
     try {
       const { data } = await client.query({
         query: PostDetailGQL.QUERIES.GET_POST_COMMENT_LIST,
-        variables: { start, postId },
+        variables: { start, size, postId },
         fetchPolicy: 'no-cache'
       });
       return data?.getPostCommentList || [];
@@ -395,11 +396,11 @@ export const PostDetailService = {
   },
 
   // 하숙방 댓글 관련
-  getRoomComments: async (client: ApolloClient<any>, roomId: string, start: number = 0) => {
+  getRoomComments: async (client: ApolloClient<any>, roomId: string, start: number = 0, size: number = 5) => {
     try {
       const { data } = await client.query({
         query: PostDetailGQL.QUERIES.GET_BOARDING_ROOM_COMMENT_LIST,
-        variables: { start, roomId },
+        variables: { start, size, roomId },
         fetchPolicy: 'no-cache'
       });
       return data?.getBoardingRoomCommentList || [];
@@ -491,13 +492,13 @@ export const PostDetailService = {
     throw new Error('지원하지 않는 게시물 타입입니다.');
   },
 
-  getPostComments: async (client: ApolloClient<any>, post: PostDetailUnion, start: number = 0) => {
+  getPostComments: async (client: ApolloClient<any>, post: PostDetailUnion, start: number = 0, size: number = 5) => {
     if (post.__typename === 'SnsPost') {
       const snsPost = post as SnsPostDetail;
-      return await PostDetailService.getComments(client, snsPost.postId, start);
+      return await PostDetailService.getComments(client, snsPost.postId, start, size);
     } else if (post.__typename === 'BoardingPost') {
       const boardingPost = post as BoardingPostDetail;
-      return await PostDetailService.getRoomComments(client, boardingPost.room.roomId, start);
+      return await PostDetailService.getRoomComments(client, boardingPost.room.roomId, start, size);
     }
     throw new Error('지원하지 않는 게시물 타입입니다.');
   },
