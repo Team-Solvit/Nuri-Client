@@ -2,23 +2,42 @@ import * as S from '@/styles/confirm'
 import Square from "@/components/ui/button/square";
 import {AccessionProps} from "@/containers/meetings/accession/type";
 import React from "react";
-import NProgress from "nprogress";
 import {useModalStore} from "@/store/modal";
-import {useOtherMeetingFind} from '@/store/otherMeetingFind';
-import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {useMutation} from "@apollo/client";
+import {MeetingMutations} from "@/services/meeting";
+import {useLoadingEffect} from "@/hooks/useLoading";
+import {useAlertStore} from "@/store/alert";
+import {useIsEnteringMeetingStore} from "@/store/isEnteringMeeting";
 
 export default function Accession({isAccession, setIsAccession, accessions}: AccessionProps) {
+	const {isEnteringMeeting, isSendRequest} = useIsEnteringMeetingStore()
 	const modalClose = () => {
 		setIsAccession(false)
 	}
-	const navigate = useNavigationWithProgress();
 	const {close} = useModalStore();
-	const {setFind} = useOtherMeetingFind();
-	const handelRouter = (id: number) => {
-		navigate(`/meetings/${id}`)
+	const [mutate, {loading}] = useMutation(MeetingMutations.JOIN_MEETING_REQUEST, {
+		variables: {
+			groupJoinInput: {
+				groupId : accessions.groupId,
+				requestMessage : "default"
+			}
+		}
+	})
+	const {error, success} = useAlertStore()
+	const [leaveMeeting] = useMutation(MeetingMutations.LEAVE_MEETING)
+	useLoadingEffect(loading);
+	const handelRouter = async () => {
+		try{
+			if(isEnteringMeeting) {
+				await leaveMeeting();
+			}
+			await mutate()
+			success("모임 신청에 성공하였습니다.")
+		}catch (err){
+			console.log(err)
+			error("모임 신청에 실패하였습니다.")
+		}
 		setIsAccession(false)
-		NProgress.start()
-		setFind(false);
 		close()
 	}
 	if (!isAccession) return null
@@ -33,14 +52,23 @@ export default function Accession({isAccession, setIsAccession, accessions}: Acc
 			<S.Content onClick={(e) => e.stopPropagation()}>
 				<S.Container>
 					<S.Title>모임 가입</S.Title>
-					<S.Text>{accessions.title} 모임에 참여하시겠습니까?</S.Text>
+					<S.Text>
+						{isEnteringMeeting && "현재 가입중인 모임을 탈퇴하시고,"}
+						{isSendRequest && (
+							<>
+								현재 {isSendRequest} 모임에 <span>요청을 보내신 상태</span>입니다.
+								<br />
+								이전에 보냈던 요청을 취소하시고
+							</>
+						)}
+						<br />
+						{accessions.name} 모임에 참여하시겠습니까?
+					</S.Text>
 					<S.ButtonContainer>
 						<S.CancelBtn onClick={modalClose} $width={"100%"}>
 							<S.Name>취소</S.Name>
 						</S.CancelBtn>
-						<Square text={"가입"} onClick={() => {
-							handelRouter(accessions.id)
-						}} status={true} width={"100%"}/>
+						<Square text={"가입"} onClick={handelRouter} status={true} width={"100%"}/>
 					</S.ButtonContainer>
 				</S.Container>
 			</S.Content>

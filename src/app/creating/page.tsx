@@ -15,7 +15,7 @@ export default function CreatingModalPage() {
         width: "100vw",
         height: "100vh",
         background: "rgba(0,0,0,0.3)",
-        zIndex: 2000,
+        zIndex: 100,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

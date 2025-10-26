@@ -13,9 +13,22 @@ export const Black = styled.div`
   align-items: center;
   background-color: rgba(116, 116, 116, 0.5);
   z-index: ${zIndex.modal};
+
+  ${mq.mobile} {
+    padding: 20px;
+  }
 `
 export const Content = styled.div`
   background-color: white;
   position: relative;
   border-radius: ${radius.md};
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+
+  ${mq.mobile} {
+    max-width: 100%;
+    max-height: 85vh;
+    width: 100%;
+  }
 `

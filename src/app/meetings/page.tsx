@@ -1,62 +1,73 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import {useRouter} from "next/navigation";
 import GoogleMap from "@/components/ui/googleMap/Map";
 import MeetingsSidebar from "@/containers/meetings/sidebar/ui";
 import MeetingModal from "@/containers/meetings/MeetingModal/ui";
 import MeetingAccession from "@/containers/meetings/accession/ui";
-import {Accession} from "@/containers/meetings/accession/type";
-import {useOtherMeetingFind} from "@/store/otherMeetingFind";
+import {useQuery} from "@apollo/client";
+import {MeetingQueries} from "@/services/meeting";
+import {useLoadingEffect} from "@/hooks/useLoading";
+import {AreaResponse, M, Marker} from "@/types/meetings";
+import {useMeetingAccessionStore} from "@/store/meetingAccessionData";
+import BackMeetingRoomBtn from "@/containers/meetings/BackMeetingRoomBtn/ui"
 
 export default function Meetings() {
-	const navigate = useRouter();
-	const {find} = useOtherMeetingFind();
-	useEffect(() => {
-		if (!find) {
-			navigate.push("/meetings/1");
-		}
-	}, [find]);
-	const markers = [
-		{
-			id: 1,
-			position: {lat: 35.13340833, lng: 129.0865},
-		},
-		{
-			id: 2,
-			position: {lat: 35.1868, lng: 129.0115},
-		},
-	]
-	const rooms = [
-		{
-			id: 1,
-			title: "남구",
-		},
-		{
-			id: 2,
-			title: "북구",
-		},
-	]
-	const fakeData = [
-		{id: 1, title: "다함께 놀자 동네", content: "누구보다 재미있게", personnel: 2, maxPersonnel: 3},
-		{id: 2, title: "모임2", content: "누구보다 상냥하게", personnel: 1, maxPersonnel: 3},
-	]
+	const [loading, setLoading] = useState(false);
 	const [isAccession, setIsAccession] = useState(false);
-	const AccessionData: Accession = {
-		id: 1,
-		title: "다함께dddddddddd 놀자 동네",
-		content: "dajflkdjskfjfj",
-		personnel: 2,
-		maxPersonnel: 3
+	
+	const changeAreaInitial = () => {
+		if (!areas?.getAreas) return;
+		setLoading(true)
+		const newMarkers = areas.getAreas.map((area, idx) => ({
+			id: idx,
+			position: {lat: area.latitude, lng: area.longitude},
+		}));
+		setMarkers(newMarkers);
+		
+		const newMeetings = areas.getAreas.map((area, idx) => ({
+			id : idx,
+			title: area.area,
+		}))
+		setMeetings(newMeetings)
+		setLoading(false)
 	}
+	const {data: areas, loading : getAreasLoading} = useQuery<AreaResponse>(MeetingQueries.GET_MEETING_AREAS);
+	useEffect(() => {
+		if(areas){
+			changeAreaInitial();
+		}
+	}, [areas?.getAreas?.length]);
+	
+	const [markers, setMarkers] = useState<Marker[]>([])
+	const [meetings, setMeetings] = useState<M[]>([])
+	const [selectedMarker, setSelectedMarker] = useState<Marker | null>(null);
+	
+	const hasArea = selectedMarker && meetings[selectedMarker.id]?.title;
+	const {data: areaMeetings, loading : getAreaMeetingsLoading} = useQuery(MeetingQueries.GET_MEETINGS, {
+		variables: { area: hasArea ? meetings[selectedMarker.id]!.title : "" },
+		skip: !hasArea,
+	});
+	const {accessMeeting} = useMeetingAccessionStore()
+	useLoadingEffect(getAreaMeetingsLoading || getAreasLoading || loading)
+	const meetingsData = areaMeetings?.getGroupsByArea;
+	if(loading) return null;
 	return (
 		<>
-			<GoogleMap markers={markers} label={(m) => rooms[m.id - 1].title} renderPopup={(marker: typeof markers[0]) => (
-				<MeetingsSidebar rooms={rooms[marker.id - 1].title} meetings={fakeData}/>
-			)}>
-			</GoogleMap>
-			<MeetingAccession accessions={AccessionData} isAccession={isAccession} setIsAccession={setIsAccession}/>
-			<MeetingModal {...{...fakeData, setIsAccessionAction: setIsAccession}} />
+			<BackMeetingRoomBtn />
+			<GoogleMap
+        onMarkerSelect={(m) => setSelectedMarker(m)}
+        markers={markers}
+        label={(m) => meetings[m.id]?.title ?? ''}
+        renderPopup={(marker: typeof markers[0]) => (
+					<MeetingsSidebar
+	            isLoading={getAreaMeetingsLoading}
+	            rooms={meetings[marker.id]?.title ?? ''}
+	            meetings={meetingsData}
+	          />
+        )} />
+			<MeetingAccession accessions={accessMeeting} isAccession={isAccession} setIsAccession={setIsAccession}/>
+			<MeetingModal {...{setIsAccessionAction: setIsAccession}} />
 		</>
 	)
 }

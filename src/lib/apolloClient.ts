@@ -53,7 +53,7 @@ function createApolloClient() {
 					fetchPolicy: 'no-cache',
 				});
 				const newToken = extractTokenFromApolloResult(r);
-				if (newToken) saveAccessToken(newToken);
+				if (typeof newToken === 'string') saveAccessToken(newToken);
 				return newToken ?? null;
 			})
 		).flatMap((newToken) => {
