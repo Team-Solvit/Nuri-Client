@@ -94,6 +94,18 @@ export default function Addition(){
 		);
 	};
 
+	const params = useParams();
+	const roomId = Array.isArray(params.roomId) ? params.roomId[0] : params.roomId;
+
+	const { data } = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOM_INFO, {
+		variables: {
+			roomId: roomId
+		}
+	});
+
+	console.log(data)
+
+
 	const { error, success } = useAlertStore();
 	
 	const {roomNumber : roomId, refetch} = useUpdateRoomNumber();

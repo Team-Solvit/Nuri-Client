@@ -1,348 +1,261 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
-import Arrow from '@/assets/post/arrow-right.svg';
-import Square from '@/components/ui/button/square';
-import RoomTourModal from './RoomTourModal';
-import { fakeData } from '@/containers/home/post-scroll/data';
-import HeartIcon from '@/assets/post/heart.svg';
-import CommentIcon from '@/assets/post/comment.svg';
-import EllipsisIcon from '@/assets/post/ellipsis.svg';
-import SendIconSvg from '@/assets/post/send.svg';
-import * as S from './style';
-import { radius } from '@/styles/theme';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Square from "@/components/ui/button/square";
+import RoomTourModal from "./RoomTourModal";
+import SendIconSvg from "@/assets/post/send.svg";
+import * as S from "./style";
+import { radius } from "@/styles/theme";
+import MediaSlider from "./parts/MediaSlider";
+import SnsPostContent from "./parts/SnsPostContent";
+import BoardingPostContent from "./parts/BoardingPostContent";
+import ConfirmModal from "./parts/ConfirmModal";
+import CommentsPanel from "./parts/CommentsPanel";
+import InteractionBar from "./parts/InteractionBar";
+import { usePostDetail } from "@/hooks/post-detail/usePostDetail";
+import { useMediaSlider } from "@/hooks/post-detail/useMediaSlider";
+import { usePostEdit } from "@/hooks/post-detail/usePostEdit";
+import { useComments } from "@/hooks/post-detail/useComments";
+import { useContract } from "@/hooks/post-detail/useContract";
+import ContractPeriodModal from "./ContractPeriodModal";
+import { useAlertStore } from "@/store/alert";
+import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
+import PostDetailSkeleton from "./PostDetailSkeleton";
 
-interface PostDetailProps {
-  id: string;
-  isModal?: boolean;
-}
-
-const mockComments = [
-  { id: 1, author: 'huhon123', avatar: '/avatars/user1.png', text: '첫 번째 댓글입니다!' },
-  { id: 2, author: 'fooBar', avatar: '/avatars/user2.png', text: '두 번째 댓글이여~' },
-  { id: 3, author: 'bazQux', avatar: '/avatars/user3.png', text: '마지막 댓글입니다 :)' },
-];
+interface PostDetailProps { id: string; isModal?: boolean; }
 
 export default function PostDetail({ id, isModal }: PostDetailProps) {
   const router = useRouter();
-  const post = fakeData.find((p) => p.id.toString() === id);
-  const isHousePost = post?.subject === "하숙집";
-  const [current, setCurrent] = useState(0);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [showComments, setShowComments] = useState(false);
-  const [showRoomTour, setShowRoomTour] = useState(false);
-  const [commentText, setCommentText] = useState('');
-  const [openCommentMenuId, setOpenCommentMenuId] = useState<number | null>(null);
+  const navigate = useNavigationWithProgress();
+  const {
+    postInfo,
+    loading,
+    isLiked,
+    likeCount,
+    isOpen,
+    postToDelete,
+    isHousePost,
+    images,
+    commentCount,
+    date,
+    userProfile,
+    userId,
+    currentUserId,
+    isPostOwner,
+    desc,
+    roomName,
+    handleLikeToggle,
+    deletePost,
+    confirmDeletePost,
+    cancelDeletePost,
+  } = usePostDetail(id);
 
+  const { current, fitMode, handleSlide, handleImageLoadForFit } = useMediaSlider(images);
+
+  const {
+    uploading,
+    isEditingPost,
+    editingPostContent,
+    editingImages,
+    newImages,
+    setEditingPostContent,
+    handleEditPost,
+    saveEditPost,
+    cancelEditPost,
+    removeImage,
+    handleImageUpload,
+    removeNewImage,
+    displayDesc,
+  } = usePostEdit(postInfo, async (postId: string) => {
+    const { PostDetailService } = await import("@/services/postDetail");
+    const { useApollo } = await import("@/lib/apolloClient");
+    const client = useApollo();
+    const updated = await PostDetailService.getPostById(client, postId);
+    return updated;
+  });
+
+  const {
+    comments,
+    commentsLoading,
+    showComments,
+    commentText,
+    editingCommentId,
+    editingText,
+    setEditingText,
+    openCommentMenuId,
+    actionMenuRef,
+    commentToDelete,
+    setShowComments,
+    setCommentText,
+    setOpenCommentMenuId,
+    handleKeyPress,
+    submitComment,
+    handleEditComment,
+    saveEditComment,
+    cancelEditComment,
+    deleteComment,
+    confirmDeleteComment,
+    cancelDeleteComment,
+  } = useComments(postInfo);
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [showRoomTour, setShowRoomTour] = useState(false);
   const roomTourRef = useRef<HTMLDivElement | null>(null);
-  const actionMenuRef = useRef<HTMLDivElement | null>(null);
+  const [showContractPeriods, setShowContractPeriods] = useState(false);
+  const { error } = useAlertStore();
+  const { creating: creatingContract, sendContract } = useContract(postInfo, currentUserId);
+
+  const openContractPeriodPicker = () => {
+    if (!postInfo || postInfo.__typename !== 'BoardingPost') return;
+    if (!postInfo.room.contractPeriod?.length) {
+      error('개월을 선택해주세요.');
+      return;
+    }
+    setShowContractPeriods(prev => {
+      const next = !prev;
+      if (next) {
+        setShowRoomTour(false);
+        setMenuOpen(false);
+        setOpenCommentMenuId(null);
+      }
+      return next;
+    });
+  };
 
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
       const target = e.target as Node;
-      if (showRoomTour && roomTourRef.current && !roomTourRef.current.contains(target)) {
-        setShowRoomTour(false);
-      }
-      if (menuOpen && actionMenuRef.current && !actionMenuRef.current.contains(target)) {
-        setMenuOpen(false);
-      }
-
-      if (openCommentMenuId !== null) {
-        setOpenCommentMenuId(null);
-      }
+      if (showRoomTour && roomTourRef.current && !roomTourRef.current.contains(target)) setShowRoomTour(false);
+      if (menuOpen && actionMenuRef.current && !actionMenuRef.current.contains(target)) setMenuOpen(false);
+      if (openCommentMenuId !== null) setOpenCommentMenuId(null);
     };
+    document.addEventListener("click", onDocClick);
+    return () => document.removeEventListener("click", onDocClick);
+  }, [menuOpen, showRoomTour, showContractPeriods, openCommentMenuId]);
 
-    document.addEventListener('click', onDocClick);
-    return () => document.removeEventListener('click', onDocClick);
-  }, [menuOpen, showRoomTour, openCommentMenuId]);
-
-  if (!post) return <div>게시물을 불러올수 없습니다.</div>
-
-  const comments = mockComments;
-  const images = post.thumbnail || [];
-  const max = images.length - 1;
-
-  const handleSlide = (direction: 'next' | 'prev') => {
-    setCurrent(prev => {
-      if (direction === 'next') {
-        return prev < max ? prev + 1 : 0;
-      } else {
-        return prev > 0 ? prev - 1 : max;
-      }
-    });
-  };
-
-  const submitComment = () => {
-    if (!commentText.trim()) return;
-    console.log('새 댓글 전송:', commentText);
-    // TODO: 실제 전송 로직
-    setCommentText('');
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      submitComment();
-    }
-  };
+  if (loading) return <PostDetailSkeleton isModal={isModal} />;
+  if (!postInfo) return <div>게시물을 불러올 수 없습니다.</div>;
 
   return (
     <S.Wrapper>
-      {isModal && <S.MobileClose onClick={() => router.back()}>×</S.MobileClose>}
+      {isModal && <S.MobileClose onClick={() => history.back()}>×</S.MobileClose>}
       <S.Left>
-        <S.SliderWrapper>
-          {current > 0 && (
-            <S.ArrowBtn left onClick={e => { e.stopPropagation(); handleSlide('prev'); }}>
-              <Image src={Arrow} alt="arrow" fill style={{ objectFit: 'cover', transform: 'rotate(180deg)' }} />
-            </S.ArrowBtn>
-          )}
-          <S.SliderTrack index={current} count={images.length}>
-            {images.map((src, i) => (
-              <S.Slide key={i}>
-                <Image src={src} alt={`slide-${i}`} fill style={{ objectFit: 'cover' }} />
-              </S.Slide>
-            ))}
-          </S.SliderTrack>
-          {current < max && (
-            <S.ArrowBtn onClick={e => { e.stopPropagation(); handleSlide('next'); }}>
-              <Image src={Arrow} alt="arrow" fill style={{ objectFit: 'cover' }} />
-            </S.ArrowBtn>
-          )}
-        </S.SliderWrapper>
+        <MediaSlider
+          images={images}
+          current={current}
+          fitMode={fitMode}
+          onPrev={() => handleSlide('prev')}
+          onNext={() => handleSlide('next')}
+          onImageLoadForFit={handleImageLoadForFit}
+        />
         <S.Footer>
           <S.Profile>
-            <Image src={post.user.thumbnail} alt="user thumbnail" width={40} height={40} style={{ borderRadius: radius.full }} />
+            <Image src={userProfile || '/post/default.png'} alt="user thumbnail" width={40} height={40} style={{ borderRadius: radius.full }} />
             <div>
-              <p>{post.user.userId}</p>
-              <p>{post.date}</p>
+              <p>{userId}</p>
+              <p>{date}</p>
             </div>
           </S.Profile>
           {isHousePost && (
             <S.Buttons>
               <S.RoomTourWrapper ref={roomTourRef}>
-                <Square
-                  text="룸투어"
-                  onClick={() =>
-                    setShowRoomTour((prev) => {
-                      const next = !prev;
-                      if (next) {
-                        setMenuOpen(false);
-                        setOpenCommentMenuId(null);
-                      }
-                      return next;
-                    })
-                  }
-                  status={true}
-                  width="max-content"
-                />
+                <Square text="룸투어" onClick={() => setShowRoomTour(prev => { const next = !prev; if (next) { setMenuOpen(false); setOpenCommentMenuId(null); } return next; })} status={true} width="max-content" />
                 {showRoomTour && (
-                  <RoomTourModal />
+                  <RoomTourModal
+                    boardingRoomId={postInfo.__typename === 'BoardingPost' ? postInfo.room.roomId : undefined}
+                    onSuccess={() => {
+                      if (postInfo.__typename === 'BoardingPost') {
+                        const user = [postInfo.room.boardingHouse.host.user.userId, currentUserId].sort();
+                        setShowRoomTour(false);
+                        router.prefetch(`/message/${user.join(':')}`);
+                        router.back();
+                        setTimeout(() => {
+                          navigate(`/message/${user.join(':')}`);
+                        }, 300);
+                      }
+                    }}
+                  />
                 )}
               </S.RoomTourWrapper>
-              <Square text="계약" onClick={() => { }} status={true} width="max-content" />
+              <S.RoomTourWrapper>
+                <Square text={creatingContract ? "보내는 중..." : "계약"} onClick={openContractPeriodPicker} status={true} width="max-content" />
+                {showContractPeriods && (
+                  <ContractPeriodModal
+                    periods={(postInfo.__typename === 'BoardingPost' ? postInfo.room.contractPeriod || [] : []).map(p => p.contractPeriod)}
+                    onConfirm={async (p) => {
+                      await sendContract(p);
+                      setShowContractPeriods(false);
+                    }}
+                    onClose={() => setShowContractPeriods(false)}
+                  />
+                )}
+              </S.RoomTourWrapper>
             </S.Buttons>
           )}
         </S.Footer>
       </S.Left>
-
       <S.Right>
         <S.RightContent showComments={showComments} isModal={isModal}>
           {isHousePost ? (
-            <>
-              <S.RightTopRow>
-                <S.RightPeriodTags>
-                  <S.RightPeriodTag>6개월</S.RightPeriodTag>
-                  <S.RightPeriodTag>2개월</S.RightPeriodTag>
-                  <S.RightPeriodTag>자유</S.RightPeriodTag>
-                </S.RightPeriodTags>
-              </S.RightTopRow>
-
-              <S.RightTitle>
-                <span>그랜마 하우스 301호</span>
-                <S.RightRoomType>1인실</S.RightRoomType>
-              </S.RightTitle>
-              <S.RightSub>부산광역시 남구</S.RightSub>
-              <S.RightDesc>
-                그랜마 하우스 3호은 슈퍼싱글 사이즈 침대, 책상, 에어컨, 냉장고, 수납장이 준비된 1인 실 입니다. 큰 창이 있어서 밝고 환기가 잘되며 조용하고 포근한 방입니다.
-              </S.RightDesc>
-
-              <S.RightDivider />
-
-              <S.RightLabelRow>
-                <S.RightLabel>요금</S.RightLabel>
-                <S.RightPriceRow>
-                  <S.RightPriceUnit>월</S.RightPriceUnit>
-                  <S.RightPriceValue>₩ 300,000</S.RightPriceValue>
-                </S.RightPriceRow>
-              </S.RightLabelRow>
-
-              <S.RightDivider />
-
-              <S.RightFeatureList>
-                <S.RightFeature>
-                  <S.RightFeatureIcon>
-                    <Image src="/icons/post-detail/language.svg" alt="language" width={20} height={20} />
-                  </S.RightFeatureIcon>
-                  <S.RightFeatureContent>
-                    <S.RightFeatureTitle>영어</S.RightFeatureTitle>
-                    <S.RightFeatureDesc>호스트의 영어로 소통이 가능해요</S.RightFeatureDesc>
-                  </S.RightFeatureContent>
-                </S.RightFeature>
-                <S.RightFeature>
-                  <S.RightFeatureIcon>
-                    <Image src="/icons/post-detail/station.svg" alt="station" width={20} height={20} />
-                  </S.RightFeatureIcon>
-                  <S.RightFeatureContent>
-                    <S.RightFeatureTitle>연제역</S.RightFeatureTitle>
-                    <S.RightFeatureDesc>연제역과 가까워요</S.RightFeatureDesc>
-                  </S.RightFeatureContent>
-                </S.RightFeature>
-                <S.RightFeature>
-                  <S.RightFeatureIcon>
-                    <Image src="/icons/post-detail/school.svg" alt="school" width={20} height={20} />
-                  </S.RightFeatureIcon>
-                  <S.RightFeatureContent>
-                    <S.RightFeatureTitle>부산대학교</S.RightFeatureTitle>
-                    <S.RightFeatureDesc>부산대학교와 가까워요</S.RightFeatureDesc>
-                  </S.RightFeatureContent>
-                </S.RightFeature>
-                <S.RightFeature>
-                  <S.RightFeatureIcon>
-                    <Image src="/icons/post-detail/gender-female.svg" alt="female" width={20} height={20} />
-                  </S.RightFeatureIcon>
-                  <S.RightFeatureContent>
-                    <S.RightFeatureTitle>여성전용</S.RightFeatureTitle>
-                    <S.RightFeatureDesc>여성전용으로 운영되고 있어요</S.RightFeatureDesc>
-                  </S.RightFeatureContent>
-                </S.RightFeature>
-              </S.RightFeatureList>
-
-              {/* <S.RightDivider />
-
-              <S.RightLabel>식사</S.RightLabel>
-              <S.RightImageBox>
-                <S.RightImage src="/post/meal.png" alt="meal" />
-              </S.RightImageBox> */}
-
-              <S.RightDivider />
-
-              <S.RightLabel>시설</S.RightLabel>
-              <S.RightFacilityGrid>
-                <S.RightFacility>
-                  <S.RightFacilityIcon>
-                    <Image src="/icons/bed.svg" alt="bed" width={32} height={32} />
-                  </S.RightFacilityIcon>
-                  <S.RightFacilityText>침대</S.RightFacilityText>
-                </S.RightFacility>
-                <S.RightFacility>
-                  <S.RightFacilityIcon>
-                    <Image src="/icons/cabinet.svg" alt="cabinet" width={32} height={32} />
-                  </S.RightFacilityIcon>
-                  <S.RightFacilityText>수납장</S.RightFacilityText>
-                </S.RightFacility>
-                <S.RightFacility>
-                  <S.RightFacilityIcon>
-                    <Image src="/icons/fridge.svg" alt="fridge" width={32} height={32} />
-                  </S.RightFacilityIcon>
-                  <S.RightFacilityText>개별 냉장고</S.RightFacilityText>
-                </S.RightFacility>
-                <S.RightFacility>
-                  <S.RightFacilityIcon>
-                    <Image src="/icons/mirror.svg" alt="mirror" width={32} height={32} />
-                  </S.RightFacilityIcon>
-                  <S.RightFacilityText>전신 거울</S.RightFacilityText>
-                </S.RightFacility>
-              </S.RightFacilityGrid>
-            </>
+            <BoardingPostContent
+              isModal={isModal}
+              roomName={roomName}
+              headCount={postInfo.__typename === 'BoardingPost' ? postInfo.room.headCount : 0}
+              location={postInfo.__typename === 'BoardingPost' ? postInfo.room.boardingHouse.location : undefined}
+              desc={desc ?? ''}
+              monthlyRent={postInfo.__typename === 'BoardingPost' ? postInfo.room.monthlyRent : undefined}
+              periods={postInfo.__typename === 'BoardingPost' ? postInfo.room.contractPeriod.map(p => p.contractPeriod) : []}
+              nearestStation={postInfo.__typename === 'BoardingPost' ? postInfo.room.boardingHouse.nearestStation : undefined}
+              nearestSchool={postInfo.__typename === 'BoardingPost' ? postInfo.room.boardingHouse.nearestSchool : undefined}
+              gender={postInfo.__typename === 'BoardingPost' ? postInfo.room.boardingHouse.gender : undefined}
+              isMealProvided={postInfo.__typename === 'BoardingPost' ? postInfo.room.boardingHouse.isMealProvided : undefined}
+              options={postInfo.__typename === 'BoardingPost' ? postInfo.room.boardingRoomOption : []}
+            />
           ) : (
-            <>
-              <S.RightTopRow>
-                <S.RightPeriodTags>
-                  <S.RightPeriodTag>6개월</S.RightPeriodTag>
-                  <S.RightPeriodTag>2개월</S.RightPeriodTag>
-                  <S.RightPeriodTag>자유</S.RightPeriodTag>
-                </S.RightPeriodTags>
-              </S.RightTopRow>
-              <S.RightSub>부산광역시 남구</S.RightSub>
-              <S.RightDesc>
-                그랜마 하우스 3호은 슈퍼싱글 사이즈 침대, 책상, 에어컨, 냉장고, 수납장이 준비된 1인 실 입니다. 큰 창이 있어서 밝고 환기가 잘되며 조용하고 포근한 방입니다.
-              </S.RightDesc>
-            </>
+            <SnsPostContent
+              date={date || ''}
+              hashtags={postInfo.__typename === 'SnsPost' ? postInfo.hashtags : undefined}
+              isEditingPost={isEditingPost}
+              editingPostContent={editingPostContent}
+              editingImages={editingImages}
+              newImages={newImages}
+              uploading={uploading}
+              displayDesc={displayDesc}
+              onChangeContent={setEditingPostContent}
+              onRemoveImage={removeImage}
+              onRemoveNewImage={removeNewImage}
+              onImageUpload={handleImageUpload}
+              onCancelEdit={cancelEditPost}
+              onSaveEdit={saveEditPost}
+            />
           )}
         </S.RightContent>
-
-        {/* 댓글 섹션 */}
-        <S.CommentsSection show={showComments} isModal={isModal}>
-          <S.CommentsHeader>
-            <S.CommentsTitle>댓글 {comments.length}개</S.CommentsTitle>
-            <S.CommentsCloseButton onClick={() => setShowComments(false)}>
-              ×
-            </S.CommentsCloseButton>
-          </S.CommentsHeader>
-          <S.CommentsList>
-            {comments.map((comment) => (
-              <S.CommentItem key={comment.id}>
-                <S.CommentAvatar>
-                  <Image src={comment.avatar} alt={comment.author} fill style={{ objectFit: 'cover' }} />
-                </S.CommentAvatar>
-                <S.CommentContent>
-                  <S.CommentAuthor>{comment.author}</S.CommentAuthor>
-                  <S.CommentText>{comment.text}</S.CommentText>
-                </S.CommentContent>
-                <S.MenuButton onClick={(e) => e.stopPropagation()}>
-                  <S.CommentMenu
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setOpenCommentMenuId((prev) => {
-                        const opening = prev !== comment.id;
-                        if (opening) {
-                          setMenuOpen(false);
-                          setShowRoomTour(false);
-                        }
-                        return opening ? comment.id : null;
-                      });
-                    }}
-                  >
-                    <Image src={EllipsisIcon} alt="메뉴" width={16} height={16} />
-                  </S.CommentMenu>
-                  {openCommentMenuId === comment.id && (
-                    <S.MenuDropdown placement="down">
-                      <S.MenuItem
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          console.log('댓글 수정', comment.id);
-                          setOpenCommentMenuId(null);
-                        }}
-                      >
-                        수정
-                      </S.MenuItem>
-                      <S.MenuItem
-                        red
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          console.log('댓글 삭제', comment.id);
-                          setOpenCommentMenuId(null);
-                        }}
-                      >
-                        삭제
-                      </S.MenuItem>
-                    </S.MenuDropdown>
-                  )}
-                </S.MenuButton>
-              </S.CommentItem>
-            ))}
-          </S.CommentsList>
-        </S.CommentsSection>
-
-        <S.InteractionBar isModal={isModal}>
-          {showComments ? (
+        <CommentsPanel
+          show={showComments}
+          isModal={isModal}
+          comments={comments}
+          commentsLoading={commentsLoading}
+          currentUserId={currentUserId ?? undefined}
+          editingCommentId={editingCommentId}
+          editingText={editingText}
+          onChangeEditingText={setEditingText}
+          onEditComment={handleEditComment}
+          onSaveEditComment={saveEditComment}
+          onCancelEditComment={cancelEditComment}
+          onDeleteComment={(id) => deleteComment(id)}
+          openCommentMenuId={openCommentMenuId}
+          setOpenCommentMenuId={(id) => setOpenCommentMenuId(id)}
+          onClose={() => setShowComments(false)}
+        />
+        {showComments ? (
+          <S.InteractionBar isModal={isModal}>
             <S.CommentInputContainer>
               <S.CommentInput
                 placeholder="댓글을 입력하세요..."
                 value={commentText}
-                onChange={e => setCommentText(e.target.value)}
+                onChange={(e) => setCommentText(e.target.value)}
                 onKeyPress={handleKeyPress}
                 rows={1}
               />
@@ -350,38 +263,44 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
                 <Image src={SendIconSvg} alt="send" width={20} height={20} />
               </S.SendButton>
             </S.CommentInputContainer>
-          ) : (
-            <S.InteractionButtons>
-              <S.ActionButton onClick={() => console.log('좋아요!')}>
-                <Image src={HeartIcon} alt="like" width={24} height={24} />
-                <S.ActionCount>{post.likes ?? 3}</S.ActionCount>
-              </S.ActionButton>
-              <S.ActionButton onClick={() => setShowComments(true)}>
-                <Image src={CommentIcon} alt="comment" width={22} height={22} />
-                <S.ActionCount>{post.comments ?? 3}</S.ActionCount>
-              </S.ActionButton>
-              <S.MenuButton ref={actionMenuRef} onClick={() =>
-                setMenuOpen((prev) => {
-                  const next = !prev;
-                  if (next) {
-                    setShowRoomTour(false);
-                    setOpenCommentMenuId(null);
-                  }
-                  return next;
-                })
-              }>
-                <Image src={EllipsisIcon} alt="menu" width={24} height={24} />
-                {menuOpen && (
-                  <S.MenuDropdown>
-                    <S.MenuItem onClick={() => { console.log('수정'); setMenuOpen(false); }}>수정</S.MenuItem>
-                    <S.MenuItem onClick={() => { console.log('삭제'); setMenuOpen(false); }} red>삭제</S.MenuItem>
-                  </S.MenuDropdown>
-                )}
-              </S.MenuButton>
-            </S.InteractionButtons>
-          )}
-        </S.InteractionBar>
+          </S.InteractionBar>
+        ) : (
+          <InteractionBar
+            isModal={isModal}
+            isLiked={isLiked}
+            likeCount={likeCount}
+            commentCount={commentCount}
+            isPostOwner={isPostOwner}
+            menuOpen={menuOpen}
+            menuRef={actionMenuRef}
+            onToggleLike={handleLikeToggle}
+            onOpenComments={() => setShowComments(true)}
+            onToggleMenu={() => setMenuOpen((prev) => { const next = !prev; if (next) { setShowRoomTour(false); setOpenCommentMenuId(null); } return next; })}
+            onEditPost={postInfo.__typename === 'SnsPost' ? () => { handleEditPost(); setMenuOpen(false); } : undefined}
+            onDeletePost={() => { deletePost(); setMenuOpen(false); }}
+          />
+        )}
       </S.Right>
+
+      <ConfirmModal
+        visible={Boolean(isOpen && commentToDelete !== null)}
+        title="댓글 삭제"
+        message={<>정말 댓글을 삭제하시겠습니까?</>}
+        confirmText="삭제"
+        cancelText="취소"
+        onConfirm={confirmDeleteComment}
+        onCancel={cancelDeleteComment}
+      />
+
+      <ConfirmModal
+        visible={Boolean(isOpen && postToDelete !== null)}
+        title="게시물 삭제"
+        message={<>정말 게시물을 삭제하시겠습니까?<br />삭제된 게시물은 복구할 수 없습니다.</>}
+        confirmText="삭제"
+        cancelText="취소"
+        onConfirm={confirmDeletePost}
+        onCancel={cancelDeletePost}
+      />
     </S.Wrapper>
   );
 }
