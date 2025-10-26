@@ -111,6 +111,13 @@ export const RoomList = styled.div`
   gap: 24px;
   margin-top: 16px;
 `;
+
+export const ActionWrap = styled.div`
+	position: absolute;
+	top: 50%;
+	right: 0;
+	transform: translateY(-50%);
+`
 export const RoomCard = styled.div`
   display: grid;
   grid-template-columns: 1fr 2fr;
@@ -119,6 +126,7 @@ export const RoomCard = styled.div`
   border: 1px solid ${colors.line};
   width: 100%;
   padding: 16px;
+	gap: 1rem;
   transition: all 0.2s ease-in-out;
   cursor: pointer;
 
@@ -139,11 +147,11 @@ export const RoomHeader = styled.div`
 `;
 
 export const RoomInfo = styled.div`
-  width: 75%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: start;
-  padding: 1rem 2rem;
+  padding: 1rem 0;
   gap: 0.4rem;
 
   ${mq.mobile} {
@@ -163,13 +171,16 @@ export const BoarderList = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+	width: 100%;
   gap: 8px;
 `;
 
 export const ProfileWrap = styled.div`
   display: flex;
+	position: relative;
   align-items: center;
   margin-right: 8px;
+	width: 100%;
   gap: 8px;
 `;
 
@@ -198,7 +209,8 @@ export const ProfileImg = styled.div`
 
 export const RoomImage = styled.div`
   width: 100%;
-  height: 7rem;
+  height: 100%;
+	min-height: 7rem;
   border-radius: ${radius.lg2};
   background: ${colors.line};
   margin-top: 8px;

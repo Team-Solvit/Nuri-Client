@@ -9,7 +9,7 @@ import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import LeaveModal from "@/containers/myHouse/leave-modal/ui";
 import {useQuery} from "@apollo/client";
 import {BoardingHouseQueries} from "@/services/boardingHouse";
-import {BoardingHouseType, BoardingRoomAndBoardersType} from "@/types/boardinghouse";
+import {BoardingHouseType, BoardingRoomAndBoardersType, BoarderType} from "@/types/boardinghouse";
 import {useUpdateRoomNumber} from "@/store/updateRoomNumber";
 import {useLoadingEffect} from "@/hooks/useLoading";
 import HouseScrollSkeleton from "@/components/ui/skeleton/HouseScrollSkeleton";
@@ -66,28 +66,18 @@ const HouseScroll = () => {
 		setRoomNumber(roomId)
 		setRefetch(refetch)
 	}
-	const handleLeaveOpenModal = (e : React.MouseEvent, room: BoardingRoomAndBoardersType) =>{
+	// open modal for a single boarder (individual contract end)
+	const handleBoarderLeaveOpen = (e: React.MouseEvent, boarderEntry: BoarderType | null | undefined, roomName?: string) => {
 		e.stopPropagation();
-		if(!room?.contractInfo || room.contractInfo.length === 0) return
-		openModal(
-			(room?.contractInfo
-				?.map(boarder => boarder.boarder?.user?.name)
-				.filter((name): name is string => !!name)) ?? [],
-			room.room?.name ?? "",
-			room?.contractInfo[0]?.contractId ?? ""
-		)
+		if (!boarderEntry) return;
+		const name = boarderEntry.boarder?.user?.name ?? "";
+		const contractId = boarderEntry.contractId ?? "";
+		openModal([name], roomName ?? "", contractId);
 	}
 	
 	if (isLoading) {
 		return <HouseScrollSkeleton />;
 	}
-	const {data: boardingHouseInfo} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_INFO);
-	const {data: boardingHouseRooms} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOMS);
-	
-	const boardingHouse: BoardingHouseType = boardingHouseInfo?.getMyBoardingHouse;
-	const boardingHouseRoomsList: BoardingRoomAndBoardersType[] = boardingHouseRooms?.getBoardingRoomAndBoardersInfoList;
-	
-	const [roomId, setRoomId] = useState<string>("");
 	return (
 		<S.Container>
 			{leaveInfo && <LeaveModal roomRefetch={refetch} boarders={leaveInfo} contractId={contractId}/>}
@@ -153,35 +143,46 @@ const HouseScroll = () => {
 										<S.RoomName>{room.room?.name}</S.RoomName>
 										{room.room?.status !== "EMPTY_ROOM" && room?.contractInfo && (
 											<S.BoarderList>
-												{room.contractInfo.map(boarder => {
-													const boarderData = boarder.boarder;
+												{room.contractInfo.map((entry) => {
+													const { contractId, boarder } = entry;
+													const { user, callNumber } = boarder ?? {};
 													return (
-														<S.ProfileWrap key={boarderData?.user.id}>
+														<S.ProfileWrap key={contractId ?? user?.id}>
 															<S.ProfileImg>
-																<Image src={imageCheck(boarderData?.user?.profile) ?? "/post/default.png"} alt={"profile"} fill style={{objectFit: "cover"}}/>
+																<Image
+																	src={imageCheck(user?.profile)}
+																	alt="profile"
+																	fill
+																	style={{ objectFit: "cover" }}
+																/>
 															</S.ProfileImg>
 															<div>
-																<S.UserId>{boarderData?.user.name}</S.UserId>
-																{boarderData?.callNumber && <S.UserPhone>{boarderData.callNumber}</S.UserPhone>}
+																<S.UserId>{user?.name}</S.UserId>
+																{callNumber && <S.UserPhone>{callNumber}</S.UserPhone>}
 															</div>
+															<S.ActionWrap>
+																<Square
+																	text="계약 종료"
+																	status={true}
+																	onClick={(e: React.MouseEvent) =>
+																		handleBoarderLeaveOpen(e, entry, room.room?.name)
+																	}
+																	width="max-content"
+																/>
+															</S.ActionWrap>
 														</S.ProfileWrap>
 													);
 												})}
-											</S.BoarderList>
-										)}
-										{room.room?.status === "EMPTY_ROOM" && (
-											<S.UserId color="#8c8c8c">비어있음</S.UserId>
-										)}
-									</S.RoomInfo>
-									{room.room?.status !== "EMPTY_ROOM" && (
-										<Square text={"계약 종료"}
-										        onClick={(e: React.MouseEvent) => handleLeaveOpenModal(e, room)} status={true}
-										        width={"max-content"}/>
-									)}
-								</S.RoomHeader>
-							</S.RoomCard>
-						)
-					})
+												</S.BoarderList>
+											)}
+											{room.room?.status === "EMPTY_ROOM" && (
+												<S.UserId color="#8c8c8c">비어있음</S.UserId>
+											)}
+										</S.RoomInfo>
+									</S.RoomHeader>
+								</S.RoomCard>
+							)
+						})
 				) : (
 					<S.EmptyMessage>
 						등록된 방이 없습니다. 방을 추가해보세요!
