@@ -69,6 +69,7 @@ export interface BoardingRoomType {
 	boardingRoomOption?: BoardingRoomOptionType[];
 }
 export interface BoarderType {
+	contractId : string,
 	boarder?:{
 		callNumber : string,
 		gender : Gender,
@@ -82,7 +83,7 @@ export interface BoarderType {
 
 export interface BoardingRoomAndBoardersType {
 	room?: BoardingRoomType;
-	contractInfo : BoarderType[] | null
+	contractInfo : BoarderType[] | null,
 }
 
 export interface CreateBoardingHouseType {

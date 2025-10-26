@@ -6,9 +6,10 @@ import {useAlertStore} from "@/store/alert";
 import {BoardingHouseService} from "@/services/boardingHouse";
 import {useApollo} from "@/lib/apolloClient";
 
-export default function LeaveModal({boarders, roomId}: {
+export default function LeaveModal({boarders, contractId, roomRefetch}: {
 	boarders: { boarderName: string, roomName: string }[],
-	roomId: string
+	contractId: string,
+	roomRefetch : () => void
 }) {
 	const {close} = useModalStore();
 	const {error, success} = useAlertStore();
@@ -20,9 +21,10 @@ export default function LeaveModal({boarders, roomId}: {
 		try {
 			const res = await BoardingHouseService.endBoardingRoomContract(
 				client,
-				roomId
+				contractId
 			)
 			if (res) {
+				roomRefetch()
 				success("계약 종료에 성공하였습니다.");
 			} else {
 				error("계약 종료에 실패하였습니다.");
@@ -30,6 +32,8 @@ export default function LeaveModal({boarders, roomId}: {
 		} catch (e) {
 			console.log(e)
 			error("계약 종료에 실패하였습니다.")
+		}finally {
+			modalClose()
 		}
 	}
 	return (Array.isArray(boarders) && boarders.length > 0) && (

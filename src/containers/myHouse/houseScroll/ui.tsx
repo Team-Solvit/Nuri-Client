@@ -27,9 +27,9 @@ const HouseScroll = () => {
 		roomName: ""
 	}])
 	const {open} = useModalStore();
-	const openModal = (boarderNames: string[], roomName: string, roomId: string) => {
+	const openModal = (boarderNames: string[], roomName: string, contractId: string) => {
 		open();
-		setRoomId(roomId)
+		setContractId(contractId)
 		const newBoarders = boarderNames.map((item) => ({
 			boarderName: item,
 			roomName: roomName,
@@ -55,7 +55,7 @@ const HouseScroll = () => {
 	}, [isLoading, boardingHouse, error, navigate]);
 	
 	const {setRoomNumber, setRefetch} = useUpdateRoomNumber()
-	const [roomId, setRoomId] = useState<string>("");
+	const [contractId, setContractId] = useState<string>("");
 	const handleRoomAdd = () => {
 		navigate("/myHouse/addition")
 		setRefetch(refetch)
@@ -68,12 +68,13 @@ const HouseScroll = () => {
 	}
 	const handleLeaveOpenModal = (e : React.MouseEvent, room: BoardingRoomAndBoardersType) =>{
 		e.stopPropagation();
+		if(!room?.contractInfo) return
 		openModal(
 			(room?.contractInfo
 				?.map(boarder => boarder.boarder?.user?.name)
 				.filter((name): name is string => !!name)) ?? [],
 			room.room?.name ?? "",
-			room.room?.roomId ?? ""
+			room?.contractInfo[0]?.contractId ?? ""
 		)
 	}
 	
@@ -82,7 +83,7 @@ const HouseScroll = () => {
 	}
 	return (
 		<S.Container>
-			{leaveInfo && <LeaveModal boarders={leaveInfo} roomId={roomId}/>}
+			{leaveInfo && <LeaveModal roomRefetch={refetch} boarders={leaveInfo} contractId={contractId}/>}
 			<S.Header>
 				<S.Title>{boardingHouse?.name}</S.Title>
 				<S.Setting onClick={() => navigate("/setting/host")}>하숙집 설정</S.Setting>
