@@ -15,6 +15,7 @@ import {useAlertStore} from "@/store/alert";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import {useUserStore} from "@/store/user";
 import PostScrollSkeleton from "@/components/ui/skeleton/PostScrollSkeleton";
+import {usePermissionGuard} from "@/hooks/usePermissionGuard";
 
 export default function PostScroll() {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null);
@@ -134,6 +135,7 @@ export default function PostScroll() {
 		});
 	};
 	
+	const {withPermission} = usePermissionGuard()
 	// 초기 로딩 중이면 스켈레톤 컴포넌트 렌더링
 	if (isInitialLoading) {
 		return <PostScrollSkeleton />;
@@ -229,7 +231,7 @@ export default function PostScroll() {
 							<S.Nav onClick={(e) => e.stopPropagation()}>
 								<p>{postData.price ? "하숙집" : ""}</p>
 								<Square text={"채팅"} onClick={() => {
-									handleChatJoinTwoIds(currentUserId ?? "", postData?.user?.userId ?? "")
+									withPermission(()=>handleChatJoinTwoIds(currentUserId ?? "", postData?.user?.userId ?? ""))
 								}} status={true} width={"100px"}/>
 							</S.Nav>
 						</S.PostTitle>
