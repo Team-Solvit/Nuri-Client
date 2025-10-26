@@ -314,7 +314,9 @@ export const GroupService = {
   deleteGroup: async (client: ApolloClient<any>, groupId: string) => {
     const { data } = await client.mutate({
       mutation: GroupGQL.MUTATIONS.DELETE_GROUP,
-      variables: { groupId }
+      variables: { groupId },
+      refetchQueries: ['GetGroupsByArea', 'GetGroupStatus'],
+      awaitRefetchQueries: true
     });
     return data.deleteGroup;
   },
