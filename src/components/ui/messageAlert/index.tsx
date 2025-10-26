@@ -6,6 +6,7 @@ import {createPortal} from "react-dom";
 import * as S from "./style";
 import Image from "next/image";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {imageCheck} from "@/utils/imageCheck";
 
 
 export default function MessageAlert() {
@@ -55,7 +56,7 @@ export default function MessageAlert() {
 			>
 				<S.Content>
 					<S.ImgBox>
-						<Image style={{objectFit: "cover"}} src={ima_url} alt="profile-img" fill/>
+						<Image style={{objectFit: "cover"}} src={imageCheck(ima_url)} alt="profile-img" fill/>
 					</S.ImgBox>
 					<S.TextBox>
 						<S.Name>{user_id}</S.Name>
