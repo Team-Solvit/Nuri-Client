@@ -25,6 +25,7 @@ export default function LeaveModal({boarders, contractId, roomRefetch}: {
 			)
 			if (res) {
 				roomRefetch()
+				modalClose()
 				success("계약 종료에 성공하였습니다.");
 			} else {
 				error("계약 종료에 실패하였습니다.");
@@ -32,8 +33,6 @@ export default function LeaveModal({boarders, contractId, roomRefetch}: {
 		} catch (e) {
 			console.log(e)
 			error("계약 종료에 실패하였습니다.")
-		}finally {
-			modalClose()
 		}
 	}
 	return (Array.isArray(boarders) && boarders.length > 0) && (

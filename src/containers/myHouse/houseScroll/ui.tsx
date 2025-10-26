@@ -68,7 +68,7 @@ const HouseScroll = () => {
 	}
 	const handleLeaveOpenModal = (e : React.MouseEvent, room: BoardingRoomAndBoardersType) =>{
 		e.stopPropagation();
-		if(!room?.contractInfo) return
+		if(!room?.contractInfo || room.contractInfo.length === 0) return
 		openModal(
 			(room?.contractInfo
 				?.map(boarder => boarder.boarder?.user?.name)
