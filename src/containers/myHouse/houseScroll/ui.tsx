@@ -166,7 +166,7 @@ const HouseScroll = () => {
 																	text="계약 종료"
 																	status={true}
 																	onClick={(e: React.MouseEvent) =>
-																		handleBoarderLeaveOpen(e, entry, room.room?.name)
+																		handleBoarderLeaveOpen(e, entry, room?.room?.name as string)
 																	}
 																	width="max-content"
 																/>

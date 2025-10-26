@@ -119,6 +119,7 @@ export const ActionWrap = styled.div`
 	transform: translateY(-50%);
 	${mq.mobile} {
 		position: static;
+    transform: translateY(0);
 	}
 `
 export const RoomCard = styled.div`
@@ -158,7 +159,6 @@ export const RoomInfo = styled.div`
   gap: 0.4rem;
 
   ${mq.mobile} {
-    width: max-content;
     padding: 1.5rem;
   }
 `;
