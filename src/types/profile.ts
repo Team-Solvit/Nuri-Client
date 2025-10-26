@@ -4,6 +4,7 @@ export interface UserProfileResponseDto {
   followingCount: number;
   profile: string;
   userId: string;
+  userUUID: string;
   introduce: string;
   isFollowing: boolean;
 }

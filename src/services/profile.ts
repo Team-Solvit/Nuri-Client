@@ -11,6 +11,7 @@ export const ProfileGQL = {
           followingCount
           profile
           userId
+          userUUID
           introduce
           isFollowing
         }

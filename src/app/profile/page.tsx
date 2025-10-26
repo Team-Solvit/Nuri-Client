@@ -274,7 +274,7 @@ export default function MyProfilePage() {
 
         <S.ProfileMain>
           <S.ButtonRow>
-            <S.Nickname>{name || '로그인 후 사용해주세요.'}</S.Nickname>
+            <S.Nickname>{userId || '로그인 후 사용해주세요.'}</S.Nickname>
             {id && (
               <S.Button>
                 <Square

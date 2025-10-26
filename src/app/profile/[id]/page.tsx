@@ -152,6 +152,8 @@ export default function UserProfilePage() {
         introduce: '소개글이 없습니다.',
       };
 
+      const isValidUser = data?.getUserProfile !== undefined && data?.getUserProfile !== null;
+
       const handleFollowToggle = async () => {
         try {
           if (isFollowing) {
@@ -262,39 +264,41 @@ export default function UserProfilePage() {
                 <S.ProfileMain>
                     <S.ButtonRow>
                         <S.Nickname>{profile.userId}</S.Nickname>
-                        <S.Button>
-                            {isOwnProfile ? (
-                                <>
-                                    <Square
-                                        text="프로필 편집"
-                                        status={true}
-                                        onClick={() => handleBtnClick('/setting/profile')}
-                                        width="120px"
-                                    />
-                                    <Square
-                                        text="설정"
-                                        status={true}
-                                        onClick={() => handleBtnClick('/setting')}
-                                        width="120px"
-                                    />
-                                </>
-                            ) : (
-                                <>
-                                    <Square
-                                        text={isFollowing ? "언팔로우" : "팔로우"}
-                                        status={!isFollowing}
-                                        onClick={handleFollowToggle}
-                                        width="120px"
-                                    />
-                                    <Square
-                                        text="메시지"
-                                        status={true}
-                                        onClick={() => handleBtnClick(`/message/${userId}`)}
-                                        width="120px"
-                                    />
-                                </>
-                            )}
-                        </S.Button>
+                        {isValidUser && (
+                            <S.Button>
+                                {isOwnProfile ? (
+                                    <>
+                                        <Square
+                                            text="프로필 편집"
+                                            status={true}
+                                            onClick={() => handleBtnClick('/setting/profile')}
+                                            width="120px"
+                                        />
+                                        <Square
+                                            text="설정"
+                                            status={true}
+                                            onClick={() => handleBtnClick('/setting')}
+                                            width="120px"
+                                        />
+                                    </>
+                                ) : (
+                                    <>
+                                        <Square
+                                            text={isFollowing ? "언팔로우" : "팔로우"}
+                                            status={!isFollowing}
+                                            onClick={handleFollowToggle}
+                                            width="120px"
+                                        />
+                                        <Square
+                                            text="메시지"
+                                            status={true}
+                                            onClick={() => handleBtnClick(`/message/${userId}`)}
+                                            width="120px"
+                                        />
+                                    </>
+                                )}
+                            </S.Button>
+                        )}
                     </S.ButtonRow>
                     <S.Stats>
                         <S.Stat>

@@ -5,6 +5,7 @@ import Square from '../button/square';
 import { useQuery } from '@apollo/client';
 import { ProfileGQL } from '@/services/profile';
 import { FollowerUserInfo } from '@/types/profile';
+import { useRouter } from 'next/navigation';
 
 interface FollowerListProps {
   onClose: () => void;
@@ -13,6 +14,7 @@ interface FollowerListProps {
 
 export default function FollowerList({ onClose, userId }: FollowerListProps) {
   // const [search, setSearch] = useState('');
+  const router = useRouter();
   
   const { data: followerData } = useQuery(ProfileGQL.QUERIES.GET_FOLLOWERS, {
     variables: { userId },
@@ -22,8 +24,6 @@ export default function FollowerList({ onClose, userId }: FollowerListProps) {
   // const filtered = followers.filter((f: FollowerUserInfo) =>
   //   f.userId.includes(search)
   // );
-
-  // URL 유효성 검사 함수
   const isValidUrl = (url: string): boolean => {
     try {
       new URL(url);
@@ -33,17 +33,18 @@ export default function FollowerList({ onClose, userId }: FollowerListProps) {
     }
   };
 
-  // 프로필 이미지 URL 변환 함수
   const getProfileImageUrl = (profile: string): string => {
     if (!profile) return '/profile/profile.svg';
-    
-    // 이미 완전한 URL이면 그대로 반환
     if (isValidUrl(profile)) {
       return profile;
     }
     
-    // 파일 ID인 경우 CDN URL로 변환
     return `https://cdn.solvit-nuri.com/file/${profile}`;
+  };
+
+  const handleProfileClick = (targetUserId: string) => {
+    onClose();
+    router.push(`/profile/${targetUserId}`);
   };
 
   return (
@@ -66,21 +67,39 @@ export default function FollowerList({ onClose, userId }: FollowerListProps) {
           </S.SearchBox> */}
           <S.List>
             {followers.map((f: FollowerUserInfo) => (
-              <S.Item key={f.id}>
+              <S.Item key={f.id} onClick={() => handleProfileClick(f.userId)} style={{ cursor: 'pointer' }}>
                 <S.ProfileImg>
-                  <Image 
-                    src={getProfileImageUrl(f.profile)} 
-                    alt="프로필" 
-                    width={55} 
-                    height={55}
-                    style={{ borderRadius: '50%', objectFit: 'cover' }}
-                  />
+                  {f.profile && getProfileImageUrl(f.profile) !== '/profile/profile.svg' ? (
+                    <Image 
+                      src={getProfileImageUrl(f.profile)} 
+                      alt="프로필" 
+                      width={55} 
+                      height={55}
+                      style={{ borderRadius: '50%', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        width: 55,
+                        height: 55,
+                        borderRadius: '50%',
+                        background: '#e0e0e0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 700,
+                        fontSize: 20,
+                        color: '#666',
+                      }}
+                    >
+                      {f.userId && f.userId[0] ? f.userId[0] : '?'}
+                    </div>
+                  )}
                 </S.ProfileImg>
                 <S.Info>
                   <S.Username>{f.userId}</S.Username>
                   <S.Name>{f.userId}</S.Name>
                 </S.Info>
-                <S.DeleteBtn>삭제</S.DeleteBtn>
               </S.Item>
             ))}
           </S.List>
