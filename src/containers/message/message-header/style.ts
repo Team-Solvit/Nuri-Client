@@ -196,38 +196,89 @@ export const MemberCount = styled.span`
 
 export const MemberListContainer = styled.div`
   position: absolute;
-  top: 100%;
+  top: calc(100% + 8px);
   left: 0;
-  right: 0;
+  width: 300px;
+  max-height: 400px;
   background: white;
-  border: 1px solid ${colors.line};
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: ${zIndex.modal};
-  max-height: 200px;
-  overflow-y: auto;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  z-index: ${zIndex.overlay};
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 `;
 
 export const MemberListHeader = styled.div`
   padding: 12px 16px;
-  border-bottom: 1px solid ${colors.line};
   font-weight: 600;
   font-size: 14px;
   color: ${colors.text};
+  border-bottom: 1px solid ${colors.line2};
+  background-color: #fcfcfd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  span {
+    font-weight: 400;
+    color: ${colors.gray};
+  }
+`;
+
+export const MemberList = styled.div`
+  overflow-y: auto;
+  padding: 8px;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: ${colors.line2};
+    border-radius: 3px;
+  }
 `;
 
 export const MemberItem = styled.div`
-  padding: 8px 16px;
-	cursor: pointer;
-  border-bottom: 1px solid ${colors.line};
-  font-size: 14px;
-  color: ${colors.text};
-  
-  &:last-child {
-    border-bottom: none;
-  }
-  
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+
   &:hover {
     background-color: ${colors.background};
   }
+`;
+
+export const MemberAvatar = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: ${colors.primary}20;
+  color: ${colors.primary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  margin-right: 12px;
+  flex-shrink: 0;
+`;
+
+export const MemberInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+`;
+
+export const MemberName = styled.span`
+  font-weight: 500;
+  font-size: 14px;
+  color: ${colors.text};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;

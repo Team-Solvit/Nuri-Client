@@ -180,14 +180,22 @@ export default function MessageHeaderUI() {
 					</p>
 					{showMemberList && memberIds?.length > 2 && (
 						<S.MemberListContainer ref={memberListRef}>
-							{memberIds.map((memberId: string, index: number) => (
-								<S.MemberItem
-									key={index}
-									onClick={()=>handleMemberClick(memberId)}
-								>
-									{memberId}
-								</S.MemberItem>
-							))}
+							<S.MemberListHeader>
+								대화 참여자 <span>{memberIds.length}명</span>
+							</S.MemberListHeader>
+							<S.MemberList>
+								{memberIds.map((memberId: string, index: number) => (
+									<S.MemberItem
+										key={index}
+										onClick={()=>handleMemberClick(memberId)}
+									>
+										<S.MemberAvatar>{memberId.slice(0, 1).toUpperCase()}</S.MemberAvatar>
+										<S.MemberInfo>
+											<S.MemberName>{memberId}</S.MemberName>
+										</S.MemberInfo>
+									</S.MemberItem>
+								))}
+							</S.MemberList>
 						</S.MemberListContainer>
 					)}
 				</div>

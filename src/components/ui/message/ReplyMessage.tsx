@@ -22,14 +22,13 @@ const ReplyBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  width: max-content;
+	width: 100%;
 `;
 
 const ReplyBubble = styled.div<{ type: 'sent' | 'received' }>`
   background: ${colors.line};
   border-radius: ${radius.lg};
   padding: 0.5rem 1rem;
-  max-width: 220px;
   display: flex;
   flex-direction: column;
 `;

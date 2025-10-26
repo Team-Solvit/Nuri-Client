@@ -4,8 +4,8 @@ import {colors, fontSizes, radius, zIndex} from "@/styles/theme";
 
 export const DropdownContainer = styled.div`
   position: absolute;
-  top: 5rem;
-  right: 1rem;
+  top: 2rem;
+  right: 0;
   width: 260px;
   background: white;
   border-radius: ${radius.md};
@@ -13,6 +13,7 @@ export const DropdownContainer = styled.div`
   margin-top: 4px;
   overflow: hidden;
   display: flex;
+	padding: 0.5rem;
   flex-direction: column;
   z-index: ${zIndex.dropdown};
 `;

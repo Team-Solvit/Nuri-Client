@@ -344,7 +344,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 								</S.RemoveImageButton>
 							) :
 							<S.FileLabel onClick={handleProfileUpload}>
-								<span>프로필 이미지 선택</span>
+								<span>채팅방 이미지 선택</span>
 							</S.FileLabel>
 						}
 					</S.ProfileUploadContainer>
