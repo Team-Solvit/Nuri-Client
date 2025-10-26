@@ -176,8 +176,12 @@ export default function MessageSideBar() {
 		}
 	}, [isOpen, chatRoomId]);
 	
-	const changeParamsId = (id: string) => {
-		const decoded = decodeURIComponent(id);
+	const changeParamsId = (id: string | null | undefined) => {
+		if (!id) return "";
+		let decoded = id;
+		try {
+			decoded = decodeURIComponent(id);
+		} catch { /* ignore malformed percent-encoding */ }
 		const idx = decoded.lastIndexOf(":");
 		return idx !== -1 ? decoded.substring(idx + 1) : decoded;
 	};
@@ -293,7 +297,7 @@ export default function MessageSideBar() {
 								<h4>
 									{room.roomDto.name}
 								</h4>
-								<p>{getLatestMessageDisplay(room?.latestMessage as string)}</p>
+								<p>{getLatestMessageDisplay(room?.latestMessage ?? "")}</p>
 							</S.Info>
 						</S.ChatBox>
 					)

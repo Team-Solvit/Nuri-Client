@@ -184,8 +184,8 @@ export default function PostScroll() {
 						<S.PostTitle>
 							<S.Profile onClick={(e) => {
 								e.stopPropagation();
-								if (postData.user?.userId) {
-									navigateClick(`/profile/${postData.user?.userId}`);
+								if (user?.userId) {
+									navigateClick(`/profile/${user?.userId}`);
 								}
 							}}>
 								<S.Thumbnail>
@@ -204,7 +204,7 @@ export default function PostScroll() {
 									status
 									onClick={() => {
                     if(!user) return ;
-                    withPermission(moveChatRoom(user))
+                    withPermission(()=>moveChatRoom(user))
                   }}
 								/>
 							</S.Nav>
@@ -212,8 +212,8 @@ export default function PostScroll() {
 						
 						<S.PostImg
               onClick={() => {
-								if (postData.id) {
-									navigateClick(`/post/${postData.id}`);
+								if (id) {
+									navigateClick(`/post/${id}`);
 								}
 							}}
 							onMouseEnter={() => {
@@ -227,7 +227,7 @@ export default function PostScroll() {
 									status={false}
 									onClick={(e) => {
 										e.stopPropagation();
-										if (postData.id !== null) {
+										if (id !== null) {
 											handleSlide(index, "prev");
 										}
 									}}
@@ -257,7 +257,7 @@ export default function PostScroll() {
 									status={true}
 									onClick={(e) => {
 										e.stopPropagation();
-										if (postData.id !== null) {
+										if (id !== null) {
 											handleSlide(index, "next");
 										}
 									}}
