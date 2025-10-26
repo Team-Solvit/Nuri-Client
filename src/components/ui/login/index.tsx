@@ -10,9 +10,15 @@ import { useAlertStore } from '@/store/alert';
 import { useLoginModalStore } from '@/store/loginModal';
 import { useUserStore } from '@/store/user';
 import { AuthGQL, AuthService } from '@/services/auth';
-import { decodeJWT } from '@/utils/jwt';
-import { useQuery } from '@apollo/client';
+import { gql } from '@apollo/client';
+import { usePasswordReset } from '@/hooks/usePasswordReset';
+import { validatePassword } from '@/utils/validators/register';
 
+const UPDATE_PASSWORD = gql`
+  mutation UpdatePasswordWithEmail($input: PasswordUpdateInput!) {
+    updatePasswordWithEmail(passwordUpdateInput: $input)
+  }
+`;
 
 export default function Login() {
 	const router = useRouter();
@@ -24,11 +30,20 @@ export default function Login() {
 	const [id, setId] = useState("");
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
+	const [codeSent, setCodeSent] = useState(false);
 
 	const client = useApollo();
 	const alertStore = useAlertStore();
 	const loginModal = useLoginModalStore();
 	const setAuth = useUserStore(s => s.setAuth);
+
+	const {
+		loading: findLoading,
+		sendCode: handleSendCode,
+		verifyCode: handleVerifyCode,
+		changePassword: handleChangePassword,
+		ticket: findTicket,
+	} = usePasswordReset();
 
 	const handleLogin = useCallback(async () => {
 		if (loading) return;
@@ -38,7 +53,7 @@ export default function Login() {
 		}
 		setLoading(true);
 		try {
-			const { headers, status } = await AuthService.localLogin(
+			const { user, headers, status } = await AuthService.localLogin(
 				client,
 				{ id: id.trim(), password }
 			);
@@ -51,11 +66,12 @@ export default function Login() {
 				throw new Error(`토큰이 응답에 없습니다. status=${status ?? 'N/A'}`);
 			}
 
-			const decodedToken = decodeJWT(headerToken);
-			const role = decodedToken?.role || 'USER';
-
 			localStorage.setItem('AT', headerToken);
-			setAuth(id.trim(), role);
+
+			if (!user) {
+				throw new Error('로그인 유저 정보가 없습니다.');
+			}
+			setAuth(user);
 			alertStore.success('로그인 성공');
 			loginModal.close();
 		} catch (e: any) {
@@ -87,10 +103,24 @@ export default function Login() {
 		}
 	}, [client, alertStore]);
 
+	// sendCode 래핑해서 발송 후 codeSent true로
+	const handleSendCodeAndSet = useCallback(async (email: string) => {
+		await handleSendCode(email);
+		setCodeSent(true);
+	}, [handleSendCode]);
+
+	// 인증 성공 시 codeSent false로 초기화
+	const handleVerifyCodeAndSet = useCallback(async (email: string, code: string) => {
+		const ok = await handleVerifyCode(email, code);
+		if (ok) {
+			setStep('find-reset');
+			setCodeSent(false);
+		}
+	}, [handleVerifyCode]);
+
 	return (
 		<Wrapper>
 			<Image src="/logo.svg" alt="로고" width={80} height={80} priority />
-
 			{step === 'login' && (
 				<>
 					<FormGroup>
@@ -136,7 +166,6 @@ export default function Login() {
 					</SocialList>
 				</>
 			)}
-
 			{step === 'find-email' && (
 				<>
 					<FormGroup>
@@ -158,14 +187,15 @@ export default function Login() {
 								onChange={e => setCode(e.target.value)}
 								style={{ flex: 1 }}
 							/>
-							<Square text='인증' onClick={() => {
-							}} status={true} width='6vw' />
+							{!codeSent ? (
+								<Square text='발송' onClick={() => handleSendCodeAndSet(email)} status={!findLoading} width='fit-content' />
+							) : (
+								<Square text='인증' onClick={() => handleVerifyCodeAndSet(email, code)} status={!findLoading} width='fit-content' />
+							)}
 						</InputRow>
 					</FormGroup>
-					<Square text='다음' onClick={() => setStep('find-reset')} status={true} width='100%' />
 				</>
 			)}
-
 			{step === 'find-reset' && (
 				<>
 					<FormGroup>
@@ -186,7 +216,15 @@ export default function Login() {
 							onChange={e => setPw2(e.target.value)}
 						/>
 					</FormGroup>
-					<Square text='비밀번호 재설정' onClick={() => setStep('login')} status={true} width='100%' />
+					<Square text={findLoading ? '변경 중...' : '비밀번호 재설정'} onClick={async () => {
+						const err = validatePassword({ password: pw, confirmPassword: pw2 });
+						if (err) {
+							alertStore.error(err);
+							return;
+						}
+						const ok = await handleChangePassword(email, pw);
+						if (ok) setStep('login');
+					}} status={!findLoading} width='100%' />
 				</>
 			)}
 		</Wrapper>
@@ -235,6 +273,7 @@ const Input = styled.input`
     outline: none;
     border-color: ${colors.primary};
   }
+
 
 
   &::placeholder {

@@ -63,12 +63,17 @@ export default function OAuthCallbackClient() {
           throw new Error(`토큰이 응답에 없습니다. status=${status ?? 'N/A'}`);
         }
 
-        const decodedToken = decodeJWT(headerToken);
-        const role = decodedToken?.role || 'USER';
-        const userId = decodedToken?.sub || decodedToken?.id || 'unknown';
-
         localStorage.setItem('AT', headerToken);
-        setAuth(userId, role);
+        setAuth({
+          id: response.user.id || '',
+          email: response.user.email || '',
+          userId: response.user.userId || '',
+          country: response.user.country || '',
+          language: response.user.language || '',
+          name: response.user.name || '',
+          profile: response.user.profile || '',
+          role: response.user.role || '',
+        });
 
         alertStore.success('로그인 성공');
         router.push('/');

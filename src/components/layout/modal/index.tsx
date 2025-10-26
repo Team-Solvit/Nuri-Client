@@ -24,7 +24,7 @@ export default function Modal({children}: { children: React.ReactNode }) {
 	}
 	return createPortal(
 		<S.Black
-			style={{zIndex: 999}}
+			style={{zIndex: 9999}}
 			onClick={closeModal}
 			role="dialog"
 			aria-modal="true"

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { RoomTourService } from '@/services/roomTour';
+import { useApolloClient } from '@apollo/client';
 import styled from '@emotion/styled';
 import Image from 'next/image';
 import { colors, fontSizes, zIndex } from '@/styles/theme';
@@ -17,7 +19,13 @@ import ArrowRight from '@/assets/post/arrow/right.svg';
 import { mq } from '@/styles/media';
 import { useAlertStore } from "@/store/alert";
 
-export default function RoomTourModal() {
+interface RoomTourModalProps {
+	boardingRoomId?: string;
+	onSuccess?: () => void;
+}
+
+export default function RoomTourModal({ boardingRoomId, onSuccess }: RoomTourModalProps) {
+	const client = useApolloClient();
 	const now = new Date();
 	const rawHour = now.getHours();
 	const initialPeriod = rawHour >= 12 ? 'PM' : 'AM';
@@ -40,7 +48,7 @@ export default function RoomTourModal() {
 	const formatTime = (h: number, m: number) =>
 		`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
 
-	const { error } = useAlertStore();
+	const { error, success } = useAlertStore();
 
 	const handleDateClick = (day: Date, isCurrentMonth: boolean) => {
 		const today = new Date();
@@ -53,6 +61,33 @@ export default function RoomTourModal() {
 			return;
 		}
 		setSelectedDate(day);
+	};
+
+
+	const handleSend = async () => {
+		if (!boardingRoomId) {
+			error('예약 정보가 올바르지 않습니다.');
+			return;
+		}
+		const date = new Date(selectedDate);
+		let hour24 = hour % 12;
+		if (period === 'PM') hour24 += 12;
+		date.setHours(hour24, minute, 0, 0);
+
+		try {
+			await RoomTourService.createRoomTour(client, {
+				boardingRoomId,
+				time: date.toISOString(),
+			});
+			success('룸투어 예약이 완료되었습니다.');
+			onSuccess?.();
+		} catch (e) {
+			if (e instanceof Error) {
+				error(e.message || '룸투어 예약에 실패했습니다.');
+			} else {
+				error(String(e) || '룸투어 예약에 실패했습니다.');
+			}
+		}
 	};
 
 	return (
@@ -121,7 +156,7 @@ export default function RoomTourModal() {
 					</Select>
 					<Span>:</Span>
 					<Select value={minute} onChange={(e) => setMinute(+e.target.value)}>
-						{Array.from({ length: 60 }, (_, i) => i).map((m) => (
+						{Array.from({ length: 12 }, (_, i) => i * 5).map((m) => (
 							<option key={m} value={m}>
 								{m.toString().padStart(2, '0')}
 							</option>
@@ -129,28 +164,31 @@ export default function RoomTourModal() {
 					</Select>
 					<PeriodButtons>
 						<PeriodButton active={period === 'AM'} onClick={() => setPeriod('AM')}>
-							AM
+							오전
 						</PeriodButton>
 						<PeriodButton active={period === 'PM'} onClick={() => setPeriod('PM')}>
-							PM
+							오후
 						</PeriodButton>
 					</PeriodButtons>
 				</TimeSelector>
 			</TimeRow>
 
-			<SendButton
-				onClick={() =>
-					console.log(
-						'전송:',
-						format(selectedDate, 'yyyy-MM-dd'),
-						formatTime(hour, minute),
-						period
-					)
-				}
-			>
-				<Image src={'/icons/post-detail/send.svg'} alt="Send" width={20} height={20} />
-				전송
-			</SendButton>
+			{!boardingRoomId ? (
+				<>
+					<SendButton disabled>
+						<Image src={'/icons/post-detail/send.svg'} alt="Send" width={20} height={20} />
+						전송
+					</SendButton>
+					<div style={{ color: '#e74c3c', textAlign: 'center', marginTop: 8, fontSize: 14 }}>
+						예약에 필요한 정보가 없습니다. 게시글에서 진입 시에만 예약이 가능합니다.
+					</div>
+				</>
+			) : (
+				<SendButton onClick={handleSend}>
+					<Image src={'/icons/post-detail/send.svg'} alt="Send" width={20} height={20} />
+					전송
+				</SendButton>
+			)}
 
 			<Arrow>
 				<Image src="/icons/roomtour-popover-arrow.svg" alt="arrow" width={20} height={10} />
@@ -312,6 +350,7 @@ const PeriodButton = styled.button<{ active?: boolean }>`
   font-weight: 600;
   color: ${({ active }) => (active ? colors.primary : colors.gray)};
   cursor: pointer;
+	white-space: nowrap;
 
   &:hover {
     background: ${({ active }) => (active ? '#FFEDEF' : colors.line2)};

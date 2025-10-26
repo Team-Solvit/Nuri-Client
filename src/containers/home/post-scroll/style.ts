@@ -23,7 +23,7 @@ export const PostScrollContainer = styled.section`
   width: 100%;
   height: 100%;
   overflow-y: scroll;
-  padding: 0 1rem 2rem 1rem;
+  padding: 0 1rem 20rem 1rem;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE, Edge */
 
@@ -77,7 +77,7 @@ export const PostImg = styled.div`
   overflow: hidden;
   border-radius: ${radius.md};
   position: relative;
-  cursor: default;
+  cursor: pointer;
 
   ${mq.mobile} {
     height: 30vh;
@@ -130,7 +130,7 @@ export const Arrow = styled.div<{ status: boolean, isHover: boolean }>`
       ? "translate(50%, -50%)"
       : "translate(-50%, -50%) rotateY(180deg)"};
   cursor: pointer;
-  z-index: ${zIndex.modal};
+  z-index: ${zIndex.dropdown};
   width: 1.8rem;
   height: 1.8rem;
   border-radius: ${radius.full};
@@ -168,6 +168,7 @@ export const Profile = styled.div`
   width: 70%;
   height: 100%;
   gap: 0.8rem;
+  cursor: pointer;
 `
 export const User = styled.div`
   display: flex;
