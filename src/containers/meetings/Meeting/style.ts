@@ -76,7 +76,9 @@ export const ImgBox = styled.div`
   border-radius: ${radius.md};
   position: relative;
   overflow: hidden;
-
+& > img{
+	object-fit: cover;
+}
   ${mq.mobile} {
     width: 4rem;
     height: 4rem;
