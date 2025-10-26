@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
-import {fontSizes, zIndex} from "@/styles/theme";
-import {mq} from '@/styles/media';
+import { fontSizes, zIndex } from "@/styles/theme";
+import { mq } from '@/styles/media';
 
 export const HeaderContainer = styled.header`
   height: 100vh;
@@ -49,9 +49,9 @@ export const MenuItem = styled.div<{ active?: boolean, label?: string, order?: n
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  color: ${({active}) => (active ? "#FF4C61" : "")};
-  background: ${({active}) => (active ? "#FF4C611A" : "transparent")};
-  font-weight: ${({active}) => (active ? 600 : "normal")};
+  color: ${({ active }) => (active ? "#FF4C61" : "")};
+  background: ${({ active }) => (active ? "#FF4C611A" : "transparent")};
+  font-weight: ${({ active }) => (active ? 600 : "normal")};
 
   padding: 0.7rem 1rem;
   border-radius: 0.75rem;
@@ -60,18 +60,18 @@ export const MenuItem = styled.div<{ active?: boolean, label?: string, order?: n
   transition: background 0.3s, color 0.3s;
 
   & > img {
-    filter: ${({active}) => active ? "invert(56%) sepia(50%) saturate(7496%) hue-rotate(328deg) brightness(107%) contrast(101%)" : "none"};
+    filter: ${({ active }) => active ? "invert(56%) sepia(50%) saturate(7496%) hue-rotate(328deg) brightness(107%) contrast(101%)" : "none"};
   }
 
   &:hover {
-    background: ${({active}) => (active ? "rgb(255, 210, 215)" : "rgba(90, 90, 90, 0.03)")};
+    background: ${({ active }) => (active ? "rgb(255, 210, 215)" : "rgba(90, 90, 90, 0.03)")};
   }
 
   ${mq.mobile} {
-    ${({label}) => label?.includes("제3자") && `
+    ${({ label }) => label?.includes("제3자") && `
       display: none;
     `}
-    ${({order}) => order !== undefined && `order: ${order};`}
+    ${({ order }) => order !== undefined && `order: ${order};`}
     flex-direction: column;
 
     & > div {
@@ -105,6 +105,11 @@ export const Report = styled.div`
   justify-content: center;
   gap: 0.5rem;
   cursor: pointer;
+  background: none;
+  border: none;
+  font-family: 'SCOREDREAM';
+  font-size: ${fontSizes.Body};
+  color: grey;
 `;
 
 export const MoreWrap = styled.div`
@@ -131,9 +136,9 @@ export const MoreDropdown = styled.div<{ open?: boolean }>`
   border: 1px solid rgba(0, 0, 0, 0.06);
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16);
   z-index: 2;
-  opacity: ${({open}) => (open ? 1 : 0)};
-  transform: translateY(${({open}) => (open ? '0' : '6px')});
-  pointer-events: ${({open}) => (open ? 'auto' : 'none')};
+  opacity: ${({ open }) => (open ? 1 : 0)};
+  transform: translateY(${({ open }) => (open ? '0' : '6px')});
+  pointer-events: ${({ open }) => (open ? 'auto' : 'none')};
   transition: opacity .18s ease, transform .18s ease;
 `;
 
@@ -182,7 +187,7 @@ export const MoreIcon = styled.span<{ open?: boolean }>`
   align-items: center;
   justify-content: center;
   transition: transform .22s ease;
-  transform: rotate(${({open}) => (open ? '0deg' : '180deg')});
+  transform: rotate(${({ open }) => (open ? '0deg' : '180deg')});
 `;
 
 export const MoreBar = styled.div<{ open?: boolean }>`
@@ -202,9 +207,9 @@ export const MoreBar = styled.div<{ open?: boolean }>`
   right: 12px;
   bottom: calc(8vh + 12px);
   z-index: ${zIndex.modal + 1};
-  opacity: ${({open}) => (open ? 1 : 0)};
-  transform: translateY(${({open}) => (open ? '0' : '8px')});
-  pointer-events: ${({open}) => (open ? 'auto' : 'none')};
+  opacity: ${({ open }) => (open ? 1 : 0)};
+  transform: translateY(${({ open }) => (open ? '0' : '8px')});
+  pointer-events: ${({ open }) => (open ? 'auto' : 'none')};
   transition: opacity .2s ease, transform .2s ease;
 
   ${mq.mobile} {
