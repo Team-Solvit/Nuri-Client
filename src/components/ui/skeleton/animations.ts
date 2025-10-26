@@ -11,8 +11,8 @@ export const shimmer = keyframes`
 `;
 
 export const SkeletonBase = styled.div`
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   background-size: 200px 100%;
-  animation: ${shimmer} 1.5s infinite;
+  animation: ${shimmer} 2s ease-in-out infinite;
   border-radius: 4px;
 `;

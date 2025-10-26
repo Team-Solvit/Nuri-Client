@@ -81,7 +81,7 @@ export const typeDefs = gql`
     url: String!
   }
 
-  type ContractPeriod {
+  type ContractPeriodRange {
     contractPeriodId: Int!
     contractPeriod: String!
   }
@@ -155,7 +155,7 @@ type ContractInfo {
     max: Int!
   }
 
-  type Price {
+  type PriceRange {
     min: Int!
     max: Int!
   }
@@ -163,14 +163,14 @@ type ContractInfo {
   type BoardingRoomSearchFilter {
     school: Location
     station: Location
-    contractPeriod: ContractPeriod
+    contractPeriod: ContractPeriodRange
     price: Price
     region: String
     start: Int
     name: String
   }
 
-  type BoardingRoom {
+  type BoardingRoomSearchResult {
     roomId: ID!
     name: String!
     description: String

@@ -5,7 +5,7 @@ import SelectItem from '@/components/ui/selectItem';
 import * as S from './style';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { BoardingRoomSearchFilter, Location, ContractPeriod, Price } from '@/types/explore';
+import { BoardingRoomSearchFilter, Location } from '@/types/explore';
 
 interface ExploreFilterProps {
   onFilterChange: (filter: Partial<BoardingRoomSearchFilter>) => void;
@@ -22,7 +22,6 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
   const regionList = ['남구'];
   const stationList = ['못골역', '국제금융센터·부산은행역', '문현역', '지게골역', '대연역', '경성대·부경대역'];
 
-  // 학교/역 좌표 매핑 (실제로는 API에서 가져와야 함)
   const getLocation = (name: string, type: 'school' | 'station'): Location => {
     const coordinates: { [key: string]: { lat: number; lon: number } } = {
       '부경대학교': { lat: 35.1379, lon: 129.0556 },

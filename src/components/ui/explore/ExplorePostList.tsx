@@ -8,6 +8,7 @@ import { SEARCH_BOARDING_ROOM } from '@/services/explore';
 import { BoardingRoomSearchFilter, BoardingRoom, PostItemData } from '@/services/explore';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAlertStore } from '@/store/alert';
+import ExplorePostItemSkeleton from '@/components/ui/skeleton/ExplorePostItemSkeleton';
 
 interface ExplorePostListProps {
   searchFilter: BoardingRoomSearchFilter;
@@ -21,15 +22,21 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [currentStart, setCurrentStart] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const observerRef = useRef<HTMLDivElement>(null);
+  const PAGE_SIZE = 20;
+
+
+  const handlePostClick = useCallback((id: string) => {
+    navigate(`/post/${id}`);
+  }, [navigate]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedFilter(searchFilter);
       setAllPosts([]);
       setHasMore(true);
-      setCurrentStart(0);
+      setCurrentPage(0);
     }, 300);
 
     return () => clearTimeout(timer);
@@ -39,15 +46,15 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     variables: {
       boardingRoomSearchFilter: { ...debouncedFilter, start: 0 }
     },
-    skip: !debouncedFilter || Object.keys(debouncedFilter).length === 0 || (Object.keys(debouncedFilter).length === 1 && debouncedFilter.start === 0),
-    notifyOnNetworkStatusChange: true,
+    skip: !debouncedFilter || Object.keys(debouncedFilter).filter(k => k !== 'start').length === 0,
     fetchPolicy: 'cache-and-network',
     onCompleted: (data) => {
       if (data?.searchBoardingRoom) {
         const rooms = data.searchBoardingRoom;
         const postList = rooms.map(convertToPostItem);
         setAllPosts(postList);
-        setHasMore(postList.length === 20);
+        setCurrentPage(1);
+        setHasMore(postList.length >= PAGE_SIZE);
         setIsInitialized(true);
       }
     },
@@ -56,7 +63,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
       setHasMore(false);
     }
   });
-  
+
   const isValidUrl = (url: string): boolean => {
     try {
       new URL(url);
@@ -67,20 +74,22 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
   };
 
   const convertToPostItem = (room: BoardingRoom): PostItemData => {
-    // 첫 번째 이미지 파일의 URL 가져오기
     const firstImage = room.boardingRoomFile?.[0];
-    
-    // url 필드를 우선 사용, 없으면 fileId 사용 → 둘 다 ID이므로 CDN URL로 변환
     let thumbnailUrl = '';
+    
     if (firstImage) {
       const imageId = firstImage.url || firstImage.fileId;
-      if (imageId) {
-        thumbnailUrl = `https://cdn.solvit-nuri.com/file/${imageId}`;
+      if (imageId && imageId.trim() !== '') {
+        if (imageId.startsWith('http')) {
+          thumbnailUrl = imageId;
+        } else {
+          thumbnailUrl = `https://cdn.solvit-nuri.com/file/${imageId}`;
+        }
       }
     }
-    
+
     const userProfileUrl = room.boardingHouse?.host?.user?.profile;
-    
+
     return {
       id: room.roomId || `room_${Math.random().toString(36).substr(2, 9)}`,
       user: room.boardingHouse?.host?.user?.name || '알 수 없음',
@@ -97,29 +106,27 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
 
     setIsLoadingMore(true);
     try {
+      const nextStart = currentPage;
       const result = await fetchMore({
         variables: {
-          boardingRoomSearchFilter: { ...debouncedFilter, start: currentStart }
+          boardingRoomSearchFilter: { ...debouncedFilter, start: nextStart }
         }
       });
 
       const newRooms = result.data?.searchBoardingRoom || [];
-      
+
       if (newRooms.length > 0) {
         const newPosts = newRooms.map(convertToPostItem);
-        
-        // 중복 제거: 기존 id와 중복되지 않는 항목만 추가
+
         setAllPosts(prev => {
           const existingIds = new Set(prev.map(p => p.id));
           const uniqueNewPosts = newPosts.filter((p: PostItemData) => !existingIds.has(p.id));
           return [...prev, ...uniqueNewPosts];
         });
-        
-        // start를 1씩 증가
-        setCurrentStart(prev => prev + 1);
-        
-        // 중요: 원본 응답이 1개 미만이면 더 이상 없음
-        if (newRooms.length < 1) {
+
+        setCurrentPage(prev => prev + 1);
+
+        if (newRooms.length < PAGE_SIZE) {
           setHasMore(false);
           success('모든 게시물을 불러왔습니다.');
         }
@@ -133,7 +140,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     } finally {
       setIsLoadingMore(false);
     }
-  }, [debouncedFilter, currentStart, isLoadingMore, hasMore, fetchMore, loading, success]);
+  }, [debouncedFilter, currentPage, isLoadingMore, hasMore, fetchMore, loading, success]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -175,13 +182,15 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
       ) : (
         <>
           {allPosts.map((post: PostItemData) => (
-            <PostItem key={post.id} {...post} onClick={() => navigate(`/post/${post.id}`)} />
+            <PostItem key={post.id} {...post} onClick={handlePostClick} />
           ))}
-          {hasMore && (
-            <div ref={observerRef} style={{ height: '20px', margin: '20px 0' }}>
-              {isLoadingMore && <div>더 많은 게시물을 불러오는 중...</div>}
-            </div>
+          {hasMore && isLoadingMore && (
+            <>
+              <ExplorePostItemSkeleton />
+              <ExplorePostItemSkeleton />
+            </>
           )}
+          {hasMore && <div ref={observerRef} style={{ height: '1px' }} />}
         </>
       )}
     </S.PostList>

@@ -4,12 +4,20 @@ import * as S from './style';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
+const isValidUrl = (url: string): boolean => {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 interface PostCardProps {
   id: string;
   user: string;
   userId: string;
   title: string;
-  //region: string;
   price: string;
   thumbnail: string;
   userProfile: string;
@@ -22,7 +30,6 @@ export default function PostItem({
   user,
   userId,
   title,
-  //region,
   price,
   thumbnail,
   userProfile,
@@ -39,18 +46,6 @@ export default function PostItem({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  // 유효한 URL인지 확인하는 함수
-  const isValidUrl = (url: string): boolean => {
-    try {
-      new URL(url);
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
-  // thumbnail이 유효한 URL인지 확인하고, 그렇지 않으면 기본 이미지 사용
   const imageSrc = thumbnail && isValidUrl(thumbnail) ? thumbnail : '/post/post-example.png';
 
   return (
