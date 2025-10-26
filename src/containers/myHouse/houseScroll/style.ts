@@ -159,6 +159,13 @@ export const RoomName = styled.span`
   margin-right: 16px;
 `;
 
+export const BoarderList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+`;
+
 export const ProfileWrap = styled.div`
   display: flex;
   align-items: center;
