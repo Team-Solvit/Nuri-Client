@@ -50,7 +50,7 @@ export interface LoginUserResponse {
   language: string;
   name: string;
   email: string;
+	profile: string | null;
   phoneNumber?: string;
-  profile: string;
   role: string;
 } 

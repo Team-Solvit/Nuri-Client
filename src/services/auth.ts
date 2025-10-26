@@ -13,7 +13,7 @@ export const AuthGQL = {
         }
       }
     `,
-		GET_SOCIAL_URL: gql`
+    GET_SOCIAL_URL: gql`
       query GetOAuth2Link($provider: String!) {
         getOAuth2Link(provider: $provider)
       }
@@ -23,10 +23,9 @@ export const AuthGQL = {
         validateUserId(userId: $userId)
       }
     `,
-
-	},
-	MUTATIONS: {
-		LOCAL_LOGIN: gql`
+  },
+  MUTATIONS: {
+	  LOCAL_LOGIN: gql`
       mutation LocalLogin($input: LocalLoginInput!) {
         localLogin(localLoginInput: $input) {
           id

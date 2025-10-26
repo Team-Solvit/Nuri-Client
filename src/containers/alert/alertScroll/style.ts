@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import {colors, fontSizes} from "@/styles/theme";
+import {colors, fontSizes, radius} from "@/styles/theme";
 import {mq} from "@/styles/media";
 
 export const AlertScrollContainer = styled.section`
@@ -20,13 +20,29 @@ export const AlertScrollContainer = styled.section`
     padding: 0 1rem;
   }
 `
-export const Alert = styled.article`
+export const Alert = styled.article<{ isRead: boolean }>`
   display: flex;
   gap: 0.5rem;
   padding: 2rem 1rem;
   width: 100%;
   align-items: center;
   border-bottom: 1px solid ${colors.line};
+  background-color: ${(props) => props.isRead ? "#fafafa" : colors.background};
+  transition: 0.2s;
+  border-radius: ${radius.md};
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${(props) => props.isRead ? colors.line : "#f8f8f8"};
+  }
+
+  border-radius: ${radius.md};
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    background-color: ${colors.line2};
+  }
 
   &:first-of-type {
     ${mq.mobile} {
@@ -50,6 +66,9 @@ export const Profile = styled.div`
   align-items: center;
   width: 4rem;
   height: 4rem;
+	& > img{
+		object-fit: cover;
+	}
 `
 
 export const Title = styled.h3`
@@ -65,3 +84,10 @@ export const Info = styled.div`
   gap: 0.5rem;
   padding: 0 1rem;
 `
+
+export const CreatedDate = styled.time`
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #888888;
+`;

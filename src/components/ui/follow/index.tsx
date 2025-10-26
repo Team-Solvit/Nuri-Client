@@ -28,6 +28,29 @@ export default function Follow({ onClose, userId }: FollowProps) {
 
     const isFollowing = (targetId: string) => following.some((f: FollowUserInfo) => f.userId === targetId);
 
+    // URL 유효성 검사 함수
+    const isValidUrl = (url: string): boolean => {
+        try {
+            new URL(url);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+
+    // 프로필 이미지 URL 변환 함수
+    const getProfileImageUrl = (profile: string): string => {
+        if (!profile) return '/profile/profile.svg';
+        
+        // 이미 완전한 URL이면 그대로 반환
+        if (isValidUrl(profile)) {
+            return profile;
+        }
+        
+        // 파일 ID인 경우 CDN URL로 변환
+        return `https://cdn.solvit-nuri.com/file/${profile}`;
+    };
+
     const handleFollowToggle = async (targetId: string) => {
         if (isFollowing(targetId)) {
             await unfollowUser({
@@ -70,7 +93,13 @@ export default function Follow({ onClose, userId }: FollowProps) {
                         {filtered.map((f: FollowUserInfo) => (
                             <S.Item key={f.id}>
                                 <S.ProfileImg>
-                                    <Image src={f.profile} alt='프로필' width={55} height={55} />
+                                    <Image 
+                                        src={getProfileImageUrl(f.profile)} 
+                                        alt='프로필' 
+                                        width={55} 
+                                        height={55}
+                                        style={{ borderRadius: '50%', objectFit: 'cover' }}
+                                    />
                                 </S.ProfileImg>
                                 <S.Info>
                                     <S.Username>{f.userId}</S.Username>

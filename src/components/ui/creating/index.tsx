@@ -6,6 +6,13 @@ import Image from 'next/image';
 import Square from '../button/square';
 import Header from '../header';
 import Arrow from "@/assets/post/arrow-right.svg";
+import { useApollo } from '@/lib/apolloClient';
+import { createPost } from '@/services/post';
+import { ShareRange } from '@/types/post';
+import { imageService } from '@/services/image';
+import {useIsMakeGroupPostStore} from "@/store/isMakeGroupPost";
+import { useUserStore } from '@/store/user';
+import { useAlertStore } from '@/store/alert';
 
 interface CreatingModalProps {
     onClose: () => void;
@@ -13,11 +20,16 @@ interface CreatingModalProps {
 
 export default function CreatingModal({ onClose }: CreatingModalProps) {
     const [content, setContent] = useState('');
+    const [title, setTitle] = useState('');
     const [previewImages, setPreviewImages] = useState<string[]>([]);
-    const [publicTarget, setPublicTarget] = useState('공개대상');
+    const [publicTarget, setPublicTarget] = useState('공개범위');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { id, userId, profile } = useUserStore(s => s);
+    const apolloClient = useApollo();
+    const alertStore = useAlertStore();
 
     const prevImage = () => {
         setCurrentIndex(prev => (prev === 0 ? previewImages.length - 1 : prev - 1));
@@ -25,6 +37,95 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
 
     const nextImage = () => {
         setCurrentIndex(prev => (prev === previewImages.length - 1 ? 0 : prev + 1));
+    };
+
+    const getShareRange = (target: string): ShareRange => {
+        switch (target) {
+            case '전체':
+                return ShareRange.ALL;
+            case '팔로워':
+                return ShareRange.FRIENDS;
+            case '모임':
+                return ShareRange.PRIVATE;
+            default:
+                return ShareRange.ALL;
+        }
+    };
+
+    const extractHashTags = (text: string): { hashtags: string[], cleanedContent: string } => {
+        const hashtagRegex = /#([^\s#]+)/g;
+        const matches = [...text.matchAll(hashtagRegex)].map(m => m[1]);
+        const hashtags = Array.from(new Set(matches));
+
+        const cleanedContent = text.replace(hashtagRegex, '').trim();
+
+        return { hashtags, cleanedContent };
+    };
+
+
+		const {isGroup} = useIsMakeGroupPostStore()
+    const handleSubmit = async () => {
+        if (isSubmitting) return;
+        if (!content.trim() || !title.trim()) {
+            alertStore.error('제목과 내용을 입력해주세요.');
+            return;
+        }
+
+        if (previewImages.length === 0) {
+            alertStore.error('최소 한 장의 이미지를 선택해주세요.');
+            return;
+        }
+
+        if (publicTarget === "공개범위") {
+            alertStore.error("공개범위를 선택해주세요.");
+            return;
+        }
+
+        if (!id) {
+            alertStore.error("로그인 후 이용 가능합니다.");
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            const imageFiles: File[] = [];
+            for (const base64Image of previewImages) {
+                const response = await fetch(base64Image);
+                const blob = await response.blob();
+                const file = new File([blob], `image-${Date.now()}.png`, { type: 'image/png' });
+                imageFiles.push(file);
+            }
+
+            const uploadResult = await imageService.upload(imageFiles);
+
+            const imageUrls = uploadResult.data?.files || uploadResult.files || uploadResult.urls || uploadResult || [];
+
+            const { hashtags, cleanedContent } = extractHashTags(content);
+
+            const result = await createPost(apolloClient, {
+                postInfo: {
+                    title: title,
+                    contents: cleanedContent,
+                    shareRange: getShareRange(publicTarget),
+                    isGroup: isGroup
+                },
+                files: imageUrls,
+                hashTags: hashtags
+            });
+
+            if (result) {
+                alertStore.success('게시물이 성공적으로 생성되었습니다!');
+                onClose();
+            } else {
+                alertStore.error('게시물 생성에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('게시물 생성 오류:', error);
+            alertStore.error('게시물 생성 중 오류가 발생했습니다.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
 
@@ -78,6 +179,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
     };
 
     const handleOverlayClick = () => {
+        if (isSubmitting) return;
         onClose();
         closeDropdown();
     };
@@ -96,7 +198,19 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                     <S.HeaderM>
                         <S.Title>새 게시물 만들기</S.Title>
                         <button onClick={onClose} style={{ backgroundColor: 'white', border: 'none', color: 'gray', fontSize: '15px', marginLeft: 'auto' }}>취소</button>
-                        <button onClick={onClose} style={{ backgroundColor: 'white', border: 'none', color: '#FF4C61', fontSize: '15px' }}>업로드</button>
+                        <button
+                            onClick={handleSubmit}
+                            disabled={isSubmitting}
+                            style={{
+                                backgroundColor: 'white',
+                                border: 'none',
+                                color: '#FF4C61',
+                                fontSize: '15px',
+                                opacity: isSubmitting ? 0.6 : 1
+                            }}
+                        >
+                            {isSubmitting ? '업로드 중...' : '업로드'}
+                        </button>
                     </S.HeaderM>
                 )}
                 <S.Left>
@@ -157,59 +271,90 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
 
                     <S.ProfileRow>
                         <S.ProfileImg>
-                            <Image
-                                src="/profile/profile.svg"
-                                alt="프로필"
-                                width={48}
-                                height={48}
-                            />
+                            {profile ? (
+                                <Image
+                                    src={profile}
+                                    alt="프로필"
+                                    width={48}
+                                    height={48}
+                                    unoptimized
+                                />
+                            ) : (
+                                <div
+                                    style={{
+                                        width: 48,
+                                        height: 48,
+                                        borderRadius: '50%',
+                                        background: '#e0e0e0',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: 700,
+                                        fontSize: 20,
+                                        color: '#666',
+                                    }}
+                                >
+                                    {(userId && userId[0]) || '?'}
+                                </div>
+                            )}
                         </S.ProfileImg>
-                        <S.ProfileName>huhon123</S.ProfileName>
+                        <S.ProfileName>{userId || '로그인을 해주세요'}</S.ProfileName>
                     </S.ProfileRow>
                 </S.Left>
 
                 <S.Main>
-                    {!isMobile && (
-                        <S.Header>
-                            <S.Title>새 게시물 만들기</S.Title>
-                        </S.Header>
-                    )}
+                    <S.Top>
+                        {!isMobile && (
+                            <S.Header>
+                                <S.Title>새 게시물 만들기</S.Title>
+                            </S.Header>
+                        )}
+                        <S.Row>
+                            <S.PublicSection>
+                                <S.PublicWrap
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        handleToggleDropdown();
+                                    }}
+                                >
+                                    <S.PublicIconWrap>
+                                        <Image
+                                            src="/icons/eyes.svg"
+                                            alt="공개대상"
+                                            width={18}
+                                            height={16}
+                                        />
+                                        <S.PublicLabel>{publicTarget}</S.PublicLabel>
+                                    </S.PublicIconWrap>
+
+                                    {isDropdownOpen && (
+                                        <S.Dropdown
+                                            onClick={e => e.stopPropagation()}
+                                        >
+                                            <S.DropdownItem onClick={() => handleSelectTarget('전체')}>전체공개</S.DropdownItem>
+                                            <S.DropdownItem onClick={() => handleSelectTarget('팔로워')}>팔로워만</S.DropdownItem>
+                                            <S.DropdownItem onClick={() => handleSelectTarget('모임')}>모임원만</S.DropdownItem>
+                                        </S.Dropdown>
+                                    )}
+                                </S.PublicWrap>
+                            </S.PublicSection>
+                        </S.Row>
+                    </S.Top>
+
+                    <S.TitleInput
+                        placeholder="제목을 입력하세요"
+                        value={title}
+                        onChange={e => setTitle(e.target.value)}
+                        maxLength={100}
+                    />
+
                     <S.Textarea
-                        placeholder="글을 작성하세요."
+                        placeholder="글을 작성하세요. (#을 사용하여 해시태그를 추가할 수 있습니다.)"
                         value={content}
                         onChange={e => setContent(e.target.value)}
-                        maxLength={9999}
+                        maxLength={10000}
                     />
-                    <S.CharCount>{content.length}/10000</S.CharCount>
-
-                    <S.Row>
-                        <S.PublicWrap
-                            onClick={e => {
-                                e.stopPropagation();
-                                handleToggleDropdown();
-                            }}
-                        >
-                            <S.PublicIconWrap>
-                                <Image
-                                    src="/icons/eyes.svg"
-                                    alt="공개대상"
-                                    width={18}
-                                    height={16}
-                                />
-                                <S.PublicLabel>{publicTarget}</S.PublicLabel>
-                            </S.PublicIconWrap>
-
-                            {isDropdownOpen && (
-                                <S.Dropdown
-                                    onClick={e => e.stopPropagation()}
-                                >
-                                    <S.DropdownItem onClick={() => handleSelectTarget('전체')}>전체</S.DropdownItem>
-                                    <S.DropdownItem onClick={() => handleSelectTarget('팔로워')}>팔로워</S.DropdownItem>
-                                    <S.DropdownItem onClick={() => handleSelectTarget('모임')}>모임</S.DropdownItem>
-                                </S.Dropdown>
-                            )}
-                        </S.PublicWrap>
-                    </S.Row>
+                    <S.CharCount>{content.length}/9999</S.CharCount>
 
                     <S.ButtonRow>
                         <Square
@@ -219,8 +364,8 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                             status={false}
                         />
                         <Square
-                            onClick={onClose}
-                            text='업로드'
+                            onClick={handleSubmit}
+                            text={isSubmitting ? '업로드 중...' : '업로드'}
                             width='8vw'
                             status={true}
                         />
