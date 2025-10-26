@@ -6,6 +6,7 @@ import { useApolloClient } from '@apollo/client';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import GroupEditModalSkeleton from '@/components/ui/skeleton/GroupEditModalSkeleton';
 import type { Group, GroupUpdateInput, Area } from '@/types/group';
+import { imageCheck } from '@/utils/imageCheck';
 import * as S from './style';
 
 interface GroupEditModalProps {
@@ -152,7 +153,7 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
           <S.Label>배너 이미지</S.Label>
           {banner && (
             <S.BannerImg
-              src={`https://cdn.solvit-nuri.com/file/${banner}`}
+              src={imageCheck(banner)}
               alt="배너 미리보기"
             />
           )}
@@ -175,7 +176,7 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
           <S.Label>프로필 이미지</S.Label>
           {profile && (
             <S.ProfileImg
-              src={`https://cdn.solvit-nuri.com/file/${profile}`}
+              src={imageCheck(profile)}
               alt="프로필 미리보기"
             />
           )}

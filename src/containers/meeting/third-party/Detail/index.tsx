@@ -9,6 +9,7 @@ import { useFileUpload } from '@/hooks/useFileUpload';
 import { useRouter } from 'next/navigation';
 import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 import ThirdPartyDetailSkeleton from "@/components/ui/skeleton/ThirdPartyDetailSkeleton";
+import { imageCheck } from '@/utils/imageCheck';
 import * as S from "./style";
 import Square from '@/components/ui/button/square';
 
@@ -476,7 +477,7 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
               <S.ParticipantItem key={participant.userId} onClick={() => handleParticipantClick(participant.userId)}>
                 <S.ParticipantProfile>
                   {participant.profile ? (
-                    <S.ProfileImage src={participant.profile} alt={participant.name} />
+                    <S.ProfileImage src={imageCheck(participant.profile)} alt={participant.name} />
                   ) : (
                     <S.ProfilePlaceholder>{participant.name?.[0] || '?'}</S.ProfilePlaceholder>
                   )}
