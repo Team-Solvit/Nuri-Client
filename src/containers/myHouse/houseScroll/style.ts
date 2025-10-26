@@ -173,6 +173,19 @@ export const ProfileWrap = styled.div`
   gap: 8px;
 `;
 
+export const UserId = styled.span<{ color?: string }>`
+  font-weight: 500;
+  font-size: ${fontSizes.Body};
+  color: ${({color}) => color || colors.text};
+  margin-right: 8px;
+`;
+
+export const UserPhone = styled.span`
+  font-size: ${fontSizes.Small};
+  color: ${colors.gray};
+  display: block;
+`;
+
 export const ProfileImg = styled.div`
   width: 2rem;
   height: 2rem;
@@ -181,13 +194,6 @@ export const ProfileImg = styled.div`
   position: relative;
   overflow: hidden;
   margin-right: 4px;
-`;
-
-export const UserId = styled.span<{ color?: string }>`
-  font-weight: 500;
-  font-size: ${fontSizes.Body};
-  color: ${({color}) => color || colors.text};
-  margin-right: 8px;
 `;
 
 export const RoomImage = styled.div`

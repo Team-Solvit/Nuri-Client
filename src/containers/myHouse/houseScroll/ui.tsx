@@ -152,7 +152,10 @@ const HouseScroll = () => {
 															<S.ProfileImg>
 																<Image src={imageCheck(boarderData?.user?.profile) ?? "/post/default.png"} alt={"profile"} fill style={{objectFit: "cover"}}/>
 															</S.ProfileImg>
-															<S.UserId>{boarderData?.user.name}</S.UserId>
+															<div>
+																<S.UserId>{boarderData?.user.name}</S.UserId>
+																{boarderData?.callNumber && <S.UserPhone>{boarderData.callNumber}</S.UserPhone>}
+															</div>
 														</S.ProfileWrap>
 													);
 												})}

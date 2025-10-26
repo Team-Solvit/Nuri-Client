@@ -82,7 +82,7 @@ export interface BoarderType {
 
 export interface BoardingRoomAndBoardersType {
 	room?: BoardingRoomType;
-	contractInfo : BoarderType[]
+	contractInfo : BoarderType[] | null
 }
 
 export interface CreateBoardingHouseType {
