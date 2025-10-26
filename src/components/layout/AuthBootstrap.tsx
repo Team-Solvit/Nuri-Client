@@ -14,22 +14,16 @@ export default function AuthBootstrap() {
 
     (async () => {
       try {
-        let token = getAccessToken();
-        if (!token) {
-          const r = await client.mutate({
+        const r = await client.mutate({
           mutation: AuthGQL.MUTATIONS.REISSUE,
           fetchPolicy: 'no-cache',
-          });
-          const headerToken = extractTokenFromApolloResult(r);
-          const user = r.data?.reissue;
-          if (headerToken) saveAccessToken(headerToken);
-          if (user && !cancelled) setAuth(user);
-          token = headerToken || token;
-          }
-
-        if (token && !cancelled) {
-        }
+        });
+        const headerToken = extractTokenFromApolloResult(r);
+        const user = r.data?.reissue;
+        if (headerToken) saveAccessToken(headerToken);
+        if (user && !cancelled) setAuth(user);
       } catch {
+        // 로그인 다시 시도해얍지~~!
       }
     })();
 
