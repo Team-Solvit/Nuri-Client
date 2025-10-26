@@ -79,7 +79,7 @@ export default function MessageContent() {
 			},
 			createdAt: formatKoreanDateTime(newMessageReflect.sendAt)
 		};
-		
+		console.log("newSetMessage : ", newSetMessage)
 		const newMessage = (newMessage: ChatMessage) => {
 			setMessages(prev => {
 				return [...(prev ?? []), newMessage];
@@ -168,7 +168,7 @@ export default function MessageContent() {
 									.split(',')
 									.map(user => user.trim());
 								
-								const joinedText = `${joinedUsers.join('님, ')}님이 들어왔습니다.`;
+								const joinedText = `${joinedUsers.join('님, ')}님이 초대 되었습니다.`;
 								
 								return <S.SystemMessage>{joinedText}</S.SystemMessage>;
 							}
@@ -179,7 +179,7 @@ export default function MessageContent() {
 								const exitedUser = exitMatch[1];
 								return (
 									<S.SystemMessage>
-										{exitedUser}님이 나갔습니다.
+										{exitedUser}님이 퇴장하였습니다.
 									</S.SystemMessage>
 								);
 							}

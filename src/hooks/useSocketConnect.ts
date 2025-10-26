@@ -38,6 +38,7 @@ export default function useSocketConnect() {
 			
 			addSubscription("user-notify", client.subscribe(`/user/${userId}/notify`, (message) => {
 				try {
+					console.log(message.body)
 					const subMessage = message.body.split(" ");
 					if (subMessage.length === 2 && subMessage[0] === "JOINPLAYERS") {
 						const joinMessage : ChatMessageResponse = {
@@ -61,7 +62,6 @@ export default function useSocketConnect() {
 						setMessage(joinMessage);
 						return;
 					}
-					
 					if (subMessage.length === 2 && subMessage[0] === "EXITPLAYERS") {
 						const exitMessage : ChatMessageResponse = {
 							name: "",
@@ -80,6 +80,7 @@ export default function useSocketConnect() {
 							},
 							sendAt: new Date().toISOString()
 						};
+						console.log(subMessage, exitMessage)
 						setMessage(exitMessage);
 						return;
 					}

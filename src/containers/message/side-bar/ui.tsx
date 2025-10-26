@@ -20,6 +20,7 @@ import {messageRequestCheck} from "@/utils/messageRequestCheck";
 import { useMessagePageStore } from "@/store/messagePage";
 import {useMessageReflectStore} from "@/store/messageReflect";
 import useDebounce from "@/hooks/useDebounce";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 const IMAGE_BASE = process.env.NEXT_PUBLIC_IMAGE_URL;
 
 export default function MessageSideBar() {
@@ -205,23 +206,29 @@ export default function MessageSideBar() {
 	}, [debouncedSearchTerm, roomDataList]);
 
 
+	const navigate = useNavigationWithProgress()
 	return (
 		<S.MessageContainer id={typeof params.id === 'string' ? params.id : params.id?.[0] ?? ''}>
-			<S.AddRoom>
-				방추가
-				<Image
-					ref={iconRef}
-					onClick={(e) => {
-						e.stopPropagation();
-						setIsAddition(!isAddition);
-					}} src={Plus} alt={"plus-icon"} width={24} height={24}/>
-				<AdditionRoom
-					isAddition={isAddition}
-					setIsAddition={setIsAddition}
-					iconRef={iconRef as React.RefObject<HTMLImageElement>}
-					type={"add"}
-				/>
-			</S.AddRoom>
+			<S.Header>
+				<S.BackButton onClick={() => navigate('/')}>
+					<Image src={"/icons/arrow.svg"} style={{transform: "rotate(180deg)"}} alt="back" width={24} height={24} />
+				</S.BackButton>
+				<S.AddRoom>
+					방추가
+					<Image
+						ref={iconRef}
+						onClick={(e) => {
+							e.stopPropagation();
+							setIsAddition(!isAddition);
+						}} src={Plus} alt={"plus-icon"} width={24} height={24}/>
+					<AdditionRoom
+						isAddition={isAddition}
+						setIsAddition={setIsAddition}
+						iconRef={iconRef as React.RefObject<HTMLImageElement>}
+						type={"add"}
+					/>
+				</S.AddRoom>
+			</S.Header>
 			<S.Search>
 				<input
 					type={"text"}

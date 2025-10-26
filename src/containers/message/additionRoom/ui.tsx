@@ -305,7 +305,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 				<S.SearchBar>
 					<S.SearchInput
 						type="text"
-						placeholder="id를 입력해주세요"
+						placeholder="대화 상대 아이디를 입력해주세요"
 						value={searchTerm}
 						onChange={handleSearch}
 					/>

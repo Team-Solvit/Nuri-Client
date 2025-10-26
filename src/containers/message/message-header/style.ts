@@ -2,6 +2,22 @@ import styled from "@emotion/styled";
 import {colors, fontSizes, zIndex} from "@/styles/theme";
 import {mq} from "@/styles/media";
 
+export const BackButton = styled.button`
+  display: none; // 기본적으로 숨김
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-right: 0.5rem;
+
+  ${mq.mobile} {
+    display: block;
+    width: 24px;
+    height: 24px;
+    position: relative;
+  }
+`;
+
 export const MessageHeaderContainer = styled.section`
   width: 100%;
   display: flex;

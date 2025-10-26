@@ -18,13 +18,35 @@ export const MessageContainer = styled.section<{ id: string }>`
     ${({id}) => id && 'display: none;'}
   }
 `
+export const Header = styled.div`
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	align-items: center;
+  padding: 0 1.5rem;
+`
+export const BackButton = styled.button`
+  display: none; // 기본적으로 숨김
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-right: 0.5rem;
+
+  ${mq.mobile} {
+    display: block;
+    width: 24px;
+    height: 24px;
+    position: relative;
+  }
+`;
+
 export const AddRoom = styled.div`
   width: 100%;
   display: flex;
   height: 100%;
   gap: 1rem;
   justify-content: flex-end;
-  padding: 1rem;
   align-items: center;
   position: relative;
 

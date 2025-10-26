@@ -55,7 +55,7 @@ export default function MessageHeaderUI() {
 	const [showMemberList, setShowMemberList] = useState(false);
 	const navigate = useNavigationWithProgress()
 	const [isLoading, setIsLoading] = useState(false)
-	
+
 	const params = useParams();
 	const roomId = typeof params.id === 'string' ? params.id : params.id?.[0] ?? '';
 	
@@ -119,6 +119,7 @@ export default function MessageHeaderUI() {
 	const handleEllipsisClick = (e: React.MouseEvent) => {
 		e.stopPropagation();
 		setIsMenuOpen(!isMenuOpen);
+		setIsAddition(false);
 	};
 	
 	const handleMemberClick = (memberId: string) => {
@@ -152,12 +153,16 @@ export default function MessageHeaderUI() {
 	const setRoomDataList = useMessagePageStore(s=>s.setRoomDataList)
 	const memberCount = useMessageHeaderStore(s=>s.memberCount)
 	const [isAddition, setIsAddition] = useState(false);
-	const iconRef = useRef<HTMLDivElement>(null);
+	const iconRef = useRef<HTMLImageElement>(null);
 	
 	useLoadingEffect(isLoading)
 	const {chatProfile, chatRoomName} = useMessageHeaderStore()
 	return (
 		<S.MessageHeaderContainer className="message-header">
+			{/*모바일이면 나오는 뒤로가기 버튼*/}
+				<S.BackButton onClick={() => navigate('/message')}>
+					<Image src={"/icons/arrow.svg"} style={{transform: "rotate(180deg)"}} alt="back" width={24} height={24} />
+				</S.BackButton>
 			<S.ProfileBox>
 				<S.Profile>
 					<Image src={imageCheck(chatProfile || "") || "/post/default.png"} alt="message" fill priority/>
@@ -189,10 +194,10 @@ export default function MessageHeaderUI() {
 				</div>
 			</S.ProfileBox>
 			<S.EllipsisIconBox
-				ref={iconRef}
-				onClick={handleEllipsisClick}
 			>
 				<Image
+					ref={iconRef}
+					onClick={handleEllipsisClick}
 					src={EllipsisIcon}
 					fill
 					alt={"ellipsis-icon"}
