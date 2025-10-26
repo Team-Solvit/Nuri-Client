@@ -1,50 +1,27 @@
 import * as S from "./style"
 import Post from "@/components/ui/post";
+import {useQuery} from "@apollo/client";
+import {MeetingQueries} from "@/services/meeting";
+import {useLoadingEffect} from "@/hooks/useLoading";
 
-export default function MeetingPost({isModal}: { isModal: boolean }) {
-	const fakeData = [
-		{
-			id: 1,
-			thumbnail: '/post/post-example.png',
+export default function MeetingPost({isModal, groupId}: { isModal: boolean, groupId: string }) {
+	
+	const {data: meetingPost, loading} = useQuery(MeetingQueries.GET_MEETING_POST, {
+		variables: {
+			groupId: groupId
 		},
-		{
-			id: 2,
-			thumbnail: '/post/post-example.png',
-		},
-		{
-			id: 3,
-			thumbnail: '/post/post-example.png',
-		},
-		{
-			id: 4,
-			thumbnail: '/post/post-example.png',
-		},
-		{
-			id: 5,
-			thumbnail: '/post/post-example.png',
-		},
-		{
-			id: 6,
-			thumbnail: '/post/post-example.png',
-		},
-		{
-			id: 7,
-			thumbnail: '/post/post-example.png',
-		},
-		{
-			id: 8,
-			thumbnail: '/post/post-example.png',
-		},
-		{
-			id: 9,
-			thumbnail: '/post/post-example.png',
-		},
-	]
+		skip: !groupId,
+	})
+	useLoadingEffect(loading)
+	const posts = meetingPost?.getGroupPosts
 	return (
 		<S.MetingPostContainer isModal={isModal}>
-			{fakeData.map(post => (
-				<Post key={post.id} post={post}/>
-			))}
+			{loading ?
+				<p>게시물을 불러오고 있습니다...</p> :
+				posts && posts.length > 0 ? posts.map((post : {postId : string,
+				thumbnail : string}) => (
+				<Post key={post.postId} post={post}/>
+			)) : <p>게시물이 존재하지 않습니다.</p>}
 		</S.MetingPostContainer>
 	)
 }

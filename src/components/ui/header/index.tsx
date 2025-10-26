@@ -187,7 +187,14 @@ export default function Header() {
 					<span>{userId || '로그인을 해주세요'}</span>
 				</S.Profile>
 				
-				<S.Report>
+				<S.Report
+					as="button"
+					onClick={() => {
+						const w = window.open('https://forms.gle/kFGiF6KmmCyaDwos5', '_blank', 'noopener,noreferrer');
+						if (w) w.opener = null;
+					}}
+					aria-label="신고하기"
+				>
 					<Image src="/icons/warningBell.svg" alt="신고하기" width={24} height={24} />
 					<span>신고하기</span>
 				</S.Report>

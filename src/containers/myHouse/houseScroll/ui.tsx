@@ -81,6 +81,13 @@ const HouseScroll = () => {
 	if (isLoading) {
 		return <HouseScrollSkeleton />;
 	}
+	const {data: boardingHouseInfo} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_INFO);
+	const {data: boardingHouseRooms} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOMS);
+	
+	const boardingHouse: BoardingHouseType = boardingHouseInfo?.getMyBoardingHouse;
+	const boardingHouseRoomsList: BoardingRoomAndBoardersType[] = boardingHouseRooms?.getBoardingRoomAndBoardersInfoList;
+	
+	const [roomId, setRoomId] = useState<string>("");
 	return (
 		<S.Container>
 			{leaveInfo && <LeaveModal roomRefetch={refetch} boarders={leaveInfo} contractId={contractId}/>}

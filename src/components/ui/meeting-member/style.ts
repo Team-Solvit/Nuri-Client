@@ -56,10 +56,6 @@ export const NameBox = styled.div`
 export const Name = styled.p`
   font-size: ${fontSizes.Body};
 `
-export const Count = styled.p`
-  font-size: ${fontSizes.Caption};
-  color: ${colors.gray};
-`
 export const Leave = styled.button`
   all: unset;
   box-sizing: border-box;
@@ -74,4 +70,14 @@ export const Leave = styled.button`
   & > div > span {
     font-size: ${fontSizes.Caption};
   }
+`
+
+export const Role = styled.span`
+  display: inline-block;
+  background: #e6f3ff;
+  color: ${colors.primary};
+  font-size: ${fontSizes.Caption};
+  padding: 2px 8px;
+  border-radius: ${radius.sm};
+  margin-top: 2px;
 `

@@ -1,11 +1,5 @@
 import { create } from "zustand";
-
-interface MeetingListItem {
-  id: number;
-  title: string;
-  time: string;
-  location: string;
-}
+import type { MeetingListItem } from '@/types/group';
 
 interface MeetingState {
   selected: MeetingListItem | null;
