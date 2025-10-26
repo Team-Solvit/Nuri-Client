@@ -7,6 +7,7 @@ import { useQuery } from '@apollo/client';
 import { SEARCH_BOARDING_ROOM } from '@/services/explore';
 import { BoardingRoomSearchFilter, BoardingRoom, PostItemData } from '@/services/explore';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useAlertStore } from '@/store/alert';
 
 interface ExplorePostListProps {
   searchFilter: BoardingRoomSearchFilter;
@@ -14,11 +15,13 @@ interface ExplorePostListProps {
 
 export default function ExplorePostList({ searchFilter }: ExplorePostListProps) {
   const navigate = useNavigationWithProgress();
+  const { success } = useAlertStore();
   const [debouncedFilter, setDebouncedFilter] = useState<BoardingRoomSearchFilter>(searchFilter);
   const [allPosts, setAllPosts] = useState<PostItemData[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [currentStart, setCurrentStart] = useState(0);
   const observerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -26,6 +29,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
       setDebouncedFilter(searchFilter);
       setAllPosts([]);
       setHasMore(true);
+      setCurrentStart(0);
     }, 300);
 
     return () => clearTimeout(timer);
@@ -41,14 +45,6 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     onCompleted: (data) => {
       if (data?.searchBoardingRoom) {
         const rooms = data.searchBoardingRoom;
-        console.log('🎉 초기 로드 완료:', rooms.length, '개');
-        console.log('📋 전체 방 데이터 (첫 3개):', rooms.slice(0, 3).map((r: BoardingRoom) => ({
-          roomId: r.roomId,
-          name: r.name,
-          imageCount: r.boardingRoomFile?.length,
-          firstImageUrl: r.boardingRoomFile?.[0]?.url,
-          firstImageFileId: r.boardingRoomFile?.[0]?.fileId,
-        })));
         const postList = rooms.map(convertToPostItem);
         setAllPosts(postList);
         setHasMore(postList.length === 20);
@@ -85,15 +81,6 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     
     const userProfileUrl = room.boardingHouse?.host?.user?.profile;
     
-    // 디버깅: 이미지 데이터 확인
-    console.log('🖼️ 방 이미지 변환:', {
-      roomId: room.roomId,
-      name: room.name,
-      url: firstImage?.url,
-      fileId: firstImage?.fileId,
-      finalThumbnail: thumbnailUrl
-    });
-    
     return {
       id: room.roomId || `room_${Math.random().toString(36).substr(2, 9)}`,
       user: room.boardingHouse?.host?.user?.name || '알 수 없음',
@@ -108,17 +95,15 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
   const loadMorePosts = useCallback(async () => {
     if (isLoadingMore || !hasMore || loading) return;
 
-    console.log('🔄 loadMorePosts 시작 - 현재 게시물 수:', allPosts.length);
     setIsLoadingMore(true);
     try {
       const result = await fetchMore({
         variables: {
-          boardingRoomSearchFilter: { ...debouncedFilter, start: allPosts.length }
+          boardingRoomSearchFilter: { ...debouncedFilter, start: currentStart }
         }
       });
 
       const newRooms = result.data?.searchBoardingRoom || [];
-      console.log('📦 API 응답:', newRooms.length, '개 받음');
       
       if (newRooms.length > 0) {
         const newPosts = newRooms.map(convertToPostItem);
@@ -127,17 +112,20 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
         setAllPosts(prev => {
           const existingIds = new Set(prev.map(p => p.id));
           const uniqueNewPosts = newPosts.filter((p: PostItemData) => !existingIds.has(p.id));
-          console.log('✅ 중복 제거 후:', uniqueNewPosts.length, '개 추가 (원본:', newPosts.length, '개)');
-          console.log('📊 전체 게시물 수:', prev.length, '→', prev.length + uniqueNewPosts.length);
           return [...prev, ...uniqueNewPosts];
         });
         
-        // 중요: 원본 응답이 20개 미만이면 더 이상 없음
-        setHasMore(newRooms.length === 20);
-        console.log('🎯 hasMore 설정:', newRooms.length === 20);
+        // start를 1씩 증가
+        setCurrentStart(prev => prev + 1);
+        
+        // 중요: 원본 응답이 1개 미만이면 더 이상 없음
+        if (newRooms.length < 1) {
+          setHasMore(false);
+          success('모든 게시물을 불러왔습니다.');
+        }
       } else {
-        console.log('⚠️ 응답 데이터 없음 - 더 이상 로드 안 함');
         setHasMore(false);
+        success('모든 게시물을 불러왔습니다.');
       }
     } catch (error) {
       console.error('❌ 추가 데이터 로드 실패:', error);
@@ -145,7 +133,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     } finally {
       setIsLoadingMore(false);
     }
-  }, [debouncedFilter, allPosts.length, isLoadingMore, hasMore, fetchMore, loading]);
+  }, [debouncedFilter, currentStart, isLoadingMore, hasMore, fetchMore, loading, success]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -192,11 +180,6 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
           {hasMore && (
             <div ref={observerRef} style={{ height: '20px', margin: '20px 0' }}>
               {isLoadingMore && <div>더 많은 게시물을 불러오는 중...</div>}
-            </div>
-          )}
-          {!hasMore && allPosts.length > 0 && (
-            <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-              모든 게시물을 불러왔습니다.
             </div>
           )}
         </>
