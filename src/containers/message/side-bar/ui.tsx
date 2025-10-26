@@ -18,6 +18,8 @@ import {useAlertStore} from "@/store/alert";
 import {useLoadingEffect} from "@/hooks/useLoading";
 import {messageRequestCheck} from "@/utils/messageRequestCheck";
 import { useMessagePageStore } from "@/store/messagePage";
+import {useMessageReflectStore} from "@/store/messageReflect";
+import useDebounce from "@/hooks/useDebounce";
 const IMAGE_BASE = process.env.NEXT_PUBLIC_IMAGE_URL;
 
 export default function MessageSideBar() {
@@ -27,11 +29,19 @@ export default function MessageSideBar() {
 	const roomDataList = useMessagePageStore((s) => s.roomDataList);
 	const setRoomDataList = useMessagePageStore((s) => s.setRoomDataList);
 
-	const { data, loading, fetchMore } = useQuery(MessageQueries.GET_ROOMS_CHAT_LIST, {
+	const { data, loading, fetchMore, refetch } = useQuery(MessageQueries.GET_ROOMS_CHAT_LIST, {
 		variables: { page, size },
 		fetchPolicy: "no-cache",
 		nextFetchPolicy: "no-cache",
 	});
+	
+	const { message } = useMessageReflectStore()
+	
+	useEffect(() => {
+		if (message) {
+			refetch();
+		}
+	}, [message?.contents, refetch]);
 	
 	useEffect(() => {
 		if (data?.getRooms && data.getRooms.length < size) {
@@ -173,10 +183,11 @@ export default function MessageSideBar() {
 	};
 
 	const [searchTerm, setSearchTerm] = useState("");
+	const debouncedSearchTerm = useDebounce(searchTerm, 300); // 300ms 디바운스
 	const [searchResults, setSearchResults] = useState<RoomReadResponseDto[] | null>(null);
 
-	const performSearch = () => {
-		const q = searchTerm.trim().toLowerCase();
+	useEffect(() => {
+		const q = debouncedSearchTerm.trim().toLowerCase();
 		if (!q) {
 			setSearchResults(null);
 			return;
@@ -187,7 +198,8 @@ export default function MessageSideBar() {
 			return name.includes(q) || latest.includes(q);
 		});
 		setSearchResults(results);
-	};
+	}, [debouncedSearchTerm, roomDataList]);
+
 
 	return (
 		<S.MessageContainer id={typeof params.id === 'string' ? params.id : params.id?.[0] ?? ''}>
@@ -212,18 +224,12 @@ export default function MessageSideBar() {
 					placeholder={"채팅방 이름 또는 메시지로 검색하세요"}
 					value={searchTerm}
 					onChange={(e) => setSearchTerm(e.target.value)}
-					onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-						if (e.key === "Enter") {
-							performSearch();
-						}
-					}}
 				/>
 				<Image
 					src={Search}
 					alt={"search-icon"}
 					width={16}
 					height={16}
-					onClick={() => performSearch()}
 				/>
 			</S.Search>
 			<S.CategoryList
@@ -242,8 +248,12 @@ export default function MessageSideBar() {
 						}
 						
 						// 계약 메시지 체크
-						if (messageRequestCheck(message || "")) {
+						const request = messageRequestCheck(message || "")
+						if (request?.type === "contract") {
 							return "계약";
+						}
+						if(request?.type === "roomTour"){
+							return "룸투어"
 						}
 						
 						// 입장 메시지 처리 ([id1, id2] join)
@@ -295,3 +305,4 @@ export default function MessageSideBar() {
 		</S.MessageContainer>
 	)
 }
+
