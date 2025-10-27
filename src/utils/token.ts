@@ -27,3 +27,26 @@ export function withRefreshLock(fn: () => Promise<string | null>) {
   refreshInFlight = fn().finally(() => { refreshInFlight = null; });
   return refreshInFlight;
 }
+
+export function isTokenExpired(token: string | null): boolean {
+  if (!token) return true;
+  
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const exp = payload.exp;
+    
+    if (!exp) return true;
+    
+    // exp는 초 단위, Date.now()는 밀리초 단위
+    const expirationTime = exp * 1000;
+    const currentTime = Date.now();
+    
+    // 만료 2분 전이면 만료된 것으로 간주 (여유시간)
+    const bufferTime = 2 * 60 * 1000;
+    
+    return currentTime >= (expirationTime - bufferTime);
+  } catch (error) {
+    // 토큰 파싱 실패 시 만료된 것으로 간주
+    return true;
+  }
+}

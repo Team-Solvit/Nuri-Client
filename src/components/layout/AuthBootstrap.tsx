@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useApollo } from '@/lib/apolloClient';
 import { AuthGQL } from '@/services/auth';
 import { useUserStore } from '@/store/user';
-import { extractTokenFromApolloResult, saveAccessToken } from '@/utils/token';
+import { extractTokenFromApolloResult, saveAccessToken, getAccessToken, isTokenExpired } from '@/utils/token';
 import { useLoginModalStore } from '@/store/loginModal';
 
 export default function AuthBootstrap() {
@@ -15,6 +15,16 @@ export default function AuthBootstrap() {
     let cancelled = false;
 
     (async () => {
+      const existingToken = getAccessToken();
+
+      if (!existingToken) {
+        return;
+      }
+
+      if (!isTokenExpired(existingToken)) {
+        return;
+      }
+
       try {
         const r = await client.mutate({
           mutation: AuthGQL.MUTATIONS.REISSUE,
