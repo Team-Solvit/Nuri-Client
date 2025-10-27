@@ -11,7 +11,15 @@ export const ContainerBox = styled.section`
     margin-top: 10vh;
   }
 `
-
+export const ProfileName = styled.div`
+  position: absolute;
+  top: -1.5rem;
+  left: 3.5rem;
+  font-size: ${fontSizes.Body};
+  font-weight: 500;
+  color: ${colors.gray};
+  z-index: 1;
+`
 export const MessageContentContainer = styled.section`
   width: 100%;
   height: 100%;
@@ -43,8 +51,7 @@ export const DateDivider = styled.div`
     content: "";
     flex: 1;
     height: 1px;
-    background: ${colors.line};
-    opacity: 0.7;
+    background-color: ${colors.line};
   }
 `;
 
@@ -64,6 +71,11 @@ export const ProfileImg = styled.div<{ isFirst: boolean }>`
   object-fit: cover;
   background: ${(props) => (props.isFirst ? "#e0e0e0" : "#ffffff")};
 
+	& > img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
   ${mq.mobile} {
     width: 30px;
     height: 30px;
@@ -76,24 +88,25 @@ export const SentMsgRow = styled.div<{ isSameUser: boolean }>`
   ${(props) => props.isSameUser ? "margin-bottom: 2rem;" : null}
 `;
 
-export const ReceivedMsgAndTimeWrapper = styled.div<{ isHaveReply: string | undefined }>`
+export const ReceivedMsgAndTimeWrapper = styled.div<{ isHaveReply: boolean  }>`
   ${(props) => props.isHaveReply ? "margin-top:4rem;" : null}
   display: flex;
   align-items: flex-end;
   gap: 6px;
   position: relative;
 
-  &:hover .msg-hover-icons,
-  .msg-hover-icons:hover {
+  /* 메시지 바로 옆(오른쪽)에 아이콘이 나오도록, 부모에 여유 공간을 주지 않음(오버플로우 허용) */
+  /* 부모 hover 시 아이콘을 보이게 하고 제자리로 이동시킴 */
+  &:hover .msg-hover-icons {
     opacity: 1;
     pointer-events: auto;
+    transform: translate(0, -50%);
   }
 `;
 
-export const MsgHoverIcons = styled.div`
+export const MsgHoverIcons = styled.div<{ isSent: boolean }>`
   position: absolute;
-  bottom: 0;
-  right: -2.4rem;
+  top: 50%;
   display: flex;
   gap: 0.5rem;
   cursor: pointer;
@@ -101,33 +114,43 @@ export const MsgHoverIcons = styled.div`
   border-radius: ${radius.md};
   box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.06);
   padding: 0.25rem 0.5rem;
-  margin-bottom: 0.5rem;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.5s, right 0.15s;
+  transition: opacity 0.18s ease, transform 0.16s ease;
   z-index: 2;
 
-  ${ReceivedMsgAndTimeWrapper}:hover &,
-  &:hover {
+  ${(props) =>
+    props.isSent
+      ? `
+        right: 100%;
+        transform: translate(8px, -50%);
+      `
+      : `
+        left: 100%;
+        transform: translate(-8px, -50%);
+      `}
+
+  /* 아이콘 자체에 hover 시 즉시 유지되도록 약간의 안정성 추가 */
+   &:hover {
     opacity: 1;
     pointer-events: auto;
-    transition-delay: 0s; /* hover될 때는 딜레이 없이 즉시 */
-  }
-
-  /* hover 해제 시 1초 후 사라지게 */
-
-  ${ReceivedMsgAndTimeWrapper} & {
-    transition-delay: 1s; /* hover가 풀리면 사라지는 딜레이 */
-  }
+    transform: translate(0, -50%);
+   }
 `;
 
-export const SentMsgAndTimeWrapper = styled.div<{ isHaveReply: string | undefined }>`
+export const SentMsgAndTimeWrapper = styled.div<{ isHaveReply: boolean | null }>`
   display: flex;
   position: relative;
   align-items: flex-end;
   gap: 6px;
   flex-direction: row-reverse;
   ${(props) => props.isHaveReply ? "margin-top:4rem;" : null}
+
+  &:hover .msg-hover-icons {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(0, -50%);
+  }
 `;
 
 export const ReplyPreviewContainer = styled.div`
@@ -163,4 +186,17 @@ export const ReplyPreviewCloseBtn = styled.button`
   padding: 0;
   display: flex;
   align-items: center;
+`;
+
+export const SystemMessage = styled.div`
+  width: 100%;
+  text-align: center;
+  color: ${colors.gray};
+  font-size: ${fontSizes.Body};
+  font-weight: 400;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0;
+  background-color: ${colors.background};
+  border-radius: ${radius.sm};
+  line-height: 1.4;
 `;

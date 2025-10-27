@@ -24,6 +24,7 @@ export const Input = styled.input`
     font-size: 18px;
     margin-top: 2px;
     margin-left: 10px;
+    width: 100%;
 
     &::placeholder {
         color: ${colors.gray};
@@ -68,7 +69,8 @@ export const PostList = styled.div`
     align-items: center;
     justify-content: flex-start;
     overflow-y: auto;
-    max-height: 70vh;
+    height: 68vh;
+    min-height: 500px;
     &::-webkit-scrollbar {
         display: none;
     }

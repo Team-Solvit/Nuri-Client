@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import * as S from './style';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Range } from 'react-range';
 import Square from '../button/square';
 
@@ -16,7 +16,24 @@ interface SelectItemProps {
 
 export default function SelectItem({ text, isOpen, onOpen, onClose, onChangeRange }: SelectItemProps) {
     const [selected, setSelected] = useState<string>(text);
+    const selectItemRef = useRef<HTMLDivElement>(null);
     const unit = text === '가격' ? '원' : text === '기간' ? '개월' : '';
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (selectItemRef.current && !selectItemRef.current.contains(event.target as Node)) {
+                onClose();
+            }
+        };
+
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen, onClose]);
 
     const toggleDropdown = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -59,7 +76,7 @@ export default function SelectItem({ text, isOpen, onOpen, onClose, onChangeRang
 
 
     return (
-        <S.Container onClick={(e) => e.stopPropagation()}>
+        <S.Container ref={selectItemRef}>
             <S.Select onClick={toggleDropdown} selected={selected !== text}>
                 {selected}
                 <Image

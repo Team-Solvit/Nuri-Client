@@ -4,6 +4,7 @@ import Header from "@/components/ui/header";
 import TopLoadingBar from "@/components/layout/loadingbar";
 import React from "react";
 import {Providers} from "@/components/layout/provider";
+import ChatComponent from "@/components/layout/chatConnect";
 import Alert from "@/components/ui/alert";
 import MessageAlert from "@/components/ui/messageAlert";
 import AuthBootstrap from "@/components/layout/AuthBootstrap";
@@ -30,6 +31,7 @@ export default function RootLayout({children, modal}: { children: React.ReactNod
 		<body style={{display: 'flex'}}>
 		<Providers>
 			<AuthBootstrap/>
+			<ChatComponent/>
 			<Loading/>
 			<Header/>
 			<main className="main-container">

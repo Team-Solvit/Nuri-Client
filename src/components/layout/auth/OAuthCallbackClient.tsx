@@ -6,7 +6,6 @@ import { useApollo } from '@/lib/apolloClient';
 import { useAlertStore } from '@/store/alert';
 import { useUserStore } from '@/store/user';
 import { AuthService } from '@/services/auth';
-import { decodeJWT } from '@/utils/jwt';
 
 export default function OAuthCallbackClient() {
   const router = useRouter();
@@ -14,6 +13,7 @@ export default function OAuthCallbackClient() {
   const client = useApollo();
   const alertStore = useAlertStore();
   const setAuth = useUserStore(s => s.setAuth);
+	const setToken = useUserStore(s => s.setToken);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function OAuthCallbackClient() {
           profile: response.user.profile || '',
           role: response.user.role || '',
         });
-
+	      setToken(headerToken)
         alertStore.success('로그인 성공');
         router.push('/');
       } catch (error: any) {

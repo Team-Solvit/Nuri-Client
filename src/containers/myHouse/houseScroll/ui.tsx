@@ -9,11 +9,12 @@ import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import LeaveModal from "@/containers/myHouse/leave-modal/ui";
 import {useQuery} from "@apollo/client";
 import {BoardingHouseQueries} from "@/services/boardingHouse";
-import {BoardingHouseType, BoardingRoomAndBoardersType} from "@/types/boardinghouse";
+import {BoardingHouseType, BoardingRoomAndBoardersType, BoarderType} from "@/types/boardinghouse";
 import {useUpdateRoomNumber} from "@/store/updateRoomNumber";
 import {useLoadingEffect} from "@/hooks/useLoading";
 import HouseScrollSkeleton from "@/components/ui/skeleton/HouseScrollSkeleton";
 import {useAlertStore} from "@/store/alert";
+import {imageCheck} from "@/utils/imageCheck";
 
 const HouseScroll = () => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -26,9 +27,9 @@ const HouseScroll = () => {
 		roomName: ""
 	}])
 	const {open} = useModalStore();
-	const openModal = (boarderNames: string[], roomName: string, roomId: string) => {
+	const openModal = (boarderNames: string[], roomName: string, contractId: string) => {
 		open();
-		setRoomId(roomId)
+		setContractId(contractId)
 		const newBoarders = boarderNames.map((item) => ({
 			boarderName: item,
 			roomName: roomName,
@@ -54,7 +55,7 @@ const HouseScroll = () => {
 	}, [isLoading, boardingHouse, error, navigate]);
 	
 	const {setRoomNumber, setRefetch} = useUpdateRoomNumber()
-	const [roomId, setRoomId] = useState<string>("");
+	const [contractId, setContractId] = useState<string>("");
 	const handleRoomAdd = () => {
 		navigate("/myHouse/addition")
 		setRefetch(refetch)
@@ -65,22 +66,21 @@ const HouseScroll = () => {
 		setRoomNumber(roomId)
 		setRefetch(refetch)
 	}
-	const handleLeaveOpenModal = (e : React.MouseEvent, room: BoardingRoomAndBoardersType) =>{
+	// open modal for a single boarder (individual contract end)
+	const handleBoarderLeaveOpen = (e: React.MouseEvent, boarderEntry: BoarderType | null | undefined, roomName?: string) => {
 		e.stopPropagation();
-		openModal(
-			room?.contractInfo.boarders?.map(boarder => boarder.name) ?? [],
-			room.room?.name ?? "",
-			room.room?.roomId ?? ""
-		)
+		if (!boarderEntry || !boarderEntry.contractId) return;
+		const name = boarderEntry.boarder?.user?.name ?? "";
+		const contractId = boarderEntry.contractId ?? "";
+		openModal([name], roomName ?? "", contractId);
 	}
 	
 	if (isLoading) {
 		return <HouseScrollSkeleton />;
 	}
-	
 	return (
 		<S.Container>
-			{leaveInfo && <LeaveModal boarders={leaveInfo} roomId={roomId}/>}
+			{leaveInfo && <LeaveModal roomRefetch={refetch} boarders={leaveInfo} contractId={contractId}/>}
 			<S.Header>
 				<S.Title>{boardingHouse?.name}</S.Title>
 				<S.Setting onClick={() => navigate("/setting/host")}>하숙집 설정</S.Setting>
@@ -120,49 +120,70 @@ const HouseScroll = () => {
 			</S.RoomInfoContainer>
 			<S.RoomList>
 				{boardingHouseRoomsList && boardingHouseRoomsList.length > 0 ? (
-					boardingHouseRoomsList.map((room, idx) => (
-						<S.RoomCard
-							onClick={()=>handleModifyRoom(room.room?.roomId ?? "")}
-							key={idx}
-						>
-							<S.RoomImage>
-								{room?.room?.boardingRoomFile?.[0]?.url && process.env.NEXT_PUBLIC_IMAGE_URL ? (
-									<Image
-										src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${room.room.boardingRoomFile[0].url}`}
-										alt="room"
-										fill
-										style={{ objectFit: "cover" }}
-									/>
-								) : (
-									<div style={{ width: "100%", height: "100%", background: "#f2f2f2" }} />
-								)}
-							</S.RoomImage>
-							<S.RoomHeader>
-								<S.RoomInfo>
-									<S.RoomName>{room.room?.name}</S.RoomName>
-									{room?.contractInfo.boarders && room?.contractInfo.boarders.map(boarder => {
-										return (
-											<S.ProfileWrap key={boarder.id}>
-												<S.ProfileImg>
-													<Image src={boarder.profile} alt={"profile"} fill style={{objectFit: "cover"}}/>
-												</S.ProfileImg>
-												<S.UserId>{boarder.name}</S.UserId>
-											</S.ProfileWrap>
-										)
-									})
-									}
-									{room.room?.status === "EMPTY_ROOM" && (
-										<S.UserId color="#8c8c8c">비어있음</S.UserId>
+					boardingHouseRoomsList.map((room, idx) => {
+						return (
+							<S.RoomCard
+								onClick={() => handleModifyRoom(room.room?.roomId ?? "")}
+								key={idx}
+							>
+								<S.RoomImage>
+									{room?.room?.boardingRoomFile?.[0]?.url && process.env.NEXT_PUBLIC_IMAGE_URL ? (
+										<Image
+											src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${room.room.boardingRoomFile[0].url}`}
+											alt="room"
+											fill
+											style={{objectFit: "cover"}}
+										/>
+									) : (
+										<div style={{width: "100%", height: "100%", background: "#f2f2f2"}}/>
 									)}
-								</S.RoomInfo>
-								{room.room?.status !== "EMPTY_ROOM" && (
-									<Square text={"계약 종료"}
-									        onClick={(e : React.MouseEvent) =>handleLeaveOpenModal(e, room)} status={true}
-									        width={"max-content"}/>
-								)}
-							</S.RoomHeader>
-						</S.RoomCard>
-					))
+								</S.RoomImage>
+								<S.RoomHeader>
+									<S.RoomInfo>
+										<S.RoomName>{room.room?.name}</S.RoomName>
+										{room.room?.status !== "EMPTY_ROOM" && room?.contractInfo && (
+											<S.BoarderList>
+												{room.contractInfo.map((entry) => {
+													const { contractId, boarder } = entry;
+													const { user, callNumber } = boarder ?? {};
+													if (!contractId) return null;
+													return (
+														<S.ProfileWrap key={contractId}>
+															<S.ProfileImg>
+																<Image
+																	src={imageCheck(user?.profile)}
+																	alt="profile"
+																	fill
+																	style={{ objectFit: "cover" }}
+																/>
+															</S.ProfileImg>
+															<div>
+																<S.UserId>{user?.name}</S.UserId>
+																{callNumber && <S.UserPhone>{callNumber}</S.UserPhone>}
+															</div>
+															<S.ActionWrap>
+																<Square
+																	text="계약 종료"
+																	status={true}
+																	onClick={(e: React.MouseEvent) =>
+																		handleBoarderLeaveOpen(e, entry, room?.room?.name as string)
+																	}
+																	width="max-content"
+																/>
+															</S.ActionWrap>
+														</S.ProfileWrap>
+													);
+												})}
+												</S.BoarderList>
+											)}
+											{room.room?.status === "EMPTY_ROOM" && (
+												<S.UserId color="#8c8c8c">비어있음</S.UserId>
+											)}
+										</S.RoomInfo>
+									</S.RoomHeader>
+								</S.RoomCard>
+							)
+						})
 				) : (
 					<S.EmptyMessage>
 						등록된 방이 없습니다. 방을 추가해보세요!

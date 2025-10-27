@@ -3,6 +3,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import * as S from './style';
 import Circle from '@/components/ui/button/circle';
 import Square from '@/components/ui/button/square';
+
 import {DEFAULT_CONTRACT_OPTIONS, FACILITY_CATEGORIES} from "./data"
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import {useAlertStore} from "@/store/alert";
@@ -13,6 +14,7 @@ import {CreateBoardingHouseType, GetBoardingRoomByRoomId} from "@/types/boarding
 import {useFileUpload} from "@/hooks/useFileUpload";
 import {useLoadingEffect} from "@/hooks/useLoading";
 import {useUpdateRoomNumber} from "@/store/updateRoomNumber";
+import {imageCheck} from "@/utils/imageCheck";
 
 export default function Addition(){
 	const [contractOptions, setContractOptions] = useState<string[]>(DEFAULT_CONTRACT_OPTIONS);
@@ -91,18 +93,6 @@ export default function Addition(){
 			checked ? [...prev, facility] : prev.filter((f) => f !== facility)
 		);
 	};
-
-	const params = useParams();
-	const roomId = Array.isArray(params.roomId) ? params.roomId[0] : params.roomId;
-
-	const { data } = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOM_INFO, {
-		variables: {
-			roomId: roomId
-		}
-	});
-
-	console.log(data)
-
 
 	const { error, success } = useAlertStore();
 	
@@ -227,7 +217,7 @@ export default function Addition(){
 				<S.PhotoUploadList>
 					{images?.map((img, idx) => (
 						<S.PhotoThumb key={idx} onClick={() => handleRemoveImage(idx)} style={{ cursor: 'pointer' }}>
-							<img src={process.env.NEXT_PUBLIC_IMAGE_URL + img} alt={`추가된 사진${idx + 1}`} />
+							<img src={imageCheck(img)} alt={`추가된 사진${idx + 1}`} />
 						</S.PhotoThumb>
 					))}
 					<S.PhotoUploadBox onClick={handleAddImageClick} style={{ cursor: 'pointer' }}>

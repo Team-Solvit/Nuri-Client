@@ -44,6 +44,7 @@ export const BoardingHouseQueries = {
 		      }
 		    }
         contractInfo {
+          contractId
           boarder{
              callNumber
 				     gender
@@ -96,8 +97,8 @@ export const BoardingHouseMutations = {
 		}
 	`,
 	END_BOARDING_ROOM_CONTRACT: gql`
-		mutation EndBoardingRoomContract($roomId: String!) {
-		  endBoardingRoomContract(roomId: $roomId)
+		mutation shutdownRoomContract($contractId: String!) {
+		  shutdownRoomContract(contractId: $contractId)
 		}
 	`,
 	PATCH_BOARDING_ROOM: gql`
@@ -132,13 +133,13 @@ export const BoardingHouseService = {
 	
 	endBoardingRoomContract: async (
 		client: ApolloClient<NormalizedCacheObject>,
-		roomId: string
-	): Promise<string> => {
-		const {data} = await client.mutate<{ endBoardingRoomContract: string }>({
+		contractId: string
+	): Promise<boolean> => {
+		const {data} = await client.mutate<{ shutdownRoomContract: boolean }>({
 			mutation: BoardingHouseMutations.END_BOARDING_ROOM_CONTRACT,
-			variables: {roomId},
+			variables: {contractId},
 		});
-		return data?.endBoardingRoomContract ?? "";
+		return data?.shutdownRoomContract ?? false;
 	},
 	
 	patchBoardingRoom: async (
