@@ -159,8 +159,9 @@ export default function RegisterContainer() {
 				alertStore.error('소셜 로그인 URL을 가져올 수 없습니다.');
 				sessionStorage.removeItem('oauth_provider');
 			}
-		} catch (error: any) {
-			alertStore.error(error?.message || '소셜 로그인 연결에 실패했습니다.');
+		} catch (error) {
+			const message = error instanceof Error ? error.message : '소셜 로그인 연결에 실패했습니다.';
+			alertStore.error(message);
 			sessionStorage.removeItem('oauth_provider');
 		}
 	}, [client, alertStore]);
