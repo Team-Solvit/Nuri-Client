@@ -17,6 +17,7 @@ import { ProfileGQL } from '@/services/profile';
 import { UserProfileResponseDto, UserPostListResponse, UserPost } from '@/types/profile';
 import { useUserStore } from '@/store/user';
 import { useCallback } from 'react';
+import { useAlertStore } from '@/store/alert';
 
 
 export default function UserProfilePage() {
@@ -25,6 +26,7 @@ export default function UserProfilePage() {
     const userId = params.id as string;
     const client = useApolloClient();
     const { userId: currentUserId, id: currentId } = useUserStore(s => s);
+    const { error: showError } = useAlertStore();
     
     const [selected, setSelected] = useState(1);
     const [showFollowerModal, setShowFollowerModal] = useState(false);
@@ -114,11 +116,11 @@ export default function UserProfilePage() {
         {
             variables: { 
                 userPostListReadInput: { 
-                    userId: isOwnProfile ? '' : userId,
+                    userId: isOwnProfile ? '' : (data?.getUserProfile?.userUUID || ''),
                     start: 0 
                 } 
             },
-            skip: selected !== 2,
+            skip: selected !== 2 || !data?.getUserProfile?.userUUID,
             errorPolicy: 'all',
             fetchPolicy: 'cache-first',
             onCompleted: (data) => {
@@ -126,6 +128,10 @@ export default function UserProfilePage() {
                 const postList = posts.map(convertToPostItem);
                 setAllPosts(postList);
                 setHasMore(posts.length === 20);
+            },
+            onError: (error) => {
+                console.error('게시물 로드 실패:', error);
+                showError('게시물을 불러오는 중 오류가 발생했습니다.');
             }
         }
     );
@@ -185,7 +191,7 @@ export default function UserProfilePage() {
             const result = await fetchMore({
                 variables: {
                     userPostListReadInput: { 
-                        userId: isOwnProfile ? '' : userId,
+                        userId: isOwnProfile ? '' : (data?.getUserProfile?.userUUID || ''),
                         start: allPosts.length + 1
                     }
                 }
@@ -196,10 +202,11 @@ export default function UserProfilePage() {
             setHasMore(newPosts.length === 20);
         } catch (error) {
             console.error('추가 데이터 로드 실패:', error);
+            showError('게시물을 더 불러오는 중 오류가 발생했습니다.');
         } finally {
             setIsLoadingMore(false);
         }
-    }, [isOwnProfile, userId, allPosts.length, isLoadingMore, hasMore, fetchMore, convertToPostItem]);
+    }, [isOwnProfile, data?.getUserProfile?.userUUID, allPosts.length, isLoadingMore, hasMore, fetchMore, convertToPostItem, showError]);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -342,8 +349,6 @@ export default function UserProfilePage() {
                     <S.List2 style={{ minHeight: '400px' }}>
                         {postLoading ? (
                             <div style={{ padding: '20px', textAlign: 'center' }}>게시물을 불러오는 중...</div>
-                        ) : postError ? (
-                            <div style={{ padding: '20px', textAlign: 'center' }}>오류가 발생했습니다.</div>
                         ) : allPosts.length === 0 ? (
                             <div style={{ padding: '20px', textAlign: 'center' }}>게시물이 없습니다.</div>
                         ) : (
