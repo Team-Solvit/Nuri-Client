@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import * as S from './style';
 import Square from '@/components/ui/button/square';
@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 import { useApollo } from '@/lib/apolloClient';
 import { useAlertStore } from '@/store/alert';
-import { AuthService } from '@/services/auth';
+import { AuthService, AuthGQL } from '@/services/auth';
 import { REGISTER_STEPS } from '@/constants/register';
 import { validateTerms, validateAccount, validateEmail, validatePassword, validateProfile } from '@/utils/validators/register';
 import { useUsernameCheck } from '@/hooks/useUsernameCheck';
@@ -19,6 +19,8 @@ import { StepEmail } from '@/components/ui/register/steps/StepEmail';
 import { StepPassword } from '@/components/ui/register/steps/StepPassword';
 import { StepProfile } from '@/components/ui/register/steps/StepProfile';
 import { RegisterFormData, createInitialRegisterForm } from '@/types/register';
+import styled from '@emotion/styled';
+import { colors, fontSizes } from '@/styles/theme';
 
 const steps = REGISTER_STEPS as unknown as string[];
 
@@ -141,6 +143,29 @@ export default function RegisterContainer() {
 	const handleSendMailCode = () => { sendMailCode(formData.email); };
 	const handleVerifyMailCode = () => { verifyMailCode(formData.email, formData.verificationCode); };
 
+	const handleSocialLogin = useCallback(async (provider: 'kakao' | 'google' | 'facebook' | 'tiktok') => {
+		try {
+			sessionStorage.setItem('oauth_provider', provider);
+
+			const { data } = await client.query({
+				query: AuthGQL.QUERIES.GET_SOCIAL_URL,
+				variables: { provider },
+				fetchPolicy: 'no-cache'
+			});
+
+			if (data?.getOAuth2Link) {
+				window.location.href = data.getOAuth2Link;
+			} else {
+				alertStore.error('소셜 로그인 URL을 가져올 수 없습니다.');
+				sessionStorage.removeItem('oauth_provider');
+			}
+		} catch (error) {
+			const message = error instanceof Error ? error.message : '소셜 로그인 연결에 실패했습니다.';
+			alertStore.error(message);
+			sessionStorage.removeItem('oauth_provider');
+		}
+	}, [client, alertStore]);
+
 	const renderStepContent = () => {
 		const stepLabel = effectiveSteps[currentStep];
 		switch (stepLabel) {
@@ -200,7 +225,52 @@ export default function RegisterContainer() {
 						width="100%"
 					/>
 				</S.ButtonGroup>
+				{currentStep === 0 && (
+					<>
+						<SocialOther>또는</SocialOther>
+						<SocialList>
+							<Image src="/login/kakao.svg" alt="카카오 로그인" width={56} height={56} onClick={() => handleSocialLogin('kakao')} />
+							<Image src="/login/tiktok.svg" alt="틱톡 로그인" width={56} height={56} onClick={() => handleSocialLogin('tiktok')} />
+							<Image src="/login/facebook.svg" alt="페이스북 로그인" width={56} height={56} onClick={() => handleSocialLogin('facebook')} />
+							<Image src="/login/google.svg" alt="구글 로그인" width={56} height={56} onClick={() => handleSocialLogin('google')} />
+						</SocialList>
+					</>
+				)}
 			</S.Content>
 		</S.Wrapper>
 	);
 }
+
+const SocialOther = styled.div`
+  margin-top: 1.5rem;
+  color: ${colors.gray};
+  font-size: ${fontSizes.Small};
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 1rem;
+
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: ${colors.gray};
+    display: block;
+  }
+`;
+
+const SocialList = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+
+  img {
+    cursor: pointer;
+    transition: transform 0.2s;
+
+    &:hover {
+      transform: scale(1.03);
+    }
+  }
+`;

@@ -1,23 +1,63 @@
 import styled from "@emotion/styled";
-import {colors, fontSizes, radius} from "@/styles/theme";
+import {colors, fontSizes, radius, zIndex} from "@/styles/theme";
 import {mq} from "@/styles/media";
 
 export const MessageContainer = styled.section<{ id: string }>`
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-template-rows: 1fr 1fr 12fr;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
   background-color: ${colors.background};
-  padding: 3rem 0;
-  overflow-y: scroll;
+  padding: 1rem 0;
+  z-index: ${zIndex.overlay};
+  place-items: center;
+  overflow: hidden;
 
   ${mq.mobile} {
     ${({id}) => id && 'display: none;'}
   }
 `
+export const Header = styled.div`
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	align-items: center;
+  padding: 0 1.5rem;
+`
+export const BackButton = styled.button`
+  display: none; // 기본적으로 숨김
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-right: 0.5rem;
 
+  ${mq.mobile} {
+    display: block;
+    width: 24px;
+    height: 24px;
+    position: relative;
+  }
+`;
+
+export const AddRoom = styled.div`
+  width: 100%;
+  display: flex;
+  height: 100%;
+  gap: 1rem;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+
+  & > img {
+    cursor: pointer;
+    border-radius: 100%;
+    background: white;
+    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
+    padding: 0.2rem;
+  }
+`
 export const Search = styled.div`
   width: 90%;
   gap: 1rem;
@@ -25,6 +65,7 @@ export const Search = styled.div`
   border: 1px solid #DDDDDD;
   padding: 0.5rem 2rem;
   display: flex;
+  margin-bottom: 1rem;
 
   & > input {
     width: 100%;
@@ -32,30 +73,12 @@ export const Search = styled.div`
     border: none;
     font-size: ${fontSizes.Body};
   }
-
+	& > img{
+		cursor: pointer;
+	}
   & > input::placeholder {
     color: #DDDDDD;
   }
-`
-
-export const Category = styled.article`
-  display: flex;
-  padding: 0 2rem;
-  margin: 3rem 0 0.5rem 0;
-  width: 100%;
-
-  & > h3 {
-    font-weight: 500;
-  }
-
-  & > img {
-    cursor: pointer;
-  }
-
-  font-size: ${fontSizes.Body};
-  justify-content: space-between;
-  align-items: center;
-
 `
 export const ChatBox = styled.div<{ isRead: boolean }>`
   width: 100%;
@@ -67,6 +90,7 @@ export const ChatBox = styled.div<{ isRead: boolean }>`
   transition: 0.2s;
   cursor: pointer;
   gap: 1rem;
+  position: relative; /* 변경: 뱃지 위치용 컨테이너 */
 
   &:hover {
     background-color: ${(props) => props.isRead ? "#ededed" : "#f8f8f8"};
@@ -78,31 +102,42 @@ export const Profile = styled.div`
   border-radius: 100%;
   overflow: hidden;
   position: relative;
+	& > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 `
 
 export const Info = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  width: 180px;
+  overflow: hidden;
 
-  & > h4 {
+  h4, p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  h4 {
     font-size: ${fontSizes.Body};
     font-weight: 500;
   }
 
-  & > p {
+  p {
     font-size: ${fontSizes.Caption};
     color: ${colors.gray};
   }
-`
+`;
 
-export const CategoryBox = styled.article<{ isDrop: boolean }>`
-  width: 100%;
-  overflow: hidden;
-  max-height: ${(props) => (props.isDrop ? "5rem" : "1000px;")};
-  transition: all 0.4s ease-in-out;
-`
 export const CategoryList = styled.div`
   width: 100%;
   height: 100%;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+`
+
+export const NoText = styled.p`
+padding: 0 1rem;
 `
