@@ -7,4 +7,3 @@ export const imageCheck = (thumbnail?: string): string => {
     ? `${BASE_URL.replace(/\/$/, "")}/${thumbnail.replace(/^\//, "")}`
     : `/${thumbnail.replace(/^\//, "")}`;
 };
-

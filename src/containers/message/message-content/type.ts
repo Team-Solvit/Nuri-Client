@@ -1,35 +1,58 @@
 export interface ChatMessage {
-    id: number;
-    type: 'sent' | 'received';
-    text: string;
-    time: string;
-    date?: string;
-    profile?: string;
-    name?: string;
-    img?: string;
+	id: string;
+	contents: string;
+	createdAt: {
+		time: string;
+		date: string;
+	};
+	sender: {
+		profile: string | null;
+		name: string;
+	}
+	roomId: string;
+	
+	img?: string;
+	roomTour?: RoomTour
+	replyChat?:  ReplyTo | null
+	contract?: Contract
+}
 
-    roomTour? :RoomTour
-    replyTo?: ReplyTo
-    contract?: Contract
-  }
-  
-  export interface ReplyTo{
-    id: number;
-    text: string;
-    name: string;
-  }
-  export interface RoomTour{
-    name : string,
-    tourId : number,
-    date : string,
-    time: string,
-    thumbnail : string,
-    master : boolean
-  }
+export interface ChatReadMessageResponse extends Omit<ChatMessage, "createdAt"> {
+	createdAt: string;
+}
 
-  export interface Contract{
-    name : string,
-    contractId : number,
-    thumbnail : string,
-    master : boolean
-  }
+export interface ChatMessageResponse {
+	contents: string;
+	id: string;
+	name: string;
+	picture: string;
+	replyChat?: ReplyTo | null;
+	roomId: string;
+	sendAt: string;
+	sender: {
+		profile: string | null;
+		name: string;
+	};
+}
+
+export interface ReplyTo {
+	chatId : string,
+	contents : string,
+	name : string
+}
+
+export interface RoomTour {
+	name: string,
+	tourId: number,
+	date: string,
+	time: string,
+	thumbnail: string,
+	master: boolean
+}
+
+export interface Contract {
+	name: string,
+	contractId: number,
+	thumbnail: string,
+	master: boolean
+}

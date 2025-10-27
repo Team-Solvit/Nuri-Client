@@ -2,7 +2,21 @@ import styled from "@emotion/styled";
 import {colors, fontSizes, radius} from "@/styles/theme";
 import {mq} from "@/styles/media";
 
+export const Status = styled.div<{isAgree : boolean}>`
+	position: absolute;
+	top: 20px;
+	left: 20px;
+  background-color: ${(props) => (props.isAgree ? colors.success : colors.error)};
+  color: white;
+	padding: 0.4rem 1rem;
+	border-radius: ${radius.md};
+	font-size: ${fontSizes.Small};
+	font-weight: 300;
+	z-index: 1;
+`
+
 export const ModalContainer = styled.div`
+	position: relative;
   width: 39.5rem;
   background: ${colors.background};
   border-radius: ${radius.md};
@@ -21,7 +35,7 @@ export const TopImageWrapper = styled.div`
   width: 100%;
   height: 11.125rem;
   position: relative;
-
+z-index: 1;
   ${mq.mobile} {
     height: 7rem;
   }

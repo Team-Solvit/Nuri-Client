@@ -48,6 +48,10 @@ export default function MessageAlert() {
 	}
 	if (!isVisible && isStatus === "none") return null;
 	
+	const path = window.location.pathname;
+	const isMessage = path.includes("/message");
+	if (isMessage) return null;
+	
 	return (
 		createPortal(
 			<S.Alert
