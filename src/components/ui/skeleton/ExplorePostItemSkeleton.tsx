@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { SkeletonBase } from './animations';
-import { colors, radius, fontSizes } from '@/styles/theme';
+import { colors, radius } from '@/styles/theme';
 import { mq } from '@/styles/media';
 
 const PostItemSkeleton = styled.div`
