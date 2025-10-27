@@ -7,6 +7,7 @@ import * as S from './style'
 import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 import { useUserStore } from '@/store/user'
 import { useLoginModalStore } from '@/store/loginModal';
+import { imageCheck } from '@/utils/imageCheck';
 
 const MENU_ITEMS = [
 	{ label: '홈', path: '/', icon: '/icons/home.svg', order: 0 },
@@ -104,7 +105,7 @@ export default function Header() {
 
 	const profileNode = profile ? (
 		<Image
-			src={profile}
+			src={imageCheck(profile)}
 			alt="프로필"
 			width={36}
 			height={36}
