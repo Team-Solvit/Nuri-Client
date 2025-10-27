@@ -10,7 +10,7 @@ export const Container = styled.section`
   gap: 1rem;
 
   ${mq.mobile} {
-    width: 80vw;
+    width: unset;
   }
 `
 

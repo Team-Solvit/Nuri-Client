@@ -68,18 +68,22 @@ export interface BoardingRoomType {
 	contractPeriod?: ContractPeriodType[];
 	boardingRoomOption?: BoardingRoomOptionType[];
 }
-
 export interface BoarderType {
-	id: string;
-	name: string;
-	profile: string;
+	contractId : string,
+	boarder?:{
+		callNumber : string,
+		gender : Gender,
+		user : {
+			id: string;
+			name: string;
+			profile: string;
+		}
+	}
 }
 
 export interface BoardingRoomAndBoardersType {
 	room?: BoardingRoomType;
-	contractInfo : {
-		boarders?: BoarderType[];
-	}
+	contractInfo : BoarderType[] | null,
 }
 
 export interface CreateBoardingHouseType {
