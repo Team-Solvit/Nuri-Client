@@ -68,6 +68,68 @@ export const VerifiedDescription = styled.p`
   margin: 0;
 `;
 
+export const CompletedSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  border: 2px solid #4CAF50;
+  border-radius: ${radius.md};
+  background: rgba(76, 175, 80, 0.05);
+`;
+
+export const CompletedTitle = styled.h3`
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #4CAF50;
+  margin: 0;
+  text-align: center;
+`;
+
+export const CompletedDescription = styled.p`
+  font-size: 1rem;
+  color: ${colors.text};
+  margin: 0;
+  text-align: center;
+  line-height: 1.5;
+`;
+
+export const CompletedInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: ${radius.sm};
+`;
+
+export const InfoRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid ${colors.line};
+  
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+`;
+
+export const InfoLabel = styled.span`
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: ${colors.gray};
+`;
+
+export const InfoValue = styled.span`
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: ${colors.text};
+  text-align: right;
+`;
+
 export const Section = styled.section`
   display: flex;
   flex-direction: column;
@@ -115,7 +177,7 @@ export const Home = styled.div`
 `;
 
 export const Con = styled.div`
-  width: 80%;
+  width: 100%;
   display: flex;
 
   ${mq.mobile} {

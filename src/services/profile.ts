@@ -14,6 +14,7 @@ export const ProfileGQL = {
           userUUID
           introduce
           isFollowing
+          role
         }
       }
     `,
@@ -40,6 +41,19 @@ export const ProfileGQL = {
           id
           userId
           profile
+        }
+      }
+    `,
+    GET_HOST_BOARDING_ROOMS: gql`
+      query GetHostBoardingRooms($userId: String!) {
+        getHostBoardingRooms(userId: $userId) {
+          boardingRoomFile {
+            fileId
+            url
+            roomId
+          }
+          name
+          monthlyRent
         }
       }
     `,

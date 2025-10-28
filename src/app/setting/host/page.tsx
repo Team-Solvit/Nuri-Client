@@ -10,8 +10,38 @@ import SettingHeader from "@/components/ui/settingHeader";
 import AddressInput from "@/components/ui/addressInput/AddressInput";
 import Square from "@/components/ui/button/square";
 import PhoneAuth from "@/components/ui/phoneAuth";
+import { useUserStore } from "@/store/user";
+import { useApolloClient, useQuery } from "@apollo/client";
+import { HostService, HostGQL } from "@/services/host";
+import { useAlertStore } from "@/store/alert";
+import { BoardingHouseSettingRequestDto } from "@/types/boarding";
+import Alert from "@/components/ui/alert";
+import { AuthService } from "@/services/auth";
+import { useRouter } from "next/navigation";
+
+interface HostBoardingRoom {
+  boardingHouse: {
+    nearestSchool: string;
+    nearestStation: string;
+    location: string;
+  };
+  name: string;
+  description: string;
+}
+
+interface HostBoardingRoomsResponse {
+  getHostBoardingRooms: HostBoardingRoom[];
+}
 
 export default function Host() {
+  const userStore = useUserStore(s => s);
+  const { role, phoneNumber, userId, clear } = userStore;
+  const apolloClient = useApolloClient();
+  const { success, error: showError } = useAlertStore();
+  const router = useRouter();
+  
+  console.log('Full user store:', userStore);
+  
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [showPhoneAuth, setShowPhoneAuth] = useState(false);
@@ -19,6 +49,63 @@ export default function Host() {
   const [selectedPosition, setSelectedPosition] = useState<{lat: number, lng: number} | null>(null);
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
   const [verifiedPhoneNumber, setVerifiedPhoneNumber] = useState<string>('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [isHostSettingCompleted, setIsHostSettingCompleted] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // 폼 상태
+  const [formData, setFormData] = useState({
+    name: '',
+    address: '',
+    detailAddress: '',
+    introduce: '',
+    station: '',
+    university: '',
+    gender: 'MALE',
+    mealProvided: true,
+  });
+
+  // 기존 하숙집 정보 불러오기
+  const { data: boardingRoomData, loading: boardingRoomLoading } = useQuery<HostBoardingRoomsResponse>(
+    HostGQL.QUERIES.GET_HOST_BOARDING_ROOMS,
+    {
+      variables: { userId: userId || '' },
+      skip: !userId || !isPhoneVerified,
+      fetchPolicy: 'network-only',
+      onCompleted: (data) => {
+        console.log('하숙집 데이터 로드 완료:', data);
+        const rooms = data?.getHostBoardingRooms;
+        if (rooms && rooms.length > 0) {
+          console.log('첫 번째 하숙집 정보:', rooms[0]);
+          const room = rooms[0]; // 첫 번째 하숙집 정보 사용
+          const newFormData = {
+            name: room.name || '',
+            address: room.boardingHouse?.location || '',
+            detailAddress: room.description || '',
+            introduce: room.description || '',
+            station: room.boardingHouse?.nearestStation || '',
+            university: room.boardingHouse?.nearestSchool || '',
+            gender: 'MALE', // API에서 gender 정보가 없으면 기본값
+            mealProvided: true, // API에서 meal 정보가 없으면 기본값
+          };
+          console.log('설정할 폼 데이터:', newFormData);
+          setFormData(newFormData);
+          setIsHostSettingCompleted(true); // 하숙집 정보가 있으면 완료 상태로 설정
+          localStorage.setItem('hostSettingCompleted', 'true'); // localStorage에 저장
+        } else {
+          console.log('하숙집 정보가 없습니다.');
+          setIsHostSettingCompleted(false);
+          localStorage.removeItem('hostSettingCompleted');
+        }
+      },
+      onError: (error) => {
+        console.error('하숙집 정보 로드 실패:', error);
+      }
+    }
+  );
+
+  console.log('현재 폼 데이터:', formData);
+  console.log('쿼리 skip 여부:', !userId || !isPhoneVerified, { userId, isPhoneVerified });
 
   useEffect(() => {
     const handleResize = () => {
@@ -29,19 +116,49 @@ export default function Host() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // 새로고침 시 휴대폰 인증 상태 복원
+  // 새로고침 시 휴대폰 인증 상태 복원 & 호스트인 경우 자동으로 인증 상태로 설정
   useEffect(() => {
+    console.log('Current role:', role);
+    console.log('Current phoneNumber:', phoneNumber);
+    
+    // role이 HOST인 경우 자동으로 인증된 것으로 처리
+    if (role === 'HOST') {
+      console.log('User is already a HOST, auto-verifying phone');
+      setIsPhoneVerified(true);
+      setVerifiedPhoneNumber(phoneNumber || '인증 완료');
+      return;
+    }
+
     const savedPhoneVerified = localStorage.getItem('hostPhoneVerified');
     const savedPhoneNumber = localStorage.getItem('hostPhoneNumber');
     
     if (savedPhoneVerified === 'true' && savedPhoneNumber) {
+      console.log('Restoring phone verification from localStorage');
       setIsPhoneVerified(true);
       setVerifiedPhoneNumber(savedPhoneNumber);
     }
+  }, [role, phoneNumber])
+
+  // 새로고침 시 호스트 설정 완료 상태 복원
+  useEffect(() => {
+    const savedHostSettingCompleted = localStorage.getItem('hostSettingCompleted');
+    if (savedHostSettingCompleted === 'true') {
+      setIsHostSettingCompleted(true);
+    }
   }, [])
 
-  const handleLogout = () => {
-    console.log('로그아웃 처리 완료')
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      await AuthService.logout(apolloClient);
+      clear();
+      success('로그아웃되었습니다.');
+      router.push('/');
+    } catch (err) {
+      console.error('로그아웃 실패:', err);
+      showError('로그아웃 중 오류가 발생했습니다.');
+      setIsLoggingOut(false)
+    }
     setShowLogoutModal(false)
   }
 
@@ -53,6 +170,69 @@ export default function Host() {
     // localStorage에 인증 상태 저장
     localStorage.setItem('hostPhoneVerified', 'true');
     localStorage.setItem('hostPhoneNumber', callNumber);
+  }
+
+  const handleInputChange = (field: keyof typeof formData, value: string | boolean) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  }
+
+  const handleSave = async () => {
+    // 유효성 검사
+    if (!formData.name.trim()) {
+      showError('하숙집 이름을 입력해주세요.');
+      return;
+    }
+    if (!formData.address.trim()) {
+      showError('주소를 선택해주세요.');
+      return;
+    }
+    if (!selectedPosition) {
+      showError('주소를 선택해주세요.');
+      return;
+    }
+    if (!formData.station.trim()) {
+      showError('가까운 역을 입력해주세요.');
+      return;
+    }
+    if (!formData.university.trim()) {
+      showError('가까운 대학교를 입력해주세요.');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const requestDto: BoardingHouseSettingRequestDto = {
+        name: formData.name,
+        address: formData.address,
+        detailAddress: formData.detailAddress,
+        lat: selectedPosition.lat,
+        lng: selectedPosition.lng,
+        station: formData.station,
+        university: formData.university,
+        gender: formData.gender,
+        mealProvided: formData.mealProvided,
+        introduce: formData.introduce,
+        callNumber: phoneNumber || verifiedPhoneNumber || '',
+      };
+
+      const result = await HostService.createBoardingHouse(apolloClient, requestDto);
+      
+      if (result) {
+        success('하숙집 정보가 저장되었습니다.');
+        setIsHostSettingCompleted(true); // 저장 완료 후 완료 상태로 변경
+        localStorage.setItem('hostSettingCompleted', 'true'); // localStorage에 저장
+        // 폼 초기화 (선택사항)
+        // setFormData({ name: '', address: '', detailAddress: '', introduce: '', station: '', university: '', gender: 'MALE', mealProvided: true });
+        // setSelectedPosition(null);
+      } else {
+        showError('하숙집 정보 저장에 실패했습니다.');
+      }
+    } catch (err) {
+      console.error('하숙집 저장 오류:', err);
+      showError('하숙집 정보 저장 중 오류가 발생했습니다.');
+    } finally {
+      setIsSaving(false);
+    }
   }
   return (
     <S.Con>
@@ -81,23 +261,61 @@ export default function Host() {
               />
             </S.AuthButtonWrapper>
           </S.AuthSection>
+        ) : isHostSettingCompleted ? (
+          <S.CompletedSection>
+            <S.CompletedTitle>호스트 설정이 완료되었습니다</S.CompletedTitle>
+            <S.CompletedDescription>
+              하숙집 정보가 등록되어 호스트로 활동하실 수 있습니다.
+            </S.CompletedDescription>
+            <S.CompletedInfo>
+              <S.InfoRow>
+                <S.InfoLabel>하숙집 이름:</S.InfoLabel>
+                <S.InfoValue>{formData.name}</S.InfoValue>
+              </S.InfoRow>
+              <S.InfoRow>
+                <S.InfoLabel>주소:</S.InfoLabel>
+                <S.InfoValue>{formData.address}</S.InfoValue>
+              </S.InfoRow>
+              <S.InfoRow>
+                <S.InfoLabel>가까운 역:</S.InfoLabel>
+                <S.InfoValue>{formData.station}</S.InfoValue>
+              </S.InfoRow>
+              <S.InfoRow>
+                <S.InfoLabel>가까운 대학교:</S.InfoLabel>
+                <S.InfoValue>{formData.university}</S.InfoValue>
+              </S.InfoRow>
+            </S.CompletedInfo>
+          </S.CompletedSection>
         ) : (
           <>
             <S.Section>
               <S.SectionTitle>하숙집 정보</S.SectionTitle>
           <S.Home>
             <S.InputRow>
-              <S.Input placeholder="하숙집 이름을 입력해주세요." />
+              <S.Input 
+                placeholder="하숙집 이름을 입력해주세요." 
+                value={formData.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
+              />
               <AddressInput
                 onSelectAddress={(address, lat, lng) => {
                   console.log("선택된 주소:", address, lat, lng);
                   setSelectedPosition({ lat, lng });
+                  handleInputChange('address', address);
                 }}
               />
             </S.InputRow>
             <S.InputRow>
-              <S.Input placeholder="하숙집 소개를 입력해주세요." />
-              <S.Input placeholder="상세정보를 입력해주세요. (ex 301동 1103호)" />
+              <S.Input 
+                placeholder="하숙집 소개를 입력해주세요." 
+                value={formData.introduce}
+                onChange={(e) => handleInputChange('introduce', e.target.value)}
+              />
+              <S.Input 
+                placeholder="상세정보를 입력해주세요. (ex 301동 1103호)" 
+                value={formData.detailAddress}
+                onChange={(e) => handleInputChange('detailAddress', e.target.value)}
+              />
             </S.InputRow>
           </S.Home>
         </S.Section>
@@ -105,8 +323,16 @@ export default function Host() {
         <S.Section>
           <S.SectionTitle>지역</S.SectionTitle>
           <S.InputRow>
-            <S.Input placeholder="가까운 역을 입력해주세요. (ex 대연역)" />
-            <S.Input placeholder="가까운 대학교를 입력해주세요. (ex 부경대학교)" />
+            <S.Input 
+              placeholder="가까운 역을 입력해주세요. (ex 대연역)" 
+              value={formData.station}
+              onChange={(e) => handleInputChange('station', e.target.value)}
+            />
+            <S.Input 
+              placeholder="가까운 대학교를 입력해주세요. (ex 부경대학교)" 
+              value={formData.university}
+              onChange={(e) => handleInputChange('university', e.target.value)}
+            />
           </S.InputRow>
           <S.Guide>* 하나씩만 정확히 작성해주세요. </S.Guide>
         </S.Section>
@@ -115,15 +341,30 @@ export default function Host() {
           <S.SectionTitle>성별 조건</S.SectionTitle>
           <S.RadioRow>
             <S.RadioLabel>
-              <S.Radio name="gender" type="radio" defaultChecked />
+              <S.Radio 
+                name="gender" 
+                type="radio" 
+                checked={formData.gender === 'MALE'}
+                onChange={() => handleInputChange('gender', 'MALE')}
+              />
               남
             </S.RadioLabel>
             <S.RadioLabel>
-              <S.Radio name="gender" type="radio" />
+              <S.Radio 
+                name="gender" 
+                type="radio" 
+                checked={formData.gender === 'FEMALE'}
+                onChange={() => handleInputChange('gender', 'FEMALE')}
+              />
               여
             </S.RadioLabel>
             <S.RadioLabel>
-              <S.Radio name="gender" type="radio" />
+              <S.Radio 
+                name="gender" 
+                type="radio" 
+                checked={formData.gender === 'ALL'}
+                onChange={() => handleInputChange('gender', 'ALL')}
+              />
               모두
             </S.RadioLabel>
           </S.RadioRow>
@@ -133,16 +374,31 @@ export default function Host() {
           <S.SectionTitle>식사 제공</S.SectionTitle>
           <S.RadioRow>
             <S.RadioLabel>
-              <S.Radio name="meal" type="radio" defaultChecked />
+              <S.Radio 
+                name="meal" 
+                type="radio" 
+                checked={formData.mealProvided === true}
+                onChange={() => handleInputChange('mealProvided', true)}
+              />
               예
             </S.RadioLabel>
             <S.RadioLabel>
-              <S.Radio name="meal" type="radio" />
+              <S.Radio 
+                name="meal" 
+                type="radio" 
+                checked={formData.mealProvided === false}
+                onChange={() => handleInputChange('mealProvided', false)}
+              />
               아니요
             </S.RadioLabel>
           </S.RadioRow>
         </S.Section>
-        <Square text="저장하기" status={true} onClick={() => {}} width="100%" />
+        <Square 
+          text={isSaving ? "저장 중..." : "저장하기"} 
+          status={!isSaving} 
+          onClick={handleSave} 
+          width="100%" 
+        />
           </>
         )}
       </S.Container>
@@ -166,6 +422,7 @@ export default function Host() {
           role="HOST"
         />
       )}
+      <Alert />
     </S.Con>
   );
 }

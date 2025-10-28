@@ -66,42 +66,48 @@ export default function FollowerList({ onClose, userId }: FollowerListProps) {
             />
           </S.SearchBox> */}
           <S.List>
-            {followers.map((f: FollowerUserInfo) => (
-              <S.Item key={f.id} onClick={() => handleProfileClick(f.userId)} style={{ cursor: 'pointer' }}>
-                <S.ProfileImg>
-                  {f.profile && getProfileImageUrl(f.profile) !== '/profile/profile.svg' ? (
-                    <Image 
-                      src={getProfileImageUrl(f.profile)} 
-                      alt="프로필" 
-                      width={55} 
-                      height={55}
-                      style={{ borderRadius: '50%', objectFit: 'cover' }}
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        width: 55,
-                        height: 55,
-                        borderRadius: '50%',
-                        background: '#e0e0e0',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: 700,
-                        fontSize: 20,
-                        color: '#666',
-                      }}
-                    >
-                      {f.userId && f.userId[0] ? f.userId[0] : '?'}
-                    </div>
-                  )}
-                </S.ProfileImg>
-                <S.Info>
-                  <S.Username>{f.userId}</S.Username>
-                  <S.Name>{f.userId}</S.Name>
-                </S.Info>
-              </S.Item>
-            ))}
+            {followers.length === 0 ? (
+              <div style={{ padding: '2rem', textAlign: 'center', color: '#666' }}>
+                팔로워가 없습니다.
+              </div>
+            ) : (
+              followers.map((f: FollowerUserInfo) => (
+                <S.Item key={f.id} onClick={() => handleProfileClick(f.userId)} style={{ cursor: 'pointer' }}>
+                  <S.ProfileImg>
+                    {f.profile && getProfileImageUrl(f.profile) !== '/profile/profile.svg' ? (
+                      <Image 
+                        src={getProfileImageUrl(f.profile)} 
+                        alt="프로필" 
+                        width={55} 
+                        height={55}
+                        style={{ borderRadius: '50%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: 55,
+                          height: 55,
+                          borderRadius: '50%',
+                          background: '#e0e0e0',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: 700,
+                          fontSize: 20,
+                          color: '#666',
+                        }}
+                      >
+                        {f.userId && f.userId[0] ? f.userId[0] : '?'}
+                      </div>
+                    )}
+                  </S.ProfileImg>
+                  <S.Info>
+                    <S.Username>{f.userId}</S.Username>
+                    <S.Name>{f.userId}</S.Name>
+                  </S.Info>
+                </S.Item>
+              ))
+            )}
           </S.List>
           <S.ConfirmButtonWrap>
             <Square

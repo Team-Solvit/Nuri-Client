@@ -4,20 +4,22 @@ import Image from 'next/image';
 import * as S from './style';
 import PostItem from '@/components/ui/postItem';
 import Square from '@/components/ui/button/square';
-import {useState, useRef, useEffect} from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Post from '@/components/ui/post';
 import Follow from '@/components/ui/follow';
 import FollowerList from '@/components/ui/follower';
-import {useRouter, useParams} from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useQuery } from '@apollo/client';
 import NProgress from 'nprogress';
 import { useApolloClient } from '@apollo/client';
 import { followUser, unfollowUser } from '@/services/profile';
 import { ProfileGQL } from '@/services/profile';
-import { UserProfileResponseDto, UserPostListResponse, UserPost } from '@/types/profile';
+import { UserProfileResponseDto, UserPostListResponse, UserPost, HostBoardingRoomsResponse, HostBoardingRoom } from '@/types/profile';
 import { useUserStore } from '@/store/user';
 import { useCallback } from 'react';
 import { useAlertStore } from '@/store/alert';
+import ProfileSkeleton from '@/components/ui/skeleton/ProfileSkeleton'
+import { useLoginModalStore } from '@/store/loginModal';
 
 
 export default function UserProfilePage() {
@@ -27,75 +29,20 @@ export default function UserProfilePage() {
     const client = useApolloClient();
     const { userId: currentUserId, id: currentId } = useUserStore(s => s);
     const { error: showError } = useAlertStore();
-    
+    const { open: openLoginModal } = useLoginModalStore();
+
     const [selected, setSelected] = useState(1);
     const [showFollowerModal, setShowFollowerModal] = useState(false);
     const [showFollowModal, setShowFollowModal] = useState(false);
     const [isFollowing, setIsFollowing] = useState(false);
     const [allPosts, setAllPosts] = useState<any[]>([]);
+    const [allBoardingRooms, setAllBoardingRooms] = useState<any[]>([]);
     const [hasMore, setHasMore] = useState(true);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const observerRef = useRef<HTMLDivElement>(null);
 
-    const boardingHouseList = [
-        {
-          id: 1,
-          user: '해ㅠ피',
-          title: '해피해피하숙',
-          region: '강서구',
-          price: '30',
-          thumbnail: '/post/post-example.png',
-          userProfile: '/profile/profile.svg',
-        },
-        {
-          id: 2,
-          user: '해ㅠ피',
-          title: '해피해피하숙',
-          region: '강서구',
-          price: '30',
-          thumbnail: '/post/post-example.png',
-          userProfile: '/profile/profile.svg',
-        },
-        {
-          id: 3,
-          user: '해ㅠ피',
-          title: '해피해피하숙',
-          region: '강서구',
-          price: '30',
-          thumbnail: '/post/post-example.png',
-          userProfile: '/profile/profile.svg',
-        },
-        {
-          id: 4,
-          user: '해ㅠ피',
-          title: '해피해피하숙',
-          region: '강서구',
-          price: '30',
-          thumbnail: '/post/post-example.png',
-          userProfile: '/profile/profile.svg',
-        },
-        {
-          id: 5,
-          user: '해ㅠ피',
-          title: '해피해피하숙',
-          region: '강서구',
-          price: '30',
-          thumbnail: '/post/post-example.png',
-          userProfile: '/profile/profile.svg',
-        },
-        {
-          id: 6,
-          user: '해ㅠ피',
-          title: '해피해피하숙',
-          region: '강서구',
-          price: '30',
-          thumbnail: '/post/post-example.png',
-          userProfile: '/profile/profile.svg',
-        }
-      ];
-
     const isOwnProfile = currentUserId === userId;
-    
+
     useEffect(() => {
         if (isOwnProfile) {
             router.replace('/profile');
@@ -105,20 +52,20 @@ export default function UserProfilePage() {
     const { data, loading, error } = useQuery<{ getUserProfile: UserProfileResponseDto }>(
         ProfileGQL.QUERIES.GET_USER_PROFILE,
         {
-          variables: { userId },
-          skip: !userId,
-          fetchPolicy: 'network-only',
+            variables: { userId },
+            skip: !userId,
+            fetchPolicy: 'network-only',
         }
-      );
+    );
 
     const { data: postData, loading: postLoading, error: postError, fetchMore } = useQuery<UserPostListResponse>(
         ProfileGQL.QUERIES.GET_USER_POST_LIST,
         {
-            variables: { 
-                userPostListReadInput: { 
+            variables: {
+                userPostListReadInput: {
                     userId: isOwnProfile ? '' : (data?.getUserProfile?.userUUID || ''),
-                    start: 0 
-                } 
+                    start: 0
+                }
             },
             skip: selected !== 2 || !data?.getUserProfile?.userUUID,
             errorPolicy: 'all',
@@ -136,6 +83,27 @@ export default function UserProfilePage() {
         }
     );
 
+    const { data: boardingRoomData, loading: boardingRoomLoading, error: boardingRoomError } = useQuery<HostBoardingRoomsResponse>(
+        ProfileGQL.QUERIES.GET_HOST_BOARDING_ROOMS,
+        {
+            variables: {
+                userId: isOwnProfile ? '' : userId
+            },
+            skip: selected !== 1 || !userId || (data?.getUserProfile?.role !== 'HOST' && data?.getUserProfile?.role !== 'BOARDER'),
+            fetchPolicy: 'cache-first',
+            onCompleted: (data) => {
+                const rooms = data?.getHostBoardingRooms || [];
+                const roomList = rooms.map(convertToBoardingRoomItem);
+                setAllBoardingRooms(roomList);
+            },
+            onError: (error) => {
+                console.error('하숙집 로드 실패:', error);
+                setAllBoardingRooms([]);
+                showError('하숙집 정보를 불러오는 중 오류가 발생했습니다.');
+            }
+        }
+    );
+
     console.log('게시물 요청 변수:', {
         isOwnProfile,
         userId: isOwnProfile ? '' : (data?.getUserProfile?.userId || ''),
@@ -143,36 +111,45 @@ export default function UserProfilePage() {
         selected
     });
     useEffect(() => {
-      if (data?.getUserProfile) {
-        setIsFollowing(data.getUserProfile.isFollowing);
-        console.log('data?.getUserProfile?.userId:', data.getUserProfile.userId);
-      }
+        if (data?.getUserProfile) {
+            setIsFollowing(data.getUserProfile.isFollowing);
+            console.log('data?.getUserProfile?.userId:', data.getUserProfile.userId);
+        }
     }, [data]);
-    
-      const profile = data?.getUserProfile ?? {
+
+    const profile = data?.getUserProfile ?? {
         postCount: 0,
         followerCount: 0,
         followingCount: 0,
         profile: '',
         userId: '없는 사용자입니다',
         introduce: '소개글이 없습니다.',
-      };
+        role: 'USER',
+    };
 
-      const isValidUser = data?.getUserProfile !== undefined && data?.getUserProfile !== null;
+    const isValidUser = data?.getUserProfile !== undefined && data?.getUserProfile !== null;
+    const isHost = profile.role === 'HOST' || profile.role === 'BOARDER';
 
-      const handleFollowToggle = async () => {
-        try {
-          if (isFollowing) {
-            const success = await unfollowUser(client, userId);
-            if (success) setIsFollowing(false);
-          } else {
-            const success = await followUser(client, userId);
-            if (success) setIsFollowing(true);
-          }
-        } catch (e) {
-          console.error("팔로우 요청 실패:", e);
+    // role이 USER면 게시물 탭(2)으로 초기화
+    useEffect(() => {
+        if (!isHost && selected === 1) {
+            setSelected(2);
         }
-      };
+    }, [isHost, selected]);
+
+    const handleFollowToggle = async () => {
+        try {
+            if (isFollowing) {
+                const success = await unfollowUser(client, userId);
+                if (success) setIsFollowing(false);
+            } else {
+                const success = await followUser(client, userId);
+                if (success) setIsFollowing(true);
+            }
+        } catch (e) {
+            console.error("팔로우 요청 실패:", e);
+        }
+    };
 
     const convertToPostItem = (post: UserPost) => ({
         id: parseInt(post.postId) || Math.random(),
@@ -184,13 +161,39 @@ export default function UserProfilePage() {
         userProfile: profile.profile,
     });
 
+    const convertToBoardingRoomItem = (room: HostBoardingRoom) => {
+        const firstImage = room.boardingRoomFile?.[0];
+        let thumbnailUrl = '/post/post-example.png';
+
+        if (firstImage) {
+            const imageId = firstImage.url || firstImage.fileId;
+            if (imageId && imageId.trim() !== '') {
+                if (imageId.startsWith('http')) {
+                    thumbnailUrl = imageId;
+                } else {
+                    thumbnailUrl = `https://cdn.solvit-nuri.com/file/${imageId}`;
+                }
+            }
+        }
+
+        return {
+            id: firstImage?.roomId || `room_${Math.random()}`,
+            user: userId,
+            title: room.name || '하숙집',
+            region: '지역 정보 없음',
+            price: room.monthlyRent?.toString() || '0',
+            thumbnail: thumbnailUrl,
+            userProfile: profile.profile,
+        };
+    };
+
     const loadMorePosts = useCallback(async () => {
         if (isLoadingMore || !hasMore || allPosts.length === 0) return;
         setIsLoadingMore(true);
         try {
             const result = await fetchMore({
                 variables: {
-                    userPostListReadInput: { 
+                    userPostListReadInput: {
                         userId: isOwnProfile ? '' : (data?.getUserProfile?.userUUID || ''),
                         start: allPosts.length + 1
                     }
@@ -227,13 +230,26 @@ export default function UserProfilePage() {
         };
     }, [loadMorePosts, hasMore, isLoadingMore, allPosts.length]);
 
-    const handleClick = (id: number) => {
-        router.push(`/post/${id}`)
+    const handleClick = (id: string) => {
+        NProgress.start();
+        router.push(`/post/${id}`);
     }
 
     const handleBtnClick = (path: string) => {
         NProgress.start()
         router.push(path)
+    }
+
+    // 로딩 중일 때 스켈레톤 UI 표시
+    if (loading) {
+        return <ProfileSkeleton />;
+    }
+
+    // 로그인 안 된 상태에서 접근 시
+    if (!currentId && !loading) {
+        openLoginModal();
+        router.push('/');
+        return null;
     }
 
     return (
@@ -325,39 +341,44 @@ export default function UserProfilePage() {
                 </S.ProfileMain>
             </S.Profile>
             <S.Side isSelected={selected}>
-                <S.Tab>
-                    <p onClick={() => setSelected(1)}>하숙집</p>
-                </S.Tab>
-                <S.Tab2>
+                {isHost && (
+                    <S.Tab>
+                        <p onClick={() => setSelected(1)}>하숙집</p>
+                    </S.Tab>
+                )}
+                <S.Tab2 style={!isHost ? { marginLeft: '17.2rem' } : {}}>
                     <p onClick={() => setSelected(2)}>게시물</p>
                 </S.Tab2>
             </S.Side>
             <S.PostList>
                 {selected === 1 && (
-                    <S.List1 style={{ minHeight: '400px' }}>
-                        {boardingHouseList.map(post => (
-                            <PostItem
-                                key={post.id}
-                                {...post}
-                                onClick={handleClick}
-                                hideProfile
-                            />
-                        ))}
+                    <S.List1 style={{ minHeight: '400px', marginRight: '50rem' }}>
+                        {allBoardingRooms.length === 0 ? (
+                            <div style={{ padding: '20px', marginRight: '50rem' }}>하숙집이 없습니다.</div>
+                        ) : (
+                            allBoardingRooms.map(room => (
+                                <PostItem
+                                    key={room.id}
+                                    {...room}
+                                    userId={userId}
+                                    onClick={handleClick}
+                                    hideProfile
+                                />
+                            ))
+                        )}
                     </S.List1>
                 )}
                 {selected === 2 && (
                     <S.List2 style={{ minHeight: '400px' }}>
-                        {postLoading ? (
-                            <div style={{ padding: '20px', textAlign: 'center' }}>게시물을 불러오는 중...</div>
-                        ) : allPosts.length === 0 ? (
-                            <div style={{ padding: '20px', textAlign: 'center' }}>게시물이 없습니다.</div>
+                        {allPosts.length === 0 ? (
+                            <div style={{ padding: '20px', textAlign: 'left' }}>게시물이 없습니다.</div>
                         ) : (
                             <>
                                 {allPosts.map(post => (
                                     <Post key={post.id} post={post} />
                                 ))}
                                 {hasMore && (
-                                    <div ref={observerRef} style={{ padding: '20px', textAlign: 'center' }}>
+                                    <div ref={observerRef} style={{ padding: '20px' }}>
                                         {isLoadingMore ? '더 많은 게시물을 불러오는 중...' : ''}
                                     </div>
                                 )}

@@ -73,3 +73,16 @@ export interface BoardingUserRef {
     file: string;
   }
   
+  export interface BoardingHouseSettingRequestDto {
+    name: string;
+    address: string;
+    detailAddress: string;
+    lat: number;
+    lng: number;
+    station: string;
+    university: string;
+    gender: string;
+    mealProvided: boolean;
+    introduce: string;
+    callNumber?: string;
+  }

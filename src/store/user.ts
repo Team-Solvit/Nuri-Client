@@ -14,8 +14,8 @@ type State = {
 	role: string | null;
 	setAuth: (user: LoginUserResponse) => void;
 	clear: () => void;
-	token : string | null;
-	setToken : (token : string) => void;
+	token: string | null;
+	setToken: (token: string) => void;
 };
 
 export const useUserStore = create<State>()(
@@ -30,22 +30,21 @@ export const useUserStore = create<State>()(
 			phoneNumber: null,
 			profile: null,
 			role: null,
+			token: null,
 			setAuth: (user) => {
-		    if (!user) {
-			        console.error('setAuth called with null/undefined user');
-			        return;
-			    }
-		    set({
-			        id: user.id,
-			        userId: user.userId,
-			        country: user.country,
-			        language: user.language,
-			        name: user.name,
-			        email: user.email,
-			        profile: user.profile,
-			        role: user.role,
-			    });
-				},
+				if (!user) return;
+				set({
+					id: user.id,
+					userId: user.userId,
+					country: user.country,
+					language: user.language,
+					name: user.name,
+					email: user.email,
+					phoneNumber: user.phoneNumber,
+					profile: user.profile,
+					role: user.role,
+				});
+			},
 			clear: () =>
 				set({
 					id: null,
@@ -57,14 +56,10 @@ export const useUserStore = create<State>()(
 					phoneNumber: null,
 					profile: null,
 					role: null,
-					token: null
+					token: null,
 				}),
-			token : null,
-			setToken : (token : string) =>
-				set({
-					token : token
-				})
+			setToken: (token: string) => set({ token }),
 		}),
-		{name: 'nuri-user'}
-	)
+		{ name: 'nuri-user' },
+	),
 );

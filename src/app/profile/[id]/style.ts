@@ -60,14 +60,6 @@ export const ProfileImage2 = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.4);
-    z-index: 1;
-  }
 
   ${mq.mobile} {
     width: 31vw;

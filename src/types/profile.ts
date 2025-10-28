@@ -7,6 +7,7 @@ export interface UserProfileResponseDto {
   userUUID: string;
   introduce: string;
   isFollowing: boolean;
+  role: string;
 }
 
 export interface ChangeProfileRequest {
@@ -38,6 +39,22 @@ export interface UserPost {
 
 export interface UserPostListResponse {
   getUserPostList: UserPost[] | null;
+}
+
+export interface BoardingRoomFile {
+  fileId: string;
+  url: string;
+  roomId: string;
+}
+
+export interface HostBoardingRoom {
+  boardingRoomFile: BoardingRoomFile[];
+  name: string;
+  monthlyRent: number;
+}
+
+export interface HostBoardingRoomsResponse {
+  getHostBoardingRooms: HostBoardingRoom[] | null;
 }
 
 // 기존 인터페이스들을 새로운 타입으로 alias

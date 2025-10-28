@@ -25,9 +25,19 @@ export default function ProfilePage() {
     const apolloClient = useApollo();
     const router = useRouter();
     const { success, error } = useAlertStore();
-    const [isClient, setIsClient] = useState(false)
     const [isLoggingOut, setIsLoggingOut] = useState(false)
     const { upload, loading: uploadingImage } = useFileUpload();
+    const [hydrated, setHydrated] = useState(false);
+
+    useEffect(() => {
+        // Zustand 복원 완료 후 실행
+        const unsub = useUserStore.persist.onFinishHydration(() => {
+            setHydrated(true);
+        });
+        setHydrated(true); // 혹시 이미 복원되어 있을 경우 대비
+        return unsub;
+    }, []);
+
 
     const convertToCdnUrl = (uuid: string) => {
         if (!uuid) return '';
@@ -58,13 +68,13 @@ export default function ProfilePage() {
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [userid, setUserid] = useState(userId || '')
     const [nickname, setNickname] = useState(name || '')
-    const [introduction, setIntroduction] = useState('소개글이 없습니다.')
+    const [introduction, setIntroduction] = useState('')
 
     const [initialValues, setInitialValues] = useState({
         profileImg: profile || '',
         userid: userId || '',
         nickname: name || '',
-        introduction: '소개글이 없습니다.'
+        introduction: ''
     })
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [showLeaveModal, setShowLeaveModal] = useState(false);
@@ -72,7 +82,6 @@ export default function ProfilePage() {
     const [isMobile, setIsMobile] = useState(false)
 
     useEffect(() => {
-        setIsClient(true)
         const handleResize = () => {
             setIsMobile(window.innerWidth <= 430)
         }
@@ -93,7 +102,7 @@ export default function ProfilePage() {
 
         if (userId) setUserid(userId);
         if (name) setNickname(name);
-        if (gqlIntro) {
+        if (gqlIntro && gqlIntro !== '소개글이 없습니다.') {
             setIntroduction(gqlIntro);
         }
 
@@ -102,18 +111,20 @@ export default function ProfilePage() {
                 profileImg: convertToCdnUrl(gqlProfile || profile || ''),
                 userid: userId || '',
                 nickname: name || '',
-                introduction: gqlIntro || '소개글이 없습니다.',
+                introduction: (gqlIntro && gqlIntro !== '소개글이 없습니다.') ? gqlIntro : '',
             });
         }
     }, [profile, userId, name, profileData]);
 
 
     useEffect(() => {
-        if (isClient && !id && !isLoggingOut) {
+        if (!hydrated) return;
+        if (typeof window !== 'undefined' && !id && !isLoggingOut) {
             error('로그인이 필요합니다.');
             router.push('/');
         }
-    }, [isClient, id, router, isLoggingOut, error])
+    }, [hydrated, id, router, isLoggingOut, error]);
+
 
 
     const handleLogout = async () => {
@@ -178,22 +189,26 @@ export default function ProfilePage() {
 
             if (updateResult) {
                 success('프로필이 성공적으로 저장되었습니다.');
-                useUserStore.getState().setAuth({
-                    id: id || '',
+                const currentUser = useUserStore.getState();
+                currentUser.setAuth({
+                    id: currentUser.id || '',
                     userId: userid,
-                    country: useUserStore.getState().country || '',
+                    country: currentUser.country || '',
+                    language: currentUser.language || '',
                     name: nickname,
-                    email: email || '',
+                    email: currentUser.email || '',
+                    phoneNumber: currentUser.phoneNumber || '',
                     profile: profileImg,
-                    role: useUserStore.getState().role || '',
-                    language: useUserStore.getState().language || ''
+                    role: currentUser.role || '',
                 });
+
                 setInitialValues({
                     profileImg,
                     userid,
                     nickname,
                     introduction
                 });
+                router.push('/profile');
             } else {
                 error('프로필 저장에 실패했습니다.');
             }
@@ -249,7 +264,7 @@ export default function ProfilePage() {
                     <S.ProfileInfo>
                         <S.Button>
                             <S.NameInput
-                                placeholder="이름"
+                                placeholder="아이디"
                                 value={userid}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUserid(e.target.value)}
                             />
