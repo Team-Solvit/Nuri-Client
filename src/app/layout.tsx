@@ -9,6 +9,7 @@ import Alert from "@/components/ui/alert";
 import MessageAlert from "@/components/ui/messageAlert";
 import AuthBootstrap from "@/components/layout/AuthBootstrap";
 import Loading from "@/components/ui/loading";
+import { headers } from 'next/headers';
 
 
 export const metadata: Metadata = {
@@ -17,24 +18,25 @@ export const metadata: Metadata = {
 };
 
 
-export default function RootLayout({ children, modal }: { children: React.ReactNode, modal: React.ReactNode }) {
+export default async function RootLayout({ children, modal }: { children: React.ReactNode, modal: React.ReactNode }) {
+	const nonce = (await headers()).get('x-nonce') ?? '';
 	return (
 		<html lang="ko">
 		<head>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 			<meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-			<meta httpEquiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
-			<meta httpEquiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()" />
 			<meta name="format-detection" content="telephone=no, address=no, email=no" />
 			<meta name="theme-color" content="#FF4C61" />
 			<meta name="robots" content="index, follow" />
 			<meta property="og:type" content="website" />
 			<meta property="og:title" content="NURI" />
 			<meta property="og:description" content="유학생을 위한 한국 문화 교류/적응 서비스" />
-			<meta property="og:image" content="og.png" />
+			<meta property="og:image" content="https://solvit-nuri.com/og.png" />
 			<meta property="og:url" content="https://solvit-nuri.com/" />
-			<meta name="twitter:card" content="op.png" />
+			<meta name="twitter:card" content="summary_large_image" />
+			<meta name="twitter:image" content="https://solvit-nuri.com/op.png" />
 			<meta name="google-site-verification" content="4mbr6batT4ll6nkqWnfo479cEFCpleGzuoT9jswmIwg" />
+			<script nonce={nonce} dangerouslySetInnerHTML={{ __html: `console.log('Hello with nonce')` }} />
 		</head>
 		<body style={{ display: "flex" }}>
 		<TopLoadingBar />

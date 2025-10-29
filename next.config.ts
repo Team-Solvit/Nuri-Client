@@ -1,8 +1,5 @@
 import type { NextConfig } from "next";
 
-const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || "";
-const API_BASE_URL = GRAPHQL_ENDPOINT.replace(/\/graphql$/, "");
-const WS_URL = `wss://${API_BASE_URL.replace(/^https?:\/\//, "")}`;
 
 const nextConfig: NextConfig = {
 	output: "standalone",
@@ -62,7 +59,6 @@ const nextConfig: NextConfig = {
 	eslint: { ignoreDuringBuilds: true },
 	typescript: { ignoreBuildErrors: true },
 	
-	// ✅ [보안 헤더 추가]
 	async headers() {
 		return [
 			{
@@ -86,22 +82,8 @@ const nextConfig: NextConfig = {
 							"camera=(), microphone=(), geolocation=(), interest-cohort=()", // 불필요한 권한 차단
 					},
 					{
-						key: "Content-Security-Policy",
-						value: `
-              default-src 'self';
-              script-src 'self' 'unsafe-inline' 'unsafe-eval';
-              style-src 'self' 'unsafe-inline';
-              img-src 'self' data: https:;
-              connect-src 'self' ${API_BASE_URL} ${WS_URL} https:;
-              font-src 'self' https: data:;
-              object-src 'none';
-              base-uri 'none';
-              frame-ancestors 'none';
-            `.replace(/\s+/g, ' ').trim(),
-					},
-					{
 						key: "Strict-Transport-Security",
-						value: "max-age=31536000; includeSubDomains; preload"
+						value: "max-age=31536000; includeSubDomains"
 					},
 				],
 			},
