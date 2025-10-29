@@ -8,6 +8,8 @@ import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 import { useUserStore } from '@/store/user'
 import { useLoginModalStore } from '@/store/loginModal';
 import { imageCheck } from '@/utils/imageCheck';
+import LoginModal from '@/components/layout/loginModal';
+import Login from '@/components/ui/login';
 
 const MENU_ITEMS = [
 	{ label: '홈', path: '/', icon: '/icons/home.svg', order: 0 },
@@ -200,6 +202,11 @@ export default function Header() {
 					<span>신고하기</span>
 				</S.Report>
 			</S.HeaderBottom>
+			{loginModal.isOpen && (
+				<LoginModal>
+					<Login />
+				</LoginModal>
+			)}
 		</S.HeaderContainer>
 	)
 }

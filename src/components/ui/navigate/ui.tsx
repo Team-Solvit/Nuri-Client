@@ -7,8 +7,6 @@ import Home from "@/assets/icon/house.svg"
 import Message from "@/assets/icon/message.svg"
 import * as S from "./style";
 import {useUserStore} from "@/store/user";
-import Login from "../login";
-import LoginModal from "@/components/layout/loginModal";
 import {useLoginModalStore} from "@/store/loginModal";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import { AlertQueries } from "@/services/alert";
@@ -19,7 +17,7 @@ export default function Navigate() {
 	
 	const pathname = usePathname();
 	const {id, role} = useUserStore();
-	const {isOpen, open} = useLoginModalStore();
+	const {open} = useLoginModalStore();
 	const isHome = pathname === "/";
 	const NAVIGATE_ITEMS = [
 		{
@@ -148,11 +146,6 @@ export default function Navigate() {
 						)
 					})}
 				</S.BtnBox>
-				{isOpen && (
-					<LoginModal>
-						<Login/>
-					</LoginModal>
-				)}
 			</S.NavigateContainer>
 			{isHome && role === "USER" && <S.HostCard>
         <S.HostTextBox>
