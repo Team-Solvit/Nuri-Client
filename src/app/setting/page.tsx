@@ -11,6 +11,7 @@ import { ProfileGQL } from '@/services/profile';
 import { useUserStore } from '@/store/user';
 import { AuthService } from '@/services/auth';
 import { useApollo } from '@/lib/apolloClient';
+import { clearAccessToken } from '@/utils/token';
 import { useRouter } from 'next/navigation';
 import Logout from '@/components/ui/logout';
 import Leave from '@/components/ui/leave';
@@ -42,7 +43,13 @@ export default function SettingPage() {
         setIsLoggingOut(true)
         try {
             await AuthService.logout(apolloClient);
+            // clear local access token and Apollo cache
+            clearAccessToken();
+            await apolloClient.clearStore();
+            // clear persisted user store
             clear();
+            // remove persisted zustand storage key
+            try { localStorage.removeItem('nuri-user'); } catch (e) { /* ignore */ }
             success('로그아웃되었습니다.');
             router.push('/');
         } catch (err) {

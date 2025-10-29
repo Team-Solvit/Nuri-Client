@@ -1,4 +1,4 @@
-'use client'
+ 'use client'
 
 import React from "react";
 import * as S from "./style";
@@ -16,6 +16,7 @@ import { HostService, HostGQL } from "@/services/host";
 import { useAlertStore } from "@/store/alert";
 import { BoardingHouseSettingRequestDto } from "@/types/boarding";
 import Alert from "@/components/ui/alert";
+import { clearAccessToken } from '@/utils/token';
 import { AuthService } from "@/services/auth";
 import { useRouter } from "next/navigation";
 
@@ -65,12 +66,12 @@ export default function Host() {
     mealProvided: true,
   });
 
-  // 기존 하숙집 정보 불러오기
+  // 기존 하숙집 정보 불러오기 - role이 HOST이거나 로컬에 완료 플래그가 있을 때만 시도
   const { data: boardingRoomData, loading: boardingRoomLoading } = useQuery<HostBoardingRoomsResponse>(
     HostGQL.QUERIES.GET_HOST_BOARDING_ROOMS,
     {
       variables: { userId: userId || '' },
-      skip: !userId || !isPhoneVerified,
+      skip: !userId || !isPhoneVerified || (role !== 'HOST' && !localStorage.getItem('hostSettingCompleted')),
       fetchPolicy: 'network-only',
       onCompleted: (data) => {
         console.log('하숙집 데이터 로드 완료:', data);
@@ -100,6 +101,12 @@ export default function Host() {
       },
       onError: (error) => {
         console.error('하숙집 정보 로드 실패:', error);
+        // "존재하지 않습니다" 에러는 정상 케이스(첫 설정)이므로 조용히 처리
+        const errMsg = error?.message || '';
+        if (!errMsg.includes('존재하지 않습니다')) {
+          // 다른 종류의 에러만 사용자에게 표시
+          showError('하숙집 정보를 불러오는 중 오류가 발생했습니다.');
+        }
       }
     }
   );
@@ -123,17 +130,18 @@ export default function Host() {
     
     // role이 HOST인 경우 자동으로 인증된 것으로 처리
     if (role === 'HOST') {
-      console.log('User is already a HOST, auto-verifying phone');
+      console.log('User is a HOST, auto-verifying phone');
       setIsPhoneVerified(true);
       setVerifiedPhoneNumber(phoneNumber || '인증 완료');
       return;
     }
 
+    // role이 HOST가 아니지만 로컬스토리지에 hostPhoneNumber가 있으면 복원
     const savedPhoneVerified = localStorage.getItem('hostPhoneVerified');
     const savedPhoneNumber = localStorage.getItem('hostPhoneNumber');
     
     if (savedPhoneVerified === 'true' && savedPhoneNumber) {
-      console.log('Restoring phone verification from localStorage');
+      console.log('Restoring host phone verification from localStorage');
       setIsPhoneVerified(true);
       setVerifiedPhoneNumber(savedPhoneNumber);
     }
@@ -151,7 +159,16 @@ export default function Host() {
     setIsLoggingOut(true)
     try {
       await AuthService.logout(apolloClient);
-      clear();
+      // clear local access token and Apollo cache
+      try {
+        clearAccessToken();
+        await apolloClient.clearStore();
+      } catch (e) {
+        console.error('Error clearing client state on logout:', e);
+      }
+      // clear persisted user store
+  clear();
+  try { localStorage.removeItem('nuri-user'); } catch (e) { /* ignore */ }
       success('로그아웃되었습니다.');
       router.push('/');
     } catch (err) {

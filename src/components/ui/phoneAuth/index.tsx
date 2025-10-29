@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import * as S from './sytle';
 import Square from '../button/square'
 import { useApollo } from '@/lib/apolloClient'
+import { useRouter } from 'next/navigation'
 import { gql } from '@apollo/client'
 
 interface PhoneAuthProps {
@@ -35,6 +36,7 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
   const [generatedCode, setGeneratedCode] = useState('')
   const [smsLink, setSmsLink] = useState('')
   const apolloClient = useApollo()
+  const router = useRouter()
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 430)
@@ -153,7 +155,22 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
       }
     } catch (error: any) {
       console.error('인증 실패:', error)
-      alert(error?.message || '인증 중 오류가 발생했습니다. 다시 시도해주세요.')
+      const errMsg =
+        (error?.graphQLErrors && error.graphQLErrors[0]?.message) ||
+        error?.message ||
+        ''
+
+      if (typeof errMsg === 'string' && errMsg.includes('존재하지 않습니다')) {
+        // 서버가 "존재하지 않습니다" 오류를 반환하면 호스트 설정이 필요함을 안내하고 해당 페이지로 이동
+        alert('호스트(하숙집) 정보가 없습니다. 먼저 호스트 설정에서 하숙집 정보를 등록해 주세요. 이동합니다.');
+        try {
+          router.push(role === 'HOST' ? '/setting/host' : '/setting/boarder');
+        } catch (e) {
+          console.error('라우팅 실패:', e);
+        }
+      } else {
+        alert(errMsg || '인증 중 오류가 발생했습니다. 다시 시도해주세요.');
+      }
     } finally {
       setIsVerifying(false)
     }

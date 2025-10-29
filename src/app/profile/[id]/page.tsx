@@ -35,11 +35,13 @@ export default function UserProfilePage() {
     const [showFollowerModal, setShowFollowerModal] = useState(false);
     const [showFollowModal, setShowFollowModal] = useState(false);
     const [isFollowing, setIsFollowing] = useState(false);
+    const [isFollowLoading, setIsFollowLoading] = useState(false);
     const [allPosts, setAllPosts] = useState<any[]>([]);
     const [allBoardingRooms, setAllBoardingRooms] = useState<any[]>([]);
     const [hasMore, setHasMore] = useState(true);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const observerRef = useRef<HTMLDivElement>(null);
+
 
     const isOwnProfile = currentUserId === userId;
 
@@ -48,8 +50,8 @@ export default function UserProfilePage() {
             router.replace('/profile');
         }
     }, [isOwnProfile, router]);
-
-    const { data, loading, error } = useQuery<{ getUserProfile: UserProfileResponseDto }>(
+    
+    const { data, loading, error, refetch } = useQuery<{ getUserProfile: UserProfileResponseDto }>(
         ProfileGQL.QUERIES.GET_USER_PROFILE,
         {
             variables: { userId },
@@ -57,6 +59,7 @@ export default function UserProfilePage() {
             fetchPolicy: 'network-only',
         }
     );
+
 
     const { data: postData, loading: postLoading, error: postError, fetchMore } = useQuery<UserPostListResponse>(
         ProfileGQL.QUERIES.GET_USER_POST_LIST,
@@ -89,7 +92,8 @@ export default function UserProfilePage() {
             variables: {
                 userId: isOwnProfile ? '' : userId
             },
-            skip: selected !== 1 || !userId || (data?.getUserProfile?.role !== 'HOST' && data?.getUserProfile?.role !== 'BOARDER'),
+            // 하숙집 정보는 오직 HOST 역할에서만 조회합니다.
+            skip: selected !== 1 || !userId || data?.getUserProfile?.role !== 'HOST',
             fetchPolicy: 'cache-first',
             onCompleted: (data) => {
                 const rooms = data?.getHostBoardingRooms || [];
@@ -128,9 +132,8 @@ export default function UserProfilePage() {
     };
 
     const isValidUser = data?.getUserProfile !== undefined && data?.getUserProfile !== null;
-    const isHost = profile.role === 'HOST' || profile.role === 'BOARDER';
+    const isHost = profile.role === 'HOST';
 
-    // role이 USER면 게시물 탭(2)으로 초기화
     useEffect(() => {
         if (!isHost && selected === 1) {
             setSelected(2);
@@ -138,16 +141,133 @@ export default function UserProfilePage() {
     }, [isHost, selected]);
 
     const handleFollowToggle = async () => {
+        if (isFollowLoading) return;
+        setIsFollowLoading(true);
+
+        const prevFollowing = isFollowing;
+
+        let prevProfileData: any = null;
         try {
-            if (isFollowing) {
-                const success = await unfollowUser(client, userId);
-                if (success) setIsFollowing(false);
+            prevProfileData = client.readQuery({
+                query: ProfileGQL.QUERIES.GET_USER_PROFILE,
+                variables: { userId },
+            });
+        } catch (e) {
+            prevProfileData = null;
+        }
+
+        setIsFollowing(!prevFollowing);
+        if (prevProfileData && prevProfileData.getUserProfile) {
+            const currentCount = prevProfileData.getUserProfile.followerCount || 0;
+            const newCount = prevFollowing ? Math.max(0, currentCount - 1) : currentCount + 1;
+            try {
+                client.writeQuery({
+                    query: ProfileGQL.QUERIES.GET_USER_PROFILE,
+                    variables: { userId },
+                    data: {
+                        getUserProfile: {
+                            ...prevProfileData.getUserProfile,
+                            followerCount: newCount,
+                            isFollowing: !prevFollowing,
+                        }
+                    }
+                });
+            } catch (e) {
+                console.warn('캐시 낙관적 업데이트 실패:', e);
+            }
+        }
+
+        try {
+            if (prevFollowing) {
+                await unfollowUser(client, userId);
             } else {
-                const success = await followUser(client, userId);
-                if (success) setIsFollowing(true);
+                await followUser(client, userId);
+            }
+            let serverIsFollowing: boolean | null = null;
+            try {
+                const refetchResult = await refetch();
+                serverIsFollowing = refetchResult?.data?.getUserProfile?.isFollowing ?? null;
+            } catch (e) {
+                console.warn('프로필 리프레시 실패:', e);
+            }
+
+            if (typeof serverIsFollowing === 'boolean') {
+                if (serverIsFollowing !== !prevFollowing) {
+                    showError(prevFollowing ? '언팔로우에 실패했습니다.' : '팔로우에 실패했습니다.');
+                    setIsFollowing(prevFollowing);
+                    if (prevProfileData && prevProfileData.getUserProfile) {
+                        try {
+                            client.writeQuery({
+                                query: ProfileGQL.QUERIES.GET_USER_PROFILE,
+                                variables: { userId },
+                                data: { getUserProfile: prevProfileData.getUserProfile }
+                            });
+                        } catch (err) {
+                            console.warn('캐시 롤백 실패:', err);
+                        }
+                    }
+                } else {
+                }
+            } else {
+                try {
+                    const fresh = await client.query({
+                        query: ProfileGQL.QUERIES.GET_USER_PROFILE,
+                        variables: { userId },
+                        fetchPolicy: 'network-only',
+                    });
+                    const freshFollowing = fresh?.data?.getUserProfile?.isFollowing;
+                    if (typeof freshFollowing === 'boolean') {
+                        if (freshFollowing !== !prevFollowing) {
+                            showError(prevFollowing ? '언팔로우에 실패했습니다.' : '팔로우에 실패했습니다.');
+                            setIsFollowing(prevFollowing);
+                            if (prevProfileData && prevProfileData.getUserProfile) {
+                                try {
+                                    client.writeQuery({
+                                        query: ProfileGQL.QUERIES.GET_USER_PROFILE,
+                                        variables: { userId },
+                                        data: { getUserProfile: prevProfileData.getUserProfile }
+                                    });
+                                } catch (err) {
+                                    console.warn('캐시 롤백 실패:', err);
+                                }
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.warn('프로필 강제 조회 실패:', err);
+                    showError('팔로우 상태를 확인할 수 없습니다. 잠시 후 다시 시도해주세요.');
+                    setIsFollowing(prevFollowing);
+                    if (prevProfileData && prevProfileData.getUserProfile) {
+                        try {
+                            client.writeQuery({
+                                query: ProfileGQL.QUERIES.GET_USER_PROFILE,
+                                variables: { userId },
+                                data: { getUserProfile: prevProfileData.getUserProfile }
+                            });
+                        } catch (err2) {
+                            console.warn('캐시 롤백 실패:', err2);
+                        }
+                    }
+                }
             }
         } catch (e) {
-            console.error("팔로우 요청 실패:", e);
+            console.error('팔로우 요청 실패:', e);
+            showError('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            // 롤백
+            setIsFollowing(prevFollowing);
+            if (prevProfileData && prevProfileData.getUserProfile) {
+                try {
+                    client.writeQuery({
+                        query: ProfileGQL.QUERIES.GET_USER_PROFILE,
+                        variables: { userId },
+                        data: { getUserProfile: prevProfileData.getUserProfile }
+                    });
+                } catch (err) {
+                    console.warn('캐시 롤백 실패:', err);
+                }
+            }
+        } finally {
+            setIsFollowLoading(false);
         }
     };
 
@@ -240,7 +360,6 @@ export default function UserProfilePage() {
         router.push(path)
     }
 
-    // 로딩 중일 때 스켈레톤 UI 표시
     if (loading) {
         return <ProfileSkeleton />;
     }
@@ -309,7 +428,7 @@ export default function UserProfilePage() {
                                         <Square
                                             text={isFollowing ? "언팔로우" : "팔로우"}
                                             status={!isFollowing}
-                                            onClick={handleFollowToggle}
+                                            onClick={isFollowLoading ? undefined : handleFollowToggle}
                                             width="120px"
                                         />
                                         <Square
@@ -340,21 +459,21 @@ export default function UserProfilePage() {
                     <S.introduction>{profile.introduce}</S.introduction>
                 </S.ProfileMain>
             </S.Profile>
-            <S.Side isSelected={selected}>
-                {isHost && (
+            {isHost && (
+                <S.Side isSelected={selected}>
                     <S.Tab>
                         <p onClick={() => setSelected(1)}>하숙집</p>
                     </S.Tab>
-                )}
-                <S.Tab2 style={!isHost ? { marginLeft: '17.2rem' } : {}}>
-                    <p onClick={() => setSelected(2)}>게시물</p>
-                </S.Tab2>
-            </S.Side>
+                    <S.Tab2>
+                        <p onClick={() => setSelected(2)}>게시물</p>
+                    </S.Tab2>
+                </S.Side>
+            )}
             <S.PostList>
                 {selected === 1 && (
-                    <S.List1 style={{ minHeight: '400px', marginRight: '50rem' }}>
+                    <S.List1 style={{ minHeight: '400px' }}>
                         {allBoardingRooms.length === 0 ? (
-                            <div style={{ padding: '20px', marginRight: '50rem' }}>하숙집이 없습니다.</div>
+                            <div style={{ padding: '20px' }}>하숙집이 없습니다.</div>
                         ) : (
                             allBoardingRooms.map(room => (
                                 <PostItem

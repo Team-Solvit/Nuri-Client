@@ -12,6 +12,7 @@ import Square from '@/components/ui/button/square'
 import { useUserStore } from '@/store/user'
 import { AuthService } from '@/services/auth';
 import { useApollo } from '@/lib/apolloClient';
+import { clearAccessToken } from '@/utils/token';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@apollo/client';
 import { ProfileGQL, updateProfile } from '@/services/profile';
@@ -130,10 +131,19 @@ export default function ProfilePage() {
     const handleLogout = async () => {
         setIsLoggingOut(true)
         try {
-            await AuthService.logout(apolloClient);
-            clear();
-            success('로그아웃되었습니다.');
-            router.push('/');
+                await AuthService.logout(apolloClient);
+                // clear local access token and Apollo cache
+                try {
+                    clearAccessToken();
+                    await apolloClient.clearStore();
+                } catch (e) {
+                    console.error('Error clearing client state on logout:', e);
+                }
+                // clear persisted user store
+                clear();
+                try { localStorage.removeItem('nuri-user'); } catch (e) { /* ignore */ }
+                success('로그아웃되었습니다.');
+                router.push('/');
         } catch (err) {
             console.error('로그아웃 실패:', err);
             error('로그아웃 중 오류가 발생했습니다.');

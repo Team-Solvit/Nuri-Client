@@ -11,6 +11,7 @@ import { useApollo } from '@/lib/apolloClient'
 import { AuthService } from '@/services/auth'
 import { useAlertStore } from '@/store/alert'
 import { useRouter } from 'next/navigation'
+import { clearAccessToken } from '@/utils/token'
 
 interface LeaveModalProps {
     onLeave: () => void
@@ -65,6 +66,13 @@ export default function Leave({ onLeave, onClose }: LeaveModalProps) {
             const success = await AuthService.withdrawUser(apolloClient, emailState.ticket)
             if (success) {
                 alertStore.success('회원탈퇴가 완료되었습니다.')
+                // clear Apollo cache and all localStorage
+                try {
+                    await apolloClient.clearStore()
+                    localStorage.clear() // 전체 localStorage 삭제
+                } catch (e) {
+                    console.error('Error clearing client state after withdraw:', e)
+                }
                 clear()
                 setTimeout(() => {
                     router.push('/')

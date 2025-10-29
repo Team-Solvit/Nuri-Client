@@ -26,6 +26,7 @@ export default function MyProfilePage() {
   const { id, userId, name, profile: userProfile } = useUserStore(s => s);
   const { error: showError } = useAlertStore();
   const { open: openLoginModal } = useLoginModalStore();
+  const [hydrated, setHydrated] = useState(false);
 
 
   const [selected, setSelected] = useState(1);
@@ -36,11 +37,20 @@ export default function MyProfilePage() {
   const observerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const unsub = useUserStore.persist.onFinishHydration(() => {
+      setHydrated(true);
+    });
+    setHydrated(true);
+    return unsub;
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
     if (!id || !userId) {
       openLoginModal();
       router.push('/');
     }
-  }, [id, userId, openLoginModal, router]);
+  }, [hydrated, id, userId, openLoginModal, router]);
 
   const { data, loading, error } = useQuery<{ getUserProfile: UserProfileResponseDto }>(
     ProfileGQL.QUERIES.GET_USER_PROFILE,
@@ -61,14 +71,21 @@ export default function MyProfilePage() {
     role: 'USER',
   };
 
-  const isHost = profile.role === 'HOST' || profile.role === 'BOARDER';
+  // 탭은 오직 HOST 역할에서만 보이도록 합니다.
+  const isHost = profile.role === 'HOST';
 
-  // role이 USER면 게시물 탭(2)으로 초기화
+  // 초기 선택 탭을 서버에서 받은 role에 따라 설정합니다 (한 번만).
+  const [initialSelectedSet, setInitialSelectedSet] = useState(false);
   useEffect(() => {
-    if (!isHost && selected === 1) {
+    if (initialSelectedSet) return;
+    if (!data?.getUserProfile) return;
+    if (data.getUserProfile.role === 'HOST') {
+      setSelected(1);
+    } else {
       setSelected(2);
     }
-  }, [isHost, selected]);
+    setInitialSelectedSet(true);
+  }, [initialSelectedSet, data?.getUserProfile]);
 
   const { data: postData, loading: postLoading, error: postError, fetchMore } = useQuery<UserPostListResponse>(
     ProfileGQL.QUERIES.GET_USER_POST_LIST,
@@ -97,7 +114,8 @@ export default function MyProfilePage() {
       variables: {
         userId: userId || ''
       },
-      skip: selected !== 1 || !userId || (data?.getUserProfile?.role !== 'HOST' && data?.getUserProfile?.role !== 'BOARDER'),
+      // 하숙집 정보는 오직 HOST 역할에서만 조회합니다.
+      skip: selected !== 1 || !userId || data?.getUserProfile?.role !== 'HOST',
       fetchPolicy: 'cache-first',
     }
   );
@@ -337,16 +355,16 @@ export default function MyProfilePage() {
         </S.ProfileMain>
       </S.Profile>
 
-      <S.Side isSelected={selected}>
-        {isHost && (
+      {isHost ? (
+        <S.Side isSelected={selected}>
           <S.Tab>
             <p onClick={() => setSelected(1)}>하숙집</p>
           </S.Tab>
-        )}
-        <S.Tab2 style={!isHost ? { marginLeft: '24rem' } : {}}>
-          <p onClick={() => setSelected(2)}>게시물</p>
-        </S.Tab2>
-      </S.Side>
+          <S.Tab2>
+            <p onClick={() => setSelected(2)}>게시물</p>
+          </S.Tab2>
+        </S.Side>
+      ) : null}
 
       <S.PostList>
         {selected === 1 && (

@@ -15,6 +15,7 @@ import Alert from "@/components/ui/alert";
 import { useApolloClient } from "@apollo/client";
 import { AuthService } from "@/services/auth";
 import { useRouter } from "next/navigation";
+import { clearAccessToken } from '@/utils/token';
 
 export default function Boarder() {
   const userStore = useUserStore(s => s);
@@ -40,24 +41,20 @@ export default function Boarder() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // 새로고침 시 휴대폰 인증 상태 복원 & 하숙생인 경우 자동으로 인증 상태로 설정
   useEffect(() => {
     console.log('Current role:', role);
     console.log('Current phoneNumber:', phoneNumber);
-    
-    // role이 BOARDER인 경우 자동으로 인증된 것으로 처리
     if (role === 'BOARDER') {
-      console.log('User is already a BOARDER, auto-verifying phone');
+      console.log('User is a BOARDER, auto-verifying phone');
       setIsPhoneVerified(true);
       setVerifiedPhoneNumber(phoneNumber || '인증 완료');
       return;
     }
-
     const savedPhoneVerified = localStorage.getItem('boarderPhoneVerified');
     const savedPhoneNumber = localStorage.getItem('boarderPhoneNumber');
     
     if (savedPhoneVerified === 'true' && savedPhoneNumber) {
-      console.log('Restoring phone verification from localStorage');
+      console.log('Restoring boarder phone verification from localStorage');
       setIsPhoneVerified(true);
       setVerifiedPhoneNumber(savedPhoneNumber);
     }
@@ -67,7 +64,15 @@ export default function Boarder() {
     setIsLoggingOut(true)
     try {
       await AuthService.logout(apolloClient);
-      clear();
+      // clear local access token and Apollo cache
+      try {
+        clearAccessToken();
+        await apolloClient.clearStore();
+      } catch (e) {
+        console.error('Error clearing client state on logout:', e);
+      }
+  clear();
+  try { localStorage.removeItem('nuri-user'); } catch (e) { /* ignore */ }
       success('로그아웃되었습니다.');
       router.push('/');
     } catch (err) {
@@ -83,7 +88,6 @@ export default function Boarder() {
     setVerifiedPhoneNumber(callNumber);
     setShowPhoneAuth(false);
     
-    // localStorage에 인증 상태 저장
     localStorage.setItem('boarderPhoneVerified', 'true');
     localStorage.setItem('boarderPhoneNumber', callNumber);
     
