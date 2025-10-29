@@ -403,7 +403,7 @@ export default function AdditionRoom({ isAddition, setIsAddition, iconRef, type,
 					disabled={
 						selectedUsers.length === 0 ||
 						loading ||
-						(type === "add" && selectedUsers.length !== 1 && !roomName.trim())
+						(type === "add" && selectedUsers.length < 2 && !roomName.trim())
 					}
 				>
 					{loading

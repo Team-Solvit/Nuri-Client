@@ -1,3 +1,5 @@
+import { error } from "console";
+
 export const imageService = {
 	upload: async (files: File[]) => {
 		try {
@@ -14,8 +16,8 @@ export const imageService = {
 
 			const data = await res.json();
 			return data;
-		} catch (err) {
-			throw err;
+		} catch {
+			error('이미지 업로드 중 오류가 발생했습니다.');
 		}
 	},
 };

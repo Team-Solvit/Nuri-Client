@@ -9,6 +9,7 @@ import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 import { useLoadingEffect } from "@/hooks/useLoading";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import AlertScrollSkeleton from "@/components/ui/skeleton/AlertScrollSkeleton";
+import { error } from "console";
 
 export const AlertBox = ({ alert }: { alert: AlertType }) => {
 	const navigate = useNavigationWithProgress();
@@ -19,7 +20,9 @@ export const AlertBox = ({ alert }: { alert: AlertType }) => {
 	const checkAlert = useCallback(async () => {
 		try {
 			await mutate();
-		} catch { }
+		} catch {
+			error('알림 확인 처리에 실패했습니다.');
+		}
 	}, [mutate]);
 
 	useEffect(() => {

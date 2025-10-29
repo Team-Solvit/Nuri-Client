@@ -16,7 +16,7 @@ interface ExplorePostListProps {
 
 export default function ExplorePostList({ searchFilter }: ExplorePostListProps) {
   const navigate = useNavigationWithProgress();
-  const { success } = useAlertStore();
+  const { success, error } = useAlertStore();
   const [debouncedFilter, setDebouncedFilter] = useState<BoardingRoomSearchFilter>(searchFilter);
   const [allPosts, setAllPosts] = useState<PostItemData[]>([]);
   const [hasMore, setHasMore] = useState(true);
@@ -42,7 +42,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     return () => clearTimeout(timer);
   }, [searchFilter]);
 
-  const { data, loading, error, fetchMore } = useQuery(SEARCH_BOARDING_ROOM, {
+  const { data, loading, fetchMore } = useQuery(SEARCH_BOARDING_ROOM, {
     variables: {
       boardingRoomSearchFilter: { ...debouncedFilter, start: 0 }
     },
@@ -59,6 +59,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
       }
     },
     onError: () => {
+      error('게시물 목록을 불러오는 중 오류가 발생했습니다.');
       setHasMore(false);
     }
   });
@@ -163,7 +164,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
 
   const isInitialLoading = loading && !isInitialized;
 
-  if (error && !isInitialized) {
+  if (!isInitialized) {
     return (
       <S.PostList>
         <div>검색 중 오류가 발생했습니다. 다시 시도해주세요.</div>
