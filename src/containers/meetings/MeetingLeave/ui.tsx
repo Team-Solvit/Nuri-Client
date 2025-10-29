@@ -35,7 +35,7 @@ export default function MeetingLeave() {
 						<S.Name>취소</S.Name>
 					</S.CancelBtn>
 					<Square
-						text={loading ? "로딩중..." : "탈퇴"}
+						text={"탈퇴"}
 						onClick={handleLeave}
 						status={!loading}
 						width={"100%"}

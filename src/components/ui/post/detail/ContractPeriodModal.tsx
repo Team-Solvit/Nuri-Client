@@ -16,7 +16,7 @@ export default function ContractPeriodModal({ periods, onConfirm, onClose }: Pro
   const uniqueSorted = useMemo(() => Array.from(new Set(periods)).sort((a, b) => a - b), [periods]);
   const [step, setStep] = useState<'select' | 'confirm'>('select');
   const [selectedPeriod, setSelectedPeriod] = useState<number | null>(null);
-
+	const [isLoading, setIsLoading] = useState(false);
   const handlePeriodSelect = (period: number) => {
     setSelectedPeriod(period);
     setStep('confirm');

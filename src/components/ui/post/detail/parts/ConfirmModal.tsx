@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Modal from "@/components/layout/modal";
 import * as S from "../style";
 import Square from "@/components/ui/button/square";
@@ -48,7 +48,6 @@ export default function ConfirmModal({
               onClick={onCancel}
               status={false}
               width="max-content"
-              isLoading={isLoading}
             />
             <Square
               text={confirmText}
