@@ -23,7 +23,6 @@ export default function LanguagePage() {
     }, [])
 
     const handleLogout = () => {
-        console.log('로그아웃 처리 완료')
         setShowLogoutModal(false)
     }
 
@@ -76,7 +75,6 @@ export default function LanguagePage() {
             {showLeaveModal && (
                 <Leave
                     onLeave={() => {
-                        console.log('회원탈퇴 처리 완료')
                         setShowLeaveModal(false)
                     }}
                     onClose={() => setShowLeaveModal(false)}

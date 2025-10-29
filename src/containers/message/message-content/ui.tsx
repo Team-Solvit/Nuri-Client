@@ -2,39 +2,39 @@
 
 import * as S from "./style"
 import Image from "next/image"
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Reply from "@/assets/icon/reply.svg"
 import Plus from "@/assets/icon/plus.svg";
 import ContractModal from "@/containers/message/contract-modal/ui"
 import RoomTourModal from "@/containers/message/roomtour-modal/ui"
 import Square from '@/components/ui/button/square';
-import {useModalStore} from "@/store/modal"
-import {messageType, useMessageModalStore} from "@/store/messageModal"
+import { useModalStore } from "@/store/modal"
+import { messageType, useMessageModalStore } from "@/store/messageModal"
 import BasicMessage from "@/components/ui/message/BasicMessage";
 import ReplyMessage from "@/components/ui/message/ReplyMessage";
 import ImageMessage from "@/components/ui/message/ImageMessage";
 import RoomTourMessage from "@/components/ui/message/RoomTourMessage";
 import ContractMessage from "@/components/ui/message/ContractMessage";
-import {useParams} from "next/navigation";
-import {useQuery} from "@apollo/client";
-import {MessageQueries} from "@/services/message";
-import {useUserStore} from "@/store/user";
-import {formatKoreanDateTime} from "@/utils/formatKoreanDateTime"
-import type {ChatMessage, ChatReadMessageResponse} from "@/containers/message/message-content/type";
-import {useMessageReflectStore} from "@/store/messageReflect";
-import {scrollToBottom} from "@/utils/scrollToBottom";
-import {useMessageReplyStore} from "@/store/messageReply";
-import {imageCheck} from "@/utils/imageCheck";
-import {messageRequestCheck} from "@/utils/messageRequestCheck";
-import {Contract, RoomTour} from "@/types/message";
-import {useMessageContentReadFetchStore} from "@/store/messageContentReadFetch";
-import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import { useParams } from "next/navigation";
+import { useQuery } from "@apollo/client";
+import { MessageQueries } from "@/services/message";
+import { useUserStore } from "@/store/user";
+import { formatKoreanDateTime } from "@/utils/formatKoreanDateTime"
+import type { ChatMessage, ChatReadMessageResponse } from "@/containers/message/message-content/type";
+import { useMessageReflectStore } from "@/store/messageReflect";
+import { scrollToBottom } from "@/utils/scrollToBottom";
+import { useMessageReplyStore } from "@/store/messageReply";
+import { imageCheck } from "@/utils/imageCheck";
+import { messageRequestCheck } from "@/utils/messageRequestCheck";
+import { Contract, RoomTour } from "@/types/message";
+import { useMessageContentReadFetchStore } from "@/store/messageContentReadFetch";
+import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 
 export default function MessageContent() {
-	const {message: newMessageReflect} = useMessageReflectStore();
-	const {id} = useParams();
+	const { message: newMessageReflect } = useMessageReflectStore();
+	const { id } = useParams();
 	const [roomId, setRoomId] = useState<string | null>(null);
-	
+
 	useEffect(() => {
 		if (!id) return;
 		if (id === roomId) return;
@@ -42,12 +42,12 @@ export default function MessageContent() {
 			setRoomId(id);
 			return;
 		}
-		
+
 		const newRoomId = decodeURIComponent(id as string);
 		setRoomId(newRoomId);
 	}, [id, roomId]);
-	const {isActivate} = useMessageContentReadFetchStore()
-	
+	const { isActivate } = useMessageContentReadFetchStore()
+
 	const { data } = useQuery(MessageQueries.READ_MESSAGES, {
 		variables: { roomId: roomId as string, isActivate },
 		skip: !roomId,
@@ -65,14 +65,14 @@ export default function MessageContent() {
 		})
 		setMessages(newMessage);
 	}, [data?.readMessages]);
-	
+
 	useEffect(() => {
 		if (!newMessageReflect) return;
 		if (newMessageReflect.roomId !== roomId) return;
 		const newSetMessage: ChatMessage = {
 			roomId: newMessageReflect.roomId,
 			contents: newMessageReflect.contents,
-			replyChat : newMessageReflect.replyChat,
+			replyChat: newMessageReflect.replyChat,
 			id: newMessageReflect.id,
 			sender: {
 				name: newMessageReflect.sender.name,
@@ -80,7 +80,6 @@ export default function MessageContent() {
 			},
 			createdAt: formatKoreanDateTime(newMessageReflect.sendAt)
 		};
-		console.log("newSetMessage : ", newSetMessage)
 		const newMessage = (newMessage: ChatMessage) => {
 			setMessages(prev => {
 				return [...(prev ?? []), newMessage];
@@ -88,13 +87,13 @@ export default function MessageContent() {
 		};
 		newMessage(newSetMessage)
 	}, [newMessageReflect]);
-	
+
 	let lastDate: string | null = null;
 	const containerRef = useRef<HTMLDivElement>(null);
-	const {reply : replyInfo, setReply : setReplyInfo} = useMessageReplyStore()
-	
-	
-	const {open} = useModalStore();
+	const { reply: replyInfo, setReply: setReplyInfo } = useMessageReplyStore()
+
+
+	const { open } = useModalStore();
 	const {
 		isOpen,
 		messageType,
@@ -104,9 +103,9 @@ export default function MessageContent() {
 		unSetMaster,
 		setContractData
 	} = useMessageModalStore();
-	
-	
-	const openContract = (messageType: messageType, isMaster: boolean, data ?: Contract | RoomTour) => {
+
+
+	const openContract = (messageType: messageType, isMaster: boolean, data?: Contract | RoomTour) => {
 		open();
 		messageModalOpen();
 		if (!data) return;
@@ -115,40 +114,40 @@ export default function MessageContent() {
 		if (isMaster) setMaster();
 		else unSetMaster();
 	};
-	
-	const {userId} = useUserStore();
+
+	const { userId } = useUserStore();
 	// 접속 시 맨 밑으로 스크롤
 	useEffect(() => {
 		const handleResize = () => scrollToBottom(containerRef.current);
 		window.addEventListener('resize', handleResize);
 		return () => window.removeEventListener('resize', handleResize);
 	}, []);
-	
+
 	useEffect(() => {
 		scrollToBottom(containerRef.current);
 	}, [messages]);
-	
+
 	const navigate = useNavigationWithProgress()
-	const handleMemberClick = (userId: string) =>{
+	const handleMemberClick = (userId: string) => {
 		navigate(`/profile/${userId}`)
 	}
 	return (
 		<S.ContainerBox>
-			{ messageType === "contract" && isOpen && <ContractModal/>}
-			{ messageType === "roomtour" && isOpen && <RoomTourModal/>}
-			
+			{messageType === "contract" && isOpen && <ContractModal />}
+			{messageType === "roomtour" && isOpen && <RoomTourModal />}
+
 			{replyInfo && (
 				<S.ReplyPreviewContainer>
-					<div style={{flex: 1}}>
+					<div style={{ flex: 1 }}>
 						<S.ReplyPreviewName>{replyInfo.name}님에게 답장</S.ReplyPreviewName>
 						<S.ReplyPreviewText>{replyInfo.contents}</S.ReplyPreviewText>
 					</div>
 					<S.ReplyPreviewCloseBtn onClick={() => setReplyInfo(null)}>
-						<Image style={{transform: 'rotate(45deg)'}} src={Plus} width={24} height={24} alt="close reply"/>
+						<Image style={{ transform: 'rotate(45deg)' }} src={Plus} width={24} height={24} alt="close reply" />
 					</S.ReplyPreviewCloseBtn>
 				</S.ReplyPreviewContainer>
 			)}
-			
+
 			<S.MessageContentContainer ref={containerRef}>
 				{messages && messages.map((msg, idx) => {
 					const nextUser = idx < messages.length && messages[idx + 1]?.sender.name
@@ -158,12 +157,12 @@ export default function MessageContent() {
 						idx === messages.length - 1 ||
 						messages[idx + 1].createdAt.time !== msg.createdAt.time ||
 						messages[idx + 1].sender.name !== msg.sender.name;
-					
+
 					const isFirstOfTime =
 						idx === 0 ||
 						messages[idx - 1].createdAt.date !== msg.createdAt.date ||
 						messages[idx - 1].sender.name !== msg.sender.name;
-					
+
 					const renderMessageBody = () => {
 						// 입장/퇴장 메시지 체크
 						if (msg.sender.name === "nuri") {
@@ -173,12 +172,12 @@ export default function MessageContent() {
 								const joinedUsers = joinMatch[1]
 									.split(',')
 									.map(user => user.trim());
-								
+
 								const joinedText = `${joinedUsers.join('님, ')}님이 초대 되었습니다.`;
-								
+
 								return <S.SystemMessage>{joinedText}</S.SystemMessage>;
 							}
-							
+
 							// 퇴장 메시지 처리 (username exit)
 							const exitMatch = msg.contents.match(/^(\w+)\s+exit$/);
 							if (exitMatch) {
@@ -190,12 +189,12 @@ export default function MessageContent() {
 								);
 							}
 						}
-						
+
 						const request = messageRequestCheck(msg.contents)
 						if (request && request.type === "contract") {
 							return (
 								<ContractMessage
-									contract = {request}
+									contract={request}
 									time={isLastOfTime ? msg.createdAt.time : undefined}
 									isSent={msg.sender.name === userId}
 									button={
@@ -212,7 +211,7 @@ export default function MessageContent() {
 						if (request && request.type === "roomTour") {
 							return (
 								<RoomTourMessage
-									roomTour = {request}
+									roomTour={request}
 									messageTime={isLastOfTime ? msg.createdAt.time : undefined}
 									isSent={msg.sender.name === userId}
 									button={
@@ -230,7 +229,7 @@ export default function MessageContent() {
 						// 이미지 형식
 						if (regex.test(msg.contents)) {
 							return <ImageMessage src={msg.contents} alt="img-msg" time={isLastOfTime ? msg.createdAt.time : undefined}
-							                     isSent={msg.sender.name === userId}/>;
+								isSent={msg.sender.name === userId} />;
 						}
 						// 답장형식
 						return (
@@ -240,20 +239,20 @@ export default function MessageContent() {
 										type={msg.sender.name === userId ? "sent" : "received"}
 										name={msg.replyChat.name || ""}
 										text={msg.replyChat.contents || ""}
-										icon={<Image src={Reply} width={20} height={20} alt="reply"/>}
+										icon={<Image src={Reply} width={20} height={20} alt="reply" />}
 										time={isLastOfTime ? msg.createdAt.time : undefined}
 									/>
 								)}
 								<BasicMessage text={msg.contents}
-								              time={isLastOfTime ? msg.createdAt.time : undefined}
-								              isSent={msg.sender.name === userId}/>
+									time={isLastOfTime ? msg.createdAt.time : undefined}
+									isSent={msg.sender.name === userId} />
 							</>
 						);
 					};
 					const regex = /^https:\/\/cdn\.solvit-nuri\.com\/file\/[0-9a-fA-F-]{36}$/;
 					const request = messageRequestCheck(msg.contents)
 					const isValid = request?.type !== "roomTour" && request?.type !== "contract" && !regex?.test(msg.contents);
-					
+
 					// nuri 메시지인 경우 시스템 메시지로만 표시 (프로필 없이)
 					if (msg.sender.name === "nuri") {
 						return (
@@ -263,34 +262,34 @@ export default function MessageContent() {
 							</div>
 						);
 					}
-					
+
 					return (
 						<div key={msg.id + idx}>
 							{showDate && <S.DateDivider>{msg.createdAt.date} {msg.createdAt.time}</S.DateDivider>}
-							
+
 							{msg.sender.name !== userId ? (
 								<S.ReceivedMsgRow isSameUser={nextUser !== msg.sender.name}>
 									{isFirstOfTime ? (
-										<div onClick={()=>handleMemberClick(msg.sender.name)} style={{position: "relative", cursor: "pointer"}}>
+										<div onClick={() => handleMemberClick(msg.sender.name)} style={{ position: "relative", cursor: "pointer" }}>
 											<S.ProfileName>{msg.sender.name}</S.ProfileName>
 											<S.ProfileImg isFirst={true}>
-												<Image src={imageCheck(msg.sender.profile  || "")} fill alt={msg.sender.name || 'profile'}/>
+												<Image src={imageCheck(msg.sender.profile || "")} fill alt={msg.sender.name || 'profile'} />
 											</S.ProfileImg>
 										</div>
 									) : (
-										<S.ProfileImg isFirst={false}/>
+										<S.ProfileImg isFirst={false} />
 									)}
 									<S.ReceivedMsgAndTimeWrapper isHaveReply={!!msg.replyChat?.contents}>
 										{renderMessageBody()}
 										{isValid && (
 											<S.MsgHoverIcons
 												className="msg-hover-icons"
-												style={{cursor: 'pointer'}}
-												onClick={() => setReplyInfo({chatId : msg.id ,name: msg.sender.name || '', contents: msg.contents})}
+												style={{ cursor: 'pointer' }}
+												onClick={() => setReplyInfo({ chatId: msg.id, name: msg.sender.name || '', contents: msg.contents })}
 												isSent={false}
 											>
 												<Image
-													style={{cursor: 'pointer'}}
+													style={{ cursor: 'pointer' }}
 													src={Reply}
 													width={20}
 													height={20}
@@ -307,12 +306,12 @@ export default function MessageContent() {
 										{isValid && (
 											<S.MsgHoverIcons
 												className="msg-hover-icons"
-												style={{cursor: 'pointer'}}
-												onClick={() => setReplyInfo({chatId : msg.id ,name: msg.sender.name || '', contents: msg.contents})}
-											  isSent={true}
+												style={{ cursor: 'pointer' }}
+												onClick={() => setReplyInfo({ chatId: msg.id, name: msg.sender.name || '', contents: msg.contents })}
+												isSent={true}
 											>
 												<Image
-													style={{cursor: 'pointer'}}
+													style={{ cursor: 'pointer' }}
 													src={Reply}
 													width={20}
 													height={20}

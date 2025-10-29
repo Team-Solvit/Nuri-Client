@@ -15,28 +15,25 @@ export const AlertBox = ({ alert }: { alert: AlertType }) => {
 	const [mutate] = useMutation(AlertMutations.READ_ALERT, {
 		variables: { notificationId: alert.notificationId },
 	});
-	
+
 	const checkAlert = useCallback(async () => {
 		try {
 			await mutate();
-		} catch (error) {
-			console.error("알림 읽음 처리 실패:", error);
-		}
+		} catch { }
 	}, [mutate]);
-	
+
 	useEffect(() => {
 		if (alert.checked) return;
-		
+
 		const timer = setTimeout(() => {
 			checkAlert();
 		}, 1000);
-		
+
 		return () => clearTimeout(timer);
 	}, [alert.checked, checkAlert]);
-	
+
 	const handleMove = async () => {
 		await mutate();
-		console.log("alert", alert.redirectId)
 		switch (alert.redirectType) {
 			case RedirectType.POST_DETAIL:
 				navigate(`/post/${alert.redirectId}`);
@@ -61,14 +58,14 @@ export const AlertBox = ({ alert }: { alert: AlertType }) => {
 				break;
 		}
 	};
-	
+
 	const formattedDate = React.useMemo(() => {
 		if (!alert.createAt) return null;
 		const d = new Date(alert.createAt);
 		if (Number.isNaN(d.getTime())) return String(alert.createAt).split("T")[0];
 		return d.toLocaleDateString().replace(/\//g, ".");
 	}, [alert.createAt]);
-	
+
 	return (
 		<S.Alert isRead={alert.checked} onClick={handleMove}>
 			<S.Profile>
@@ -86,30 +83,30 @@ export default function AlertScroll() {
 	const [alerts, setAlerts] = useState<AlertType[]>([]);
 	const [isDone, setIsDone] = useState(false);
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
-	
+
 	const { data, loading, fetchMore } = useQuery(AlertQueries.GET_ALERT_LIST, {
 		variables: { start: 0 },
 		fetchPolicy: "no-cache",
 		nextFetchPolicy: "no-cache",
 	});
-	
+
 	useEffect(() => {
 		if (data?.getNotificationList) {
 			setAlerts(data.getNotificationList);
 			setIsDone(data.getNotificationList.length === 0);
 		}
 	}, [data?.getNotificationList]);
-	
+
 	useLoadingEffect(loading);
-	
+
 	useEffect(() => {
-		  return () => {
-			    if (observer.current) {
-				      observer.current.disconnect();
-				    }
-			  };
-		}, []);
-	
+		return () => {
+			if (observer.current) {
+				observer.current.disconnect();
+			}
+		};
+	}, []);
+
 	const loadMore = useCallback(async () => {
 		if (isFetchingMore || isDone) return;
 		setIsFetchingMore(true);
@@ -131,13 +128,12 @@ export default function AlertScroll() {
 				setIsDone(true);
 				return;
 			}
-		} catch (e) {
-			console.error(e);
+		} catch {
 		} finally {
 			setIsFetchingMore(false);
 		}
 	}, [alerts.length, fetchMore, isDone, isFetchingMore]);
-	
+
 	const observer = useRef<IntersectionObserver | null>(null);
 	const lastPostElementRef = useCallback(
 		(node: HTMLDivElement | null) => {
@@ -153,12 +149,12 @@ export default function AlertScroll() {
 		},
 		[loading, isFetchingMore, loadMore]
 	);
-	
+
 	// 로딩 중이면 스켈레톤 컴포넌트 렌더링
 	if (loading) {
 		return <AlertScrollSkeleton />;
 	}
-	
+
 	return (
 		<S.AlertScrollContainer>
 			{!loading && alerts.length === 0 ? (

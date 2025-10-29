@@ -3,13 +3,13 @@
 import Square from "@/components/ui/button/square";
 import Map from "@/components/ui/googleMap/Map";
 import Popup from "@/components/ui/third-party/Popup";
-import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
-import {useEffect, useMemo, useState, useCallback, useRef} from 'react';
-import {useApollo} from '@/lib/apolloClient';
-import {BoardingService} from '@/services/boarding';
-import type {RoomContract} from '@/types/boarding';
+import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
+import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
+import { useApollo } from '@/lib/apolloClient';
+import { BoardingService } from '@/services/boarding';
+import type { RoomContract } from '@/types/boarding';
 import type { RoomContractInfo } from '@/types/boarding';
-import {useLoadingEffect} from '@/hooks/useLoading';
+import { useLoadingEffect } from '@/hooks/useLoading';
 
 interface MarkerData {
   houseId: string;
@@ -30,36 +30,35 @@ export default function BoardingThirdPartyPage() {
   const handleSquareClick = () => navigate('/boarding/third-party/home');
 
   useEffect(() => {
-  if (initializedRef.current) return;
+    if (initializedRef.current) return;
 
-  let alive = true;
-  setInitialLoading(true);
+    let alive = true;
+    setInitialLoading(true);
 
-  (async () => {
-    try {
-      const list = await BoardingService.getManageBoardingHouseList(client);
-      if (!alive) return;
+    (async () => {
+      try {
+        const list = await BoardingService.getManageBoardingHouseList(client);
+        if (!alive) return;
 
-      setMarkers(list.map(h => {
-        const hasCoords = h.lat != null && h.lon != null;
-        return {
-          houseId: h.houseId,
-          title: h.name,
-          address: h.location || '',
-          position: hasCoords ? { lat: Number(h.lat), lng: Number(h.lon) } : undefined,
-          loading: false,
-        };
-      }));
-      initializedRef.current = true;
-    } catch (e) {
-      if (alive) console.error('Failed to load houses', e);
-    } finally {
-      if (alive) setInitialLoading(false);
-    }
-  })();
+        setMarkers(list.map(h => {
+          const hasCoords = h.lat != null && h.lon != null;
+          return {
+            houseId: h.houseId,
+            title: h.name,
+            address: h.location || '',
+            position: hasCoords ? { lat: Number(h.lat), lng: Number(h.lon) } : undefined,
+            loading: false,
+          };
+        }));
+        initializedRef.current = true;
+      } catch {
+      } finally {
+        if (alive) setInitialLoading(false);
+      }
+    })();
 
-  return () => { alive = false; };
-}, [client]);
+    return () => { alive = false; };
+  }, [client]);
 
   useLoadingEffect(initialLoading);
 
@@ -71,8 +70,7 @@ export default function BoardingThirdPartyPage() {
         try {
           const rooms = await BoardingService.getManageBoardingRoomList(client, houseId);
           setMarkers(p => p.map(m => m.houseId === houseId ? { ...m, rooms, loading: false } : m));
-        } catch (e) {
-          console.error('Failed to load rooms', e);
+        } catch {
           setMarkers(p => p.map(m => m.houseId === houseId ? { ...m, loading: false } : m));
         }
       })();

@@ -1,29 +1,26 @@
-import {Contract, RoomTour} from "@/types/message";
-import {parseKST} from "@/utils/dateTime";
+import { Contract, RoomTour } from "@/types/message";
+import { parseKST } from "@/utils/dateTime";
 
-export const messageRequestCheck = (contents: string): Contract |RoomTour| null  => {
+export const messageRequestCheck = (contents: string): Contract | RoomTour | null => {
 	const isJson = contents.trim().startsWith('{') && contents.trim().endsWith('}');
 	if (!isJson) return null;
 	try {
 		const data = JSON.parse(contents);
 		if (data.type === "contract") {
 			if (!data.roomId || !data.hostId || !data.status) {
-				console.error("Invalid contract data structure:", data);
 				return null;
 			}
 			data.time = parseKST(data?.expiryDate);
 			return data as Contract;
 		} else if (data.type === "roomTour") {
 			if (!data.roomId || !data.time || !data.status) {
-				console.error("Invalid roomTour data structure:", data);
 				return null;
 			}
 			data.time = parseKST(data?.time);
 			return data as RoomTour;
 		}
 		return null;
-	} catch (e) {
-		console.error("Invalid contract format:", e);
+	} catch {
 		return null;
 	}
 };

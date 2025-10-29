@@ -11,11 +11,10 @@ export const imageService = {
 			if (!res.ok) {
 				throw new Error("업로드 실패");
 			}
-			
+
 			const data = await res.json();
 			return data;
 		} catch (err) {
-			console.error(err);
 			throw err;
 		}
 	},

@@ -58,8 +58,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
         setIsInitialized(true);
       }
     },
-    onError: (error) => {
-      console.error('GraphQL 쿼리 오류:', error);
+    onError: () => {
       setHasMore(false);
     }
   });
@@ -76,7 +75,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
   const convertToPostItem = (room: BoardingRoom): PostItemData => {
     const firstImage = room.boardingRoomFile?.[0];
     let thumbnailUrl = '';
-    
+
     if (firstImage) {
       const imageId = firstImage.url || firstImage.fileId;
       if (imageId && imageId.trim() !== '') {
@@ -134,8 +133,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
         setHasMore(false);
         success('모든 게시물을 불러왔습니다.');
       }
-    } catch (error) {
-      console.error('❌ 추가 데이터 로드 실패:', error);
+    } catch {
       setHasMore(false);
     } finally {
       setIsLoadingMore(false);

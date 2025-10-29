@@ -47,8 +47,7 @@ export default function Todos({ selectedDate, houseId }: TodosProps) {
         }));
         setTodos(mapped);
         if (selected !== '전체' && !mapped.some(t => t.house === selected)) setSelected('전체');
-      } catch (e) {
-        if (!cancelled) console.error('Failed to load manage work', e);
+      } catch {
         setTodos([]);
       } finally {
         if (!cancelled) setLoading(false);
@@ -102,8 +101,7 @@ export default function Todos({ selectedDate, houseId }: TodosProps) {
               throw new Error('업로드 ID 없음');
             }
           }
-        } catch (err) {
-          console.error('File upload failed', err);
+        } catch {
           setTodos(prev => prev.map(t => t.id === id ? { ...t, file: null, uploading: false } : t));
         } finally {
           setUploadingId(null);

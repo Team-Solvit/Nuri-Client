@@ -242,7 +242,6 @@ export const PostDetailService = {
       });
       return data?.getPostList ?? [];
     } catch (error) {
-      console.error('게시물 목록 조회 오류:', error);
       throw error;
     }
   },
@@ -284,7 +283,6 @@ export const PostDetailService = {
       
       return null;
     } catch (error) {
-      console.error('게시물 조회 오류:', error);
       return null;
     }
   },
@@ -297,7 +295,6 @@ export const PostDetailService = {
       });
       return !!data?.likePost;
     } catch (error) {
-      console.error('좋아요 처리 오류:', error);
       throw error;
     }
   },
@@ -310,7 +307,6 @@ export const PostDetailService = {
       });
       return !!data?.unlikePost;
     } catch (error) {
-      console.error('좋아요 취소 처리 오류:', error);
       throw error;
     }
   },
@@ -324,7 +320,6 @@ export const PostDetailService = {
       });
       return !!data?.likeRoom;
     } catch (error) {
-      console.error('하숙방 좋아요 처리 오류:', error);
       throw error;
     }
   },
@@ -337,7 +332,6 @@ export const PostDetailService = {
       });
       return !!data?.unlikeRoom;
     } catch (error) {
-      console.error('하숙방 좋아요 취소 처리 오류:', error);
       throw error;
     }
   },
@@ -351,7 +345,6 @@ export const PostDetailService = {
       });
       return data?.getPostCommentList || [];
     } catch (error) {
-      console.error('댓글 조회 오류:', error);
       throw error;
     }
   },
@@ -364,7 +357,6 @@ export const PostDetailService = {
       });
       return data?.createPostComment || '';
     } catch (error) {
-      console.error('댓글 작성 오류:', error);
       throw error;
     }
   },
@@ -377,7 +369,6 @@ export const PostDetailService = {
       });
       return data?.updatePostComment || '';
     } catch (error) {
-      console.error('댓글 수정 오류:', error);
       throw error;
     }
   },
@@ -390,7 +381,6 @@ export const PostDetailService = {
       });
       return data?.deletePostComment || '';
     } catch (error) {
-      console.error('댓글 삭제 오류:', error);
       throw error;
     }
   },
@@ -405,7 +395,6 @@ export const PostDetailService = {
       });
       return data?.getBoardingRoomCommentList || [];
     } catch (error) {
-      console.error('하숙방 댓글 조회 오류:', error);
       throw error;
     }
   },
@@ -418,7 +407,6 @@ export const PostDetailService = {
       });
       return data?.createBoardingRoomComment || '';
     } catch (error) {
-      console.error('하숙방 댓글 작성 오류:', error);
       throw error;
     }
   },
@@ -431,7 +419,6 @@ export const PostDetailService = {
       });
       return data?.updateBoardingRoomComment || '';
     } catch (error) {
-      console.error('하숙방 댓글 수정 오류:', error);
       throw error;
     }
   },
@@ -444,7 +431,6 @@ export const PostDetailService = {
       });
       return data?.deleteBoardingRoomComment || '';
     } catch (error) {
-      console.error('하숙방 댓글 삭제 오류:', error);
       throw error;
     }
   },
@@ -458,7 +444,6 @@ export const PostDetailService = {
       });
       return data?.updatePost || '';
     } catch (error) {
-      console.error('게시물 수정 오류:', error);
       throw error;
     }
   },
@@ -471,7 +456,6 @@ export const PostDetailService = {
       });
       return data?.deletePost || '';
     } catch (error) {
-      console.error('게시물 삭제 오류:', error);
       throw error;
     }
   },
