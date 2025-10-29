@@ -84,4 +84,4 @@ export default function FollowerList({ onClose }: FollowerListProps) {
       </S.ModalWrapper>
     </S.Overlay>
   );
-} 
+}

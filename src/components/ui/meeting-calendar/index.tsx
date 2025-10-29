@@ -107,8 +107,8 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 		);
 		cellIndex++;
 	}
-	const [joinMeetingRequest, {data : joinResponse}] = useMutation(MeetingMutations.JOIN_MEETING_SCHEDULE_REQUEST)
-	const [cancelMeetingRequest, {data : cancelResponse}] = useMutation(MeetingMutations.CANCEL_MEETING_SCHEDULE_REQUEST)
+	const [joinMeetingRequest, {data : joinResponse, loading: joinLoading}] = useMutation(MeetingMutations.JOIN_MEETING_SCHEDULE_REQUEST)
+	const [cancelMeetingRequest, {data : cancelResponse, loading: cancelLoading}] = useMutation(MeetingMutations.CANCEL_MEETING_SCHEDULE_REQUEST)
 	
 	useEffect(() => {
 		if(joinResponse?.joinGroupSchedule){
@@ -194,11 +194,20 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 							<S.ButtonContainer>
 								{
 									complete ?
-										<S.PartButton onClick={(e)=>handlePart(e, "불참가", schedule[date]?.scheduleId)}>참가 취소하기</S.PartButton>
-											:
-										<S.PartButton onClick={(e)=>handlePart(e, "참가", schedule[date]?.scheduleId)}>참가하기</S.PartButton>
+										<S.PartButton
+											onClick={(e) => handlePart(e, "불참가", schedule[date]?.scheduleId)}
+											disabled={cancelLoading}
+										>
+											{cancelLoading ? "취소 중..." : "참가 취소하기"}
+										</S.PartButton>
+										:
+										<S.PartButton
+											onClick={(e) => handlePart(e, "참가", schedule[date]?.scheduleId)}
+											disabled={joinLoading}
+										>
+											{joinLoading ? "참가 중..." : "참가하기"}
+										</S.PartButton>
 								}
-							
 							</S.ButtonContainer>
 							: null
 						}

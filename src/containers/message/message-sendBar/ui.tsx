@@ -94,18 +94,23 @@ export default function MessageSendBar() {
 	// 메시지 전송 버튼
 	
 	const {reply, clearReply} = useMessageReplyStore()
-	const handleSendMessage = () => {
-		if (!message.trim()) return;
-		const type = checkType(id as string);
-		if (Array.isArray(type)) {
-			sendDmChatMessage(type, message,chatRoomName, reply);
-		} else if (type === "UUID 형식") {
-			sendGroupChatMessage(id as string, message, reply);
-		} else {
-			error("메시지 전송실패")
+	const handleSendMessage = async () => {
+		if (!message.trim() || isSending) return;
+		setIsSending(true);
+		try {
+			const type = checkType(id as string);
+			if (Array.isArray(type)) {
+				await sendDmChatMessage(type, message, chatRoomName, reply);
+			} else if (type === "UUID 형식") {
+				await sendGroupChatMessage(id as string, message, reply);
+			} else {
+				error("메시지 전송실패");
+			}
+			clearReply();
+			setMessage("");
+		} finally {
+			setIsSending(false);
 		}
-		clearReply();
-		setMessage("");
 	};
 	
 	// 엔터 시 메시지 전송
@@ -156,7 +161,7 @@ export default function MessageSendBar() {
 					placeholder="메시지를 입력하세요 (Shift+Enter로 줄바꿈)"
 				/>
 			</S.ContentBox>
-			<S.SendButton onClick={handleSendMessage}>
+			<S.SendButton onClick={handleSendMessage} disabled={isSending}>
 				<Image src={Send} alt={"send-icon"} fill/>
 			</S.SendButton>
 		</S.MessageSendBarContainer>

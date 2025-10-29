@@ -15,12 +15,18 @@ interface SquareProps {
     onClick?: (e:React.MouseEvent<HTMLDivElement>) => void
     status: boolean
     width: string
+    isLoading?: boolean
 }
 
-export default function Square({ text, onClick, status, width }: SquareProps) {
+export default function Square({ text, onClick, status, width, isLoading = false }: SquareProps) {
+    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (isLoading) return;
+        onClick?.(e);
+    };
+
     return (
-        <S.Container onClick={onClick} $status={status} $width={width}>
-            <S.Name>{text}</S.Name>
+        <S.Container onClick={handleClick} $status={status} $width={width} $disabled={ isLoading}>
+            <S.Name>{isLoading ? '로딩 중...' : text}</S.Name>
         </S.Container>
     )
 }

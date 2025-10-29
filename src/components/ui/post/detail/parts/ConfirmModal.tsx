@@ -24,6 +24,17 @@ export default function ConfirmModal({
   onConfirm,
   onCancel,
 }: ConfirmModalProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleConfirm = async () => {
+    setIsLoading(true);
+    try {
+      await onConfirm();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (!visible) return null;
   return (
     <Modal>
@@ -32,8 +43,20 @@ export default function ConfirmModal({
           <S.ConfirmModalTitle>{title}</S.ConfirmModalTitle>
           <S.ConfirmModalMessage>{message}</S.ConfirmModalMessage>
           <S.ConfirmModalButtons>
-            <Square text={cancelText} onClick={onCancel} status={false} width="max-content" />
-            <Square text={confirmText} onClick={onConfirm} status={true} width="max-content" />
+            <Square
+              text={cancelText}
+              onClick={onCancel}
+              status={false}
+              width="max-content"
+              isLoading={isLoading}
+            />
+            <Square
+              text={confirmText}
+              onClick={handleConfirm}
+              status={true}
+              width="max-content"
+              isLoading={isLoading}
+            />
           </S.ConfirmModalButtons>
         </S.ConfirmModalContent>
       </div>

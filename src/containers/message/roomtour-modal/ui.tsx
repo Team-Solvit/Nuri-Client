@@ -1,3 +1,5 @@
+"use client"
+
 import Modal from "@/components/layout/modal";
 import * as S from "./style";
 import Square from "@/components/ui/button/square";
@@ -9,14 +11,17 @@ import {useQuery} from "@apollo/client";
 import {RoomTourQueries} from "@/services/roomTour";
 import {imageCheck} from "@/utils/imageCheck";
 import {isRoomTour, RoomTourResponseDto} from "@/types/message";
-import React from "react";
+import React, { useState } from "react";
 
 export default function RoomTourModal() {
 	const {isOpen, master, messageType, close, contractData} = useMessageModalStore();
+	const { openConfirm} = useConfirmStore();
+	const [isLoading, setIsLoading] = useState(false);
+
 	const closeModal = () => {
 		close()
 	}
-	const { openConfirm} = useConfirmStore();
+
 	const shouldFetch = isRoomTour(contractData);
 	
 	const { data } = useQuery(RoomTourQueries.GET_ROOM_TOUR, {
@@ -28,6 +33,25 @@ export default function RoomTourModal() {
 	if(contractData?.type !== "roomTour") return null;
 	const roomTour: RoomTourResponseDto = data?.getRoomTour;
 	const status = roomTour?.status;
+
+	const handleAccept = async () => {
+		setIsLoading(true);
+		try {
+			await openConfirm("sure");
+		} finally {
+			setIsLoading(false);
+		}
+	}
+
+	const handleReject = async () => {
+		setIsLoading(true);
+		try {
+			await openConfirm("delete");
+		} finally {
+			setIsLoading(false);
+		}
+	}
+
 	return isOpen && messageType === "roomtour" && (
 		<Modal>
 			<S.ModalContainer>
@@ -84,8 +108,8 @@ export default function RoomTourModal() {
 				{/* 버튼 */}
 				<S.ButtonRow>
 					{master && status === "PENDING" ? <>
-						<Square text="거절" onClick={() => openConfirm("delete")} status={false} width="48%"/>
-						<Square text="수락" onClick={() => openConfirm("sure")} status={true} width="48%"/>
+						<Square text="거절" onClick={handleReject} status={false} width="48%" isLoading={isLoading}/>
+						<Square text="수락" onClick={handleAccept} status={true} width="48%" isLoading={isLoading}/>
 					</> :
 						<Square text="확인" onClick={closeModal} status={true} width="100%"/>}
 				</S.ButtonRow>

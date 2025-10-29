@@ -362,12 +362,14 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                             text='취소'
                             width='8vw'
                             status={false}
+                            isLoading={isSubmitting}
                         />
                         <Square
                             onClick={handleSubmit}
                             text={isSubmitting ? '업로드 중...' : '업로드'}
                             width='8vw'
                             status={true}
+                            isLoading={isSubmitting}
                         />
                     </S.ButtonRow>
                 </S.Main>

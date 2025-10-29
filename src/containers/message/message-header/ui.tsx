@@ -233,7 +233,7 @@ export default function MessageHeaderUI() {
 							<p>대화방을 나가면 대화내용이 삭제됩니다.</p>
 							<S.ConfirmButtonGroup>
 								<Square text={"취소"} status={false} width={"100%"} onClick={cancelExit}/>
-								<Square text={"나가기"} status={true} width={'100%'} onClick={confirmExit}/>
+								<Square text={"나가기"} status={true} width={'100%'} onClick={confirmExit} isLoading={isLoading}/>
 							</S.ConfirmButtonGroup>
 						</S.ConfirmModalContent>
 					</StateModal>
