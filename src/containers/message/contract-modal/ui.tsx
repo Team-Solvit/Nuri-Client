@@ -83,7 +83,7 @@ export default function ContractModal() {
 					{master ?
 						<>
 							<Square text="거절" onClick={handleReject} status={false} width="48%"/>
-							+<Square text="수락" onClick={handleAccept} status={true} width="48%"/>
+							<Square text="수락" onClick={handleAccept} status={true} width="48%"/>
 						</> : <Square text="확인" onClick={closeModal} status={true} width="100%"/>
 					}
 				</S.ButtonRow>
