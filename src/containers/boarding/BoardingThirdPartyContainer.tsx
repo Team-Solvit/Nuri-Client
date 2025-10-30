@@ -95,7 +95,7 @@ export default function BoardingThirdPartyContainer() {
         .map((m, i) => ({ id: i + 1, position: m.position!, houseId: m.houseId })),
     [markers]
   );
-  const isReady = !initialLoading && mapMarkers.length > 0;
+  const isReady = !initialLoading;
 
   return (
     <div style={{ position: 'relative', width: '100%' }}>
