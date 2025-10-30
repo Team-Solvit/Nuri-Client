@@ -67,7 +67,13 @@ export default function Accession({ isAccession, setIsAccession, accessions }: A
 						<S.CancelBtn onClick={modalClose} $width={"100%"}>
 							<S.Name>취소</S.Name>
 						</S.CancelBtn>
-						<Square text={"가입"} onClick={handelRouter} status={true} width={"100%"} />
+						<Square
+							text={"가입"}
+							onClick={handelRouter}
+							status={true}
+							width={"100%"}
+							isLoading={loading}
+						/>
 					</S.ButtonContainer>
 				</S.Container>
 			</S.Content>

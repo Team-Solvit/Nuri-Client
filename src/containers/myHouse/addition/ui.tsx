@@ -349,11 +349,14 @@ export default function Addition() {
 				<S.CancelBtn onClick={() => handleRoute("/myHouse")} $width={"100%"}>
 					<S.Name>취소</S.Name>
 				</S.CancelBtn>
-				<Square text="등록" onClick={() => {
-					checkValue();
-				}} status={true} width="100%" />
+				<Square
+					text={isLoading ? "등록 중..." : "등록"}
+					onClick={checkValue}
+					status={!isLoading}
+					width="100%"
+					isLoading={isLoading}
+				/>
 			</S.FixedFooter>
 		</S.Container>
 	);
 };
-

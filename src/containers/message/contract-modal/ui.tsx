@@ -16,6 +16,14 @@ export default function ContractModal() {
 	const closeModal = () => {
 		close();
 	}
+	
+	const handleAccept = () => {
+		openConfirm("sure");
+	}
+	const handleReject = () => {
+		openConfirm("delete");
+	}
+
 	return isOpen && messageType === "contract" && isContract(contractData) && (
 		<Modal>
 			<S.ModalContainer>
@@ -74,8 +82,8 @@ export default function ContractModal() {
 				<S.ButtonRow>
 					{master ?
 						<>
-							<Square text="거절" onClick={()=>openConfirm("delete")} status={false} width="48%"/>
-							<Square text="수락" onClick={() => openConfirm("sure")} status={true} width="48%"/>
+							<Square text="거절" onClick={handleReject} status={false} width="48%"/>
+							<Square text="수락" onClick={handleAccept} status={true} width="48%"/>
 						</> : <Square text="확인" onClick={closeModal} status={true} width="100%"/>
 					}
 				</S.ButtonRow>

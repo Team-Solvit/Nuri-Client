@@ -164,4 +164,9 @@ export const PartButton = styled.button`
   &:hover {
     background-color: ${colors.primary};
   }
+  
+  &:disabled {
+    background-color: ${colors.gray};
+    cursor: not-allowed;
+  }
 `;

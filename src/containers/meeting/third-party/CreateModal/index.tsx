@@ -322,6 +322,7 @@ export default function CreateModal({
         onClick={handleSubmit}
         status={!loading}
         width="100%"
+        isLoading={loading}
       />
     </S.Wrapper>
   );
