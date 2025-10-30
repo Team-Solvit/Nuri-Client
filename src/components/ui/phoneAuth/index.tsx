@@ -17,7 +17,7 @@ interface PhoneAuthProps {
 const BACKEND_EMAIL = 'solvit25@gmail.com'
 const AGENCY_DOMAINS: { [key: string]: string } = {
   'SKT': 'vmms.nate.com',
-  'KT': 'ktfmms.magicn.com',
+  'KT': 'mms.kt.co.kr',
   'LG U+': 'mmsmail.uplus.co.kr'
 }
 

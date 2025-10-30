@@ -54,7 +54,6 @@ export default function Host() {
   const [isHostSettingCompleted, setIsHostSettingCompleted] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  // 폼 상태
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -66,7 +65,6 @@ export default function Host() {
     mealProvided: true,
   });
 
-  // 기존 하숙집 정보 불러오기 - role이 HOST이거나 로컬에 완료 플래그가 있을 때만 시도
   const { data: boardingRoomData, loading: boardingRoomLoading } = useQuery<HostBoardingRoomsResponse>(
     HostGQL.QUERIES.GET_HOST_BOARDING_ROOMS,
     {
