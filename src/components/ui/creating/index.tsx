@@ -44,9 +44,9 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
             case '전체':
                 return ShareRange.ALL;
             case '팔로워':
-                return ShareRange.FRIENDS;
+                return ShareRange.FOLLOWER;
             case '모임':
-                return ShareRange.PRIVATE;
+                return ShareRange.GROUP;
             default:
                 return ShareRange.ALL;
         }

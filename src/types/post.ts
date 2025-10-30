@@ -88,8 +88,8 @@ export type GetPostListResponse = {
 
 export enum ShareRange {
     ALL = 'ALL',
-    FRIENDS = 'FRIENDS',
-    PRIVATE = 'PRIVATE'
+    FOLLOWER = 'FOLLOWER',
+    GROUP = 'GROUP'
   }
   
   export interface PostCreateInput {

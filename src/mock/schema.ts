@@ -4,8 +4,8 @@ export const typeDefs = gql`
   # --- Post 관련 타입 ---
   enum ShareRange {
     ALL
-    FRIENDS
-    PRIVATE
+    FOLLOWER
+    GROUP
   }
 
   input CreatePostInput {
