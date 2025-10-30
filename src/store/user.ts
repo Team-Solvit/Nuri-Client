@@ -43,6 +43,7 @@ export const useUserStore = create<State>()(
 					language: user.language,
 					name: user.name,
 					email: user.email,
+					phoneNumber: user.phoneNumber,
 					profile: user.profile,
 					role: user.role,
 				});
@@ -60,10 +61,13 @@ export const useUserStore = create<State>()(
 					role: null,
 					token: null,
 				}),
-			token: null,
 			setToken: (token: string) =>
 				set({
 					token: token
+				}),
+			setRole: (role: string) =>
+				set({
+					role: role
 				})
 		}),
 		{ name: 'nuri-user' }
