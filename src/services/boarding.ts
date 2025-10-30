@@ -5,7 +5,7 @@ import {
   BoardingManageWork,
   BoardingManageWorkReadInput,
   BoardingManageWorkFileUploadInput
-} from '@/types/boarding';
+} from '@/types/boarding'
 
 export const BoardingGQL = {
   QUERIES: {

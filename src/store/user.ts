@@ -9,12 +9,14 @@ type State = {
 	language: string | null;
 	name: string | null;
 	email: string | null;
+	phoneNumber: string | null;
 	profile: string | null;
 	role: string | null;
 	setAuth: (user: LoginUserResponse) => void;
 	clear: () => void;
 	token: string | null;
 	setToken: (token: string) => void;
+	setRole: (role: string) => void;
 };
 
 export const useUserStore = create<State>()(
@@ -26,8 +28,10 @@ export const useUserStore = create<State>()(
 			language: null,
 			name: null,
 			email: null,
+			phoneNumber: null,
 			profile: null,
 			role: null,
+			token: null,
 			setAuth: (user) => {
 				if (!user) {
 					return;
@@ -51,9 +55,10 @@ export const useUserStore = create<State>()(
 					language: null,
 					name: null,
 					email: null,
+					phoneNumber: null,
 					profile: null,
 					role: null,
-					token: null
+					token: null,
 				}),
 			token: null,
 			setToken: (token: string) =>

@@ -51,13 +51,25 @@ export const ProfileImage = styled.div`
     object-fit: cover;
   }
 
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.4);
-    z-index: 1;
+  ${mq.mobile} {
+    width: 31vw;
+    margin-left: 1.5rem;
+    margin-top: 6rem;
+    aspect-ratio: 1 / 1;
+    height: auto;
   }
+`
+
+export const ProfileImage2 = styled.div`
+  position: relative;
+  width: 10vw;
+  height: 18vh;
+  border-radius: 50%;
+  overflow: hidden;
+  background: ${colors.gray};
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   ${mq.mobile} {
     width: 31vw;

@@ -3,11 +3,18 @@
 import React from "react";
 import {ApolloProvider} from "@apollo/client";
 import {useApollo} from "@/lib/apolloClient";
+import {GoogleMapsProvider} from "./GoogleMapsProvider";
 
 export function Providers({children}: { children: React.ReactNode }) {
 	const client = useApollo();
 	
-	return <ApolloProvider client={client}>{children}</ApolloProvider>;
+	return (
+		<ApolloProvider client={client}>
+			<GoogleMapsProvider>
+				{children}
+			</GoogleMapsProvider>
+		</ApolloProvider>
+	);
 }
 
 

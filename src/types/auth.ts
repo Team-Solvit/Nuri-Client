@@ -51,5 +51,6 @@ export interface LoginUserResponse {
   name: string;
   email: string;
 	profile: string | null;
+  phoneNumber?: string;
   role: string;
-}
+} 

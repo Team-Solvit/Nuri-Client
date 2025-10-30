@@ -2,25 +2,62 @@ import React, { useState } from 'react';
 import * as S from './style';
 import Image from 'next/image';
 import Square from '../button/square';
-
-const mockFollowers = [
-    { id: 1, username: 'xx._un8', name: '오주현', profile: '/profile/profile.svg' },
-    { id: 2, username: 'xx._un8', name: '오주현', profile: '/profile/profile.svg' },
-    { id: 3, username: 'xx._un8', name: '오주현', profile: '/profile/profile.svg' },
-    { id: 4, username: 'xx._un8', name: '오주현', profile: '/profile/profile.svg' },
-    { id: 5, username: 'xx._un8', name: '오주현', profile: '/profile/profile.svg' },
-    { id: 6, username: 'xx._un8', name: '오주현', profile: '/profile/profile.svg' },
-];
+import { useQuery, useMutation } from '@apollo/client';
+import { ProfileGQL } from '@/services/profile';
+import { FollowUserInfo } from '@/types/profile';
+import { useRouter } from 'next/navigation';
 
 interface FollowProps {
     onClose: () => void;
+    userId: string;
+    viewerId?: string;
 }
 
-export default function Follow({ onClose }: FollowProps) {
-    const [search, setSearch] = useState('');
-    const filtered = mockFollowers.filter(f =>
-        f.username.includes(search) || f.name.includes(search)
+export default function Follow({ onClose, userId, viewerId }: FollowProps) {
+    const router = useRouter();
+    const { data: followingData } = useQuery(
+      ProfileGQL.QUERIES.GET_FOLLOWING,
+      { variables: { userId } }
     );
+    const { data: myFollowingData, refetch: refetchMyFollowing } = useQuery(
+      ProfileGQL.QUERIES.GET_FOLLOWING,
+      { variables: { userId: viewerId! }, skip: !viewerId }
+    );
+
+    const [followUser, { loading: followLoading, error: followError }] =
+      useMutation(ProfileGQL.MUTATIONS.FOLLOW);
+    const [unfollowUser, { loading: unfollowLoading, error: unfollowError }] =
+      useMutation(ProfileGQL.MUTATIONS.UNFOLLOW);
+
+    const following = followingData?.getFollowingInfo ?? []; 
+    const myFollowing = myFollowingData?.getFollowingInfo ?? [];
+
+    const filtered: FollowUserInfo[] = following;
+
+    const isFollowing = (targetId: string) =>
+        (viewerId ? myFollowing : following).some((f: FollowUserInfo) => f.userId === targetId);
+
+    const isValidUrl = (url: string): boolean => {
+        try {
+            new URL(url);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+
+    const getProfileImageUrl = (profile: string): string => {
+        if (!profile) return '/profile/profile.svg';
+        if (isValidUrl(profile)) {
+            return profile;
+        }
+        return `https://cdn.solvit-nuri.com/file/${profile}`;
+    };
+
+    const handleProfileClick = (targetUserId: string) => {
+        onClose();
+        router.push(`/profile/${targetUserId}`);
+    };
 
     return (
         <S.Overlay onClick={onClose}>
@@ -28,33 +65,48 @@ export default function Follow({ onClose }: FollowProps) {
                 <S.Container>
                     <S.Title>팔로잉</S.Title>
 
-                    <S.SearchBox>
-                        <Image
-                            src='/icons/search.svg'
-                            alt="search"
-                            width={22}
-                            height={22}
-                        />
-                        <S.SearchInput
-                            placeholder="검색어를 입력하세요."
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                        />
-                    </S.SearchBox>
-
                     <S.List>
-                        {filtered.map(f => (
-                            <S.Item key={f.id}>
-                                <S.ProfileImg>
-                                    <Image src={f.profile} alt="프로필" width={55} height={55} />
-                                </S.ProfileImg>
-                                <S.Info>
-                                    <S.Username>{f.username}</S.Username>
-                                    <S.Name>{f.name}</S.Name>
-                                </S.Info>
-                                <S.DeleteBtn>팔로잉</S.DeleteBtn>
-                            </S.Item>
-                        ))}
+                        {filtered.length === 0 ? (
+                            <div style={{ padding: '2rem', textAlign: 'center', color: '#666' }}>
+                                팔로잉이 없습니다.
+                            </div>
+                        ) : (
+                            filtered.map((f: FollowUserInfo) => (
+                                <S.Item key={f.id} onClick={() => handleProfileClick(f.userId)} style={{ cursor: 'pointer' }}>
+                                    <S.ProfileImg>
+                                        {f.profile && getProfileImageUrl(f.profile) !== '/profile/profile.svg' ? (
+                                            <Image 
+                                                src={getProfileImageUrl(f.profile)} 
+                                                alt='프로필' 
+                                                width={55} 
+                                                height={55}
+                                                style={{ borderRadius: '50%', objectFit: 'cover' }}
+                                            />
+                                        ) : (
+                                            <div
+                                                style={{
+                                                    width: 55,
+                                                    height: 55,
+                                                    borderRadius: '50%',
+                                                    background: '#e0e0e0',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontWeight: 700,
+                                                    fontSize: 20,
+                                                    color: '#666',
+                                                }}
+                                            >
+                                                {f.userId && f.userId[0] ? f.userId[0] : '?'}
+                                            </div>
+                                        )}
+                                    </S.ProfileImg>
+                                    <S.Info>
+                                        <S.Username>{f.userId}</S.Username>
+                                    </S.Info>
+                                </S.Item>
+                            ))
+                        )}
                     </S.List>
 
                     <S.ConfirmButtonWrap>
