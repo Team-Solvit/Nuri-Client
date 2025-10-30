@@ -9,10 +9,11 @@ import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 import { useLoadingEffect } from "@/hooks/useLoading";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import AlertScrollSkeleton from "@/components/ui/skeleton/AlertScrollSkeleton";
-import { error } from "console";
+import { useAlertStore } from "@/store/alert";
 
 export const AlertBox = ({ alert }: { alert: AlertType }) => {
 	const navigate = useNavigationWithProgress();
+	const { error } = useAlertStore();
 	const [mutate] = useMutation(AlertMutations.READ_ALERT, {
 		variables: { notificationId: alert.notificationId },
 	});
