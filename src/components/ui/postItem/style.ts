@@ -66,15 +66,15 @@ export const Post = styled.div`
 
 export const PostThumbnail = styled.div`
     flex-shrink: 0;
-    width: 6vw;
-    height: 9vh;
+    width: 10vw;
+    height: 12vh;
     position: relative;
     border-radius: 10px;
     overflow: hidden;
 
     ${mq.mobile} {
-        width: 20vw;
-        height: 8.5vh;
+        width: 28vw;
+        height: 11vh;
   }
 `
 

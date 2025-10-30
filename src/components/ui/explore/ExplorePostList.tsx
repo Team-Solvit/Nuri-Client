@@ -16,7 +16,7 @@ interface ExplorePostListProps {
 
 export default function ExplorePostList({ searchFilter }: ExplorePostListProps) {
   const navigate = useNavigationWithProgress();
-  const { success } = useAlertStore();
+  const { success, error: showError } = useAlertStore();
   const [debouncedFilter, setDebouncedFilter] = useState<BoardingRoomSearchFilter>(searchFilter);
   const [allPosts, setAllPosts] = useState<PostItemData[]>([]);
   const [hasMore, setHasMore] = useState(true);
@@ -60,7 +60,9 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     },
     onError: (error) => {
       console.error('GraphQL 쿼리 오류:', error);
+      showError('검색 중 오류가 발생했습니다. 다시 시도해주세요.');
       setHasMore(false);
+      setIsInitialized(true);
     }
   });
 
@@ -136,11 +138,12 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
       }
     } catch (error) {
       console.error('❌ 추가 데이터 로드 실패:', error);
+      showError('추가 데이터를 불러오는데 실패했습니다.');
       setHasMore(false);
     } finally {
       setIsLoadingMore(false);
     }
-  }, [debouncedFilter, currentPage, isLoadingMore, hasMore, fetchMore, loading, success]);
+  }, [debouncedFilter, currentPage, isLoadingMore, hasMore, fetchMore, loading, success, showError]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -164,14 +167,6 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
   }, [loadMorePosts, hasMore, isLoadingMore]);
 
   const isInitialLoading = loading && !isInitialized;
-
-  if (error && !isInitialized) {
-    return (
-      <S.PostList>
-        <div>검색 중 오류가 발생했습니다. 다시 시도해주세요.</div>
-      </S.PostList>
-    );
-  }
 
   return (
     <S.PostList>

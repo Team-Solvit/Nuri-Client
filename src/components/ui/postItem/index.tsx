@@ -74,22 +74,22 @@ export default function PostItem({
             <Image
               src={userProfile}
               alt="프로필"
-              width={isMobile ? 40 : 70}
-              height={isMobile ? 40 : 70}
+              width={isMobile ? 36 : 50}
+              height={isMobile ? 36 : 50}
               style={{ borderRadius: '50%', objectFit: 'cover' }}
             />
           ) : (
             <div
               style={{
-                width: isMobile ? 40 : 70,
-                height: isMobile ? 40 : 70,
+                width: isMobile ? 36 : 50,
+                height: isMobile ? 36 : 50,
                 borderRadius: '50%',
                 background: '#e0e0e0',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontWeight: 700,
-                fontSize: isMobile ? 16 : 24,
+                fontSize: isMobile ? 14 : 20,
                 color: '#666',
               }}
             >
