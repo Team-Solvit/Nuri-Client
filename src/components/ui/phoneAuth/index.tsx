@@ -6,6 +6,7 @@ import Square from '../button/square'
 import { useApollo } from '@/lib/apolloClient'
 import { useRouter } from 'next/navigation'
 import { gql } from '@apollo/client'
+import { useAlertStore } from '@/store/alert';
 
 interface PhoneAuthProps {
   onVerifySuccess: (callNumber: string, agency: string) => void
@@ -37,6 +38,7 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
   const [smsLink, setSmsLink] = useState('')
   const apolloClient = useApollo()
   const router = useRouter()
+  const { success, error } = useAlertStore()
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 430)
@@ -59,41 +61,34 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
     }
   }, [isCodeSent, generatedCode, authCode])
 
-  // 6자리 랜덤 인증코드 생성
   const generateAuthCode = () => {
     return Math.floor(100000 + Math.random() * 900000).toString()
   }
 
-  // 휴대폰 번호 정규화 (하이픈 제거)
   const normalizePhoneNumber = (phone: string) => {
     return phone.replace(/[^0-9]/g, '')
   }
 
-  // 통신사 감지 (번호 앞자리로 판별)
   const detectAgency = (phone: string): string => {
     const normalizedPhone = normalizePhoneNumber(phone)
     const prefix = normalizedPhone.substring(0, 3)
-    
-    // 010은 통합 번호이므로 사용자가 직접 선택하도록 유도
-    // 또는 백엔드에서 발신자 정보로 자동 감지
     return 'UNKNOWN'
   }
 
-  // SMS/MMS 발송 처리
   const handleSendCode = () => {
     if (!callNumber.trim()) {
-      alert('휴대폰 번호를 입력해주세요.')
+      error('휴대폰 번호를 입력해주세요.')
       return
     }
 
     if (!agency) {
-      alert('통신사를 선택해주세요.')
+      error('통신사를 선택해주세요.')
       return
     }
 
     const normalizedPhone = normalizePhoneNumber(callNumber)
     if (normalizedPhone.length !== 11 || !normalizedPhone.startsWith('010')) {
-      alert('올바른 휴대폰 번호를 입력해주세요. (010-XXXX-XXXX 형식)')
+      error('올바른 휴대폰 번호를 입력해주세요. (010-XXXX-XXXX 형식)')
       return
     }
 
@@ -111,21 +106,21 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
       const linkElement = document.createElement('a')
       linkElement.href = link
       linkElement.click()
-    } catch (error) {
-      console.error('SMS 앱 열기 실패:', error)
+    } catch (e) {
+      console.error('SMS 앱 열기 실패:', e)
       // 실패 시 사용자에게 수동으로 안내
-      alert(`인증코드: ${code}\n\n위 코드를 휴대폰에서 다음 주소로 MMS를 보내주세요:\n${BACKEND_EMAIL}`)
+      success(`인증코드: ${code}\n\n위 코드를 휴대폰에서 다음 주소로 MMS를 보내주세요:\n${BACKEND_EMAIL}`)
     }
   }
 
   const handleVerifyCode = async () => {
     if (!authCode.trim()) {
-      alert('인증코드를 입력해주세요.')
+      error('인증코드를 입력해주세요.')
       return
     }
 
     if (authCode.length !== 6) {
-      alert('인증코드는 6자리입니다.')
+      error('인증코드는 6자리입니다.')
       return
     }
 
@@ -148,28 +143,27 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
       })
 
       if (data?.authenticateHost) {
-        alert('휴대폰 인증이 완료되었습니다!')
+          success('휴대폰 인증이 완료되었습니다!')
         onVerifySuccess(normalizePhoneNumber(callNumber), agencyDomain)
       } else {
-        alert('인증코드가 올바르지 않습니다. 다시 확인해주세요.')
+          error('인증코드가 올바르지 않습니다. 다시 확인해주세요.')
       }
-    } catch (error: any) {
-      console.error('인증 실패:', error)
+    } catch (e: any) {
+      console.error('인증 실패:', e)
       const errMsg =
-        (error?.graphQLErrors && error.graphQLErrors[0]?.message) ||
-        error?.message ||
+        (e?.graphQLErrors && e.graphQLErrors[0]?.message) ||
+        e?.message ||
         ''
 
       if (typeof errMsg === 'string' && errMsg.includes('존재하지 않습니다')) {
-        // 서버가 "존재하지 않습니다" 오류를 반환하면 호스트 설정이 필요함을 안내하고 해당 페이지로 이동
-        alert('호스트(하숙집) 정보가 없습니다. 먼저 호스트 설정에서 하숙집 정보를 등록해 주세요. 이동합니다.');
+        error('호스트(하숙집) 정보가 없습니다. 먼저 호스트 설정에서 하숙집 정보를 등록해 주세요. 이동합니다.');
         try {
           router.push(role === 'HOST' ? '/setting/host' : '/setting/boarder');
         } catch (e) {
           console.error('라우팅 실패:', e);
         }
       } else {
-        alert(errMsg || '인증 중 오류가 발생했습니다. 다시 시도해주세요.');
+        error(errMsg || '인증 중 오류가 발생했습니다. 다시 시도해주세요.')
       }
     } finally {
       setIsVerifying(false)

@@ -41,7 +41,7 @@ interface SettingNavProps {
 export default function SettingNav({onLogoutClick, onLeaveClick, onClose}: SettingNavProps) {
 	const pathname = usePathname()
 	const { role } = useUserStore(s => s);
-	const { success } = useAlertStore();
+	const { success, error: showError } = useAlertStore();
 	const [isMobile, setIsMobile] = useState(false)
 	
 	useEffect(() => {
@@ -60,9 +60,16 @@ export default function SettingNav({onLogoutClick, onLeaveClick, onClose}: Setti
 		} else if (label === '회원탈퇴') {
 			onLeaveClick?.()
 		} else {
-			// role이 HOST 또는 INTERNATIONAL_STUDENT인 경우, 인증 관련 탭은 이미 완료된 상태로 처리
+			if (label === '하숙생 인증') {
+				const hostPhoneVerified = localStorage.getItem('hostPhoneVerified');
+				if (hostPhoneVerified === 'true' && role === 'USER') {
+					showError('호스트 설정을 완료해주세요.');
+					navigate('/setting/host');
+					onClose?.();
+					return;
+				}
+			}
 			if ((label === '호스트 인증' || label === '하숙생 인증') && (role === 'HOST' || role === 'INTERNATIONAL_STUDENT')) {
-				// role에 따라 각각 다른 완료 메시지를 표시
 				if (role === 'HOST') {
 					success('호스트 인증이 완료된 상태입니다.');
 				} else if (role === 'INTERNATIONAL_STUDENT') {
