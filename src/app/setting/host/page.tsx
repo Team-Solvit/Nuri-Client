@@ -1,4 +1,4 @@
- 'use client'
+'use client'
 
 import React from "react";
 import * as S from "./style";
@@ -40,14 +40,14 @@ export default function Host() {
   const apolloClient = useApolloClient();
   const { success, error: showError } = useAlertStore();
   const router = useRouter();
-  
+
   console.log('Full user store:', userStore);
-  
+
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [showPhoneAuth, setShowPhoneAuth] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [selectedPosition, setSelectedPosition] = useState<{lat: number, lng: number} | null>(null);
+  const [selectedPosition, setSelectedPosition] = useState<{ lat: number, lng: number } | null>(null);
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
   const [verifiedPhoneNumber, setVerifiedPhoneNumber] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
@@ -122,7 +122,7 @@ export default function Host() {
   useEffect(() => {
     console.log('Current role:', role);
     console.log('Current phoneNumber:', phoneNumber);
-    
+
     if (role === 'HOST') {
       console.log('User is a HOST, auto-verifying phone');
       setIsPhoneVerified(true);
@@ -131,16 +131,15 @@ export default function Host() {
     }
 
     const savedPhoneVerified = localStorage.getItem('hostPhoneVerified');
-    const savedPhoneNumber = localStorage.getItem('hostPhoneNumber');
-    
-    if (savedPhoneVerified === 'true' && savedPhoneNumber) {
+    const savedAt = Number(localStorage.getItem('hostPhoneVerifiedAt') || 0);
+
+    const isFresh = Date.now() - savedAt < 1000 * 60 * 30; // 30분 TTL
+    if (savedPhoneVerified === 'true' && isFresh) {
       console.log('Restoring host phone verification from localStorage');
       setIsPhoneVerified(true);
-      setVerifiedPhoneNumber(savedPhoneNumber);
     }
   }, [role, phoneNumber])
 
-  // 새로고침 시 호스트 설정 완료 상태 복원
   useEffect(() => {
     const savedHostSettingCompleted = localStorage.getItem('hostSettingCompleted');
     if (savedHostSettingCompleted === 'true') {
@@ -158,25 +157,28 @@ export default function Host() {
       } catch (e) {
         console.error('Error clearing client state on logout:', e);
       }
-  clear();
-  try { localStorage.removeItem('nuri-user'); } catch (e) { /* ignore */ }
+      clear();
+      try { localStorage.removeItem('nuri-user'); } catch (e) { /* ignore */ }
       success('로그아웃되었습니다.');
       router.push('/');
     } catch (err) {
       console.error('로그아웃 실패:', err);
       showError('로그아웃 중 오류가 발생했습니다.');
-      setIsLoggingOut(false)
     }
-    setShowLogoutModal(false)
+    finally {
+      setIsLoggingOut(false);
+      setShowLogoutModal(false);
+      try { await apolloClient.clearStore(); } catch { }
+    }
   }
 
   const handlePhoneVerifySuccess = (callNumber: string, agency: string) => {
     setIsPhoneVerified(true);
     setVerifiedPhoneNumber(callNumber);
     setShowPhoneAuth(false);
-    
+
     localStorage.setItem('hostPhoneVerified', 'true');
-    localStorage.setItem('hostPhoneNumber', callNumber);
+    localStorage.setItem('hostPhoneVerifiedAt', String(Date.now()));
   }
 
   const handleInputChange = (field: keyof typeof formData, value: string | boolean) => {
@@ -222,12 +224,12 @@ export default function Host() {
       };
 
       const result = await HostService.createBoardingHouse(apolloClient, requestDto);
-      
+
       if (result) {
         success('하숙집 정보가 저장되었습니다.');
         setIsHostSettingCompleted(true);
         localStorage.setItem('hostSettingCompleted', 'true');
-        
+
         setRole('HOST');
       } else {
         showError('하숙집 정보 저장에 실패했습니다.');
@@ -277,115 +279,115 @@ export default function Host() {
           <>
             <S.Section>
               <S.SectionTitle>하숙집 정보</S.SectionTitle>
-          <S.Home>
-            <S.InputRow>
-              <S.Input 
-                placeholder="하숙집 이름을 입력해주세요." 
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-              />
-              <AddressInput
-                onSelectAddress={(address, lat, lng) => {
-                  console.log("선택된 주소:", address, lat, lng);
-                  setSelectedPosition({ lat, lng });
-                  handleInputChange('address', address);
-                }}
-              />
-            </S.InputRow>
-            <S.InputRow>
-              <S.Input 
-                placeholder="하숙집 소개를 입력해주세요." 
-                value={formData.introduce}
-                onChange={(e) => handleInputChange('introduce', e.target.value)}
-              />
-              <S.Input 
-                placeholder="상세정보를 입력해주세요. (ex 301동 1103호)" 
-                value={formData.detailAddress}
-                onChange={(e) => handleInputChange('detailAddress', e.target.value)}
-              />
-            </S.InputRow>
-          </S.Home>
-        </S.Section>
+              <S.Home>
+                <S.InputRow>
+                  <S.Input
+                    placeholder="하숙집 이름을 입력해주세요."
+                    value={formData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                  />
+                  <AddressInput
+                    onSelectAddress={(address, lat, lng) => {
+                      console.log("선택된 주소:", address, lat, lng);
+                      setSelectedPosition({ lat, lng });
+                      handleInputChange('address', address);
+                    }}
+                  />
+                </S.InputRow>
+                <S.InputRow>
+                  <S.Input
+                    placeholder="하숙집 소개를 입력해주세요."
+                    value={formData.introduce}
+                    onChange={(e) => handleInputChange('introduce', e.target.value)}
+                  />
+                  <S.Input
+                    placeholder="상세정보를 입력해주세요. (ex 301동 1103호)"
+                    value={formData.detailAddress}
+                    onChange={(e) => handleInputChange('detailAddress', e.target.value)}
+                  />
+                </S.InputRow>
+              </S.Home>
+            </S.Section>
 
-        <S.Section>
-          <S.SectionTitle>지역</S.SectionTitle>
-          <S.InputRow>
-            <S.Input 
-              placeholder="가까운 역을 입력해주세요. (ex 대연역)" 
-              value={formData.station}
-              onChange={(e) => handleInputChange('station', e.target.value)}
+            <S.Section>
+              <S.SectionTitle>지역</S.SectionTitle>
+              <S.InputRow>
+                <S.Input
+                  placeholder="가까운 역을 입력해주세요. (ex 대연역)"
+                  value={formData.station}
+                  onChange={(e) => handleInputChange('station', e.target.value)}
+                />
+                <S.Input
+                  placeholder="가까운 대학교를 입력해주세요. (ex 부경대학교)"
+                  value={formData.university}
+                  onChange={(e) => handleInputChange('university', e.target.value)}
+                />
+              </S.InputRow>
+              <S.Guide>* 하나씩만 정확히 작성해주세요. </S.Guide>
+            </S.Section>
+
+            <S.Section>
+              <S.SectionTitle>성별 조건</S.SectionTitle>
+              <S.RadioRow>
+                <S.RadioLabel>
+                  <S.Radio
+                    name="gender"
+                    type="radio"
+                    checked={formData.gender === 'MALE'}
+                    onChange={() => handleInputChange('gender', 'MALE')}
+                  />
+                  남
+                </S.RadioLabel>
+                <S.RadioLabel>
+                  <S.Radio
+                    name="gender"
+                    type="radio"
+                    checked={formData.gender === 'FEMALE'}
+                    onChange={() => handleInputChange('gender', 'FEMALE')}
+                  />
+                  여
+                </S.RadioLabel>
+                <S.RadioLabel>
+                  <S.Radio
+                    name="gender"
+                    type="radio"
+                    checked={formData.gender === 'ALL'}
+                    onChange={() => handleInputChange('gender', 'ALL')}
+                  />
+                  모두
+                </S.RadioLabel>
+              </S.RadioRow>
+            </S.Section>
+
+            <S.Section>
+              <S.SectionTitle>식사 제공</S.SectionTitle>
+              <S.RadioRow>
+                <S.RadioLabel>
+                  <S.Radio
+                    name="meal"
+                    type="radio"
+                    checked={formData.mealProvided === true}
+                    onChange={() => handleInputChange('mealProvided', true)}
+                  />
+                  예
+                </S.RadioLabel>
+                <S.RadioLabel>
+                  <S.Radio
+                    name="meal"
+                    type="radio"
+                    checked={formData.mealProvided === false}
+                    onChange={() => handleInputChange('mealProvided', false)}
+                  />
+                  아니요
+                </S.RadioLabel>
+              </S.RadioRow>
+            </S.Section>
+            <Square
+              text={isSaving ? "저장 중..." : "저장하기"}
+              status={!isSaving}
+              onClick={handleSave}
+              width="100%"
             />
-            <S.Input 
-              placeholder="가까운 대학교를 입력해주세요. (ex 부경대학교)" 
-              value={formData.university}
-              onChange={(e) => handleInputChange('university', e.target.value)}
-            />
-          </S.InputRow>
-          <S.Guide>* 하나씩만 정확히 작성해주세요. </S.Guide>
-        </S.Section>
-
-        <S.Section>
-          <S.SectionTitle>성별 조건</S.SectionTitle>
-          <S.RadioRow>
-            <S.RadioLabel>
-              <S.Radio 
-                name="gender" 
-                type="radio" 
-                checked={formData.gender === 'MALE'}
-                onChange={() => handleInputChange('gender', 'MALE')}
-              />
-              남
-            </S.RadioLabel>
-            <S.RadioLabel>
-              <S.Radio 
-                name="gender" 
-                type="radio" 
-                checked={formData.gender === 'FEMALE'}
-                onChange={() => handleInputChange('gender', 'FEMALE')}
-              />
-              여
-            </S.RadioLabel>
-            <S.RadioLabel>
-              <S.Radio 
-                name="gender" 
-                type="radio" 
-                checked={formData.gender === 'ALL'}
-                onChange={() => handleInputChange('gender', 'ALL')}
-              />
-              모두
-            </S.RadioLabel>
-          </S.RadioRow>
-        </S.Section>
-
-        <S.Section>
-          <S.SectionTitle>식사 제공</S.SectionTitle>
-          <S.RadioRow>
-            <S.RadioLabel>
-              <S.Radio 
-                name="meal" 
-                type="radio" 
-                checked={formData.mealProvided === true}
-                onChange={() => handleInputChange('mealProvided', true)}
-              />
-              예
-            </S.RadioLabel>
-            <S.RadioLabel>
-              <S.Radio 
-                name="meal" 
-                type="radio" 
-                checked={formData.mealProvided === false}
-                onChange={() => handleInputChange('mealProvided', false)}
-              />
-              아니요
-            </S.RadioLabel>
-          </S.RadioRow>
-        </S.Section>
-        <Square 
-          text={isSaving ? "저장 중..." : "저장하기"} 
-          status={!isSaving} 
-          onClick={handleSave} 
-          width="100%" 
-        />
           </>
         )}
       </S.Container>

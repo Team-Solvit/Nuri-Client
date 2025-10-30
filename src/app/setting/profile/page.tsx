@@ -156,8 +156,9 @@ export default function ProfilePage() {
         const file = e.target.files?.[0]
         if (!file) return
         setSelectedFile(file)
-        const previewUrl = URL.createObjectURL(file)
-        setProfileImg(previewUrl)
+        const previewUrl = URL.createObjectURL(file);
+        setProfileImg(previewUrl);
+        setTimeout(() => URL.revokeObjectURL(previewUrl), 0);
     }
 
     const handleSave = async () => {
@@ -208,12 +209,12 @@ export default function ProfilePage() {
                     name: nickname,
                     email: currentUser.email || '',
                     phoneNumber: currentUser.phoneNumber || '',
-                    profile: profileImg,
+                    profile: finalProfile,
                     role: currentUser.role || '',
                 });
 
                 setInitialValues({
-                    profileImg,
+                    profileImg: finalProfile,
                     userid,
                     nickname,
                     introduction
