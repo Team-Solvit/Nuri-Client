@@ -10,6 +10,7 @@ import { useNavigationWithProgress } from '@/hooks/useNavigationWithProgress';
 import { imageCheck } from '@/utils/imageCheck';
 import { UserService } from '@/services/user';
 import { UserSearchResult } from '@/types/user';
+import { useAlertStore } from '@/store/alert';
 
 export default function UserSearch() {
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -17,6 +18,7 @@ export default function UserSearch() {
   const [loading, setLoading] = useState(false);
   const client = useApollo();
   const navigate = useNavigationWithProgress();
+  const { error: showError } = useAlertStore();
 
   const handleSearch = useCallback(async (keyword: string) => {
     if (!keyword.trim()) {
@@ -28,12 +30,14 @@ export default function UserSearch() {
       setLoading(true);
       const results = await UserService.searchUsers(client, keyword.trim());
       setUsers(results);
-    } catch {
+    } catch (error) {
+      console.error('유저 검색 실패:', error);
+      showError('유저 검색 중 오류가 발생했습니다. 다시 시도해주세요.');
       setUsers([]);
     } finally {
       setLoading(false);
     }
-  }, [client]);
+  }, [client, showError]);
 
   const handleKeywordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value;

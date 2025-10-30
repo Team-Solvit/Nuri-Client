@@ -16,7 +16,7 @@ interface ExplorePostListProps {
 
 export default function ExplorePostList({ searchFilter }: ExplorePostListProps) {
   const navigate = useNavigationWithProgress();
-  const { success, error } = useAlertStore();
+  const { success, error: showError } = useAlertStore();
   const [debouncedFilter, setDebouncedFilter] = useState<BoardingRoomSearchFilter>(searchFilter);
   const [allPosts, setAllPosts] = useState<PostItemData[]>([]);
   const [hasMore, setHasMore] = useState(true);
@@ -58,9 +58,10 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
         setIsInitialized(true);
       }
     },
-    onError: () => {
-      error('게시물 목록을 불러오는 중 오류가 발생했습니다.');
+    onError: (error) => {
+      console.error('GraphQL 쿼리 오류:', error);
       setHasMore(false);
+      setIsInitialized(true);
     }
   });
 
@@ -134,12 +135,14 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
         setHasMore(false);
         success('모든 게시물을 불러왔습니다.');
       }
-    } catch {
+    } catch (error) {
+      console.error('❌ 추가 데이터 로드 실패:', error);
+      showError('추가 데이터를 불러오는데 실패했습니다.');
       setHasMore(false);
     } finally {
       setIsLoadingMore(false);
     }
-  }, [debouncedFilter, currentPage, isLoadingMore, hasMore, fetchMore, loading, success]);
+  }, [debouncedFilter, currentPage, isLoadingMore, hasMore, fetchMore, loading, success, showError]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

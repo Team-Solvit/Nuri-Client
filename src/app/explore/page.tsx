@@ -58,25 +58,26 @@ const Container = styled.div`
     width: 100%;
     height: 100%;
     z-index: 3;
-    padding: 5% 6% 0% 6%;
+    padding: 2rem 6% 0% 6%;
     flex-direction: column;
-    gap: 40px;
+    gap: 1.5rem;
 
     ${mq.mobile} {
-      gap: 0;
+      gap: 1rem;
+      padding: 1rem 6% 0% 6%;
     }
 `
 
 const TabContainer = styled.div`
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   border-bottom: 2px solid ${colors.line};
-  margin-bottom: 1rem;
+  margin-bottom: 0;
 `;
 
 const Tab = styled.button<{ active: boolean }>`
-  padding: 1rem 2rem;
-  font-size: ${fontSizes.H4};
+  padding: 0.75rem 1.5rem;
+  font-size: ${fontSizes.Body};
   font-weight: ${({ active }) => (active ? 700 : 500)};
   color: ${({ active }) => (active ? colors.primary : colors.gray)};
   background: none;
@@ -91,7 +92,7 @@ const Tab = styled.button<{ active: boolean }>`
   }
 
   ${mq.mobile} {
-    padding: 0.75rem 1.5rem;
-    font-size: ${fontSizes.Body};
+    padding: 0.6rem 1rem;
+    font-size: ${fontSizes.Small};
   }
 `;
