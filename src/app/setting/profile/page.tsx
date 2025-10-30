@@ -22,8 +22,8 @@ import Alert from '@/components/ui/alert';
 import { useFileUpload } from '@/hooks/useFileUpload';
 
 export default function ProfilePage() {
-    const { userId, name, profile, email, clear, id } = useUserStore(s => s);
-    const apolloClient = useApollo();
+	const { userId, name, profile, clear, id } = useUserStore(s => s);
+	const apolloClient = useApollo();
     const router = useRouter();
     const { success, error } = useAlertStore();
     const [isLoggingOut, setIsLoggingOut] = useState(false)
@@ -141,7 +141,8 @@ export default function ProfilePage() {
                 }
                 // clear persisted user store
                 clear();
-                try { localStorage.removeItem('nuri-user'); } catch (e) { /* ignore */ }
+                try { localStorage.removeItem('nuri-user'); } catch (e:unknown) {
+	                console.error(e) }
                 success('로그아웃되었습니다.');
                 router.push('/');
         } catch (err) {
@@ -173,13 +174,6 @@ export default function ProfilePage() {
             return;
         }
 
-        console.log('프로필 저장 시작:', {
-            introduce: introduction,
-            profile: profileImg,
-            userId: userid,
-            username: nickname
-        });
-
         try {
             let finalProfile = profileImg;
             if (selectedFile) {
@@ -195,8 +189,6 @@ export default function ProfilePage() {
                 userId: userid,
                 username: nickname
             });
-
-            console.log('프로필 저장 결과:', updateResult);
 
             if (updateResult) {
                 success('프로필이 성공적으로 저장되었습니다.');
@@ -316,10 +308,6 @@ export default function ProfilePage() {
             />}
             {showLeaveModal && (
                 <Leave
-                    onLeave={() => {
-                        console.log('회원탈퇴 처리 완료')
-                        setShowLeaveModal(false)
-                    }}
                     onClose={() => setShowLeaveModal(false)}
                 />
             )}

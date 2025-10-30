@@ -30,7 +30,6 @@ export default function Boarder() {
   const [isMobile, setIsMobile] = useState(false);
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
   const [verifiedPhoneNumber, setVerifiedPhoneNumber] = useState<string>('');
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -42,10 +41,7 @@ export default function Boarder() {
   }, [])
 
   useEffect(() => {
-    console.log('Current role:', role);
-    console.log('Current phoneNumber:', phoneNumber);
     if (role === 'BOARDER') {
-      console.log('User is a BOARDER, auto-verifying phone');
       setIsPhoneVerified(true);
       setVerifiedPhoneNumber(phoneNumber || '인증 완료');
       return;
@@ -54,14 +50,17 @@ export default function Boarder() {
     const savedPhoneNumber = localStorage.getItem('boarderPhoneNumber');
     
     if (savedPhoneVerified === 'true' && savedPhoneNumber) {
-      console.log('Restoring boarder phone verification from localStorage');
       setIsPhoneVerified(true);
       setVerifiedPhoneNumber(savedPhoneNumber);
     }
   }, [role, phoneNumber])
-
+	
+	function maskPhoneNumber(n: string) {
+		const d = n.replace(/\D/g, '');
+		return d.length === 11 ? d.replace(/(\d{3})(\d{4})(\d{4})/, '$1-****-$3') : '인증 완료';
+	}
+	
   const handleLogout = async () => {
-    setIsLoggingOut(true)
     try {
       await AuthService.logout(apolloClient);
       // clear local access token and Apollo cache
@@ -72,18 +71,22 @@ export default function Boarder() {
         console.error('Error clearing client state on logout:', e);
       }
   clear();
-  try { localStorage.removeItem('nuri-user'); } catch (e) { /* ignore */ }
+  try {
+		localStorage.removeItem('nuri-user');
+	  localStorage.removeItem('boarderPhoneVerified');
+		localStorage.removeItem('boarderPhoneNumber');
+	} catch (e:unknown) {
+	  console.error(e) }
       success('로그아웃되었습니다.');
       router.push('/');
     } catch (err) {
       console.error('로그아웃 실패:', err);
       showError('로그아웃 중 오류가 발생했습니다.');
-      setIsLoggingOut(false)
     }
     setShowLogoutModal(false)
   }
 
-  const handlePhoneVerifySuccess = (callNumber: string, agency: string) => {
+  const handlePhoneVerifySuccess = (callNumber: string) => {
     setIsPhoneVerified(true);
     setVerifiedPhoneNumber(callNumber);
     setShowPhoneAuth(false);
@@ -131,7 +134,7 @@ export default function Boarder() {
             <S.AuthDescription>
               하숙생 인증이 완료되었습니다.
               <br />
-              인증 번호: {verifiedPhoneNumber}
+	            인증 번호: {maskPhoneNumber(verifiedPhoneNumber)}
             </S.AuthDescription>
           </S.AuthSection>
         )}
@@ -142,10 +145,6 @@ export default function Boarder() {
       />}
       {showLeaveModal && (
         <Leave
-          onLeave={() => {
-            console.log('회원탈퇴 처리 완료')
-            setShowLeaveModal(false)
-          }}
           onClose={() => setShowLeaveModal(false)}
         />
       )}

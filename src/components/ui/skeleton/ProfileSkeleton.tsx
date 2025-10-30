@@ -1,31 +1,10 @@
 'use client'
 
 import styled from '@emotion/styled';
-import { keyframes } from '@emotion/react';
 import { colors, radius } from '@/styles/theme';
 import { mq } from '@/styles/media';
 
-const shimmer = keyframes`
-  0% {
-    background-position: -468px 0;
-  }
-  100% {
-    background-position: 468px 0;
-  }
-`;
-
-const SkeletonBase = styled.div`
-  background: linear-gradient(
-    to right,
-    #f0f0f0 0%,
-    #e0e0e0 20%,
-    #f0f0f0 40%,
-    #f0f0f0 100%
-  );
-  background-size: 800px 104px;
-  animation: ${shimmer} 1.5s infinite linear;
-  border-radius: ${radius.sm};
-`;
+import { SkeletonBase } from './animations';
 
 const ProfileWrapper = styled.div`
   display: flex;

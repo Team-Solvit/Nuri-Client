@@ -11,14 +11,12 @@ import { useApollo } from '@/lib/apolloClient'
 import { AuthService } from '@/services/auth'
 import { useAlertStore } from '@/store/alert'
 import { useRouter } from 'next/navigation'
-import { clearAccessToken } from '@/utils/token'
 
 interface LeaveModalProps {
-    onLeave: () => void
     onClose: () => void
 }
 
-export default function Leave({ onLeave, onClose }: LeaveModalProps) {
+export default function Leave({  onClose }: LeaveModalProps) {
     const [isMobile, setIsMobile] = useState(false)
     const [verificationCode, setVerificationCode] = useState('')
     const [isWithdrawing, setIsWithdrawing] = useState(false)
@@ -80,9 +78,8 @@ export default function Leave({ onLeave, onClose }: LeaveModalProps) {
             } else {
                 alertStore.error('회원탈퇴에 실패했습니다.')
             }
-        } catch (error: any) {
+        } catch (error : unknown) {
             console.error('회원탈퇴 실패:', error)
-            alertStore.error(error?.message || '회원탈퇴 중 오류가 발생했습니다.')
         } finally {
             setIsWithdrawing(false)
         }

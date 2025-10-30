@@ -49,7 +49,8 @@ export default function SettingPage() {
             // clear persisted user store
             clear();
             // remove persisted zustand storage key
-            try { localStorage.removeItem('nuri-user'); } catch (e) { /* ignore */ }
+            try { localStorage.removeItem('nuri-user'); } catch (e : unknown) {
+	            console.error(e) }
             success('로그아웃되었습니다.');
             router.push('/');
         } catch (err) {
@@ -61,6 +62,14 @@ export default function SettingPage() {
     };
 
     const handleChangePassword = async () => {
+		    if (!currentPw || !newPw || !confirmPw) {
+					error('모든 비밀번호 필드를 입력해주세요.');
+					return;
+				}
+				if (newPw.length < 8) {
+					error('새 비밀번호는 최소 8자 이상이어야 합니다.');
+					return;
+				}
         if (newPw !== confirmPw) {
             error('새 비밀번호가 일치하지 않습니다.');
             return;
@@ -71,6 +80,9 @@ export default function SettingPage() {
             });
             if (data.changePassword) {
                 success('비밀번호가 성공적으로 변경되었습니다.');
+	            setCurrentPw('');
+							setNewPw('');
+							setConfirmPw('');
             } else {
                 error('비밀번호 변경에 실패했습니다.');
             }
@@ -165,10 +177,6 @@ export default function SettingPage() {
             )}
             {showLeaveModal && (
                 <Leave
-                    onLeave={() => {
-                        console.log('회원탈퇴 처리 완료')
-                        setShowLeaveModal(false)
-                    }}
                     onClose={() => setShowLeaveModal(false)}
                 />
             )}

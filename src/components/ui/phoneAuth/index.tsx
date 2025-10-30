@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import * as S from './sytle';
+import * as S from './style';
 import Square from '../button/square'
 import { useApollo } from '@/lib/apolloClient'
 import { useRouter } from 'next/navigation'
@@ -33,19 +33,12 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
   const [isVerifying, setIsVerifying] = useState(false)
   const [callNumber, setCallNumber] = useState('')
   const [agency, setAgency] = useState('')
-  const [isMobile, setIsMobile] = useState(false)
   const [generatedCode, setGeneratedCode] = useState('')
   const [smsLink, setSmsLink] = useState('')
   const apolloClient = useApollo()
   const router = useRouter()
   const { success, error } = useAlertStore()
 
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 430)
-    handleResize()
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
 
   // MMS 보낸 후 웹으로 돌아왔을 때 자동으로 인증코드 입력
   useEffect(() => {
@@ -60,19 +53,20 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
       return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
   }, [isCodeSent, generatedCode, authCode])
-
-  const generateAuthCode = () => {
-    return Math.floor(100000 + Math.random() * 900000).toString()
-  }
+	
+	const generateAuthCode = () => {
+		if (typeof crypto?.getRandomValues === 'function') {
+			const buf = new Uint32Array(1);
+			crypto.getRandomValues(buf);
+			const n = (buf[0] % 900000) + 100000;
+			return String(n);
+		}
+		// Fallback
+		return String(Math.floor(100000 + Math.random() * 900000));
+	}
 
   const normalizePhoneNumber = (phone: string) => {
     return phone.replace(/[^0-9]/g, '')
-  }
-
-  const detectAgency = (phone: string): string => {
-    const normalizedPhone = normalizePhoneNumber(phone)
-    const prefix = normalizedPhone.substring(0, 3)
-    return 'UNKNOWN'
   }
 
   const handleSendCode = () => {
@@ -98,7 +92,7 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
     setIsCodeSent(true)
     
     // SMS 링크 생성 - 백엔드 이메일 주소로 보냄
-    const link = `sms:${BACKEND_EMAIL}?body=${code}`
+	  const link = `sms:${BACKEND_EMAIL}?body=${encodeURIComponent(code)}`
     setSmsLink(link)
     
     // SMS 앱 열기 시도
@@ -159,7 +153,7 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
         error('호스트(하숙집) 정보가 없습니다. 먼저 호스트 설정에서 하숙집 정보를 등록해 주세요. 이동합니다.');
         try {
           router.push(role === 'HOST' ? '/setting/host' : '/setting/boarder');
-        } catch (e) {
+        } catch (e : unknown) {
           console.error('라우팅 실패:', e);
         }
       } else {

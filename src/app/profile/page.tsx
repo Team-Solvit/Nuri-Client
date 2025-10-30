@@ -23,7 +23,7 @@ export default function MyProfilePage() {
   const router = useRouter()
   const [showFollowerModal, setShowFollowerModal] = useState(false);
   const [showFollowModal, setShowFollowModal] = useState(false);
-  const { id, userId, name, profile: userProfile } = useUserStore(s => s);
+  const { id, userId, profile: userProfile } = useUserStore(s => s);
   const { error: showError } = useAlertStore();
   const { open: openLoginModal } = useLoginModalStore();
   const [hydrated, setHydrated] = useState(false);
@@ -52,7 +52,7 @@ export default function MyProfilePage() {
     }
   }, [hydrated, id, userId, openLoginModal, router]);
 
-  const { data, loading, error } = useQuery<{ getUserProfile: UserProfileResponseDto }>(
+  const { data, loading } = useQuery<{ getUserProfile: UserProfileResponseDto }>(
     ProfileGQL.QUERIES.GET_USER_PROFILE,
     {
       variables: { userId: userId || '' },
@@ -87,7 +87,7 @@ export default function MyProfilePage() {
     setInitialSelectedSet(true);
   }, [initialSelectedSet, data?.getUserProfile]);
 
-  const { data: postData, loading: postLoading, error: postError, fetchMore } = useQuery<UserPostListResponse>(
+  const { loading: postLoading, error: postError, fetchMore } = useQuery<UserPostListResponse>(
     ProfileGQL.QUERIES.GET_USER_POST_LIST,
     {
       variables: {
@@ -135,16 +135,17 @@ export default function MyProfilePage() {
       showError('하숙집 정보를 불러오는 중 오류가 발생했습니다.');
     }
   }, [boardingRoomError, showError]);
-
-  const convertToPostItem = (post: UserPost) => ({
-    id: parseInt(post.postId) || Math.random(),
-    user: userId || '알 수 없음',
-    title: '게시물',
-    region: '지역',
-    price: '0',
-    thumbnail: post.thumbnail || '/post/post-example.png',
-    userProfile: profile.profile,
-  });
+	
+	const convertToPostItem = (post: UserPost) => ({
+			postId: post.postId,
+			thumbnail: post.thumbnail || '/post/post-example.png',
+			// 카드용 부가 필드(필요 시)
+			user: userId || '알 수 없음',
+			title: '게시물',
+			region: '지역',
+			price: '0',
+			userProfile: profile.profile,
+	});
 
   const convertToBoardingRoomItem = (room: HostBoardingRoom) => {
     const firstImage = room.boardingRoomFile?.[0];
@@ -162,7 +163,7 @@ export default function MyProfilePage() {
     }
 
     return {
-      id: firstImage?.roomId || `room_${Math.random()}`,
+	    id: firstImage?.roomId || `room_${room.name}_${room.monthlyRent}`,
       user: userId || '알 수 없음',
       title: room.name || '하숙집',
       region: '지역 정보 없음',
@@ -396,8 +397,8 @@ export default function MyProfilePage() {
               <div style={{ padding: '20px', textAlign: 'center' }}>게시물이 없습니다.</div>
             ) : (
               <>
-                {allPosts.map((post) => (
-                  <Post key={post.id} post={post} />
+	              {allPosts.map((post) => (
+									<Post key={post.postId} post={post} />
                 ))}
                 {hasMore && (
                   <div ref={observerRef} style={{ padding: '20px', textAlign: 'center' }}>
