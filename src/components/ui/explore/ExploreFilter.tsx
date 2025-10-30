@@ -22,7 +22,7 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
   const regionList = ['남구'];
   const stationList = ['못골역', '국제금융센터·부산은행역', '문현역', '지게골역', '대연역', '경성대·부경대역'];
 
-  const getLocation = (name: string, type: 'school' | 'station'): Location => {
+  const getLocation = (name: string): Location => {
     const coordinates: { [key: string]: { lat: number; lon: number } } = {
       '부경대학교': { lat: 35.1379, lon: 129.0556 },
       '경성대학교': { lat: 35.1379, lon: 129.0556 },
