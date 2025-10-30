@@ -166,10 +166,10 @@ export default function Host() {
       showError('로그아웃 중 오류가 발생했습니다.');
     }
     finally {
-      setIsLoggingOut(false);
-      setShowLogoutModal(false);
-      try { await apolloClient.clearStore(); } catch { }
-    }
+     setIsLoggingOut(false);
+     setShowLogoutModal(false);
+     try { await apolloClient.clearStore(); } catch {}
+   }
   }
 
   const handlePhoneVerifySuccess = (callNumber: string, agency: string) => {
