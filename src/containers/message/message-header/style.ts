@@ -64,25 +64,6 @@ export const Profile = styled.div`
   position: relative;
 `
 
-export const MemberListContainer = styled.div`
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 1rem;
-  width: 280px;
-  max-height: 360px;
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-  z-index: ${zIndex.overlay};
-  overflow: auto;
-  padding: 8px 0;
-	& > img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-`
-
 export const FadeBoxContainer = styled.div`
   position: absolute;
   top: 100%;

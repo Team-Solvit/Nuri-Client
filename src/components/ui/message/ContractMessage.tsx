@@ -119,6 +119,7 @@ const STATUS_MAP = {
 	ACTIVE: { text: "수락", isAgree: true },
   REJECTED: { text: "거절", isAgree: false },
 	EXPIRED: { text: "만료", isAgree: false },
+	DELETED : { text: "만료", isAgree: false },
 // PENDING: PENDING 상태에서는 뱃지를 표시하지 않습니다
 } as const;
 const ContractMessage: React.FC<ContractMessageProps> = ({
@@ -150,6 +151,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
 						{status === "PENDING" && "계약요청이 왔어요"}
 						{status === "REJECTED" && "계약을 취소했어요"}
 						{status === "EXPIRED" && "계약이 만료되었어요"}
+						{status === "DELETED" && "계약이 만료되었어요"}
 					</ContractTitle>
 					
 					<ContractButtonWrapper>

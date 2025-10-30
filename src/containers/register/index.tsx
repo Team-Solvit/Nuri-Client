@@ -219,6 +219,7 @@ export default function RegisterContainer() {
 				{renderStepContent()}
 				<S.ButtonGroup>
 					<Square
+						isLoading={currentStep === effectiveSteps.length - 1 && loading}
 						text={currentStep === effectiveSteps.length - 1 ? (loading ? '가입 중...' : '가입완료') : '다음'}
 						onClick={handleNext}
 						status={!loading}

@@ -119,7 +119,7 @@ export default function BoardingThirdPartyPage() {
         />
       )}
       <div style={{ position: 'absolute', top: 16, right: 16 }}>
-        <Square text="하숙관리" onClick={handleSquareClick} status={true} width="max-content" />
+        <Square text="하숙관리" isLoading={initialLoading} onClick={handleSquareClick} status={true} width="max-content" />
       </div>
     </div>
   );

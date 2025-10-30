@@ -173,12 +173,14 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 						onClick={closeModal}
 						status={false}
 						width="100%"
+						isLoading={accContractLoading || rejContractLoading || rejRoomTourLoading || accRoomTourLoading}
 					/>
 					<Square
 						text="확인"
 						onClick={() => handleBtnClick()}
 						status={true}
 						width="100%"
+						isLoading={accContractLoading || rejContractLoading || rejRoomTourLoading || accRoomTourLoading}
 					/>
 				</ButtonContainer>
 			</Content>
