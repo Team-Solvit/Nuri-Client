@@ -288,7 +288,6 @@ export default function Host() {
                   />
                   <AddressInput
                     onSelectAddress={(address, lat, lng) => {
-                      console.log("선택된 주소:", address, lat, lng);
                       setSelectedPosition({ lat, lng });
                       handleInputChange('address', address);
                     }}

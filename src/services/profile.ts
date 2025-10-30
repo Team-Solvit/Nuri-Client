@@ -147,7 +147,7 @@ export const changePassword = async (
 ): Promise<boolean> => {
   const { data } = await client.mutate({
     mutation: ProfileGQL.MUTATIONS.CHANGE_PASSWORD,
-    variables: { input },
+    variables: { passwordRequestDto: input },
   });
   return data.changePassword;
 };

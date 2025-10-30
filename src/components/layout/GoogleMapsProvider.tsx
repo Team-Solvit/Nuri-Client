@@ -10,9 +10,14 @@ interface GoogleMapsContextType {
 const GoogleMapsContext = createContext<GoogleMapsContextType | undefined>(undefined)
 
 export function GoogleMapsProvider({ children }: { children: ReactNode }) {
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  
+  if (!apiKey) {
+    throw new Error('NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is not defined')
+  }
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+    googleMapsApiKey: apiKey,
     libraries: ['places'] // 필요한 라이브러리 추가
   })
 

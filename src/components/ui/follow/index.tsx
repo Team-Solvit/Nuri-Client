@@ -10,27 +10,33 @@ import { useRouter } from 'next/navigation';
 interface FollowProps {
     onClose: () => void;
     userId: string;
+    viewerId?: string;
 }
 
-export default function Follow({ onClose, userId }: FollowProps) {
-    // const [search, setSearch] = useState('');
+export default function Follow({ onClose, userId, viewerId }: FollowProps) {
     const router = useRouter();
+    const { data: followingData } = useQuery(
+      ProfileGQL.QUERIES.GET_FOLLOWING,
+      { variables: { userId } }
+    );
+    const { data: myFollowingData, refetch: refetchMyFollowing } = useQuery(
+      ProfileGQL.QUERIES.GET_FOLLOWING,
+      { variables: { userId: viewerId! }, skip: !viewerId }
+    );
 
-    const { data: followingData, refetch: refetchFollowing } = useQuery(ProfileGQL.QUERIES.GET_FOLLOWING, {
-        variables: { userId },
-    });
+    const [followUser, { loading: followLoading, error: followError }] =
+      useMutation(ProfileGQL.MUTATIONS.FOLLOW);
+    const [unfollowUser, { loading: unfollowLoading, error: unfollowError }] =
+      useMutation(ProfileGQL.MUTATIONS.UNFOLLOW);
 
-    const [followUser] = useMutation(ProfileGQL.MUTATIONS.FOLLOW);
-    const [unfollowUser] = useMutation(ProfileGQL.MUTATIONS.UNFOLLOW);
+    const following = followingData?.getFollowingInfo ?? []; 
+    const myFollowing = myFollowingData?.getFollowingInfo ?? [];
 
-    const following = followingData?.getFollowingInfo ?? [];
-
-    // const filtered = followers.filter(f => f.userId.includes(search));
     const filtered: FollowUserInfo[] = following;
 
-    const isFollowing = (targetId: string) => following.some((f: FollowUserInfo) => f.userId === targetId);
+    const isFollowing = (targetId: string) =>
+        (viewerId ? myFollowing : following).some((f: FollowUserInfo) => f.userId === targetId);
 
-    // URL 유효성 검사 함수
     const isValidUrl = (url: string): boolean => {
         try {
             new URL(url);
@@ -40,16 +46,11 @@ export default function Follow({ onClose, userId }: FollowProps) {
         }
     };
 
-    // 프로필 이미지 URL 변환 함수
     const getProfileImageUrl = (profile: string): string => {
         if (!profile) return '/profile/profile.svg';
-        
-        // 이미 완전한 URL이면 그대로 반환
         if (isValidUrl(profile)) {
             return profile;
         }
-        
-        // 파일 ID인 경우 CDN URL로 변환
         return `https://cdn.solvit-nuri.com/file/${profile}`;
     };
 
@@ -58,43 +59,11 @@ export default function Follow({ onClose, userId }: FollowProps) {
         router.push(`/profile/${targetUserId}`);
     };
 
-    // const handleFollowToggle = async (targetId: string) => {
-    //     if (isFollowing(targetId)) {
-    //         await unfollowUser({
-    //             variables: { userId: targetId },
-    //             refetchQueries: [
-    //               { query: ProfileGQL.QUERIES.GET_FOLLOWING, variables: { userId } },
-    //             ],
-    //           });
-    //     } else {
-    //         await followUser({
-    //             variables: { userId: targetId },
-    //             refetchQueries: [
-    //               { query: ProfileGQL.QUERIES.GET_FOLLOWING, variables: { userId } },
-    //             ],
-    //           });
-    //     }
-    // };
-
     return (
         <S.Overlay onClick={onClose}>
             <S.ModalWrapper onClick={(e) => e.stopPropagation()}>
                 <S.Container>
                     <S.Title>팔로잉</S.Title>
-
-                    {/* <S.SearchBox>
-                        <Image
-                            src='/icons/search.svg'
-                            alt="search"
-                            width={22}
-                            height={22}
-                        />
-                        <S.SearchInput
-                            placeholder="검색어를 입력하세요."
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                        />
-                    </S.SearchBox> */}
 
                     <S.List>
                         {filtered.length === 0 ? (
@@ -134,11 +103,7 @@ export default function Follow({ onClose, userId }: FollowProps) {
                                     </S.ProfileImg>
                                     <S.Info>
                                         <S.Username>{f.userId}</S.Username>
-                                        <S.Name>{f.userId}</S.Name>
                                     </S.Info>
-                                    {/* <S.DeleteBtn onClick={() => handleFollowToggle(f.userId)}>
-                                        {isFollowing(f.userId) ? '팔로잉' : '팔로우'}
-                                    </S.DeleteBtn> */}
                                 </S.Item>
                             ))
                         )}

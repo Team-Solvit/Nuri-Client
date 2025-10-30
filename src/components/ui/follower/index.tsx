@@ -13,17 +13,14 @@ interface FollowerListProps {
 }
 
 export default function FollowerList({ onClose, userId }: FollowerListProps) {
-  // const [search, setSearch] = useState('');
   const router = useRouter();
   
-  const { data: followerData } = useQuery(ProfileGQL.QUERIES.GET_FOLLOWERS, {
-    variables: { userId },
-  });
+  const { data: followerData, loading, error } = useQuery(
+    ProfileGQL.QUERIES.GET_FOLLOWERS,
+    { variables: { userId } }
+  );
 
   const followers = followerData?.getFollowerInfo ?? [];
-  // const filtered = followers.filter((f: FollowerUserInfo) =>
-  //   f.userId.includes(search)
-  // );
   const isValidUrl = (url: string): boolean => {
     try {
       new URL(url);
@@ -52,19 +49,6 @@ export default function FollowerList({ onClose, userId }: FollowerListProps) {
       <S.ModalWrapper onClick={(e) => e.stopPropagation()}>
         <S.Container>
           <S.Title>팔로워</S.Title>
-          {/* <S.SearchBox>
-            <Image
-              src='/icons/search.svg'
-              alt="search"
-              width={22}
-              height={22}
-            />
-            <S.SearchInput
-              placeholder="검색어를 입력하세요."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
-          </S.SearchBox> */}
           <S.List>
             {followers.length === 0 ? (
               <div style={{ padding: '2rem', textAlign: 'center', color: '#666' }}>
@@ -103,7 +87,6 @@ export default function FollowerList({ onClose, userId }: FollowerListProps) {
                   </S.ProfileImg>
                   <S.Info>
                     <S.Username>{f.userId}</S.Username>
-                    <S.Name>{f.userId}</S.Name>
                   </S.Info>
                 </S.Item>
               ))

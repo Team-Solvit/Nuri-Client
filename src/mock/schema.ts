@@ -199,9 +199,4 @@ type ContractInfo {
   type Mutation {
     createPost(createPostInput: CreatePostInput!): Boolean!
   }
-
-  # --- Mutation ---
-  type Mutation {
-    createPost(createPostInput: CreatePostInput!): Boolean!
-  }
 `;
