@@ -72,10 +72,8 @@ export default function Host() {
       skip: !userId || !isPhoneVerified || (role !== 'HOST' && !localStorage.getItem('hostSettingCompleted')),
       fetchPolicy: 'network-only',
       onCompleted: (data) => {
-        console.log('하숙집 데이터 로드 완료:', data);
         const rooms = data?.getHostBoardingRooms;
         if (rooms && rooms.length > 0) {
-          console.log('첫 번째 하숙집 정보:', rooms[0]);
           const room = rooms[0]; // 첫 번째 하숙집 정보 사용
           const newFormData = {
             name: room.name || '',
@@ -87,12 +85,10 @@ export default function Host() {
             gender: 'MALE',
             mealProvided: true,
           };
-          console.log('설정할 폼 데이터:', newFormData);
           setFormData(newFormData);
           setIsHostSettingCompleted(true);
           localStorage.setItem('hostSettingCompleted', 'true');
         } else {
-          console.log('하숙집 정보가 없습니다.');
           setIsHostSettingCompleted(false);
           localStorage.removeItem('hostSettingCompleted');
         }
@@ -107,9 +103,6 @@ export default function Host() {
     }
   );
 
-  console.log('현재 폼 데이터:', formData);
-  console.log('쿼리 skip 여부:', !userId || !isPhoneVerified, { userId, isPhoneVerified });
-
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 430)
@@ -120,11 +113,7 @@ export default function Host() {
   }, [])
 
   useEffect(() => {
-    console.log('Current role:', role);
-    console.log('Current phoneNumber:', phoneNumber);
-
     if (role === 'HOST') {
-      console.log('User is a HOST, auto-verifying phone');
       setIsPhoneVerified(true);
       setVerifiedPhoneNumber(phoneNumber || '인증 완료');
       return;
@@ -135,7 +124,6 @@ export default function Host() {
 
     const isFresh = Date.now() - savedAt < 1000 * 60 * 30; // 30분 TTL
     if (savedPhoneVerified === 'true' && isFresh) {
-      console.log('Restoring host phone verification from localStorage');
       setIsPhoneVerified(true);
     }
   }, [role, phoneNumber])
@@ -158,7 +146,15 @@ export default function Host() {
         console.error('Error clearing client state on logout:', e);
       }
       clear();
-      try { localStorage.removeItem('nuri-user'); } catch (e) { /* ignore */ }
+	    try {
+				localStorage.removeItem('nuri-user');
+				localStorage.removeItem('hostPhoneVerified');
+				localStorage.removeItem('hostPhoneNumber');
+				localStorage.removeItem('hostSettingCompleted');
+			}
+      catch (e) {
+	      console.error(e)
+      }
       success('로그아웃되었습니다.');
       router.push('/');
     } catch (err) {
@@ -166,13 +162,13 @@ export default function Host() {
       showError('로그아웃 중 오류가 발생했습니다.');
     }
     finally {
-     setIsLoggingOut(false);
-     setShowLogoutModal(false);
-     try { await apolloClient.clearStore(); } catch {}
-   }
+	    setIsLoggingOut(false);
+      setShowLogoutModal(false);
+      try { await apolloClient.clearStore(); } catch { }
+    }
   }
 
-  const handlePhoneVerifySuccess = (callNumber: string, agency: string) => {
+  const handlePhoneVerifySuccess = (callNumber: string) => {
     setIsPhoneVerified(true);
     setVerifiedPhoneNumber(callNumber);
     setShowPhoneAuth(false);
@@ -220,7 +216,12 @@ export default function Host() {
         gender: formData.gender,
         mealProvided: formData.mealProvided,
         introduce: formData.introduce,
-        callNumber: phoneNumber || verifiedPhoneNumber || '',
+	      callNumber:
+		      phoneNumber && /^\d{10,11}$/.test(phoneNumber)
+			      ? phoneNumber
+			      : verifiedPhoneNumber && /^\d{10,11}$/.test(verifiedPhoneNumber)
+			      ? verifiedPhoneNumber
+			      : '',
       };
 
       const result = await HostService.createBoardingHouse(apolloClient, requestDto);
@@ -288,7 +289,6 @@ export default function Host() {
                   />
                   <AddressInput
                     onSelectAddress={(address, lat, lng) => {
-                      console.log("선택된 주소:", address, lat, lng);
                       setSelectedPosition({ lat, lng });
                       handleInputChange('address', address);
                     }}
@@ -366,7 +366,7 @@ export default function Host() {
                   <S.Radio
                     name="meal"
                     type="radio"
-                    checked={formData.mealProvided === true}
+                    checked={formData.mealProvided}
                     onChange={() => handleInputChange('mealProvided', true)}
                   />
                   예
@@ -375,7 +375,7 @@ export default function Host() {
                   <S.Radio
                     name="meal"
                     type="radio"
-                    checked={formData.mealProvided === false}
+                    checked={!formData.mealProvided}
                     onChange={() => handleInputChange('mealProvided', false)}
                   />
                   아니요

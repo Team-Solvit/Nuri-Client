@@ -20,6 +20,7 @@ import { useCallback } from 'react';
 import { useAlertStore } from '@/store/alert';
 import ProfileSkeleton from '@/components/ui/skeleton/ProfileSkeleton'
 import { useLoginModalStore } from '@/store/loginModal';
+import {imageCheck} from "@/utils/imageCheck";
 
 
 export default function UserProfilePage() {
@@ -51,7 +52,7 @@ export default function UserProfilePage() {
         }
     }, [isOwnProfile, router]);
     
-    const { data, loading, error, refetch } = useQuery<{ getUserProfile: UserProfileResponseDto }>(
+    const { data, loading, refetch } = useQuery<{ getUserProfile: UserProfileResponseDto }>(
         ProfileGQL.QUERIES.GET_USER_PROFILE,
         {
             variables: { userId },
@@ -61,7 +62,7 @@ export default function UserProfilePage() {
     );
 
 
-    const { data: postData, loading: postLoading, error: postError, fetchMore } = useQuery<UserPostListResponse>(
+    const { fetchMore } = useQuery<UserPostListResponse>(
         ProfileGQL.QUERIES.GET_USER_POST_LIST,
         {
             variables: {
@@ -86,7 +87,7 @@ export default function UserProfilePage() {
         }
     );
 
-    const { data: boardingRoomData, loading: boardingRoomLoading, error: boardingRoomError } = useQuery<HostBoardingRoomsResponse>(
+    const {  } = useQuery<HostBoardingRoomsResponse>(
         ProfileGQL.QUERIES.GET_HOST_BOARDING_ROOMS,
         {
             variables: {
@@ -152,7 +153,7 @@ export default function UserProfilePage() {
                 query: ProfileGQL.QUERIES.GET_USER_PROFILE,
                 variables: { userId },
             });
-        } catch (e) {
+        } catch {
             prevProfileData = null;
         }
 
@@ -270,16 +271,17 @@ export default function UserProfilePage() {
             setIsFollowLoading(false);
         }
     };
-
-    const convertToPostItem = (post: UserPost) => ({
-        id: parseInt(post.postId) || Math.random(),
-        user: userId,
-        title: '게시물',
-        region: '지역',
-        price: '0',
-        thumbnail: post.thumbnail || '/post/post-example.png',
-        userProfile: profile.profile,
-    });
+		
+		const convertToPostItem = (post: UserPost) => ({
+			postId: post.postId,
+			id: Number.parseInt(post.postId, 10) || 0, // 내부용 보조 id(필요 시)
+			user: userId,
+			title: '게시물',
+			region: '지역',
+			price: '0',
+			thumbnail: post.thumbnail || '/post/post-example.png',
+			userProfile: profile.profile,
+		});
 
     const convertToBoardingRoomItem = (room: HostBoardingRoom) => {
         const firstImage = room.boardingRoomFile?.[0];
@@ -377,7 +379,7 @@ export default function UserProfilePage() {
                 <S.ProfileImage>
                     {profile.profile && profile.profile !== '/profile/profile.svg' && profile.profile !== '' ? (
                         <Image
-                            src={profile.profile}
+                            src={imageCheck(profile.profile)}
                             alt="프로필"
                             fill
                             style={{ objectFit: 'cover', zIndex: 0 }}
@@ -493,8 +495,8 @@ export default function UserProfilePage() {
                             <div style={{ padding: '20px', textAlign: 'left' }}>게시물이 없습니다.</div>
                         ) : (
                             <>
-                                {allPosts.map(post => (
-                                    <Post key={post.id} post={post} />
+	                            {allPosts.map(post => (
+																	<Post key={post.postId} post={post} />
                                 ))}
                                 {hasMore && (
                                     <div ref={observerRef} style={{ padding: '20px' }}>

@@ -1,5 +1,5 @@
 import { gql, ApolloClient } from '@apollo/client';
-import { UserProfileResponseDto, ChangeProfileRequest, FollowUserInfoResponseDto, FollowUserInfo, FollowerUserInfo, PasswordChangeInput } from '@/types/profile';
+import { UserProfileResponseDto, FollowUserInfoResponseDto, PasswordChangeInput } from '@/types/profile';
 
 export const ProfileGQL = {
   QUERIES: {
