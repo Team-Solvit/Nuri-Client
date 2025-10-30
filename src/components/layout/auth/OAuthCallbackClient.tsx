@@ -13,7 +13,7 @@ export default function OAuthCallbackClient() {
   const client = useApollo();
   const alertStore = useAlertStore();
   const setAuth = useUserStore(s => s.setAuth);
-	const setToken = useUserStore(s => s.setToken);
+  const setToken = useUserStore(s => s.setToken);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,8 +37,6 @@ export default function OAuthCallbackClient() {
           provider = storedProvider;
           sessionStorage.removeItem('oauth_provider');
         }
-
-        console.log('OAuth 콜백 처리:', { code: code, provider });
 
         const { response, headers, status } = await AuthService.oauthLogin(client, {
           code,
@@ -74,12 +72,11 @@ export default function OAuthCallbackClient() {
           profile: response.user.profile || '',
           role: response.user.role || '',
         });
-	      setToken(headerToken)
+        setToken(headerToken)
         alertStore.success('로그인 성공');
         router.push('/');
-      } catch (error: any) {
-        console.error('OAuth 콜백 처리 실패:', error);
-        alertStore.error(error?.message || '로그인에 실패했습니다.');
+      } catch (error) {
+        alertStore.error(error instanceof Error ? error.message : '로그인에 실패했습니다.');
       } finally {
         setLoading(false);
       }

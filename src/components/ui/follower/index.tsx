@@ -104,4 +104,4 @@ export default function FollowerList({ onClose, userId }: FollowerListProps) {
       </S.ModalWrapper>
     </S.Overlay>
   );
-} 
+}

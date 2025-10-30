@@ -1,14 +1,14 @@
 import React from 'react';
 import Square from "@/components/ui/button/square";
 import styled from "@emotion/styled";
-import {colors, fontSizes} from "@/styles/theme";
-import {useConfirmStore} from "@/store/confirm";
-import {useAlertStore} from "@/store/alert";
-import {useMutation} from "@apollo/client";
-import {ContractMutations} from "@/services/contract";
-import {RoomTourMutations} from "@/services/roomTour";
-import {useMessageModalStore} from "@/store/messageModal";
-import {useMessageContentReadFetchStore} from "@/store/messageContentReadFetch";
+import { colors, fontSizes } from "@/styles/theme";
+import { useConfirmStore } from "@/store/confirm";
+import { useAlertStore } from "@/store/alert";
+import { useMutation } from "@apollo/client";
+import { ContractMutations } from "@/services/contract";
+import { RoomTourMutations } from "@/services/roomTour";
+import { useMessageModalStore } from "@/store/messageModal";
+import { useMessageContentReadFetchStore } from "@/store/messageContentReadFetch";
 
 const Black = styled.div`
   position: fixed;
@@ -64,26 +64,26 @@ interface ConfirmRejectModalProps {
 }
 
 export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
-	                                                                      onConfirm,
-	                                                                      type
-                                                                      }) => {
-	const {isOpen, type : status, closeConfirm : onClose} = useConfirmStore()
-	const {setActivate} = useMessageContentReadFetchStore();
-	const {error, success} = useAlertStore();
-	const {contractData} = useMessageModalStore()
-	const closeModal = () =>{
+	onConfirm,
+	type
+}) => {
+	const { isOpen, type: status, closeConfirm: onClose } = useConfirmStore()
+	const { setActivate } = useMessageContentReadFetchStore();
+	const { error, success } = useAlertStore();
+	const { contractData } = useMessageModalStore()
+	const closeModal = () => {
 		onConfirm();
 		onClose();
 	}
 	const [acceptContract, { loading: accContractLoading }] = useMutation(ContractMutations.ACCEPT_CONTRACT, {
-			onCompleted: () => {
-				success("계약에 성공하였습니다.")
-				closeModal()
-			},
-			onError: (err) => {
-				error(err.message)
-			}
+		onCompleted: () => {
+			success("계약에 성공하였습니다.")
+			closeModal()
+		},
+		onError: (err) => {
+			error(err.message)
 		}
+	}
 	);
 	const [rejectContract, { loading: rejContractLoading }] = useMutation(ContractMutations.REJECT_CONTRACT, {
 		onCompleted: () => {
@@ -104,52 +104,51 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 		}
 	})
 	const [acceptRoomTour, { loading: accRoomTourLoading }] = useMutation(RoomTourMutations.ACCEPT_ROOM_TOUR, {
-		onCompleted : () =>{
+		onCompleted: () => {
 			closeModal()
 			success("룸투어 반영에 성공하였습니다.")
 		},
-		onError : (err) =>{
+		onError: (err) => {
 			error(err.message)
 		}
 	})
-	const handleBtnClick = async () =>{
+	const handleBtnClick = async () => {
 		const isMutating = accContractLoading || rejContractLoading || rejRoomTourLoading || accRoomTourLoading;
 		if (isMutating) return
 		if (!contractData) { error("유효하지 않은 요청입니다."); return; }
-		if(type === "룸투어" && contractData?.type === "roomTour"){
+		if (type === "룸투어" && contractData?.type === "roomTour") {
 			if (!contractData.roomTourId) { error("룸투어 ID가 없습니다."); return; }
-			if(status === "sure") {
+			if (status === "sure") {
 				await acceptRoomTour({
-					variables:{
-						roomTourId : contractData?.roomTourId
+					variables: {
+						roomTourId: contractData?.roomTourId
 					}
-				}).finally(()=>{
-					console.log(1)
+				}).finally(() => {
 					setActivate()
 				})
 			}
-			else if(status === "delete") await rejectRoomTour({
-				variables:{
-					roomTourId : contractData?.roomTourId
+			else if (status === "delete") await rejectRoomTour({
+				variables: {
+					roomTourId: contractData?.roomTourId
 				}
-			}).finally(()=>{
+			}).finally(() => {
 				setActivate()
 			})
 		}
-		else if(type === "계약" && contractData?.type === "contract"){
+		else if (type === "계약" && contractData?.type === "contract") {
 			if (!contractData.contractId) { error("계약 ID가 없습니다."); return; }
-			if(status === "sure") await acceptContract({
-				variables:{
-					contractId : contractData?.contractId
+			if (status === "sure") await acceptContract({
+				variables: {
+					contractId: contractData?.contractId
 				}
-			}).finally(()=>{
+			}).finally(() => {
 				setActivate()
 			})
-			else if(status === "delete") await rejectContract({
-				variables:{
-					contractId : contractData?.contractId
+			else if (status === "delete") await rejectContract({
+				variables: {
+					contractId: contractData?.contractId
 				}
-			}).finally(()=>{
+			}).finally(() => {
 				setActivate()
 			})
 		}
@@ -173,12 +172,14 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 						onClick={closeModal}
 						status={false}
 						width="100%"
+						isLoading={accContractLoading || rejContractLoading || rejRoomTourLoading || accRoomTourLoading}
 					/>
 					<Square
 						text="확인"
 						onClick={() => handleBtnClick()}
 						status={true}
 						width="100%"
+						isLoading={accContractLoading || rejContractLoading || rejRoomTourLoading || accRoomTourLoading}
 					/>
 				</ButtonContainer>
 			</Content>

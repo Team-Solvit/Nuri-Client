@@ -62,8 +62,7 @@ export function usePostEdit(postInfo: PostDetailUnion | null, refresh: (id: stri
       setEditingImages([]);
       setNewImages([]);
       success("게시물이 수정되었습니다.");
-    } catch (e) {
-      console.error("게시물 수정 실패:", e);
+    } catch {
       error("게시물 수정에 실패했습니다.");
     }
   };

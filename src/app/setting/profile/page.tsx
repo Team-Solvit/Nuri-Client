@@ -308,6 +308,9 @@ export default function ProfilePage() {
             />}
             {showLeaveModal && (
                 <Leave
+                    onLeave={() => {
+                        setShowLeaveModal(false)
+                    }}
                     onClose={() => setShowLeaveModal(false)}
                 />
             )}

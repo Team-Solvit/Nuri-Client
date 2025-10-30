@@ -6,6 +6,7 @@ import { useApollo } from '@/lib/apolloClient';
 import { BoardingService } from '@/services/boarding';
 import { useLoadingEffect } from '@/hooks/useLoading';
 import { useFileUpload } from '@/hooks/useFileUpload';
+import { useAlertStore } from '@/store/alert';
 
 const imgIcon = "/icons/todo-dropdown.svg";
 
@@ -24,8 +25,8 @@ export default function Todos({ selectedDate, houseId }: TodosProps) {
   const [selected, setSelected] = useState("전체");
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(false);
-  const [uploadingId, setUploadingId] = useState<number | null>(null);
   const { upload: uploadFiles } = useFileUpload();
+  const { error } = useAlertStore();
 
   useEffect(() => {
     let cancelled = false;
@@ -47,8 +48,8 @@ export default function Todos({ selectedDate, houseId }: TodosProps) {
         }));
         setTodos(mapped);
         if (selected !== '전체' && !mapped.some(t => t.house === selected)) setSelected('전체');
-      } catch (e) {
-        if (!cancelled) console.error('Failed to load manage work', e);
+      } catch {
+        error('할 일 목록을 불러오지 못했습니다.');
         setTodos([]);
       } finally {
         if (!cancelled) setLoading(false);
@@ -70,7 +71,6 @@ export default function Todos({ selectedDate, houseId }: TodosProps) {
     const nextChecked = !prevChecked;
 
     setTodos(prev => prev.map(t => t.id === id ? { ...t, checked: nextChecked } : t));
-    setUploadingId(id);
 
     (async () => {
       if (!target.manageWorkId) return;
@@ -79,8 +79,6 @@ export default function Todos({ selectedDate, houseId }: TodosProps) {
         else await BoardingService.inCompleteWork(client, target.manageWorkId as any);
       } catch (e) {
         setTodos(prev => prev.map(t => t.id === id ? { ...t, checked: prevChecked } : t));
-      } finally {
-        setUploadingId(null);
       }
     })();
   };
@@ -89,7 +87,6 @@ export default function Todos({ selectedDate, houseId }: TodosProps) {
     if (file) {
       const target = todos.find(t => t.id === id);
       setTodos(prev => prev.map(t => t.id === id ? { ...t, file, uploading: true } : t));
-      setUploadingId(id);
       (async () => {
         try {
           if (target?.manageWorkId) {
@@ -102,11 +99,8 @@ export default function Todos({ selectedDate, houseId }: TodosProps) {
               throw new Error('업로드 ID 없음');
             }
           }
-        } catch (err) {
-          console.error('File upload failed', err);
+        } catch {
           setTodos(prev => prev.map(t => t.id === id ? { ...t, file: null, uploading: false } : t));
-        } finally {
-          setUploadingId(null);
         }
       })();
     }

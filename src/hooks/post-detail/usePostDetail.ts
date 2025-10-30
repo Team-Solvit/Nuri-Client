@@ -35,8 +35,7 @@ export function usePostDetail(id: string) {
           setLikeCount(currentLikeCount);
           setIsLiked(currentIsLiked || false);
         }
-      } catch (e) {
-        console.error("Failed to fetch post:", e);
+      } catch {
       } finally {
         setLoading(false);
       }

@@ -12,7 +12,14 @@ export const ProfileWrapper = styled.div`
   padding: 4rem;
   overflow-y: auto;
   outline: none;
+  &:focus-visible {
+    outline: 2px solid ${colors.primary};
+    outline-offset: 4px;
+  }
+
   max-height: 100vh;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   &::-webkit-scrollbar {
        display: none;
   }
@@ -29,7 +36,8 @@ export const ProfileWrapper = styled.div`
 export const ProfileImage = styled.div`
   position: relative;
   width: 10vw;
-  height: 18vh;
+  aspect-ratio: 1 / 1;
+  height: auto;
   border-radius: 50%;
   overflow: hidden;
   background: ${colors.gray};
@@ -38,6 +46,8 @@ export const ProfileImage = styled.div`
   justify-content: center;
   
   img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
   }
 

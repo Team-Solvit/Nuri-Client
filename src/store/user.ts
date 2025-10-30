@@ -33,7 +33,9 @@ export const useUserStore = create<State>()(
 			role: null,
 			token: null,
 			setAuth: (user) => {
-				if (!user) return;
+				if (!user) {
+					return;
+				}
 				set({
 					id: user.id,
 					userId: user.userId,
@@ -41,7 +43,6 @@ export const useUserStore = create<State>()(
 					language: user.language,
 					name: user.name,
 					email: user.email,
-					phoneNumber: user.phoneNumber,
 					profile: user.profile,
 					role: user.role,
 				});
@@ -59,9 +60,12 @@ export const useUserStore = create<State>()(
 					role: null,
 					token: null,
 				}),
-			setToken: (token: string) => set({ token }),
-			setRole: (role: string) => set({ role }),
+			token: null,
+			setToken: (token: string) =>
+				set({
+					token: token
+				})
 		}),
-		{ name: 'nuri-user' },
-	),
+		{ name: 'nuri-user' }
+	)
 );

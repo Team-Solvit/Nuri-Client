@@ -95,7 +95,8 @@ export default function MessageSendBar() {
 	
 	const {reply, clearReply} = useMessageReplyStore()
 	const handleSendMessage = () => {
-		if (!message.trim()) return;
+		if (!message.trim() || isSending) return;
+		setIsSending(true)
 		const type = checkType(id as string);
 		if (Array.isArray(type)) {
 			sendDmChatMessage(type, message,chatRoomName, reply);
@@ -106,7 +107,9 @@ export default function MessageSendBar() {
 		}
 		clearReply();
 		setMessage("");
+		setIsSending(false)
 	};
+	
 	
 	// 엔터 시 메시지 전송
 	const [isSending, setIsSending] = useState(false);
@@ -156,7 +159,7 @@ export default function MessageSendBar() {
 					placeholder="메시지를 입력하세요 (Shift+Enter로 줄바꿈)"
 				/>
 			</S.ContentBox>
-			<S.SendButton onClick={handleSendMessage}>
+			<S.SendButton onClick={handleSendMessage} disabled={isSending}>
 				<Image src={Send} alt={"send-icon"} fill/>
 			</S.SendButton>
 		</S.MessageSendBarContainer>

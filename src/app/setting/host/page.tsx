@@ -398,7 +398,6 @@ export default function Host() {
       {showLeaveModal && (
         <Leave
           onLeave={() => {
-            console.log('회원탈퇴 처리 완료')
             setShowLeaveModal(false)
           }}
           onClose={() => setShowLeaveModal(false)}
