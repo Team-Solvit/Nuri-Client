@@ -21,6 +21,12 @@ interface MarkerData {
   rooms?: RoomContract[];
 }
 
+interface MapMarker {
+  id: number;
+  position: { lat: number; lng: number };
+  houseId: string;
+}
+
 export default function BoardingThirdPartyContainer() {
   const navigate = useNavigationWithProgress();
   const client = useApollo();
@@ -82,7 +88,13 @@ export default function BoardingThirdPartyContainer() {
     });
   }, [client, error]);
 
-  const mapMarkers = useMemo(() => markers.filter(m => m.position).map((m, i) => ({ id: i + 1, position: m.position!, houseId: m.houseId })), [markers]);
+  const mapMarkers = useMemo<MapMarker[]>(
+    () =>
+      markers
+        .filter((m) => m.position)
+        .map((m, i) => ({ id: i + 1, position: m.position!, houseId: m.houseId })),
+    [markers]
+  );
   const isReady = !initialLoading && mapMarkers.length > 0;
 
   return (
@@ -91,16 +103,16 @@ export default function BoardingThirdPartyContainer() {
         <Map
           markers={mapMarkers}
           label={(marker) => {
-            const data = markers.find(m => m.houseId === (marker as any).houseId);
+            const data = markers.find(m => m.houseId === (marker as MapMarker).houseId);
             return data?.title || '';
           }}
           onMarkerSelect={(marker) => {
             if (!marker) return;
             const data = mapMarkers.find(mm => mm.id === marker.id);
-            if (data) queueMicrotask(() => loadRooms((data as any).houseId));
+            if (data) queueMicrotask(() => loadRooms(data.houseId));
           }}
           renderPopup={(marker) => {
-            const data = markers.find(m => m.houseId === (marker as any).houseId);
+            const data = markers.find(m => m.houseId === (marker as MapMarker).houseId);
             if (!data) return null;
             const isLoading = data.loading && !data.rooms;
             const roomList = (data.rooms || []).map(r => ({
