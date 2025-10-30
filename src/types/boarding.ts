@@ -39,7 +39,7 @@ export interface RoomContractInfo {
 }
 
 export interface RoomContract {
-  contractInfo?: RoomContractInfo;
+  contractInfo?: RoomContractInfo[];
   room: BoardingRoom;
 }
 

@@ -6,20 +6,20 @@ interface SubscriptionItem {
 
 interface MessageConnectState {
 	subscriptions: Record<string, SubscriptionItem>;
-	addSubscription: (id : string, item : SubscriptionItem) => void;
+	addSubscription: (id: string, item: SubscriptionItem) => void;
 	removeSubscription: (id: string) => void;
 	clearSubscriptions: () => void;
 }
 
 export const useMessageConnectStore = create<MessageConnectState>((set) => ({
 	subscriptions: {},
-	
+
 	addSubscription: (id: string, item: SubscriptionItem) =>
 		set((state) => {
 			const next = { ...state.subscriptions };
 			const prev = next[id];
 			if (prev) {
-				try { prev.unsubscribe(); } catch (e) { console.error("prev unsubscribe 실패:", e); }
+				try { prev.unsubscribe(); } catch { }
 			}
 			next[id] = { id, unsubscribe: item.unsubscribe };
 			return { subscriptions: next };
@@ -31,13 +31,12 @@ export const useMessageConnectStore = create<MessageConnectState>((set) => ({
 			if (!sub) return { subscriptions: newSubs };
 			try {
 				sub.unsubscribe();
-			} catch (e) {
-				console.error("unsubscribe 실패:", e);
+			} catch {
 			}
 			delete newSubs[id];
 			return { subscriptions: newSubs };
 		}),
-	
+
 	clearSubscriptions: () =>
 		set((state) => {
 			Object.values(state.subscriptions).forEach((sub) => sub.unsubscribe());

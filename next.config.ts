@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
+
 const nextConfig: NextConfig = {
-	output: 'standalone',
+	output: "standalone",
 	images: {
 		remotePatterns: [
 			{
@@ -52,11 +53,42 @@ const nextConfig: NextConfig = {
 		],
 	},
 	compiler: {
-		emotion: true
+		emotion: true,
 	},
 	reactStrictMode: true,
 	eslint: { ignoreDuringBuilds: true },
 	typescript: { ignoreBuildErrors: true },
+	
+	async headers() {
+		return [
+			{
+				source: "/:path*",
+				headers: [
+					{
+						key: "X-Frame-Options",
+						value: "DENY", // 클릭재킹 방지
+					},
+					{
+						key: "X-Content-Type-Options",
+						value: "nosniff", // MIME 타입 스니핑 방지
+					},
+					{
+						key: "Referrer-Policy",
+						value: "strict-origin-when-cross-origin", // 리퍼러 최소화
+					},
+					{
+						key: "Permissions-Policy",
+						value:
+							"camera=(), microphone=(), geolocation=(), interest-cohort=()", // 불필요한 권한 차단
+					},
+					{
+						key: "Strict-Transport-Security",
+						value: "max-age=31536000; includeSubDomains"
+					},
+				],
+			},
+		];
+	},
 };
 
 export default nextConfig;

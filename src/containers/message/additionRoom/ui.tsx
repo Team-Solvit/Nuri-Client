@@ -1,24 +1,24 @@
 "use client";
 
-import React, {useState, useEffect, useRef, useMemo} from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Image from 'next/image';
 import * as S from './style';
-import {MessageQueries, MessageService} from "@/services/message";
-import {useApollo} from "@/lib/apolloClient";
-import {RoomCreateRequestDto} from "@/types/message";
-import {useParams} from "next/navigation";
-import {useAlertStore} from "@/store/alert";
-import {useQuery} from "@apollo/client";
-import {useUserStore} from "@/store/user";
-import {useMessageDmManageStore} from "@/store/messageDmManage";
+import { MessageQueries, MessageService } from "@/services/message";
+import { useApollo } from "@/lib/apolloClient";
+import { RoomCreateRequestDto } from "@/types/message";
+import { useParams } from "next/navigation";
+import { useAlertStore } from "@/store/alert";
+import { useQuery } from "@apollo/client";
+import { useUserStore } from "@/store/user";
+import { useMessageDmManageStore } from "@/store/messageDmManage";
 import { useFileUpload } from "@/hooks/useFileUpload";
-import {useLoadingEffect} from "@/hooks/useLoading";
-import {useMessageConnectStore} from "@/store/messageConnect";
+import { useLoadingEffect } from "@/hooks/useLoading";
+import { useMessageConnectStore } from "@/store/messageConnect";
 import { client } from "@/lib/socketClient";
-import {useMessageReflectStore} from "@/store/messageReflect";
-import {useMessageAlertStore} from "@/store/messageAlert";
-import {useMessageHeaderStore} from "@/store/messageHeader";
-import {imageCheck} from "@/utils/imageCheck";
+import { useMessageReflectStore } from "@/store/messageReflect";
+import { useMessageAlertStore } from "@/store/messageAlert";
+import { useMessageHeaderStore } from "@/store/messageHeader";
+import { imageCheck } from "@/utils/imageCheck";
 
 interface User {
 	userId: string;
@@ -26,7 +26,7 @@ interface User {
 	profile: string;
 }
 
-export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, existingMembers = [], refetchMembers}: {
+export default function AdditionRoom({ isAddition, setIsAddition, iconRef, type, existingMembers = [], refetchMembers }: {
 	isAddition: boolean;
 	setIsAddition: (value: boolean) => void;
 	iconRef: React.RefObject<HTMLImageElement>;
@@ -42,22 +42,22 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 	const [profilePreview, setProfilePreview] = useState<string | null>(null);
 	const [profileDataUrl, setProfileDataUrl] = useState<string | null>(null);
 	const { upload, loading: uploadLoading } = useFileUpload();
-	
+
 	const [debouncedTerm, setDebouncedTerm] = useState("");
-	
+
 	useEffect(() => {
 		const handler = setTimeout(() => setDebouncedTerm(searchTerm), 300);
 		return () => clearTimeout(handler);
 	}, [searchTerm]);
-	
-	const {data: searchUserResult} = useQuery(
+
+	const { data: searchUserResult } = useQuery(
 		MessageQueries.GET_USER_SEARCH,
 		{
-			variables: {userId: debouncedTerm},
+			variables: { userId: debouncedTerm },
 			skip: !debouncedTerm,
 		}
 	);
-	
+
 	const existingMembersKey = useMemo(
 		() => existingMembers.join(','),
 		[existingMembers]
@@ -70,7 +70,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 		);
 		setUsers(filteredUsers);
 	}, [searchUserResult, existingMembersKey]); // 배열을 문자열로 변환하여 안정적인 의존성 만들기
-	
+
 	// Close dropdown when clicking outside
 	useEffect(() => {
 		function handleClickOutside(event: MouseEvent) {
@@ -82,7 +82,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 				handleClose();
 			}
 		}
-		
+
 		if (isAddition) {
 			document.addEventListener("mousedown", handleClickOutside);
 		}
@@ -90,7 +90,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
 	}, [isAddition]);
-	
+
 	const handleClose = () => {
 		setIsAddition(false);
 		setSearchTerm('');
@@ -99,19 +99,19 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 		setProfilePreview(null);
 		setProfileDataUrl(null);
 	};
-	
-	const {success, error} = useAlertStore();
+
+	const { success, error } = useAlertStore();
 	// Service 영역(채팅생성, 채팅초대)
 	const apolloClient = useApollo()
 	const params = useParams();
 	const roomId = typeof params.id === "string" ? params.id : params.id?.[0] ?? "";
-	
-	const {setValues : setHeader, chatProfile, chatRoomName, memberCount} = useMessageHeaderStore()
-	const inviteSuccess = (num:number) =>{
+
+	const { setValues: setHeader, chatProfile, chatRoomName, memberCount } = useMessageHeaderStore()
+	const inviteSuccess = (num: number) => {
 		setHeader({
 			chatProfile,
 			chatRoomName,
-			memberCount : memberCount+num
+			memberCount: memberCount + num
 		})
 	}
 	const handleInviteChatMember = async (roomId: string) => {
@@ -131,12 +131,11 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 				refetchMembers();
 			}
 			handleClose();
-		} catch (e) {
-			console.log(e)
+		} catch {
 			error("채팅방 초대에 실패하였습니다.")
 		}
 	}
-	
+
 	const handleAddition = async () => {
 		if (type === "add") {
 			await handleCreateRoom()
@@ -144,10 +143,10 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 			await handleInviteChatMember(roomId);
 		}
 	}
-	
+
 	const [loading, setLoading] = useState(false);
-	const {userId : id} = useUserStore()
-	const {addSubscription} = useMessageConnectStore()
+	const { userId: id } = useUserStore()
+	const { addSubscription } = useMessageConnectStore()
 	const { setMessage } = useMessageReflectStore();
 	const { fadeIn } = useMessageAlertStore();
 	const handleCreateRoom = async () => {
@@ -155,9 +154,9 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 			error("채팅방 이름을 입력해주세요.");
 			return;
 		}
-		if(selectedUsers.length < 2){
+		if (selectedUsers.length < 2) {
 			error("채팅방의 인원수가 부족합니다.")
-			return ;
+			return;
 		}
 		const inputData: RoomCreateRequestDto = {
 			roomDto: {
@@ -173,12 +172,10 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 			const roomId = res?.data?.createRoom?.id
 			if (roomId) {
 				success("채팅방을 생성했습니다.");
-				if(inputData.users.length > 10){
-					console.log("success")
+				if (inputData.users.length > 10) {
 					addSubscription(roomId,
 						client.subscribe(`/chat/messages/${roomId}`, (msg) => {
 							const msgData = JSON.parse(msg.body);
-							console.log(msgData)
 							setMessage(msgData);
 							fadeIn(
 								msgData.sender?.profile ?? "/post/default.png",
@@ -198,15 +195,14 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 			} else {
 				error("채팅방 생성에 실패하였습니다.");
 			}
-		} catch (e) {
-			console.error(e);
+		} catch {
 			error("채팅방 생성 중 오류가 발생하였습니다.");
 		} finally {
 			setLoading(false);
 		}
 	};
-	
-	
+
+
 	// 컴포넌트 언마운트 시 Object URL 정리
 	useEffect(() => {
 		return () => {
@@ -217,13 +213,13 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 	}, [profilePreview]);
 	// 이미지 관리
 	const profileRef = useRef<HTMLInputElement | null>(null);
-	
+
 	const handleProfileUpload = () => {
 		if (!profileRef.current) return;
 		profileRef.current.click();
 	};
-	
-	
+
+
 	// 프로필 이미지 파일 선택 핸들러
 	const handleProfileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -233,7 +229,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 			setProfileDataUrl(null);
 			return;
 		}
-		
+
 		// 형식/용량 검증
 		const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
 		const MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -256,21 +252,20 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 			if (uploaded) {
 				setProfileDataUrl(uploaded);
 			}
-		} catch (err) {
-			console.error('프로필 이미지 업로드 실패', err);
+		} catch {
 			setProfilePreview(null);
 			setProfileDataUrl(null);
 		}
 	};
-	
+
 	const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchTerm(e.target.value);
 	};
-	
+
 	const removeSelectedUser = (userId: string) => {
 		setSelectedUsers(prev => prev.filter(user => user.userId !== userId));
 	};
-	
+
 	const toggleUserSelection = (user: User) => {
 		setSelectedUsers(prev => {
 			const isSelected = prev.some(u => u.userId === user.userId);
@@ -282,10 +277,10 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 		});
 	};
 	const [roomName, setRoomName] = useState<string>("");
-	const {setValues} = useMessageDmManageStore();
+	const { setValues } = useMessageDmManageStore();
 	useLoadingEffect(uploadLoading);
 	if (!isAddition) return null;
-	
+
 	return (
 		<S.DropdownContainer
 			onClick={(e) => {
@@ -295,13 +290,13 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 		>
 			<S.Content>
 				{type === "add" && <S.SearchBar>
-          <S.SearchInput
-            type="text"
-            placeholder="채팅방 이름을 입력해주세요"
-            value={roomName}
-            onChange={(e) => setRoomName(e.target.value)}
-          />
-        </S.SearchBar>}
+					<S.SearchInput
+						type="text"
+						placeholder="채팅방 이름을 입력해주세요"
+						value={roomName}
+						onChange={(e) => setRoomName(e.target.value)}
+					/>
+				</S.SearchBar>}
 				<S.SearchBar>
 					<S.SearchInput
 						type="text"
@@ -310,7 +305,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 						onChange={handleSearch}
 					/>
 				</S.SearchBar>
-				
+
 				{type === "add" && (
 					<S.ProfileUploadContainer>
 						<S.ProfilePreviewBox>
@@ -320,10 +315,10 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 									alt="프로필 미리보기"
 									width={56}
 									height={56}
-									style={{objectFit: 'cover'}}
+									style={{ objectFit: 'cover' }}
 								/>
 							) : (
-								<span style={{color: '#999', fontSize: 12}}>미리보기</span>
+								<span style={{ color: '#999', fontSize: 12 }}>미리보기</span>
 							)}
 						</S.ProfilePreviewBox>
 						<S.FileInput
@@ -333,23 +328,23 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 							onChange={handleProfileChange}
 						/>
 						{profilePreview ? (
-								<S.RemoveImageButton
-									onClick={() => {
-										if (profilePreview) URL.revokeObjectURL(profilePreview);
-										setProfilePreview(null);
-										setProfileDataUrl(null);
-									}}
-								>
-									프로필 이미지 제거
-								</S.RemoveImageButton>
-							) :
+							<S.RemoveImageButton
+								onClick={() => {
+									if (profilePreview) URL.revokeObjectURL(profilePreview);
+									setProfilePreview(null);
+									setProfileDataUrl(null);
+								}}
+							>
+								프로필 이미지 제거
+							</S.RemoveImageButton>
+						) :
 							<S.FileLabel onClick={handleProfileUpload}>
 								<span>채팅방 이미지 선택</span>
 							</S.FileLabel>
 						}
 					</S.ProfileUploadContainer>
 				)}
-				
+
 				{selectedUsers.length > 0 && (
 					<S.SelectedUsers>
 						{selectedUsers.map(user => (
@@ -362,7 +357,7 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 						))}
 					</S.SelectedUsers>
 				)}
-				
+
 				<S.UserList>
 					{users?.map(user => {
 						const isSelected = selectedUsers.some(u => u.userId === user.userId);
@@ -402,13 +397,13 @@ export default function AdditionRoom({isAddition, setIsAddition, iconRef, type, 
 						);
 					})}
 				</S.UserList>
-				
+
 				<S.ActionButton
 					onClick={handleAddition}
 					disabled={
-					selectedUsers.length === 0 ||
+						selectedUsers.length === 0 ||
 						loading ||
-						(type === "add" && selectedUsers.length !== 1 && !roomName.trim())
+						(type === "add" && selectedUsers.length < 2 && !roomName.trim())
 					}
 				>
 					{loading

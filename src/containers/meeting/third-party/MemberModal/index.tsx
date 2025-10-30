@@ -42,8 +42,7 @@ export default function MemberModal({ groupId, onDone }: MemberModalProps) {
 
       setMembers(memberData || []);
       setRequests(requestData || []);
-    } catch (err) {
-      console.error('멤버 데이터 로드 실패:', err);
+    } catch {
       error('멤버 정보를 불러올 수 없습니다.');
     } finally {
       setLoading(false);
@@ -68,8 +67,7 @@ export default function MemberModal({ groupId, onDone }: MemberModalProps) {
     try {
       await GroupService.removeMember(client, groupId, memberToExpel.userId);
       success('멤버가 추방되었습니다.');
-    } catch (err) {
-      console.error('멤버 추방 실패:', err);
+    } catch {
       error('멤버 추방에 실패했습니다.');
       loadMemberData();
     }
@@ -82,10 +80,10 @@ export default function MemberModal({ groupId, onDone }: MemberModalProps) {
 
   const handleAcceptRequest = async (requestId: string) => {
     const requestToAccept = requests.find(r => r.requestId === requestId);
-    
+
     if (requestToAccept && requestToAccept.requesterId && requestToAccept.requesterName) {
       setRequests(prev => prev.filter(r => r.requestId !== requestId));
-      
+
       const newMember: GroupMember = {
         userId: requestToAccept.requesterId,
         name: requestToAccept.requesterName,
@@ -93,15 +91,14 @@ export default function MemberModal({ groupId, onDone }: MemberModalProps) {
         joinedAt: new Date().toISOString(),
         profile: undefined
       };
-      
+
       setMembers(prev => [...prev, newMember]);
     }
 
     try {
       await GroupService.approveParticipationRequest(client, requestId);
       success('참가 요청을 수락했습니다.');
-    } catch (err) {
-      console.error('참가 요청 수락 실패:', err);
+    } catch {
       error('참가 요청 수락에 실패했습니다.');
       loadMemberData();
     }
@@ -113,8 +110,7 @@ export default function MemberModal({ groupId, onDone }: MemberModalProps) {
     try {
       await GroupService.rejectParticipationRequest(client, requestId);
       success('참가 요청을 거절했습니다.');
-    } catch (err) {
-      console.error('참가 요청 거절 실패:', err);
+    } catch {
       error('참가 요청 거절에 실패했습니다.');
       loadMemberData();
     }

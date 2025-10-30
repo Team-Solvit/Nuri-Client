@@ -42,7 +42,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     return () => clearTimeout(timer);
   }, [searchFilter]);
 
-  const { data, loading, error, fetchMore } = useQuery(SEARCH_BOARDING_ROOM, {
+  const { loading, fetchMore } = useQuery(SEARCH_BOARDING_ROOM, {
     variables: {
       boardingRoomSearchFilter: { ...debouncedFilter, start: 0 }
     },
@@ -60,7 +60,6 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     },
     onError: (error) => {
       console.error('GraphQL 쿼리 오류:', error);
-      showError('검색 중 오류가 발생했습니다. 다시 시도해주세요.');
       setHasMore(false);
       setIsInitialized(true);
     }
@@ -78,7 +77,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
   const convertToPostItem = (room: BoardingRoom): PostItemData => {
     const firstImage = room.boardingRoomFile?.[0];
     let thumbnailUrl = '';
-    
+
     if (firstImage) {
       const imageId = firstImage.url || firstImage.fileId;
       if (imageId && imageId.trim() !== '') {
@@ -167,6 +166,14 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
   }, [loadMorePosts, hasMore, isLoadingMore]);
 
   const isInitialLoading = loading && !isInitialized;
+
+  if (!isInitialized) {
+    return (
+      <S.PostList>
+        <div>검색 중 오류가 발생했습니다. 다시 시도해주세요.</div>
+      </S.PostList>
+    );
+  }
 
   return (
     <S.PostList>

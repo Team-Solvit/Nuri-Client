@@ -10,15 +10,8 @@ import { useAlertStore } from '@/store/alert';
 import { useLoginModalStore } from '@/store/loginModal';
 import { useUserStore } from '@/store/user';
 import { AuthGQL, AuthService } from '@/services/auth';
-import { gql } from '@apollo/client';
 import { usePasswordReset } from '@/hooks/usePasswordReset';
 import { validatePassword } from '@/utils/validators/register';
-
-const UPDATE_PASSWORD = gql`
-  mutation UpdatePasswordWithEmail($input: PasswordUpdateInput!) {
-    updatePasswordWithEmail(passwordUpdateInput: $input)
-  }
-`;
 
 export default function Login() {
 	const router = useRouter();
@@ -30,6 +23,7 @@ export default function Login() {
 	const [id, setId] = useState("");
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
+	const [socialLoading, setSocialLoading] = useState<string | null>(null);
 	const [codeSent, setCodeSent] = useState(false);
 	
 	const client = useApollo();
@@ -74,14 +68,20 @@ export default function Login() {
 			setToken(headerToken)
 			alertStore.success('로그인 성공');
 			loginModal.close();
-		} catch (e: any) {
-			alertStore.error(e?.message || '로그인 실패');
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				alertStore.error(e.message);
+			} else {
+				alertStore.error('로그인 실패');
+			}
 		} finally {
 			setLoading(false);
 		}
 	}, [id, password, client, alertStore, loginModal, loading, setAuth, setToken]);
 	
 	const handleSocialLogin = useCallback(async (provider: 'kakao' | 'google' | 'facebook' | 'tiktok') => {
+		if (socialLoading) return;
+		setSocialLoading(provider);
 		try {
 			sessionStorage.setItem('oauth_provider', provider);
 			
@@ -96,12 +96,18 @@ export default function Login() {
 			} else {
 				alertStore.error('소셜 로그인 URL을 가져올 수 없습니다.');
 				sessionStorage.removeItem('oauth_provider');
+				setSocialLoading(null);
 			}
-		} catch (error: any) {
-			alertStore.error(error?.message || '소셜 로그인 연결에 실패했습니다.');
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				alertStore.error(error.message);
+			} else {
+				alertStore.error('소셜 로그인 연결에 실패했습니다.');
+			}
 			sessionStorage.removeItem('oauth_provider');
+			setSocialLoading(null);
 		}
-	}, [client, alertStore]);
+	}, [client, alertStore, socialLoading]);
 	
 	// sendCode 래핑해서 발송 후 codeSent true로
 	const handleSendCodeAndSet = useCallback(async (email: string) => {
@@ -154,15 +160,16 @@ export default function Login() {
 					<Square
 						text={loading ? '로그인 중...' : '로그인'}
 						onClick={handleLogin}
+						isLoading={loading}
 						status={!!id && !!password && !loading}
 						width='100%'
 					/>
 					<SocialOther>또는</SocialOther>
 					<SocialList>
-						<Image src="/login/kakao.svg" alt="카카오 로그인" width={56} height={56} onClick={() => handleSocialLogin('kakao')} />
-						<Image src="/login/tiktok.svg" alt="틱톡 로그인" width={56} height={56} onClick={() => handleSocialLogin('tiktok')} />
-						<Image src="/login/facebook.svg" alt="페이스북 로그인" width={56} height={56} onClick={() => handleSocialLogin('facebook')} />
-						<Image src="/login/google.svg" alt="구글 로그인" width={56} height={56} onClick={() => handleSocialLogin('google')} />
+						<Image src="/login/kakao.svg" alt="카카오 로그인" width={56} height={56} onClick={() => handleSocialLogin('kakao')} style={{ opacity: socialLoading === 'kakao' ? 0.5 : 1 }} />
+						<Image src="/login/tiktok.svg" alt="틱톡 로그인" width={56} height={56} onClick={() => handleSocialLogin('tiktok')} style={{ opacity: socialLoading === 'tiktok' ? 0.5 : 1 }} />
+						<Image src="/login/facebook.svg" alt="페이스북 로그인" width={56} height={56} onClick={() => handleSocialLogin('facebook')} style={{ opacity: socialLoading === 'facebook' ? 0.5 : 1 }} />
+						<Image src="/login/google.svg" alt="구글 로그인" width={56} height={56} onClick={() => handleSocialLogin('google')} style={{ opacity: socialLoading === 'google' ? 0.5 : 1 }} />
 					</SocialList>
 				</>
 			)}
@@ -188,9 +195,9 @@ export default function Login() {
 								style={{ flex: 1 }}
 							/>
 							{!codeSent ? (
-								<Square text='발송' onClick={() => handleSendCodeAndSet(email)} status={!findLoading} width='fit-content' />
+								<Square text='발송' onClick={() => handleSendCodeAndSet(email)} isLoading={findLoading} status={!findLoading} width='fit-content' />
 							) : (
-								<Square text='인증' onClick={() => handleVerifyCodeAndSet(email, code)} status={!findLoading} width='fit-content' />
+								<Square text='인증' onClick={() => handleVerifyCodeAndSet(email, code)} isLoading={findLoading} status={!findLoading} width='fit-content' />
 							)}
 						</InputRow>
 					</FormGroup>
@@ -224,7 +231,7 @@ export default function Login() {
 						}
 						const ok = await handleChangePassword(email, pw);
 						if (ok) setStep('login');
-					}} status={!findLoading} width='100%' />
+					}} isLoading={findLoading} status={!findLoading} width='100%' />
 				</>
 			)}
 		</Wrapper>
