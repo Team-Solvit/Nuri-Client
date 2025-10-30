@@ -73,8 +73,8 @@ export default function BoardingThirdPartyContainer() {
 
   const loadRooms = useCallback((houseId: string) => {
     setMarkers(prev => {
-      const maker = prev.find(m => m.houseId === houseId);
-      if (maker?.rooms || maker?.loading) return prev;
+      const marker = prev.find(m => m.houseId === houseId);
+      if (marker?.rooms || marker?.loading) return prev;
       (async () => {
         try {
           const rooms = await BoardingService.getManageBoardingRoomList(client, houseId);
