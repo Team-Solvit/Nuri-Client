@@ -29,8 +29,7 @@ export function useComments(postInfo: PostDetailUnion | null) {
       setCommentsLoading(true);
       const list = await PostDetailService.getPostComments(client, postInfo);
       setComments(list);
-    } catch (e) {
-      console.error("댓글 로드 실패:", e);
+    } catch {
     } finally {
       setCommentsLoading(false);
     }
@@ -47,8 +46,7 @@ export function useComments(postInfo: PostDetailUnion | null) {
       setCommentText("");
       await loadComments();
       success("댓글이 작성되었습니다.");
-    } catch (e) {
-      console.error("댓글 작성 실패:", e);
+    } catch {
       error("댓글 작성에 실패했습니다.");
     }
   };
@@ -73,8 +71,7 @@ export function useComments(postInfo: PostDetailUnion | null) {
       setEditingText("");
       await loadComments();
       success("댓글이 수정되었습니다.");
-    } catch (e) {
-      console.error("댓글 수정 실패:", e);
+    } catch {
       error("댓글 수정에 실패했습니다.");
     }
   };
@@ -95,8 +92,7 @@ export function useComments(postInfo: PostDetailUnion | null) {
       await PostDetailService.deletePostComment(client, postInfo, commentToDelete);
       await loadComments();
       success("댓글이 삭제되었습니다.");
-    } catch (e) {
-      console.error("댓글 삭제 실패:", e);
+    } catch {
       error("댓글 삭제에 실패했습니다.");
     } finally {
       setCommentToDelete(null);

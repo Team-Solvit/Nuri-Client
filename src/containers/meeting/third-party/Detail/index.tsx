@@ -36,8 +36,7 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
           try {
             const participantsList = await GroupService.getGroupScheduleParticipants(client, id);
             setParticipants(participantsList);
-          } catch (participantError) {
-            console.error('참가자 조회 실패:', participantError);
+          } catch {
           }
         } else {
           showAlert('일정을 찾을 수 없습니다.');
@@ -45,8 +44,7 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
       } else {
         showAlert('그룹 정보를 찾을 수 없습니다.');
       }
-    } catch (error) {
-      console.error('일정 조회 실패:', error);
+    } catch {
       showAlert('일정 조회에 실패했습니다.');
     } finally {
       setLoading(false);
@@ -183,8 +181,7 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
         router.replace('/meeting/third-party?refresh=true');
       }, 1000);
 
-    } catch (error) {
-      console.error('일정 삭제 실패:', error);
+    } catch {
       showAlert('일정 삭제에 실패했습니다.');
     }
   };
@@ -232,8 +229,7 @@ export default function MeetingThirdPartyDetailContainer({ id }: { id: string })
         }
       }
 
-    } catch (error) {
-      console.error('기록 업로드 실패:', error);
+    } catch {
       showAlert('기록 업로드에 실패했습니다.');
     }
   };

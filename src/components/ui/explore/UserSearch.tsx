@@ -28,8 +28,7 @@ export default function UserSearch() {
       setLoading(true);
       const results = await UserService.searchUsers(client, keyword.trim());
       setUsers(results);
-    } catch (error) {
-      console.error('유저 검색 실패:', error);
+    } catch {
       setUsers([]);
     } finally {
       setLoading(false);

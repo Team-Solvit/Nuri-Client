@@ -1,23 +1,23 @@
 "use client"
 
-import React, {useState, useRef, useEffect, useMemo} from "react"
+import React, { useState, useRef, useEffect, useMemo } from "react"
 import * as S from "./style"
 import Image from "next/image"
 import EllipsisIcon from '@/assets/post/ellipsis.svg';
 import StateModal from "@/components/layout/stateModal";
-import {useParams} from "next/navigation";
+import { useParams } from "next/navigation";
 import Square from "@/components/ui/button/square";
 import AdditionRoom from "@/containers/message/additionRoom/ui";
-import {MessageService, MessageQueries} from "@/services/message";
-import {useApollo} from "@/lib/apolloClient";
-import {useAlertStore} from "@/store/alert";
-import {useMessageHeaderStore} from "@/store/messageHeader";
-import {imageCheck} from "@/utils/imageCheck";
-import {useMessagePageStore} from "@/store/messagePage";
-import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
-import {useLoadingEffect} from "@/hooks/useLoading";
-import {useQuery} from "@apollo/client";
-import {useMessageReflectStore} from "@/store/messageReflect";
+import { MessageService, MessageQueries } from "@/services/message";
+import { useApollo } from "@/lib/apolloClient";
+import { useAlertStore } from "@/store/alert";
+import { useMessageHeaderStore } from "@/store/messageHeader";
+import { imageCheck } from "@/utils/imageCheck";
+import { useMessagePageStore } from "@/store/messagePage";
+import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
+import { useLoadingEffect } from "@/hooks/useLoading";
+import { useQuery } from "@apollo/client";
+import { useMessageReflectStore } from "@/store/messageReflect";
 
 interface FadeBoxProps {
 	onClose: () => void;
@@ -25,22 +25,22 @@ interface FadeBoxProps {
 	onExit: () => void;
 }
 
-export const FadeBox = ({onClose, onInvite, onExit}: FadeBoxProps) => {
+export const FadeBox = ({ onClose, onInvite, onExit }: FadeBoxProps) => {
 	const boxRef = useRef<HTMLDivElement>(null);
-	
+
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (boxRef.current && !boxRef.current.contains(event.target as Node)) {
 				onClose();
 			}
 		};
-		
+
 		document.addEventListener('mousedown', handleClickOutside);
 		return () => {
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
 	}, [onClose]);
-	
+
 	return (
 		<S.FadeBoxContainer ref={boxRef}>
 			<S.MenuButton onClick={onExit}>나가기</S.MenuButton>
@@ -58,30 +58,29 @@ export default function MessageHeaderUI() {
 
 	const params = useParams();
 	const roomId = typeof params.id === 'string' ? params.id : params.id?.[0] ?? '';
-	
+
 	// GET_ROOM_MEMBER 쿼리를 사용하여 실제 멤버 수 가져오기
-	const {data: roomMemberData, refetch} = useQuery(MessageQueries.GET_ROOM_MEMBER, {
+	const { data: roomMemberData, refetch } = useQuery(MessageQueries.GET_ROOM_MEMBER, {
 		variables: { roomId },
 		skip: !roomId,
 	});
-	const {message} = useMessageReflectStore()
-	
+	const { message } = useMessageReflectStore()
+
 	const memberIds = useMemo(() => {
 		return roomMemberData?.getUserIds || [];
 	}, [roomMemberData?.getUserIds]);
-	
+
 	useEffect(() => {
 		if (!message || !refetch) return;
-		
+
 		const exitMatch = message.contents?.match(/^(.+?)\s+exit$/);
 		if (exitMatch) {
-			console.log("Exit message detected in header, refetching members");
 			refetch();
 		}
 	}, [message, refetch]);
-	
+
 	const memberListRef = useRef<HTMLDivElement>(null);
-	
+
 	// 멤버 목록 외부 클릭 시 닫기
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -89,16 +88,16 @@ export default function MessageHeaderUI() {
 				setShowMemberList(false);
 			}
 		};
-		
+
 		if (showMemberList) {
 			document.addEventListener('mousedown', handleClickOutside);
 		}
-		
+
 		return () => {
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
 	}, [showMemberList]);
-	
+
 	const handleMemberCountClick = (e: React.MouseEvent) => {
 		e.stopPropagation();
 		setShowMemberList(!showMemberList);
@@ -108,24 +107,24 @@ export default function MessageHeaderUI() {
 		setIsAddition(true);
 		setIsMenuOpen(false);
 	};
-	
+
 	// 채팅방 나가기
 	const handleExitClick = () => {
 		setIsMenuOpen(false);
 		setShowExitConfirm(true);
 	};
-	
-	
+
+
 	const handleEllipsisClick = (e: React.MouseEvent) => {
 		e.stopPropagation();
 		setIsMenuOpen(!isMenuOpen);
 		setIsAddition(false);
 	};
-	
+
 	const handleMemberClick = (memberId: string) => {
 		navigate(`/profile/${memberId}`);
 	};
-	
+
 	const confirmExit = async () => {
 		try {
 			setIsLoading(true)
@@ -134,37 +133,36 @@ export default function MessageHeaderUI() {
 			navigate('/message');
 			setShowExitConfirm(false);
 			success("대화방 나가기에 성공하였습니다.")
-		} catch (e) {
-			console.log(e)
+		} catch {
 			error("대화방 나가기에 실패하였습니다.")
-		}finally {
+		} finally {
 			setIsLoading(false)
 		}
 	};
-	
+
 	const cancelExit = () => {
 		setShowExitConfirm(false);
 	};
-	
+
 	const apolloClient = useApollo();
-	
-	const {success, error} = useAlertStore();
+
+	const { success, error } = useAlertStore();
 	const page = useMessagePageStore(s => s.page);
-	const setRoomDataList = useMessagePageStore(s=>s.setRoomDataList)
+	const setRoomDataList = useMessagePageStore(s => s.setRoomDataList)
 	const [isAddition, setIsAddition] = useState(false);
 	const iconRef = useRef<HTMLImageElement>(null);
-	
+
 	useLoadingEffect(isLoading)
-	const {chatProfile, chatRoomName} = useMessageHeaderStore()
+	const { chatProfile, chatRoomName } = useMessageHeaderStore()
 	return (
 		<S.MessageHeaderContainer className="message-header">
 			{/*모바일이면 나오는 뒤로가기 버튼*/}
-				<S.BackButton onClick={() => navigate('/message')}>
-					<Image src={"/icons/arrow.svg"} style={{transform: "rotate(180deg)"}} alt="back" width={24} height={24} />
-				</S.BackButton>
+			<S.BackButton onClick={() => navigate('/message')}>
+				<Image src={"/icons/arrow.svg"} style={{ transform: "rotate(180deg)" }} alt="back" width={24} height={24} />
+			</S.BackButton>
 			<S.ProfileBox>
 				<S.Profile>
-					<Image src={imageCheck(chatProfile || "") || "/post/default.png"} alt="message" fill priority/>
+					<Image src={imageCheck(chatProfile || "") || "/post/default.png"} alt="message" fill priority />
 				</S.Profile>
 				<div style={{ position: 'relative' }}>
 					<p>
@@ -172,7 +170,7 @@ export default function MessageHeaderUI() {
 						{memberIds?.length > 2 && (
 							<S.MemberCount onClick={handleMemberCountClick}>
 								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-									<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+									<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor" />
 								</svg>
 								<span>{memberIds?.length}명</span>
 							</S.MemberCount>
@@ -187,7 +185,7 @@ export default function MessageHeaderUI() {
 								{memberIds.map((memberId: string, index: number) => (
 									<S.MemberItem
 										key={index}
-										onClick={()=>handleMemberClick(memberId)}
+										onClick={() => handleMemberClick(memberId)}
 									>
 										<S.MemberAvatar>{memberId.slice(0, 1).toUpperCase()}</S.MemberAvatar>
 										<S.MemberInfo>

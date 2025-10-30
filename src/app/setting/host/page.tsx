@@ -23,7 +23,6 @@ export default function Host() {
   }, [])
 
   const handleLogout = () => {
-    console.log('로그아웃 처리 완료')
     setShowLogoutModal(false)
   }
   return (
@@ -100,7 +99,6 @@ export default function Host() {
       {showLeaveModal && (
         <Leave
           onLeave={() => {
-            console.log('회원탈퇴 처리 완료')
             setShowLeaveModal(false)
           }}
           onClose={() => setShowLeaveModal(false)}

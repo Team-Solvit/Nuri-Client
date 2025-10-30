@@ -10,7 +10,7 @@ import { useApollo } from '@/lib/apolloClient';
 import { createPost } from '@/services/post';
 import { ShareRange } from '@/types/post';
 import { imageService } from '@/services/image';
-import {useIsMakeGroupPostStore} from "@/store/isMakeGroupPost";
+import { useIsMakeGroupPostStore } from "@/store/isMakeGroupPost";
 import { useUserStore } from '@/store/user';
 import { useAlertStore } from '@/store/alert';
 
@@ -63,7 +63,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
     };
 
 
-		const {isGroup} = useIsMakeGroupPostStore()
+    const { isGroup } = useIsMakeGroupPostStore()
     const handleSubmit = async () => {
         if (isSubmitting) return;
         if (!content.trim() || !title.trim()) {
@@ -120,8 +120,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
             } else {
                 alertStore.error('게시물 생성에 실패했습니다.');
             }
-        } catch (error) {
-            console.error('게시물 생성 오류:', error);
+        } catch {
             alertStore.error('게시물 생성 중 오류가 발생했습니다.');
         } finally {
             setIsSubmitting(false);

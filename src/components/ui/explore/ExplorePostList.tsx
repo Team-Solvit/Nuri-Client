@@ -16,7 +16,7 @@ interface ExplorePostListProps {
 
 export default function ExplorePostList({ searchFilter }: ExplorePostListProps) {
   const navigate = useNavigationWithProgress();
-  const { success } = useAlertStore();
+  const { success, error } = useAlertStore();
   const [debouncedFilter, setDebouncedFilter] = useState<BoardingRoomSearchFilter>(searchFilter);
   const [allPosts, setAllPosts] = useState<PostItemData[]>([]);
   const [hasMore, setHasMore] = useState(true);
@@ -42,7 +42,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     return () => clearTimeout(timer);
   }, [searchFilter]);
 
-  const { data, loading, error, fetchMore } = useQuery(SEARCH_BOARDING_ROOM, {
+  const { loading, fetchMore } = useQuery(SEARCH_BOARDING_ROOM, {
     variables: {
       boardingRoomSearchFilter: { ...debouncedFilter, start: 0 }
     },
@@ -58,8 +58,8 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
         setIsInitialized(true);
       }
     },
-    onError: (error) => {
-      console.error('GraphQL 쿼리 오류:', error);
+    onError: () => {
+      error('게시물 목록을 불러오는 중 오류가 발생했습니다.');
       setHasMore(false);
     }
   });
@@ -76,7 +76,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
   const convertToPostItem = (room: BoardingRoom): PostItemData => {
     const firstImage = room.boardingRoomFile?.[0];
     let thumbnailUrl = '';
-    
+
     if (firstImage) {
       const imageId = firstImage.url || firstImage.fileId;
       if (imageId && imageId.trim() !== '') {
@@ -134,8 +134,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
         setHasMore(false);
         success('모든 게시물을 불러왔습니다.');
       }
-    } catch (error) {
-      console.error('❌ 추가 데이터 로드 실패:', error);
+    } catch {
       setHasMore(false);
     } finally {
       setIsLoadingMore(false);
@@ -165,7 +164,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
 
   const isInitialLoading = loading && !isInitialized;
 
-  if (error && !isInitialized) {
+  if (!isInitialized) {
     return (
       <S.PostList>
         <div>검색 중 오류가 발생했습니다. 다시 시도해주세요.</div>

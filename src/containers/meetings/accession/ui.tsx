@@ -1,40 +1,39 @@
 import * as S from '@/styles/confirm'
 import Square from "@/components/ui/button/square";
-import {AccessionProps} from "@/containers/meetings/accession/type";
+import { AccessionProps } from "@/containers/meetings/accession/type";
 import React from "react";
-import {useModalStore} from "@/store/modal";
-import {useMutation} from "@apollo/client";
-import {MeetingMutations} from "@/services/meeting";
-import {useLoadingEffect} from "@/hooks/useLoading";
-import {useAlertStore} from "@/store/alert";
-import {useIsEnteringMeetingStore} from "@/store/isEnteringMeeting";
+import { useModalStore } from "@/store/modal";
+import { useMutation } from "@apollo/client";
+import { MeetingMutations } from "@/services/meeting";
+import { useLoadingEffect } from "@/hooks/useLoading";
+import { useAlertStore } from "@/store/alert";
+import { useIsEnteringMeetingStore } from "@/store/isEnteringMeeting";
 
-export default function Accession({isAccession, setIsAccession, accessions}: AccessionProps) {
-	const {isEnteringMeeting, isSendRequest} = useIsEnteringMeetingStore()
+export default function Accession({ isAccession, setIsAccession, accessions }: AccessionProps) {
+	const { isEnteringMeeting, isSendRequest } = useIsEnteringMeetingStore()
 	const modalClose = () => {
 		setIsAccession(false)
 	}
-	const {close} = useModalStore();
-	const [mutate, {loading}] = useMutation(MeetingMutations.JOIN_MEETING_REQUEST, {
+	const { close } = useModalStore();
+	const [mutate, { loading }] = useMutation(MeetingMutations.JOIN_MEETING_REQUEST, {
 		variables: {
 			groupJoinInput: {
-				groupId : accessions.groupId,
-				requestMessage : "default"
+				groupId: accessions.groupId,
+				requestMessage: "default"
 			}
 		}
 	})
-	const {error, success} = useAlertStore()
+	const { error, success } = useAlertStore()
 	const [leaveMeeting] = useMutation(MeetingMutations.LEAVE_MEETING)
 	useLoadingEffect(loading);
 	const handelRouter = async () => {
-		try{
-			if(isEnteringMeeting) {
+		try {
+			if (isEnteringMeeting) {
 				await leaveMeeting();
 			}
 			await mutate()
 			success("모임 신청에 성공하였습니다.")
-		}catch (err){
-			console.log(err)
+		} catch {
 			error("모임 신청에 실패하였습니다.")
 		}
 		setIsAccession(false)

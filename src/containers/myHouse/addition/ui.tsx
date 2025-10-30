@@ -1,22 +1,22 @@
 "use client"
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as S from './style';
 import Circle from '@/components/ui/button/circle';
 import Square from '@/components/ui/button/square';
 
-import {DEFAULT_CONTRACT_OPTIONS, FACILITY_CATEGORIES} from "./data"
-import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
-import {useAlertStore} from "@/store/alert";
-import {useQuery} from "@apollo/client";
-import {BoardingHouseQueries, BoardingHouseService} from "@/services/boardingHouse";
-import {useApollo} from "@/lib/apolloClient";
-import {CreateBoardingHouseType, GetBoardingRoomByRoomId} from "@/types/boardinghouse";
-import {useFileUpload} from "@/hooks/useFileUpload";
-import {useLoadingEffect} from "@/hooks/useLoading";
-import {useUpdateRoomNumber} from "@/store/updateRoomNumber";
-import {imageCheck} from "@/utils/imageCheck";
+import { DEFAULT_CONTRACT_OPTIONS, FACILITY_CATEGORIES } from "./data"
+import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
+import { useAlertStore } from "@/store/alert";
+import { useQuery } from "@apollo/client";
+import { BoardingHouseQueries, BoardingHouseService } from "@/services/boardingHouse";
+import { useApollo } from "@/lib/apolloClient";
+import { CreateBoardingHouseType, GetBoardingRoomByRoomId } from "@/types/boardinghouse";
+import { useFileUpload } from "@/hooks/useFileUpload";
+import { useLoadingEffect } from "@/hooks/useLoading";
+import { useUpdateRoomNumber } from "@/store/updateRoomNumber";
+import { imageCheck } from "@/utils/imageCheck";
 
-export default function Addition(){
+export default function Addition() {
 	const [contractOptions, setContractOptions] = useState<string[]>(DEFAULT_CONTRACT_OPTIONS);
 	const [name, setName] = useState('');
 	const [description, setDescription] = useState('');
@@ -30,7 +30,7 @@ export default function Addition(){
 	const [headCount, setHeadCount] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
 	useLoadingEffect(loading || isLoading)
-	
+
 	const handleContractClick = (option: string) => {
 		setSelectedContracts(prev =>
 			prev.includes(option)
@@ -70,13 +70,12 @@ export default function Addition(){
 		try {
 			const uploaded = await upload(fileArr);
 			setImages(prev => [...prev, ...uploaded]);
-		} catch (err) {
-			console.error("이미지 업로드 실패", err);
+		} catch {
 		} finally {
 			e.target.value = '';
 		}
 	};
-	
+
 	const handleRemoveImage = (idx: number) => {
 		setImages(prev => prev.filter((_, i) => i !== idx));
 	};
@@ -95,9 +94,9 @@ export default function Addition(){
 	};
 
 	const { error, success } = useAlertStore();
-	
-	const {roomNumber : roomId, refetch} = useUpdateRoomNumber();
-	const {data} = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOM_INFO, {
+
+	const { roomNumber: roomId, refetch } = useUpdateRoomNumber();
+	const { data } = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOM_INFO, {
 		variables: {
 			roomId: roomId
 		},
@@ -109,14 +108,13 @@ export default function Addition(){
 			const years = Math.floor(num / 12);
 			const months = num % 12;
 			let result = "";
-			
+
 			if (years > 0) result += `${years}년`;
 			if (months > 0) result += `${months}개월`;
-			
+
 			return result || "0개월"; // 0개월 처리
 		});
 	}
-	console.log(selectedContracts)
 	useEffect(() => {
 		setName("");
 		setDescription("");
@@ -131,7 +129,7 @@ export default function Addition(){
 	}, []);
 	useEffect(() => {
 		setImages([]);
-		if(data?.getBoardingRoom){
+		if (data?.getBoardingRoom) {
 			const roomInfo: GetBoardingRoomByRoomId = data.getBoardingRoom;
 			setName(roomInfo?.name);
 			setDescription(roomInfo?.description);
@@ -144,45 +142,45 @@ export default function Addition(){
 			});
 			setHeadCount(roomInfo?.headCount.toString());
 			setSelectedFacilities(roomInfo?.boardingRoomOption?.map((item) => item.name) || []);
-			setSelectedContracts(convertToContractString(roomInfo?.contractPeriod.map(item=>item.contractPeriod)));
+			setSelectedContracts(convertToContractString(roomInfo?.contractPeriod.map(item => item.contractPeriod)));
 			setImages(roomInfo?.boardingRoomFile.map((file) => file.url));
 		}
 	}, [data?.getBoardingRoom]);
-	
+
 	const client = useApollo();
 	const checkValue = async () => {
-		
+
 		if (!images.length) return error('사진을 추가해주세요');
 		if (!name) return error('방의 이름을 추가해주세요');
 		if (!description) return error('방의 내용을 추가해주세요');
 		if (!contractOptions.length) return error('가격을 추가해주세요');
 		if (!selectedContracts.length) return error('계약 기간을 선택해주세요');
-		if (!monthlyRent|| Number(monthlyRent) <= 0) return error("월세를 입력해주세요")
-		if (!headCount|| Number(headCount) <= 0) return error("인원수를 입력해주세요")
+		if (!monthlyRent || Number(monthlyRent) <= 0) return error("월세를 입력해주세요")
+		if (!headCount || Number(headCount) <= 0) return error("인원수를 입력해주세요")
 		setIsLoading(true)
 		const contractPeriod = selectedContracts.map((item) => {
 			const yearMatch = item.match(/(\d+)년/);
 			const monthMatch = item.match(/(\d+)개월/);
-			
+
 			const years = yearMatch ? parseInt(yearMatch[1], 10) : 0;
 			const months = monthMatch ? parseInt(monthMatch[1], 10) : 0;
-			
+
 			return years * 12 + months;
 		});
 		if (contractPeriod.some(p => p <= 0)) {
 			setIsLoading(false);
 			return error('계약 기간은 1개월 이상으로 선택해주세요');
 		}
-		const roomInput : CreateBoardingHouseType = {
-			boardingRoomInfo :{
+		const roomInput: CreateBoardingHouseType = {
+			boardingRoomInfo: {
 				name,
 				monthlyRent: Number(monthlyRent),
 				headCount: Number(headCount),
-				description:description
+				description: description
 			},
-			files : images,
-			contractPeriod : contractPeriod,
-			options:selectedFacilities
+			files: images,
+			contractPeriod: contractPeriod,
+			options: selectedFacilities
 		}
 		try {
 			if (roomId && refetch) {
@@ -192,20 +190,17 @@ export default function Addition(){
 				});
 				success("방 수정 성공");
 				refetch();
-				console.log(result);
 				navigate("/myHouse");
 			} else {
 				// 방 생성
 				const result = await BoardingHouseService.createBoardingRoom(client, roomInput);
 				success("방 생성 성공");
 				navigate("/myHouse");
-				console.log(result);
-				if(refetch) refetch()
+				if (refetch) refetch()
 			}
-		} catch (e) {
-			console.error(e);
+		} catch {
 			error(roomId ? "방 수정 실패" : "방 생성 실패");
-		}finally {
+		} finally {
 			setIsLoading(false)
 		}
 	};
@@ -262,8 +257,8 @@ export default function Addition(){
 							min={0}
 							max={1000000000}
 							value={monthlyRent}
-							onChange={(e) => setMonthlyRent(e.target.value.replace(/[^0-9]/g, ''))} 
-							placeholder="가격을 입력해 주세요" 
+							onChange={(e) => setMonthlyRent(e.target.value.replace(/[^0-9]/g, ''))}
+							placeholder="가격을 입력해 주세요"
 						/>
 						<span className="addon">/ 월</span>
 					</div>
@@ -271,13 +266,13 @@ export default function Addition(){
 				<S.InputWithAddonRow>
 					<S.Label>인원수</S.Label>
 					<div className="input-row">
-						<input 
+						<input
 							value={headCount}
 							type={"number"}
 							min={0}
 							max={100}
-							onChange={(e) => setHeadCount(e.target.value.replace(/[^0-9]/g, ''))} 
-							placeholder="인원수를 입력해 주세요" 
+							onChange={(e) => setHeadCount(e.target.value.replace(/[^0-9]/g, ''))}
+							placeholder="인원수를 입력해 주세요"
 						/>
 						<span className="addon">/ 인실</span>
 					</div>

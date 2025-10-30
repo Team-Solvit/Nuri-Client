@@ -1,8 +1,8 @@
 "use client"
 
-import {Client} from "@stomp/stompjs";
+import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
-import {ChatRecordRequestDto, ReplyChatInput} from "@/types/message";
+import { ChatRecordRequestDto, ReplyChatInput } from "@/types/message";
 
 const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:8080/socket";
 
@@ -12,9 +12,8 @@ export const client = new Client({
 	reconnectDelay: 5000,
 });
 
-export const sendGroupChatMessage = (roomId: string, message: string, replyChat : ReplyChatInput | null) => {
+export const sendGroupChatMessage = (roomId: string, message: string, replyChat: ReplyChatInput | null) => {
 	if (!client.active) {
-		console.error("❌ 소켓 연결 안 됨");
 		return;
 	}
 	if (!roomId || !message) return;
@@ -23,20 +22,18 @@ export const sendGroupChatMessage = (roomId: string, message: string, replyChat 
 		roomId: roomId,
 		replyChat: replyChat,
 	};
-	
+
 	client.publish({
 		destination: `/messages/group`,
 		body: JSON.stringify(payload),
 	});
 };
 
-export const sendDmChatMessage = (roomId: string[], message: string, userId : string, replyChat : ReplyChatInput | null) => {
+export const sendDmChatMessage = (roomId: string[], message: string, userId: string, replyChat: ReplyChatInput | null) => {
 	if (!client.active) {
-		console.error("❌ 소켓 연결 안 됨");
 		return;
 	}
 	if (!userId || !message || roomId.length < 2) {
-		console.error("유효하지 않은 roomId 배열");
 		return;
 	}
 	const payload: ChatRecordRequestDto = {

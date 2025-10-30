@@ -91,12 +91,10 @@ export default function CreateThirdPartyContainer() {
     try {
       const uploadResult = await upload([file]);
       const imageUrl = uploadResult[0];
-      console.log('배너 업로드 결과:', imageUrl);
       setBannerPreview(URL.createObjectURL(file));
       setFormData(prev => ({ ...prev, banner: imageUrl }));
       success('배너 이미지가 업로드되었습니다.');
-    } catch (err) {
-      console.error('배너 이미지 업로드 실패:', err);
+    } catch {
       error('배너 이미지 업로드에 실패했습니다.');
     }
   };
@@ -105,12 +103,10 @@ export default function CreateThirdPartyContainer() {
     try {
       const uploadResult = await upload([file]);
       const imageUrl = uploadResult[0];
-      console.log('프로필 업로드 결과:', imageUrl);
       setProfilePreview(URL.createObjectURL(file));
       setFormData(prev => ({ ...prev, profile: imageUrl }));
       success('프로필 이미지가 업로드되었습니다.');
-    } catch (err) {
-      console.error('프로필 이미지 업로드 실패:', err);
+    } catch {
       error('프로필 이미지 업로드에 실패했습니다.');
     }
   };
@@ -156,16 +152,10 @@ export default function CreateThirdPartyContainer() {
         },
         maxParticipation: formData.maxParticipation
       };
-
-      console.log('전송할 데이터:', groupCreateInput);
-      console.log('배너 URL:', formData.banner);
-      console.log('프로필 URL:', formData.profile);
-
       await GroupService.createGroup(client, groupCreateInput);
       success('모임이 성공적으로 생성되었습니다.');
       router.push('/meeting/third-party');
-    } catch (err) {
-      console.error('모임 생성 실패:', err);
+    } catch {
       error('모임 생성에 실패했습니다.');
     } finally {
       setLoading(false);

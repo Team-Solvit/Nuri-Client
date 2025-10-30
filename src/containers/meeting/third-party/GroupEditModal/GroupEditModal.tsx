@@ -40,8 +40,7 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
       try {
         const areaList = await GroupService.getAreas(client);
         setAreas(areaList);
-      } catch (err) {
-        console.error('지역 목록 로드 실패:', err);
+      } catch {
         error('지역 목록을 불러오는데 실패했습니다.');
       } finally {
         setLoadingAreas(false);
@@ -62,8 +61,7 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
         }
         success('이미지가 업로드되었습니다.');
       }
-    } catch (err) {
-      console.error('이미지 업로드 실패:', err);
+    } catch {
       error('이미지 업로드에 실패했습니다.');
     }
   };
@@ -133,8 +131,7 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
       success('모임 정보가 수정되었습니다.');
       onUpdated(updatedGroup);
       onDone();
-    } catch (err) {
-      console.error('모임 정보 수정 실패:', err);
+    } catch {
       error('모임 정보 수정에 실패했습니다.');
     } finally {
       setLoading(false);
@@ -271,7 +268,7 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
             onClick={onDone}
             status={!loading && !uploadLoading}
             width="100%"
-            disabled={loading || uploadLoading}
+            isLoading={loading || uploadLoading}
           />
         </S.BtnRow>
       </S.FormCol>

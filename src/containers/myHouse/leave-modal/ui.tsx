@@ -2,17 +2,17 @@
 
 import * as S from '@/styles/confirm'
 import Square from "@/components/ui/button/square";
-import {useModalStore} from "@/store/modal";
+import { useModalStore } from "@/store/modal";
 import Modal from "@/components/layout/modal";
 import {useAlertStore} from "@/store/alert";
 import {BoardingHouseService} from "@/services/boardingHouse";
 import {useApollo} from "@/lib/apolloClient";
 import {useState} from "react";
 
-export default function LeaveModal({boarders, contractId, roomRefetch}: {
+export default function LeaveModal({ boarders, contractId, roomRefetch }: {
 	boarders: { boarderName: string, roomName: string }[],
 	contractId: string,
-	roomRefetch : () => void
+	roomRefetch: () => void
 }) {
 	const {close} = useModalStore();
 	const {error, success} = useAlertStore();
@@ -35,8 +35,7 @@ export default function LeaveModal({boarders, contractId, roomRefetch}: {
 			} else {
 				error("계약 종료에 실패하였습니다.");
 			}
-		} catch (e) {
-			console.log(e)
+		} catch {
 			error("계약 종료에 실패하였습니다.")
 		} finally {
 			setIsLoading(false);

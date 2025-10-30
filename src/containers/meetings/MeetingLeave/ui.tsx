@@ -1,28 +1,30 @@
 import * as S from "@/styles/confirm"
 import Modal from "@/components/layout/modal";
 import Square from "@/components/ui/button/square";
-import {useModalStore} from "@/store/modal";
-import {useMutation} from "@apollo/client";
-import {MeetingMutations, MeetingQueries} from "@/services/meeting";
-import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
-import {useLoadingEffect} from "@/hooks/useLoading";
+import { useModalStore } from "@/store/modal";
+import { useMutation } from "@apollo/client";
+import { MeetingMutations, MeetingQueries } from "@/services/meeting";
+import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
+import { useLoadingEffect } from "@/hooks/useLoading";
+import { useAlertStore } from "@/store/alert";
 
 export default function MeetingLeave() {
-	const {close} = useModalStore();
-	const [leaveMeeting, {loading}] = useMutation(MeetingMutations.LEAVE_MEETING,{
+	const { close } = useModalStore();
+	const [leaveMeeting, { loading }] = useMutation(MeetingMutations.LEAVE_MEETING, {
 		refetchQueries: [MeetingQueries.GET_MEETING_STATUS],
 		awaitRefetchQueries: true,
 	});
 	useLoadingEffect(loading);
 	const navigate = useNavigationWithProgress()
+	const { error } = useAlertStore();
 	const handleLeave = async () => {
 		if (loading) return;
 		try {
 			await leaveMeeting()
 			close()
 			navigate("/meetings")
-		} catch (err) {
-			console.log(err)
+		} catch {
+			error("모임 탈퇴에 실패했습니다.")
 		}
 	}
 	return (
