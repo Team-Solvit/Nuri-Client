@@ -122,7 +122,7 @@ export function isRoomTour(obj: Contract|RoomTour|null|undefined): obj is RoomTo
 	);
 }
 
-type RequestStatus = "PENDING" | "ACTIVE" | "EXPIRED" | "REJECTED" | "APPROVED" | "CANCELLED";
+type RequestStatus = "PENDING" | "ACTIVE" | "EXPIRED" | "REJECTED" | "APPROVED" | "CANCELLED" | "DELETED"
 
 export interface RoomTour {
 	area:string;

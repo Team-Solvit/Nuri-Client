@@ -190,6 +190,7 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
             onClick={() => profileInputRef.current?.click()}
             status={!loading && !uploadLoading}
             width="100%"
+            isLoading={uploadLoading}
           />
         </div>
         <div>
@@ -260,12 +261,14 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
             onClick={handleSave}
             status={!loading && !uploadLoading}
             width="100%"
+            isLoading={loading}
           />
           <Square
             text="취소"
             onClick={onDone}
             status={!loading && !uploadLoading}
             width="100%"
+            disabled={loading || uploadLoading}
           />
         </S.BtnRow>
       </S.FormCol>

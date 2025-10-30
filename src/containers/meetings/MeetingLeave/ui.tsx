@@ -28,12 +28,18 @@ export default function MeetingLeave() {
 		<Modal>
 			<S.Container>
 				<S.Title>모임 <span>탈퇴</span></S.Title>
-				<S.Text>모임에서 탈퇴하시겠습니까?</S.Text>
+				<S.Text>모임에서 탈퇴하시겠습니까?</S.Text>
 				<S.ButtonContainer>
 					<S.CancelBtn onClick={close} $width={"100%"}>
 						<S.Name>취소</S.Name>
 					</S.CancelBtn>
-					<Square text={loading ? "로딩중..." : "탈퇴"} onClick={handleLeave} status={!loading} width={"100%"} />
+					<Square
+						text={"탈퇴"}
+						onClick={handleLeave}
+						status={!loading}
+						width={"100%"}
+						isLoading={loading}
+					/>
 				</S.ButtonContainer>
 			</S.Container>
 		</Modal>
