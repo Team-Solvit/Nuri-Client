@@ -268,7 +268,7 @@ export default function GroupEditModal({ group, onDone, onUpdated }: GroupEditMo
             onClick={onDone}
             status={!loading && !uploadLoading}
             width="100%"
-            disabled={loading || uploadLoading}
+            isLoading={loading || uploadLoading}
           />
         </S.BtnRow>
       </S.FormCol>
