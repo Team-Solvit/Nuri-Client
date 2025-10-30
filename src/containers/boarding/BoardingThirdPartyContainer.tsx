@@ -80,7 +80,7 @@ export default function BoardingThirdPartyContainer() {
       })();
       return prev.map(m => m.houseId === houseId ? { ...m, loading: true } : m);
     });
-  }, [client]);
+  }, [client, error]);
 
   const mapMarkers = useMemo(() => markers.filter(m => m.position).map((m, i) => ({ id: i + 1, position: m.position!, houseId: m.houseId })), [markers]);
   const isReady = !initialLoading && mapMarkers.length > 0;
@@ -106,7 +106,7 @@ export default function BoardingThirdPartyContainer() {
             const roomList = (data.rooms || []).map(r => ({
               roomId: r.room?.roomId || '',
               number: r.room?.name || '',
-              names: (r.contractInfo as RoomContractInfo[] | undefined)?.map((ci: RoomContractInfo) => ci?.boarder?.user?.name).filter(Boolean).join(', ') || ''
+              names: r.contractInfo?.map((ci: RoomContractInfo) => ci?.boarder?.user?.name).filter(Boolean).join(', ') || ''
             }));
             return (
               <Popup

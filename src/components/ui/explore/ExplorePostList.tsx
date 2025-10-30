@@ -42,7 +42,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     return () => clearTimeout(timer);
   }, [searchFilter]);
 
-  const { data, loading, fetchMore } = useQuery(SEARCH_BOARDING_ROOM, {
+  const { loading, fetchMore } = useQuery(SEARCH_BOARDING_ROOM, {
     variables: {
       boardingRoomSearchFilter: { ...debouncedFilter, start: 0 }
     },
