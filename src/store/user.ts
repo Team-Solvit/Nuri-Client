@@ -16,6 +16,7 @@ type State = {
 	clear: () => void;
 	token: string | null;
 	setToken: (token: string) => void;
+	setRole: (role: string) => void;
 };
 
 export const useUserStore = create<State>()(
@@ -59,6 +60,7 @@ export const useUserStore = create<State>()(
 					token: null,
 				}),
 			setToken: (token: string) => set({ token }),
+			setRole: (role: string) => set({ role }),
 		}),
 		{ name: 'nuri-user' },
 	),

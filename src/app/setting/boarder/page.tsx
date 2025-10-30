@@ -19,7 +19,7 @@ import { clearAccessToken } from '@/utils/token';
 
 export default function Boarder() {
   const userStore = useUserStore(s => s);
-  const { role, phoneNumber, clear } = userStore;
+  const { role, phoneNumber, clear, setRole } = userStore;
   const { success, error: showError } = useAlertStore();
   const apolloClient = useApolloClient();
   const router = useRouter();
@@ -90,6 +90,9 @@ export default function Boarder() {
     
     localStorage.setItem('boarderPhoneVerified', 'true');
     localStorage.setItem('boarderPhoneNumber', callNumber);
+    
+    // 하숙생 role로 즉시 업데이트
+    setRole('INTERNATIONAL_STUDENT');
     
     // 인증 성공 메시지
     success('하숙생 인증이 완료되었습니다.');

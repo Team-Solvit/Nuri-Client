@@ -36,7 +36,7 @@ interface HostBoardingRoomsResponse {
 
 export default function Host() {
   const userStore = useUserStore(s => s);
-  const { role, phoneNumber, userId, clear } = userStore;
+  const { role, phoneNumber, userId, clear, setRole } = userStore;
   const apolloClient = useApolloClient();
   const { success, error: showError } = useAlertStore();
   const router = useRouter();
@@ -86,13 +86,13 @@ export default function Host() {
             introduce: room.description || '',
             station: room.boardingHouse?.nearestStation || '',
             university: room.boardingHouse?.nearestSchool || '',
-            gender: 'MALE', // API에서 gender 정보가 없으면 기본값
-            mealProvided: true, // API에서 meal 정보가 없으면 기본값
+            gender: 'MALE',
+            mealProvided: true,
           };
           console.log('설정할 폼 데이터:', newFormData);
           setFormData(newFormData);
-          setIsHostSettingCompleted(true); // 하숙집 정보가 있으면 완료 상태로 설정
-          localStorage.setItem('hostSettingCompleted', 'true'); // localStorage에 저장
+          setIsHostSettingCompleted(true);
+          localStorage.setItem('hostSettingCompleted', 'true');
         } else {
           console.log('하숙집 정보가 없습니다.');
           setIsHostSettingCompleted(false);
@@ -101,10 +101,8 @@ export default function Host() {
       },
       onError: (error) => {
         console.error('하숙집 정보 로드 실패:', error);
-        // "존재하지 않습니다" 에러는 정상 케이스(첫 설정)이므로 조용히 처리
         const errMsg = error?.message || '';
         if (!errMsg.includes('존재하지 않습니다')) {
-          // 다른 종류의 에러만 사용자에게 표시
           showError('하숙집 정보를 불러오는 중 오류가 발생했습니다.');
         }
       }
@@ -123,12 +121,10 @@ export default function Host() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // 새로고침 시 휴대폰 인증 상태 복원 & 호스트인 경우 자동으로 인증 상태로 설정
   useEffect(() => {
     console.log('Current role:', role);
     console.log('Current phoneNumber:', phoneNumber);
     
-    // role이 HOST인 경우 자동으로 인증된 것으로 처리
     if (role === 'HOST') {
       console.log('User is a HOST, auto-verifying phone');
       setIsPhoneVerified(true);
@@ -136,7 +132,6 @@ export default function Host() {
       return;
     }
 
-    // role이 HOST가 아니지만 로컬스토리지에 hostPhoneNumber가 있으면 복원
     const savedPhoneVerified = localStorage.getItem('hostPhoneVerified');
     const savedPhoneNumber = localStorage.getItem('hostPhoneNumber');
     
@@ -159,14 +154,12 @@ export default function Host() {
     setIsLoggingOut(true)
     try {
       await AuthService.logout(apolloClient);
-      // clear local access token and Apollo cache
       try {
         clearAccessToken();
         await apolloClient.clearStore();
       } catch (e) {
         console.error('Error clearing client state on logout:', e);
       }
-      // clear persisted user store
   clear();
   try { localStorage.removeItem('nuri-user'); } catch (e) { /* ignore */ }
       success('로그아웃되었습니다.');
@@ -184,7 +177,6 @@ export default function Host() {
     setVerifiedPhoneNumber(callNumber);
     setShowPhoneAuth(false);
     
-    // localStorage에 인증 상태 저장
     localStorage.setItem('hostPhoneVerified', 'true');
     localStorage.setItem('hostPhoneNumber', callNumber);
   }
@@ -194,7 +186,6 @@ export default function Host() {
   }
 
   const handleSave = async () => {
-    // 유효성 검사
     if (!formData.name.trim()) {
       showError('하숙집 이름을 입력해주세요.');
       return;
@@ -236,11 +227,10 @@ export default function Host() {
       
       if (result) {
         success('하숙집 정보가 저장되었습니다.');
-        setIsHostSettingCompleted(true); // 저장 완료 후 완료 상태로 변경
-        localStorage.setItem('hostSettingCompleted', 'true'); // localStorage에 저장
-        // 폼 초기화 (선택사항)
-        // setFormData({ name: '', address: '', detailAddress: '', introduce: '', station: '', university: '', gender: 'MALE', mealProvided: true });
-        // setSelectedPosition(null);
+        setIsHostSettingCompleted(true);
+        localStorage.setItem('hostSettingCompleted', 'true');
+        
+        setRole('HOST');
       } else {
         showError('하숙집 정보 저장에 실패했습니다.');
       }
@@ -263,7 +253,14 @@ export default function Host() {
       <S.Container>
         <S.Title>호스트 설정</S.Title>
 
-        {!isPhoneVerified ? (
+        {role === 'HOST' || isHostSettingCompleted ? (
+          <S.CompletedSection>
+            <S.CompletedTitle>호스트 설정이 완료되었습니다</S.CompletedTitle>
+            <S.CompletedDescription>
+              하숙집 정보가 등록되어 호스트로 활동하실 수 있습니다.
+            </S.CompletedDescription>
+          </S.CompletedSection>
+        ) : !isPhoneVerified ? (
           <S.AuthSection>
             <S.AuthTitle>휴대폰 인증</S.AuthTitle>
             <S.AuthDescription>
@@ -278,31 +275,6 @@ export default function Host() {
               />
             </S.AuthButtonWrapper>
           </S.AuthSection>
-        ) : isHostSettingCompleted ? (
-          <S.CompletedSection>
-            <S.CompletedTitle>호스트 설정이 완료되었습니다</S.CompletedTitle>
-            <S.CompletedDescription>
-              하숙집 정보가 등록되어 호스트로 활동하실 수 있습니다.
-            </S.CompletedDescription>
-            <S.CompletedInfo>
-              <S.InfoRow>
-                <S.InfoLabel>하숙집 이름:</S.InfoLabel>
-                <S.InfoValue>{formData.name}</S.InfoValue>
-              </S.InfoRow>
-              <S.InfoRow>
-                <S.InfoLabel>주소:</S.InfoLabel>
-                <S.InfoValue>{formData.address}</S.InfoValue>
-              </S.InfoRow>
-              <S.InfoRow>
-                <S.InfoLabel>가까운 역:</S.InfoLabel>
-                <S.InfoValue>{formData.station}</S.InfoValue>
-              </S.InfoRow>
-              <S.InfoRow>
-                <S.InfoLabel>가까운 대학교:</S.InfoLabel>
-                <S.InfoValue>{formData.university}</S.InfoValue>
-              </S.InfoRow>
-            </S.CompletedInfo>
-          </S.CompletedSection>
         ) : (
           <>
             <S.Section>
