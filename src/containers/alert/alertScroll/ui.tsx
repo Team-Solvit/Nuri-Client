@@ -103,7 +103,7 @@ export default function AlertScroll() {
 		}
 	}, [data?.getNotificationList]);
 
-	useLoadingEffect(loading | isFetchingMore);
+	useLoadingEffect(loading || isFetchingMore);
 
 	useEffect(() => {
 		return () => {
