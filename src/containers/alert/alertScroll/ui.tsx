@@ -87,6 +87,7 @@ export default function AlertScroll() {
 	const [alerts, setAlerts] = useState<AlertType[]>([]);
 	const [isDone, setIsDone] = useState(false);
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
+	const [page, setPage] = useState(0);
 
 	const { data, loading, fetchMore } = useQuery(AlertQueries.GET_ALERT_LIST, {
 		variables: { start: 0 },
@@ -98,10 +99,11 @@ export default function AlertScroll() {
 		if (data?.getNotificationList) {
 			setAlerts(data.getNotificationList);
 			setIsDone(data.getNotificationList.length === 0);
+			setPage(1);
 		}
 	}, [data?.getNotificationList]);
 
-	useLoadingEffect(loading);
+	useLoadingEffect(loading | isFetchingMore);
 
 	useEffect(() => {
 		return () => {
@@ -116,7 +118,7 @@ export default function AlertScroll() {
 		setIsFetchingMore(true);
 		try {
 			const res = await fetchMore({
-				variables: { start: alerts.length },
+				variables: { start: page },
 				updateQuery: (prev, { fetchMoreResult }) => {
 					if (!fetchMoreResult) return prev;
 					return {
@@ -132,11 +134,12 @@ export default function AlertScroll() {
 				setIsDone(true);
 				return;
 			}
+			setPage(prev => prev + 1);
 		} catch {
 		} finally {
 			setIsFetchingMore(false);
 		}
-	}, [alerts.length, fetchMore, isDone, isFetchingMore]);
+	}, [page, fetchMore, isDone, isFetchingMore]);
 
 	const observer = useRef<IntersectionObserver | null>(null);
 	const lastPostElementRef = useCallback(
@@ -164,16 +167,22 @@ export default function AlertScroll() {
 			{!loading && alerts.length === 0 ? (
 				<>알림이 존재하지 않습니다.</>
 			) : (
-				alerts.map((alert, idx) => {
-					if (idx === alerts.length - 1) {
-						return (
-							<div key={alert.notificationId} ref={lastPostElementRef}>
-								<AlertBox alert={alert} />
-							</div>
-						);
-					}
-					return <AlertBox key={alert.notificationId} alert={alert} />;
-				})
+				<>
+					{alerts.map((alert, idx) => {
+						if (idx === alerts.length - 1) {
+							return (
+								<div key={alert.notificationId} ref={lastPostElementRef}>
+									<AlertBox alert={alert} />
+								</div>
+							);
+						}
+						return <AlertBox key={alert.notificationId} alert={alert} />;
+					})}
+					{isFetchingMore && <AlertScrollSkeleton />}
+					{isDone && alerts.length > 0 && (
+						<S.EndMessage>더 이상 알림이 없습니다.</S.EndMessage>
+					)}
+				</>
 			)}
 		</S.AlertScrollContainer>
 	);
