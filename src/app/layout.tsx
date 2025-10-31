@@ -9,6 +9,7 @@ import Alert from "@/components/ui/alert";
 import MessageAlert from "@/components/ui/messageAlert";
 import AuthBootstrap from "@/components/layout/AuthBootstrap";
 import Loading from "@/components/ui/loading";
+import Script from "next/script";
 
 
 export const metadata: Metadata = {
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
 
 
 export default async function RootLayout({ children, modal }: { children: React.ReactNode, modal: React.ReactNode }) {
+	const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 	return (
 		<html lang="ko">
 		<head>
@@ -34,6 +36,29 @@ export default async function RootLayout({ children, modal }: { children: React.
 			<meta name="twitter:card" content="summary_large_image" />
 			<meta name="twitter:image" content="https://solvit-nuri.com/op.png" />
 			<meta name="google-site-verification" content="4mbr6batT4ll6nkqWnfo479cEFCpleGzuoT9jswmIwg" />
+
+			{GA_ID && (
+				<>
+					<Script
+					strategy="afterInteractive"
+					src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+					/>
+					<Script
+					id="google-analytics"
+					strategy="afterInteractive"
+					dangerouslySetInnerHTML={{
+						__html: `
+						window.dataLayer = window.dataLayer || [];
+						function gtag(){dataLayer.push(arguments);}
+						gtag('js', new Date());
+						gtag('config', '${GA_ID}', {
+							page_path: window.location.pathname,
+						});
+						`,
+					}}
+					/>
+				</>
+			)}
 		</head>
 		<body style={{ display: "flex" }}>
 		<TopLoadingBar />
