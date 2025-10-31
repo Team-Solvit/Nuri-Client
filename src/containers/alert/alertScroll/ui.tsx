@@ -49,7 +49,7 @@ export const AlertBox = ({ alert }: { alert: AlertType }) => {
 				navigate(`/meetings`);
 				break;
 			case RedirectType.USER:
-				navigate(`/profile/${alert.redirectId}`);
+				navigate(`${alert.redirectId}`);
 				break;
 			case RedirectType.BOARDING_MANAGE:
 				navigate(`/boarding/third-party`);
