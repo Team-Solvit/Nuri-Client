@@ -28,7 +28,7 @@ export default function useSocketConnect() {
 			addSubscription("user-message", client.subscribe(`/user/${userId}/messages`, (message) => {
 				const messageData: ChatMessageResponse = JSON.parse(message.body);
 				fadeIn(
-					messageData.sender?.profile ?? "/post/default.png",
+					messageData?.sender?.profile,
 					messageData.sender.name,
 					messageData.contents,
 					messageData.sendAt
@@ -90,7 +90,7 @@ export default function useSocketConnect() {
 							const msgData = JSON.parse(msg.body);
 							setMessage(msgData);
 							fadeIn(
-								msgData.sender?.profile ?? "/post/default.png",
+								msgData.sender?.profile,
 								msgData.userId,
 								msgData.contents,
 								msgData.sendAt

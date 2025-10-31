@@ -34,7 +34,7 @@ export default function ChatConnect() {
 				const messageData = JSON.parse(message.body);
 				setMessage(messageData);
 				fadeIn(
-					messageData.sender?.profile ?? "/post/default.png",
+					messageData.sender?.profile,
 					messageData.userId,
 					messageData.contents,
 					messageData.sendAt

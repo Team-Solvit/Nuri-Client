@@ -178,7 +178,7 @@ export default function AdditionRoom({ isAddition, setIsAddition, iconRef, type,
 							const msgData = JSON.parse(msg.body);
 							setMessage(msgData);
 							fadeIn(
-								msgData.sender?.profile ?? "/post/default.png",
+								msgData.sender?.profile,
 								msgData.userId,
 								msgData.contents,
 								msgData.sendAt
