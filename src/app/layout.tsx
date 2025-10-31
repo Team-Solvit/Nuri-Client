@@ -9,6 +9,7 @@ import Alert from "@/components/ui/alert";
 import MessageAlert from "@/components/ui/messageAlert";
 import AuthBootstrap from "@/components/layout/AuthBootstrap";
 import Loading from "@/components/ui/loading";
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 
 export const metadata: Metadata = {
@@ -55,6 +56,10 @@ export default async function RootLayout({ children, modal }: { children: React.
 				이 서비스는 자바스크립트가 필요합니다. 브라우저 설정을 확인해주세요.
 			</div>
 		</noscript>
+
+		{process.env.NEXT_PUBLIC_GA_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        )}
 		</body>
 		</html>
 	);
