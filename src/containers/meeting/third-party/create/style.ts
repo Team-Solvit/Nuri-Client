@@ -223,11 +223,10 @@ export const ButtonSection = styled.div`
   display: flex;
   gap: 16px;
   max-width: 600px;
-  margin: 32px auto 40px auto;
   padding: 0 40px;
   
   ${mq.mobile} {
-    margin: 24px 16px 32px 16px;
+    margin: 24px 16px 44px 16px;
     padding: 0;
     gap: 12px;
     

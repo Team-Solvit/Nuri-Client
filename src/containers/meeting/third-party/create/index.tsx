@@ -269,22 +269,15 @@ export default function CreateThirdPartyContainer() {
             max={100}
           />
         </S.FormSection>
+        <S.ButtonSection>
+          <Square
+            text={loading ? "생성 중..." : "모임 만들기"}
+            onClick={handleSubmit}
+            status={!loading && !!formData.name.trim() && !!formData.description.trim() && !!formData.position.area}
+            width="100%"
+          />
+        </S.ButtonSection>
       </S.Form>
-
-      <S.ButtonSection>
-        <Square
-          text="취소"
-          onClick={handleCancel}
-          status={false}
-          width="48%"
-        />
-        <Square
-          text={loading ? "생성 중..." : "모임 만들기"}
-          onClick={handleSubmit}
-          status={!loading && !!formData.name.trim() && !!formData.description.trim() && !!formData.position.area}
-          width="48%"
-        />
-      </S.ButtonSection>
     </S.CreatePageWrapper>
   );
 }
