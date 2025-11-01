@@ -329,11 +329,13 @@ export const Dropdown = styled.div`
   border-radius: 8px;
   box-shadow: 0 0 8px rgba(0,0,0,0.1);
   z-index: 10;
+  
 `
 
 export const DropdownItem = styled.div`
   padding: 10px;
   text-align: center;
+  white-space: nowrap;
   cursor: pointer;
   &:hover {
     background-color: #f2f2f2;
@@ -424,11 +426,11 @@ export const AddMoreText = styled.span`
   }
 `
 
-// 제목 입력 필드
 export const TitleInput = styled.input`
   width: 100%;
   border: none;
-  font-size: ${fontSizes.Body};
+  font-size: ${fontSizes.H4};
+  font-weight: 500;
   outline: none;
   margin-top: 0.5rem;
 

@@ -87,6 +87,11 @@ export default function Header() {
 	};
 
 	const handleMenuClick = (path: string) => {
+		if (path === '/creating' && !userId) {
+			loginModal.open();
+			setMoreOpen(false);
+			return;
+		}
 		navigate(path);
 		setMoreOpen(false);
 	};
