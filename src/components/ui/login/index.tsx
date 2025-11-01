@@ -25,20 +25,20 @@ export default function Login() {
 	const [loading, setLoading] = useState(false);
 	const [socialLoading, setSocialLoading] = useState<string | null>(null);
 	const [codeSent, setCodeSent] = useState(false);
-	
+
 	const client = useApollo();
 	const alertStore = useAlertStore();
 	const loginModal = useLoginModalStore();
 	const setAuth = useUserStore(s => s.setAuth);
-	const setToken = useUserStore(s=>s.setToken)
-	
+	const setToken = useUserStore(s => s.setToken)
+
 	const {
 		loading: findLoading,
 		sendCode: handleSendCode,
 		verifyCode: handleVerifyCode,
 		changePassword: handleChangePassword,
 	} = usePasswordReset();
-	
+
 	const handleLogin = useCallback(async () => {
 		if (loading) return;
 		if (!id.trim() || !password.trim()) {
@@ -51,15 +51,15 @@ export default function Login() {
 				client,
 				{ id: id.trim(), password }
 			);
-			
+
 			const headerTokenRaw =
 				headers['authorization'] || headers['x-access-token'] || '';
 			const headerToken = headerTokenRaw.replace(/^Bearer\s+/i, '');
-			
+
 			if (!headerToken) {
 				throw new Error(`토큰이 응답에 없습니다. status=${status ?? 'N/A'}`);
 			}
-			
+
 			if (!user) {
 				throw new Error('로그인 유저 정보가 없습니다.');
 			}
@@ -78,19 +78,19 @@ export default function Login() {
 			setLoading(false);
 		}
 	}, [id, password, client, alertStore, loginModal, loading, setAuth, setToken]);
-	
+
 	const handleSocialLogin = useCallback(async (provider: 'kakao' | 'google' | 'facebook' | 'tiktok') => {
 		if (socialLoading) return;
 		setSocialLoading(provider);
 		try {
 			sessionStorage.setItem('oauth_provider', provider);
-			
+
 			const { data } = await client.query({
 				query: AuthGQL.QUERIES.GET_SOCIAL_URL,
 				variables: { provider },
 				fetchPolicy: 'no-cache'
 			});
-			
+
 			if (data?.getOAuth2Link) {
 				window.location.href = data.getOAuth2Link;
 			} else {
@@ -108,13 +108,13 @@ export default function Login() {
 			setSocialLoading(null);
 		}
 	}, [client, alertStore, socialLoading]);
-	
+
 	// sendCode 래핑해서 발송 후 codeSent true로
 	const handleSendCodeAndSet = useCallback(async (email: string) => {
 		await handleSendCode(email);
 		setCodeSent(true);
 	}, [handleSendCode]);
-	
+
 	// 인증 성공 시 codeSent false로 초기화
 	const handleVerifyCodeAndSet = useCallback(async (email: string, code: string) => {
 		const ok = await handleVerifyCode(email, code);
@@ -123,7 +123,7 @@ export default function Login() {
 			setCodeSent(false);
 		}
 	}, [handleVerifyCode]);
-	
+
 	return (
 		<Wrapper>
 			<Image src="/logo.svg" alt="로고" width={80} height={80} priority />
@@ -151,8 +151,9 @@ export default function Login() {
 						<Hint>
 							<Left>
 								계정이 없으신가요? <SignUp onClick={() => {
-								router.push('/register');
-							}}>회원가입 하기</SignUp>
+									router.push('/register');
+									useLoginModalStore.getState().close();
+								}}>회원가입 하기</SignUp>
 							</Left>
 							<Right onClick={() => setStep('find-email')}>비밀번호를 잊으셨나요?</Right>
 						</Hint>
