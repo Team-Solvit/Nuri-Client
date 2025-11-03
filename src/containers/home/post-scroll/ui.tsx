@@ -13,12 +13,10 @@ import type {GetPostListResponse, GetPostListVariables} from "@/types/post";
 import {useLoadingEffect} from "@/hooks/useLoading";
 import {useAlertStore} from "@/store/alert";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
-import {useUserStore} from "@/store/user";
 import PostScrollSkeleton from "@/components/ui/skeleton/PostScrollSkeleton";
 
-import {useMessageDmManageStore} from "@/store/messageDmManage";
-import {useMessageHeaderStore} from "@/store/messageHeader";
 import {usePermissionGuard} from "@/hooks/usePermissionGuard";
+import { useMoveChatRoom } from "@/hooks/useMoveChatRoom";
 
 
 export default function PostScroll() {
@@ -86,25 +84,7 @@ export default function PostScroll() {
 		if (node) observer.current.observe(node);
 	}, [loading, isFetchingMore, posts?.length]);
 	
-	const { userId: currentUserId } = useUserStore();
-	const { setValues } = useMessageDmManageStore();
-	const { setValues: setMessageHeader } = useMessageHeaderStore();
-	
-	const moveChatRoom = (user: { userId: string; thumbnail: string }) => {
-		const chatRoomId = [currentUserId, user.userId].sort().join(":");
-		navigate(`/message/${chatRoomId}`);
-		setMessageHeader({
-			chatProfile: user.thumbnail,
-			chatRoomName: user.userId,
-			memberCount: 2,
-		});
-		setValues({
-			chatProfile: user.thumbnail,
-			chatRoomId: user.userId,
-			chatRoomName: user.userId,
-			isOpen: true,
-		});
-	};
+	const { moveChatRoom } = useMoveChatRoom();
 	
 	const handleMouseEnter = (id: number) => setHoverIndex(id);
 	const handleMouseLeave = () => setHoverIndex(null);
@@ -203,9 +183,9 @@ export default function PostScroll() {
 									width="100px"
 									status
 									onClick={() => {
-                    if(!user) return ;
-                    withPermission(()=>moveChatRoom(user))
-                  }}
+										if (!user) return;
+										withPermission(() => moveChatRoom(user));
+									}}
 								/>
 							</S.Nav>
 						</S.PostTitle>
