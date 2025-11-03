@@ -145,13 +145,17 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files) {
-            const newImages: string[] = [];
 
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
                 reader.onloadend = () => {
                     if (typeof reader.result === 'string') {
                         setPreviewImages(prev => {
+                            if (prev.includes(reader.result as string)) {
+                                alertStore.error('같은 사진은 중복으로 올릴 수 없습니다.');
+                                return prev;
+                            }
+                            
                             const updated = [...prev, reader.result as string];
                             setCurrentIndex(updated.length - 1);
                             return updated;
@@ -161,6 +165,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                 reader.readAsDataURL(file);
             });
         }
+        e.target.value = '';
     };
 
 
