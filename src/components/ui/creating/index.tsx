@@ -145,8 +145,6 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files) {
-            const newImages: string[] = [];
-            let hasDuplicate = false;
 
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
@@ -154,7 +152,6 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                     if (typeof reader.result === 'string') {
                         setPreviewImages(prev => {
                             if (prev.includes(reader.result as string)) {
-                                hasDuplicate = true;
                                 alertStore.error('같은 사진은 중복으로 올릴 수 없습니다.');
                                 return prev;
                             }
