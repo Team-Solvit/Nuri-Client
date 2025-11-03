@@ -145,7 +145,6 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files) {
-            const newImages: string[] = [];
 
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
