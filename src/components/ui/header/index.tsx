@@ -70,7 +70,12 @@ export default function Header() {
 	}, [moreOpen]);
 
 	const getFilteredMenuItems = () => {
-		return MENU_ITEMS.filter(item => !item.isThirdParty || role === 'THIRD_PARTY');
+		return MENU_ITEMS.filter(item => {
+			if (item.isThirdParty && role !== 'THIRD_PARTY') return false;
+			if (item.path === '/profile' && !userId) return false;
+			
+			return true;
+		});
 	};
 
 	const getMenuItems = () => {
