@@ -9,74 +9,60 @@ import { gql } from '@apollo/client'
 import { useAlertStore } from '@/store/alert';
 
 interface PhoneAuthProps {
-  onVerifySuccess: (callNumber: string, agency: string) => void
+  onVerifySuccess: (callNumber: string) => void
   onClose: () => void
   role?: 'HOST' | 'BOARDER'
 }
 
-const BACKEND_EMAIL = 'solvit25@gmail.com'
-const AGENCY_DOMAINS: { [key: string]: string } = {
-  'SKT': 'vmms.nate.com',
-  'KT': 'mms.kt.co.kr',
-  'LG U+': 'mmsmail.uplus.co.kr'
-}
-
-const AUTHENTICATE_HOST_MUTATION = gql`
-  mutation AuthenticateHost($hostAuthenticationRequestDto: HostAuthenticationRequestDto!) {
-    authenticateHost(hostAuthenticationRequestDto: $hostAuthenticationRequestDto)
+const SEND_MESSAGE_MUTATION = gql`
+  mutation SendMessage($callNumberRequestDto: CallNumberRequestDto!) {
+    sendMessage(callNumberRequestDto: $callNumberRequestDto)
   }
 `
+
+const AUTHENTICATE_MUTATION = gql`
+  mutation Authenticate($callNumberAuthenticateRequestDto: CallNumberAuthenticateRequestDto!) {
+    authenticate(callNumberAuthenticateRequestDto: $callNumberAuthenticateRequestDto)
+  }
+`
+
+const PHONE_AUTH_EXPIRY = 5 * 60 * 1000; // 5분
 
 export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: PhoneAuthProps) {
   const [authCode, setAuthCode] = useState('')
   const [isCodeSent, setIsCodeSent] = useState(false)
+  const [isSending, setIsSending] = useState(false)
   const [isVerifying, setIsVerifying] = useState(false)
   const [callNumber, setCallNumber] = useState('')
-  const [agency, setAgency] = useState('')
-  const [generatedCode, setGeneratedCode] = useState('')
-  const [smsLink, setSmsLink] = useState('')
   const apolloClient = useApollo()
   const router = useRouter()
   const { success, error } = useAlertStore()
 
-
-  // MMS 보낸 후 웹으로 돌아왔을 때 자동으로 인증코드 입력
   useEffect(() => {
-    if (isCodeSent && generatedCode) {
-      const handleVisibilityChange = () => {
-        if (!document.hidden && generatedCode && authCode !== generatedCode) {
-          setAuthCode(generatedCode)
-        }
+    const savedPhone = localStorage.getItem('phoneAuthNumber')
+    const savedTime = localStorage.getItem('phoneAuthTime')
+    const savedRole = localStorage.getItem('phoneAuthRole')
+
+    if (savedPhone && savedTime && savedRole === role) {
+      const timeDiff = Date.now() - parseInt(savedTime, 10)
+      if (timeDiff < PHONE_AUTH_EXPIRY) {
+        setCallNumber(savedPhone)
+        setIsCodeSent(true)
+      } else {
+        localStorage.removeItem('phoneAuthNumber')
+        localStorage.removeItem('phoneAuthTime')
+        localStorage.removeItem('phoneAuthRole')
       }
-      
-      document.addEventListener('visibilitychange', handleVisibilityChange)
-      return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [isCodeSent, generatedCode, authCode])
-	
-	const generateAuthCode = () => {
-		if (typeof crypto?.getRandomValues === 'function') {
-			const buf = new Uint32Array(1);
-			crypto.getRandomValues(buf);
-			const n = (buf[0] % 900000) + 100000;
-			return String(n);
-		}
-		// Fallback
-		return String(Math.floor(100000 + Math.random() * 900000));
-	}
+  }, [role])
 
   const normalizePhoneNumber = (phone: string) => {
     return phone.replace(/[^0-9]/g, '')
   }
 
-  const handleSendCode = () => {
+  const handleSendCode = async () => {
     if (!callNumber.trim()) {
       error('휴대폰 번호를 입력해주세요.')
-      return
-    }
-
-    if (!agency) {
-      error('통신사를 선택해주세요.')
       return
     }
 
@@ -86,24 +72,37 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
       return
     }
 
-    const code = generateAuthCode()
-    
-    setGeneratedCode(code)
-    setIsCodeSent(true)
-    
-    // SMS 링크 생성 - 백엔드 이메일 주소로 보냄
-	  const link = `sms:${BACKEND_EMAIL}?body=${encodeURIComponent(code)}`
-    setSmsLink(link)
-    
-    // SMS 앱 열기 시도
+    setIsSending(true)
+
     try {
-      const linkElement = document.createElement('a')
-      linkElement.href = link
-      linkElement.click()
-    } catch (e) {
-      console.error('SMS 앱 열기 실패:', e)
-      // 실패 시 사용자에게 수동으로 안내
-      success(`인증코드: ${code}\n\n위 코드를 휴대폰에서 다음 주소로 MMS를 보내주세요:\n${BACKEND_EMAIL}`)
+      const { data } = await apolloClient.mutate({
+        mutation: SEND_MESSAGE_MUTATION,
+        variables: {
+          callNumberRequestDto: {
+            callNumber: normalizedPhone
+          }
+        }
+      })
+
+      if (data?.sendMessage) {
+        success('인증코드가 문자로 발송되었습니다.')
+        setIsCodeSent(true)
+        
+        localStorage.setItem('phoneAuthNumber', normalizedPhone)
+        localStorage.setItem('phoneAuthTime', Date.now().toString())
+        localStorage.setItem('phoneAuthRole', role)
+      } else {
+        error('인증코드 발송에 실패했습니다.')
+      }
+    } catch (e: any) {
+      console.error('인증코드 발송 실패:', e)
+      const errMsg =
+        (e?.graphQLErrors && e.graphQLErrors[0]?.message) ||
+        e?.message ||
+        ''
+      error(errMsg || '인증코드 발송 중 오류가 발생했습니다.')
+    } finally {
+      setIsSending(false)
     }
   }
 
@@ -113,34 +112,31 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
       return
     }
 
-    if (authCode.length !== 6) {
-      error('인증코드는 6자리입니다.')
-      return
-    }
-
     setIsVerifying(true)
 
     try {
-      // 통신사명을 도메인으로 변환
-      const agencyDomain = AGENCY_DOMAINS[agency] || agency
-
       const { data } = await apolloClient.mutate({
-        mutation: AUTHENTICATE_HOST_MUTATION,
+        mutation: AUTHENTICATE_MUTATION,
         variables: {
-          hostAuthenticationRequestDto: {
-            callNumber: normalizePhoneNumber(callNumber),
-            agency: agencyDomain,
+          callNumberAuthenticateRequestDto: {
             authCode: authCode,
+            callNumber: normalizePhoneNumber(callNumber),
             role: role
           }
         }
       })
 
-      if (data?.authenticateHost) {
-          success('휴대폰 인증이 완료되었습니다!')
-        onVerifySuccess(normalizePhoneNumber(callNumber), agencyDomain)
+      if (data?.authenticate) {
+        success('휴대폰 인증이 완료되었습니다!')
+        
+        localStorage.removeItem('phoneAuthNumber')
+        localStorage.removeItem('phoneAuthTime')
+        localStorage.removeItem('phoneAuthRole')
+        
+        onVerifySuccess(normalizePhoneNumber(callNumber))
+        onClose()
       } else {
-          error('인증코드가 올바르지 않습니다. 다시 확인해주세요.')
+        error('인증코드가 올바르지 않습니다. 다시 확인해주세요.')
       }
     } catch (e: any) {
       console.error('인증 실패:', e)
@@ -150,10 +146,10 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
         ''
 
       if (typeof errMsg === 'string' && errMsg.includes('존재하지 않습니다')) {
-        error('호스트(하숙집) 정보가 없습니다. 먼저 호스트 설정에서 하숙집 정보를 등록해 주세요. 이동합니다.');
+        error('호스트(하숙집) 정보가 없습니다. 먼저 호스트 설정에서 하숙집 정보를 등록해 주세요.')
         try {
           router.push(role === 'HOST' ? '/setting/host' : '/setting/boarder');
-        } catch (e : unknown) {
+        } catch (e: unknown) {
           console.error('라우팅 실패:', e);
         }
       } else {
@@ -168,8 +164,10 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
     setIsCodeSent(false)
     setAuthCode('')
     setCallNumber('')
-    setAgency('')
-    setGeneratedCode('')
+    
+    localStorage.removeItem('phoneAuthNumber')
+    localStorage.removeItem('phoneAuthTime')
+    localStorage.removeItem('phoneAuthRole')
   }
 
   return (
@@ -185,7 +183,7 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
             {!isCodeSent ? (
               <S.Step1>
                 <S.Description>
-                  {role === 'HOST' ? '호스트' : '하숙생'} 인증을 위해 휴대폰 번호와 통신사를 선택해주세요.
+                  {role === 'HOST' ? '호스트' : '하숙생'} 인증을 위해 휴대폰 번호를 입력해주세요.
                 </S.Description>
                 
                 <S.Input
@@ -196,45 +194,24 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
                   maxLength={13}
                 />
                 
-                <S.Select value={agency} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setAgency(e.target.value)}>
-                  <option value="">통신사 선택</option>
-                  <option value="SKT">SKT</option>
-                  <option value="KT">KT</option>
-                  <option value="LG U+">LG U+</option>
-                </S.Select>
-                
                 <S.InfoText>
-                  * {BACKEND_EMAIL}로 인증코드가 포함된 MMS를 보내게 됩니다.
+                  * 입력하신 번호로 인증코드가 문자로 발송됩니다.
                 </S.InfoText>
 
                 <S.ButtonWrapper>
                   <Square
-                    text="인증코드 발송"
+                    text={isSending ? "발송 중..." : "인증코드 발송"}
                     onClick={handleSendCode}
-                    status={!!callNumber.trim() && !!agency}
+                    status={!!callNumber.trim() && !isSending}
                     width="100%"
                   />
                 </S.ButtonWrapper>
-                
-                {isCodeSent && (
-                  <S.SmsButton 
-                    href={smsLink}
-                    target="_blank"
-                  >
-                    📱 MMS 앱에서 직접 보내기
-                  </S.SmsButton>
-                )}
               </S.Step1>
             ) : (
               <S.Step2>
                 <S.Description>
-                  MMS로 보낸 인증코드를 아래에 입력해주세요.
+                  문자로 받은 인증코드를 입력해주세요.
                 </S.Description>
-                
-                <S.CodeDisplay>
-                  <S.CodeLabel>발송한 인증코드:</S.CodeLabel>
-                  <S.CodeValue>{generatedCode}</S.CodeValue>
-                </S.CodeDisplay>
                 
                 <S.PhoneInfo>
                   인증번호: {callNumber}
@@ -242,17 +219,16 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
 
                 <S.Input
                   type="text"
-                  placeholder="인증코드 6자리"
+                  placeholder="인증코드"
                   value={authCode}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAuthCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
-                  maxLength={6}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAuthCode(e.target.value)}
                 />
 
                 <S.ButtonWrapper>
                   <Square
                     text={isVerifying ? "인증 중..." : "인증하기"}
                     onClick={handleVerifyCode}
-                    status={authCode.length === 6 && !isVerifying}
+                    status={!!authCode.trim() && !isVerifying}
                     width="100%"
                   />
                 </S.ButtonWrapper>
