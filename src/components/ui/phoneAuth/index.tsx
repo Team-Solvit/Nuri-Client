@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import * as S from './style';
 import Square from '../button/square'
 import { useApollo } from '@/lib/apolloClient'
@@ -26,8 +26,6 @@ const AUTHENTICATE_MUTATION = gql`
   }
 `
 
-const PHONE_AUTH_EXPIRY = 5 * 60 * 1000; // 5분
-
 export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: PhoneAuthProps) {
   const [authCode, setAuthCode] = useState('')
   const [isCodeSent, setIsCodeSent] = useState(false)
@@ -37,24 +35,6 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
   const apolloClient = useApollo()
   const router = useRouter()
   const { success, error } = useAlertStore()
-
-  useEffect(() => {
-    const savedPhone = localStorage.getItem('phoneAuthNumber')
-    const savedTime = localStorage.getItem('phoneAuthTime')
-    const savedRole = localStorage.getItem('phoneAuthRole')
-
-    if (savedPhone && savedTime && savedRole === role) {
-      const timeDiff = Date.now() - parseInt(savedTime, 10)
-      if (timeDiff < PHONE_AUTH_EXPIRY) {
-        setCallNumber(savedPhone)
-        setIsCodeSent(true)
-      } else {
-        localStorage.removeItem('phoneAuthNumber')
-        localStorage.removeItem('phoneAuthTime')
-        localStorage.removeItem('phoneAuthRole')
-      }
-    }
-  }, [role])
 
   const normalizePhoneNumber = (phone: string) => {
     return phone.replace(/[^0-9]/g, '')
@@ -87,10 +67,6 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
       if (data?.sendMessage) {
         success('인증코드가 문자로 발송되었습니다.')
         setIsCodeSent(true)
-        
-        localStorage.setItem('phoneAuthNumber', normalizedPhone)
-        localStorage.setItem('phoneAuthTime', Date.now().toString())
-        localStorage.setItem('phoneAuthRole', role)
       } else {
         error('인증코드 발송에 실패했습니다.')
       }
@@ -128,11 +104,6 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
 
       if (data?.authenticate) {
         success('휴대폰 인증이 완료되었습니다!')
-        
-        localStorage.removeItem('phoneAuthNumber')
-        localStorage.removeItem('phoneAuthTime')
-        localStorage.removeItem('phoneAuthRole')
-        
         onVerifySuccess(normalizePhoneNumber(callNumber))
         onClose()
       } else {
