@@ -23,6 +23,7 @@ import ContractPeriodModal from "./ContractPeriodModal";
 import { useAlertStore } from "@/store/alert";
 import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 import PostDetailSkeleton from "./PostDetailSkeleton";
+import { imageCheck } from "@/utils/imageCheck";
 
 interface PostDetailProps { id: string; isModal?: boolean; }
 
@@ -152,7 +153,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
         />
         <S.Footer>
           <S.Profile>
-            <Image src={userProfile || '/post/default.png'} alt="user thumbnail" width={40} height={40} style={{ borderRadius: radius.full }} />
+            <Image src={imageCheck(userProfile ?? undefined)} alt="user thumbnail" width={40} height={40} style={{ borderRadius: radius.full }} />
             <div>
               <p>{userId}</p>
               <p>{date}</p>
