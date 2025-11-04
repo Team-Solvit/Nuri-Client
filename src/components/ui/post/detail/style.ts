@@ -231,6 +231,8 @@ export const RightDesc = styled.p`
   color: ${colors.text};
   line-height: 1.6;
   margin-bottom: 1rem;
+  white-space: pre-wrap;
+  word-break: break-word;
   ${mq.mobile} {
     font-size: 0.75rem;
     margin-bottom: 0.75rem;
@@ -896,6 +898,26 @@ export const EditPostInlineTextarea = styled.textarea`
     min-height: 80px;
     padding: 0.5rem;
     font-size: 0.875rem;
+  }
+`;
+
+export const EditPostTextareaWrapper = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
+export const CharCounter = styled.div`
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.75rem;
+  font-size: 0.75rem;
+  color: ${colors.gray};
+  pointer-events: none;
+  
+  ${mq.mobile} {
+    font-size: 0.7rem;
+    bottom: 0.375rem;
+    right: 0.5rem;
   }
 `;
 
