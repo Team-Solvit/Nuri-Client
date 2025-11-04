@@ -53,11 +53,17 @@ export default function SnsPostContent({
       <S.RightSub>{date}</S.RightSub>
       {isEditingPost ? (
         <S.EditPostContainer>
-          <S.EditPostInlineTextarea
-            value={editingPostContent}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onChangeContent(e.target.value)}
-            placeholder="게시물 내용을 입력하세요... (#태그 사용 가능)"
-          />
+          <S.EditPostTextareaWrapper>
+            <S.EditPostInlineTextarea
+              value={editingPostContent}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onChangeContent(e.target.value)}
+              placeholder="게시물 내용을 입력하세요... (#태그 사용 가능)"
+              maxLength={3000}
+            />
+            <S.CharCounter>
+              {editingPostContent.length} / 3000
+            </S.CharCounter>
+          </S.EditPostTextareaWrapper>
 
           <S.EditImageSection>
             <S.EditImageTitle>이미지</S.EditImageTitle>

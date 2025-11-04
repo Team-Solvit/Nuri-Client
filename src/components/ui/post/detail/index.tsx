@@ -24,14 +24,18 @@ import { useAlertStore } from "@/store/alert";
 import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 import PostDetailSkeleton from "./PostDetailSkeleton";
 import { imageCheck } from "@/utils/imageCheck";
+import { PostDetailService } from "@/services/postDetail";
+import { useApollo } from "@/lib/apolloClient";
 
 interface PostDetailProps { id: string; isModal?: boolean; }
 
 export default function PostDetail({ id, isModal }: PostDetailProps) {
   const router = useRouter();
   const navigate = useNavigationWithProgress();
+  const client = useApollo();
   const {
     postInfo,
+    setPostInfo,
     loading,
     isLiked,
     likeCount,
@@ -70,10 +74,10 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
     removeNewImage,
     displayDesc,
   } = usePostEdit(postInfo, async (postId: string) => {
-    const { PostDetailService } = await import("@/services/postDetail");
-    const { useApollo } = await import("@/lib/apolloClient");
-    const client = useApollo();
     const updated = await PostDetailService.getPostById(client, postId);
+    if (updated) {
+      setPostInfo(updated);
+    }
     return updated;
   });
 
