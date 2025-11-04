@@ -358,7 +358,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                         onChange={e => setContent(e.target.value)}
                         maxLength={10000}
                     />
-                    <S.CharCount>{content.length}/9999</S.CharCount>
+                    <S.CharCount>{content.length}/3000</S.CharCount>
 
                     <S.ButtonRow>
                         <Square
