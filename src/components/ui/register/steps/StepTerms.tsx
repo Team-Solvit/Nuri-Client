@@ -11,6 +11,7 @@ interface Props {
 export const StepTerms = memo(({ form, onChange }: Props) => {
   const allChecked = form.terms1 && form.terms2 && form.terms3;
   const toggleAll = (checked: boolean) => ['terms1', 'terms2', 'terms3'].forEach(k => onChange(k as keyof RegisterFormData, checked));
+
   return (
     <>
       <S.Title>아래의 내용을 동의해야 서비스를 이용할 수 있어요.</S.Title>
@@ -38,3 +39,5 @@ export const StepTerms = memo(({ form, onChange }: Props) => {
   );
 });
 StepTerms.displayName = 'StepTerms';
+
+

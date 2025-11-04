@@ -1,7 +1,14 @@
 import React from 'react';
 import Square from "@/components/ui/button/square";
 import styled from "@emotion/styled";
-import {colors, fontSizes} from "@/styles/theme";
+import { colors, fontSizes } from "@/styles/theme";
+import { useConfirmStore } from "@/store/confirm";
+import { useAlertStore } from "@/store/alert";
+import { useMutation } from "@apollo/client";
+import { ContractMutations } from "@/services/contract";
+import { RoomTourMutations } from "@/services/roomTour";
+import { useMessageModalStore } from "@/store/messageModal";
+import { useMessageContentReadFetchStore } from "@/store/messageContentReadFetch";
 
 const Black = styled.div`
   position: fixed;
@@ -52,40 +59,127 @@ export const ButtonContainer = styled.div`
 `
 
 interface ConfirmRejectModalProps {
-	isOpen: boolean;
-	onClose: () => void;
 	onConfirm: () => void;
-	type: '결제' | '룸투어'
+	type: '계약' | '룸투어'
 }
 
 export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
-	                                                                      isOpen,
-	                                                                      onClose,
-	                                                                      onConfirm,
-	                                                                      type
-                                                                      }) => {
+	onConfirm,
+	type
+}) => {
+	const { isOpen, type: status, closeConfirm: onClose } = useConfirmStore()
+	const { setActivate } = useMessageContentReadFetchStore();
+	const { error, success } = useAlertStore();
+	const { contractData } = useMessageModalStore()
+	const closeModal = () => {
+		onConfirm();
+		onClose();
+	}
+	const [acceptContract, { loading: accContractLoading }] = useMutation(ContractMutations.ACCEPT_CONTRACT, {
+		onCompleted: () => {
+			success("계약에 성공하였습니다.")
+			closeModal()
+		},
+		onError: (err) => {
+			error(err.message)
+		}
+	}
+	);
+	const [rejectContract, { loading: rejContractLoading }] = useMutation(ContractMutations.REJECT_CONTRACT, {
+		onCompleted: () => {
+			success("계약을 반려하였습니다.")
+			closeModal()
+		},
+		onError: (err) => {
+			error(err.message)
+		}
+	})
+	const [rejectRoomTour, { loading: rejRoomTourLoading }] = useMutation(RoomTourMutations.REJECT_ROOM_TOUR, {
+		onCompleted: () => {
+			success("룸투어 취소에 성공하였습니다.")
+			closeModal()
+		},
+		onError: (err) => {
+			error(err.message)
+		}
+	})
+	const [acceptRoomTour, { loading: accRoomTourLoading }] = useMutation(RoomTourMutations.ACCEPT_ROOM_TOUR, {
+		onCompleted: () => {
+			closeModal()
+			success("룸투어 반영에 성공하였습니다.")
+		},
+		onError: (err) => {
+			error(err.message)
+		}
+	})
+	const handleBtnClick = async () => {
+		const isMutating = accContractLoading || rejContractLoading || rejRoomTourLoading || accRoomTourLoading;
+		if (isMutating) return
+		if (!contractData) { error("유효하지 않은 요청입니다."); return; }
+		if (type === "룸투어" && contractData?.type === "roomTour") {
+			if (!contractData.roomTourId) { error("룸투어 ID가 없습니다."); return; }
+			if (status === "sure") {
+				await acceptRoomTour({
+					variables: {
+						roomTourId: contractData?.roomTourId
+					}
+				}).finally(() => {
+					setActivate()
+				})
+			}
+			else if (status === "delete") await rejectRoomTour({
+				variables: {
+					roomTourId: contractData?.roomTourId
+				}
+			}).finally(() => {
+				setActivate()
+			})
+		}
+		else if (type === "계약" && contractData?.type === "contract") {
+			if (!contractData.contractId) { error("계약 ID가 없습니다."); return; }
+			if (status === "sure") await acceptContract({
+				variables: {
+					contractId: contractData?.contractId
+				}
+			}).finally(() => {
+				setActivate()
+			})
+			else if (status === "delete") await rejectContract({
+				variables: {
+					contractId: contractData?.contractId
+				}
+			}).finally(() => {
+				setActivate()
+			})
+		}
+		else {
+			error("처리할 수 없는 요청입니다.");
+		}
+	}
 	if (!isOpen) return null;
-	
 	return (
 		<Black onClick={onClose}>
 			<Content onClick={(e) => e.stopPropagation()}>
-				<Title>{type} 거절</Title>
-				<Text>정말 거절하시겠습니까?</Text>
+				<Title>
+					{type}
+					{status === "sure" && "수락"}
+					{status === "delete" && "거절"}
+				</Title>
+				<Text>{status === "sure" ? "정말 수락하시겠습니까?" : "정말 거절하시겠습니까?"}</Text>
 				<ButtonContainer>
 					<Square
 						text="취소"
-						onClick={onClose}
+						onClick={closeModal}
 						status={false}
 						width="100%"
+						isLoading={accContractLoading || rejContractLoading || rejRoomTourLoading || accRoomTourLoading}
 					/>
 					<Square
 						text="확인"
-						onClick={() => {
-							onConfirm();
-							onClose();
-						}}
+						onClick={() => handleBtnClick()}
 						status={true}
 						width="100%"
+						isLoading={accContractLoading || rejContractLoading || rejRoomTourLoading || accRoomTourLoading}
 					/>
 				</ButtonContainer>
 			</Content>

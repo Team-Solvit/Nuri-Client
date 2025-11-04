@@ -4,21 +4,21 @@ interface MessageAlertState {
 	isStatus: "none" | "in";
 	isVisible: boolean;
 	isLeavingAnimation: boolean;
-	ima_url: string;
+	ima_url: string | null;
 	user_id: string;
 	content: string;
 	date: string;
 	chat_id: number;
 	none: () => void;
 	setIsLeavingAnimation: (isLeaving: boolean) => void;
-	fadeIn: (url: string, user_id: string, content: string, date: string) => void;
+	fadeIn: (url: string | null, user_id: string, content: string, date: string) => void;
 }
 
 export const useMessageAlertStore = create<MessageAlertState>((set) => ({
 	isStatus: "none",
 	isVisible: false,
 	isLeavingAnimation: false,
-	ima_url: '',
+	ima_url: null,
 	user_id: '',
 	content: '',
 	chat_id: 0,
@@ -38,7 +38,7 @@ export const useMessageAlertStore = create<MessageAlertState>((set) => ({
 			isLeavingAnimation: isLeaving,
 		})
 	},
-	fadeIn: (url: string, user_id: string, content: string, date: string) => {
+	fadeIn: (url: string | null, user_id: string, content: string, date: string) => {
 		// init 용 set
 		set({
 			isStatus: 'none',

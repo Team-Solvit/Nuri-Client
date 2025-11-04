@@ -10,7 +10,7 @@ import { useAlertStore } from "@/store/alert";
 
 export default function Alert() {
 	const { isStatus, description, none, isLeavingAnimation, setIsLeavingAnimation, isVisible } = useAlertStore();
-
+ 
 	useEffect(() => {
 		const leavingTimer = setTimeout(() => {
 			setIsLeavingAnimation(false);

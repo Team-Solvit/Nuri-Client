@@ -52,7 +52,6 @@ export default function SettingHeader() {
             {isLogoutModalOpen && (
                 <Logout
                     onLogout={() => {
-                        console.log('로그아웃');
                         setLogoutModalOpen(false);
                     }}
                     onClose={() => setLogoutModalOpen(false)}
@@ -62,7 +61,6 @@ export default function SettingHeader() {
             {isLeaveModalOpen && (
                 <Leave
                     onLeave={() => {
-                        console.log('회원탈퇴 진행');
                         setLeaveModalOpen(false);
                     }}
                     onClose={() => setLeaveModalOpen(false)}

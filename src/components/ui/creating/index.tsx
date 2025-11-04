@@ -10,6 +10,7 @@ import { useApollo } from '@/lib/apolloClient';
 import { createPost } from '@/services/post';
 import { ShareRange } from '@/types/post';
 import { imageService } from '@/services/image';
+import { useIsMakeGroupPostStore } from "@/store/isMakeGroupPost";
 import { useUserStore } from '@/store/user';
 import { useAlertStore } from '@/store/alert';
 
@@ -43,9 +44,9 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
             case '전체':
                 return ShareRange.ALL;
             case '팔로워':
-                return ShareRange.FRIENDS;
+                return ShareRange.FOLLOWER;
             case '모임':
-                return ShareRange.PRIVATE;
+                return ShareRange.GROUP;
             default:
                 return ShareRange.ALL;
         }
@@ -62,7 +63,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
     };
 
 
-    // 게시물 생성
+    const { isGroup } = useIsMakeGroupPostStore()
     const handleSubmit = async () => {
         if (isSubmitting) return;
         if (!content.trim() || !title.trim()) {
@@ -107,7 +108,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                     title: title,
                     contents: cleanedContent,
                     shareRange: getShareRange(publicTarget),
-                    isGroup: publicTarget === '모임'
+                    isGroup: isGroup
                 },
                 files: imageUrls,
                 hashTags: hashtags
@@ -119,8 +120,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
             } else {
                 alertStore.error('게시물 생성에 실패했습니다.');
             }
-        } catch (error) {
-            console.error('게시물 생성 오류:', error);
+        } catch {
             alertStore.error('게시물 생성 중 오류가 발생했습니다.');
         } finally {
             setIsSubmitting(false);
@@ -145,13 +145,17 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files) {
-            const newImages: string[] = [];
 
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
                 reader.onloadend = () => {
                     if (typeof reader.result === 'string') {
                         setPreviewImages(prev => {
+                            if (prev.includes(reader.result as string)) {
+                                alertStore.error('같은 사진은 중복으로 올릴 수 없습니다.');
+                                return prev;
+                            }
+                            
                             const updated = [...prev, reader.result as string];
                             setCurrentIndex(updated.length - 1);
                             return updated;
@@ -161,6 +165,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                 reader.readAsDataURL(file);
             });
         }
+        e.target.value = '';
     };
 
 
@@ -361,12 +366,14 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                             text='취소'
                             width='8vw'
                             status={false}
+                            isLoading={isSubmitting}
                         />
                         <Square
                             onClick={handleSubmit}
                             text={isSubmitting ? '업로드 중...' : '업로드'}
                             width='8vw'
                             status={true}
+                            isLoading={isSubmitting}
                         />
                     </S.ButtonRow>
                 </S.Main>

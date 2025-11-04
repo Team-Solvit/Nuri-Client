@@ -1,6 +1,6 @@
 "use client"
 
-import * as S from "./style"
+import * as S from "./style";
 import Image from "next/image";
 import { useMutation, useQuery } from "@apollo/client";
 import { AlertMutations, AlertQueries } from "@/services/alert";
@@ -9,9 +9,11 @@ import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 import { useLoadingEffect } from "@/hooks/useLoading";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import AlertScrollSkeleton from "@/components/ui/skeleton/AlertScrollSkeleton";
+import { useAlertStore } from "@/store/alert";
 
 export const AlertBox = ({ alert }: { alert: AlertType }) => {
 	const navigate = useNavigationWithProgress();
+	const { error } = useAlertStore();
 	const [mutate] = useMutation(AlertMutations.READ_ALERT, {
 		variables: { notificationId: alert.notificationId },
 	});
@@ -19,10 +21,10 @@ export const AlertBox = ({ alert }: { alert: AlertType }) => {
 	const checkAlert = useCallback(async () => {
 		try {
 			await mutate();
-		} catch (error) {
-			console.error("알림 읽음 처리 실패:", error);
+		} catch {
+			error("알림 확인 처리에 실패했습니다.");
 		}
-	}, [mutate]);
+	}, [mutate, error]);
 	
 	useEffect(() => {
 		if (alert.checked) return;
@@ -36,7 +38,6 @@ export const AlertBox = ({ alert }: { alert: AlertType }) => {
 	
 	const handleMove = async () => {
 		await mutate();
-		console.log("alert", alert.redirectId)
 		switch (alert.redirectType) {
 			case RedirectType.POST_DETAIL:
 				navigate(`/post/${alert.redirectId}`);
@@ -48,7 +49,7 @@ export const AlertBox = ({ alert }: { alert: AlertType }) => {
 				navigate(`/meetings`);
 				break;
 			case RedirectType.USER:
-				navigate(`/profile/${alert.redirectId}`);
+				navigate(`${alert.redirectId}`);
 				break;
 			case RedirectType.BOARDING_MANAGE:
 				navigate(`/boarding/third-party`);
@@ -86,6 +87,7 @@ export default function AlertScroll() {
 	const [alerts, setAlerts] = useState<AlertType[]>([]);
 	const [isDone, setIsDone] = useState(false);
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
+	const [page, setPage] = useState(0);
 	
 	const { data, loading, fetchMore } = useQuery(AlertQueries.GET_ALERT_LIST, {
 		variables: { start: 0 },
@@ -93,37 +95,48 @@ export default function AlertScroll() {
 		nextFetchPolicy: "no-cache",
 	});
 	
+	// ✅ 초기 데이터 로드 시 중복 없이 설정
 	useEffect(() => {
 		if (data?.getNotificationList) {
-			setAlerts(data.getNotificationList);
-			setIsDone(data.getNotificationList.length === 0);
+			const unique = data.getNotificationList.filter(
+				(a, index, self) =>
+					index === self.findIndex((b) => b.notificationId === a.notificationId)
+			);
+			setAlerts(unique);
+			setIsDone(unique.length === 0);
+			setPage(1);
 		}
 	}, [data?.getNotificationList]);
 	
-	useLoadingEffect(loading);
+	useLoadingEffect(loading || isFetchingMore);
 	
+	const observer = useRef<IntersectionObserver | null>(null);
 	useEffect(() => {
-		  return () => {
-			    if (observer.current) {
-				      observer.current.disconnect();
-				    }
-			  };
-		}, []);
+		return () => {
+			if (observer.current) {
+				observer.current.disconnect();
+			}
+		};
+	}, []);
 	
 	const loadMore = useCallback(async () => {
 		if (isFetchingMore || isDone) return;
 		setIsFetchingMore(true);
 		try {
 			const res = await fetchMore({
-				variables: { start: alerts.length },
+				variables: { start: page },
 				updateQuery: (prev, { fetchMoreResult }) => {
 					if (!fetchMoreResult) return prev;
-					return {
-						getNotificationList: [
-							...prev.getNotificationList,
-							...fetchMoreResult.getNotificationList,
-						],
-					};
+					const combined = [
+						...prev.getNotificationList,
+						...fetchMoreResult.getNotificationList,
+					];
+					const unique = combined.filter(
+						(a, index, self) =>
+							index ===
+							self.findIndex((b) => b.notificationId === a.notificationId)
+					);
+					return { getNotificationList: unique };
 				},
 			});
 			const more: AlertType[] = res?.data?.getNotificationList ?? [];
@@ -131,14 +144,23 @@ export default function AlertScroll() {
 				setIsDone(true);
 				return;
 			}
-		} catch (e) {
-			console.error(e);
+			// ✅ 새 데이터를 합치되 중복 제거
+			setAlerts((prev) => {
+				const merged = [...prev, ...more];
+				const unique = merged.filter(
+					(a, index, self) =>
+						index === self.findIndex((b) => b.notificationId === a.notificationId)
+				);
+				return unique;
+			});
+			setPage((prev) => prev + 1);
+		} catch {
+			// 실패 시 무시
 		} finally {
 			setIsFetchingMore(false);
 		}
-	}, [alerts.length, fetchMore, isDone, isFetchingMore]);
+	}, [page, fetchMore, isDone, isFetchingMore]);
 	
-	const observer = useRef<IntersectionObserver | null>(null);
 	const lastPostElementRef = useCallback(
 		(node: HTMLDivElement | null) => {
 			if (loading || isFetchingMore) return;
@@ -154,26 +176,29 @@ export default function AlertScroll() {
 		[loading, isFetchingMore, loadMore]
 	);
 	
-	// 로딩 중이면 스켈레톤 컴포넌트 렌더링
-	if (loading) {
-		return <AlertScrollSkeleton />;
-	}
+	if (loading) return <AlertScrollSkeleton />;
 	
 	return (
 		<S.AlertScrollContainer>
 			{!loading && alerts.length === 0 ? (
 				<>알림이 존재하지 않습니다.</>
 			) : (
-				alerts.map((alert, idx) => {
-					if (idx === alerts.length - 1) {
-						return (
-							<div key={alert.notificationId} ref={lastPostElementRef}>
-								<AlertBox alert={alert} />
-							</div>
-						);
-					}
-					return <AlertBox key={alert.notificationId} alert={alert} />;
-				})
+				<>
+					{alerts.map((alert, idx) => {
+						if (idx === alerts.length - 1) {
+							return (
+								<div key={alert.notificationId} ref={lastPostElementRef}>
+									<AlertBox alert={alert} />
+								</div>
+							);
+						}
+						return <AlertBox key={alert.notificationId} alert={alert} />;
+					})}
+					{isFetchingMore && <AlertScrollSkeleton />}
+					{isDone && alerts.length > 0 && (
+						<S.EndMessage>더 이상 알림이 없습니다.</S.EndMessage>
+					)}
+				</>
 			)}
 		</S.AlertScrollContainer>
 	);

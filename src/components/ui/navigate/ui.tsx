@@ -1,25 +1,23 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import {usePathname} from "next/navigation";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Alert from "@/assets/icon/alert.svg"
 import Home from "@/assets/icon/house.svg"
 import Message from "@/assets/icon/message.svg"
 import * as S from "./style";
-import {useUserStore} from "@/store/user";
-import Login from "../login";
-import LoginModal from "@/components/layout/loginModal";
-import {useLoginModalStore} from "@/store/loginModal";
-import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import { useUserStore } from "@/store/user";
+import { useLoginModalStore } from "@/store/loginModal";
+import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 import { AlertQueries } from "@/services/alert";
 import { useQuery } from "@apollo/client";
 
 export default function Navigate() {
 	const navigate = useNavigationWithProgress();
-	
+
 	const pathname = usePathname();
-	const {id, role} = useUserStore();
-	const {isOpen, open} = useLoginModalStore();
+	const { id, role } = useUserStore();
+	const { open } = useLoginModalStore();
 	const isHome = pathname === "/";
 	const NAVIGATE_ITEMS = [
 		{
@@ -47,7 +45,7 @@ export default function Navigate() {
 			aria_label: "하숙집 페이지로 이동"
 		},
 	] as const
-	
+
 	const NAVIGATE_AUTH_ITEMS = [
 		{
 			label: "로그인",
@@ -70,7 +68,7 @@ export default function Navigate() {
 		nextFetchPolicy: "no-cache",
 		skip: !id,
 	});
-	
+
 	useEffect(() => {
 		setAlertCount(Number(alertData?.getNotificationCount ?? 0));
 	}, [alertData]);
@@ -82,14 +80,13 @@ export default function Navigate() {
 		}
 		const onFocus = () => {
 			if (typeof refetchAlert === "function") {
-				try { refetchAlert(); } catch (e) {
-					console.error(e) }
+				try { refetchAlert(); } catch { }
 			}
 		};
 		window.addEventListener("focus", onFocus);
 		return () => window.removeEventListener("focus", onFocus);
 	}, [id, refetchAlert]);
-	
+
 	return (
 		<S.NavigateCon>
 			<S.NavigateContainer>
@@ -103,7 +100,7 @@ export default function Navigate() {
 				</S.Logo>
 				<S.BtnBox>
 					{id ? NAVIGATE_ITEMS.map(item => {
-						if(role !== "HOST" && item.label === "하숙집") return null
+						if (role !== "HOST" && item.label === "하숙집") return null
 						return (
 							<S.NavigateBtn
 								key={item.path}
@@ -114,7 +111,7 @@ export default function Navigate() {
 								aria-current={item.active}
 							>
 								<S.IconBox>
-									<Image src={item.icon} alt={item.label} width={32} height={32}/>
+									<Image src={item.icon} alt={item.label} width={32} height={32} />
 									{/* 알림 아이템일 때만, 경로가 /alert가 아니면 표시 */}
 									{item.label === "알림" && alertCount > 0 && pathname !== "/alert" && (
 										<S.Count>{alertCount > 99 ? "99+" : alertCount}</S.Count>
@@ -135,7 +132,7 @@ export default function Navigate() {
 										onClick={item.onClick}
 									/>
 								</S.Or>
-							
+
 							)
 						}
 						return (
@@ -148,22 +145,17 @@ export default function Navigate() {
 						)
 					})}
 				</S.BtnBox>
-				{isOpen && (
-					<LoginModal>
-						<Login/>
-					</LoginModal>
-				)}
 			</S.NavigateContainer>
 			{isHome && role === "USER" && <S.HostCard>
-        <S.HostTextBox>
-          <strong>하숙집</strong>
-          <strong>호스트라면?</strong>
-          <span>간편하게 하숙 정보를 등록하고 관리해보세요</span>
-        </S.HostTextBox>
-        <S.HostCTAButton onClick={() => navigate("/setting/host")}>
-          하숙집 설정하기
-        </S.HostCTAButton>
-      </S.HostCard>}
+				<S.HostTextBox>
+					<strong>하숙집</strong>
+					<strong>호스트라면?</strong>
+					<span>간편하게 하숙 정보를 등록하고 관리해보세요</span>
+				</S.HostTextBox>
+				<S.HostCTAButton onClick={() => navigate("/setting/host")}>
+					하숙집 설정하기
+				</S.HostCTAButton>
+			</S.HostCard>}
 		</S.NavigateCon>
 	)
 }

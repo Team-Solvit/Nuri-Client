@@ -4,10 +4,12 @@ import Header from "@/components/ui/header";
 import TopLoadingBar from "@/components/layout/loadingbar";
 import React from "react";
 import {Providers} from "@/components/layout/provider";
+import ChatComponent from "@/components/layout/chatConnect";
 import Alert from "@/components/ui/alert";
 import MessageAlert from "@/components/ui/messageAlert";
 import AuthBootstrap from "@/components/layout/AuthBootstrap";
 import Loading from "@/components/ui/loading";
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 
 export const metadata: Metadata = {
@@ -16,28 +18,49 @@ export const metadata: Metadata = {
 };
 
 
-export default function RootLayout({children, modal}: { children: React.ReactNode, modal: React.ReactNode }) {
+export default async function RootLayout({ children, modal }: { children: React.ReactNode, modal: React.ReactNode }) {
 	return (
 		<html lang="ko">
-		<TopLoadingBar/>
-		<Alert/>
-		<MessageAlert/>
 		<head>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+			<meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+			<meta name="format-detection" content="telephone=no, address=no, email=no" />
+			<meta name="theme-color" content="#FF4C61" />
+			<meta name="robots" content="index, follow" />
+			<meta property="og:type" content="website" />
+			<meta property="og:title" content="NURI" />
+			<meta property="og:description" content="유학생을 위한 한국 문화 교류/적응 서비스" />
+			<meta property="og:image" content="https://solvit-nuri.com/og.png" />
+			<meta property="og:url" content="https://solvit-nuri.com/" />
+			<meta name="twitter:card" content="summary_large_image" />
+			<meta name="twitter:image" content="https://solvit-nuri.com/op.png" />
 			<meta name="google-site-verification" content="4mbr6batT4ll6nkqWnfo479cEFCpleGzuoT9jswmIwg" />
 		</head>
+		<body style={{ display: "flex" }}>
+		<TopLoadingBar />
+		<Alert />
+		<MessageAlert />
 		<GlobalStyles/>
-		<body style={{display: 'flex'}}>
 		<Providers>
-			<AuthBootstrap/>
-			<Loading/>
-			<Header/>
+			<AuthBootstrap />
+			<ChatComponent />
+			<Loading />
+			<Header />
 			<main className="main-container">
 				{children}
 				{modal}
 			</main>
 		</Providers>
+		<noscript>
+			<div style={{ padding: "1rem", textAlign: "center" }}>
+				이 서비스는 자바스크립트가 필요합니다. 브라우저 설정을 확인해주세요.
+			</div>
+		</noscript>
+
+		{process.env.NEXT_PUBLIC_GA_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        )}
 		</body>
 		</html>
-	)
+	);
 }

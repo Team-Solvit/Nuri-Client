@@ -55,11 +55,10 @@ export const PostDetailGQL = {
   `,
     // 댓글 조회 쿼리들을 QUERIES로 이동
     GET_POST_COMMENT_LIST: gql`
-      query GetPostCommentList($start: Int!, $size: Int!, $postId: String!) {
+      query GetPostCommentList($start: Int!, $postId: String!) {
         getPostCommentList(
           postCommentListReadInput: {
             start: $start
-            size: $size
             postId: $postId
           }
         ) {
@@ -76,11 +75,10 @@ export const PostDetailGQL = {
       }
     `,
     GET_BOARDING_ROOM_COMMENT_LIST: gql`
-      query GetBoardingRoomCommentList($start: Int!, $size: Int!, $roomId: String!) {
+      query GetBoardingRoomCommentList($start: Int!, $roomId: String!) {
         getBoardingRoomCommentList(
           boardingRoomCommentListReadInput: {
             start: $start
-            size: $size
             roomId: $roomId
           }
         ) {
@@ -242,7 +240,6 @@ export const PostDetailService = {
       });
       return data?.getPostList ?? [];
     } catch (error) {
-      console.error('게시물 목록 조회 오류:', error);
       throw error;
     }
   },
@@ -284,7 +281,6 @@ export const PostDetailService = {
       
       return null;
     } catch (error) {
-      console.error('게시물 조회 오류:', error);
       return null;
     }
   },
@@ -297,7 +293,6 @@ export const PostDetailService = {
       });
       return !!data?.likePost;
     } catch (error) {
-      console.error('좋아요 처리 오류:', error);
       throw error;
     }
   },
@@ -310,7 +305,6 @@ export const PostDetailService = {
       });
       return !!data?.unlikePost;
     } catch (error) {
-      console.error('좋아요 취소 처리 오류:', error);
       throw error;
     }
   },
@@ -324,7 +318,6 @@ export const PostDetailService = {
       });
       return !!data?.likeRoom;
     } catch (error) {
-      console.error('하숙방 좋아요 처리 오류:', error);
       throw error;
     }
   },
@@ -337,21 +330,19 @@ export const PostDetailService = {
       });
       return !!data?.unlikeRoom;
     } catch (error) {
-      console.error('하숙방 좋아요 취소 처리 오류:', error);
       throw error;
     }
   },
 
-  getComments: async (client: ApolloClient<any>, postId: string, start: number = 0, size: number = 5) => {
+  getComments: async (client: ApolloClient<any>, postId: string, start: number = 0) => {
     try {
       const { data } = await client.query({
         query: PostDetailGQL.QUERIES.GET_POST_COMMENT_LIST,
-        variables: { start, size, postId },
+        variables: { start, postId },
         fetchPolicy: 'no-cache'
       });
       return data?.getPostCommentList || [];
     } catch (error) {
-      console.error('댓글 조회 오류:', error);
       throw error;
     }
   },
@@ -364,7 +355,6 @@ export const PostDetailService = {
       });
       return data?.createPostComment || '';
     } catch (error) {
-      console.error('댓글 작성 오류:', error);
       throw error;
     }
   },
@@ -377,7 +367,6 @@ export const PostDetailService = {
       });
       return data?.updatePostComment || '';
     } catch (error) {
-      console.error('댓글 수정 오류:', error);
       throw error;
     }
   },
@@ -390,22 +379,20 @@ export const PostDetailService = {
       });
       return data?.deletePostComment || '';
     } catch (error) {
-      console.error('댓글 삭제 오류:', error);
       throw error;
     }
   },
 
   // 하숙방 댓글 관련
-  getRoomComments: async (client: ApolloClient<any>, roomId: string, start: number = 0, size: number = 5) => {
+  getRoomComments: async (client: ApolloClient<any>, roomId: string, start: number = 0) => {
     try {
       const { data } = await client.query({
         query: PostDetailGQL.QUERIES.GET_BOARDING_ROOM_COMMENT_LIST,
-        variables: { start, size, roomId },
+        variables: { start, roomId },
         fetchPolicy: 'no-cache'
       });
       return data?.getBoardingRoomCommentList || [];
     } catch (error) {
-      console.error('하숙방 댓글 조회 오류:', error);
       throw error;
     }
   },
@@ -418,7 +405,6 @@ export const PostDetailService = {
       });
       return data?.createBoardingRoomComment || '';
     } catch (error) {
-      console.error('하숙방 댓글 작성 오류:', error);
       throw error;
     }
   },
@@ -431,7 +417,6 @@ export const PostDetailService = {
       });
       return data?.updateBoardingRoomComment || '';
     } catch (error) {
-      console.error('하숙방 댓글 수정 오류:', error);
       throw error;
     }
   },
@@ -444,7 +429,6 @@ export const PostDetailService = {
       });
       return data?.deleteBoardingRoomComment || '';
     } catch (error) {
-      console.error('하숙방 댓글 삭제 오류:', error);
       throw error;
     }
   },
@@ -458,7 +442,6 @@ export const PostDetailService = {
       });
       return data?.updatePost || '';
     } catch (error) {
-      console.error('게시물 수정 오류:', error);
       throw error;
     }
   },
@@ -471,7 +454,6 @@ export const PostDetailService = {
       });
       return data?.deletePost || '';
     } catch (error) {
-      console.error('게시물 삭제 오류:', error);
       throw error;
     }
   },
@@ -492,13 +474,13 @@ export const PostDetailService = {
     throw new Error('지원하지 않는 게시물 타입입니다.');
   },
 
-  getPostComments: async (client: ApolloClient<any>, post: PostDetailUnion, start: number = 0, size: number = 5) => {
+  getPostComments: async (client: ApolloClient<any>, post: PostDetailUnion, start: number = 0) => {
     if (post.__typename === 'SnsPost') {
       const snsPost = post as SnsPostDetail;
-      return await PostDetailService.getComments(client, snsPost.postId, start, size);
+      return await PostDetailService.getComments(client, snsPost.postId, start);
     } else if (post.__typename === 'BoardingPost') {
       const boardingPost = post as BoardingPostDetail;
-      return await PostDetailService.getRoomComments(client, boardingPost.room.roomId, start, size);
+      return await PostDetailService.getRoomComments(client, boardingPost.room.roomId, start);
     }
     throw new Error('지원하지 않는 게시물 타입입니다.');
   },

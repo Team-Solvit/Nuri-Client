@@ -2,17 +2,20 @@
 
 import React, { Fragment, useState } from 'react'
 import {
-  useJsApiLoader,
   GoogleMap,
   Marker,
   OverlayView,
 } from '@react-google-maps/api'
 import { colors, fontSizes } from '@/styles/theme'
+import { useGoogleMaps } from '@/components/layout/GoogleMapsProvider'
 
 const containerStyle = { width: '100%', height: '100vh' }
 const MARKER_SIZE = 48
 const OFFSET_X = MARKER_SIZE / 2
 const OFFSET_Y = -MARKER_SIZE / 4
+
+// 기본 위치: 동경 128.7384361, 북위 34.8799083
+const DEFAULT_CENTER = { lat: 35.18, lng: 129.08 }
 
 interface MarkerItem {
   id: number
@@ -23,25 +26,30 @@ interface MapProps {
   markers: MarkerItem[]
   label: (m: MarkerItem) => string
   renderPopup: (m: MarkerItem) => React.ReactNode
-  onMarkerSelect?: (m: MarkerItem | null) => void
+	onMarkerSelect?: (m: MarkerItem | null) => void,
+	fallbackCenter?: { lat: number; lng: number },
 }
 
 export default function Map({ markers, label, renderPopup, onMarkerSelect }: MapProps) {
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-  })
+  const { isLoaded } = useGoogleMaps()
   const [hoveredId, setHoveredId] = useState<number | null>(null)
   const [selectedId, setSelectedId] = useState<number | null>(null)
 
   if (!isLoaded) return <div>로딩 중…</div>
   const selected = markers.find((m) => m.id === selectedId) || null
 
+  // 마커가 있으면 확대, 없으면 축소
+  const zoomLevel = markers.length > 0 ? 15 : 10
+
   return (
     <GoogleMap
       mapContainerStyle={containerStyle}
-      center={markers[0].position}
-      zoom={15}
+      center={
+        (markers.find(m => m.id === selectedId)?.position) ??
+        markers[0]?.position ??
+        DEFAULT_CENTER
+      }
+      zoom={zoomLevel}
     >
       {markers.map((m) => {
         const isHovered = m.id === hoveredId
@@ -61,9 +69,13 @@ export default function Map({ markers, label, renderPopup, onMarkerSelect }: Map
               onClick={() =>
                 setSelectedId((prev) => {
                   const next = prev === m.id ? null : m.id
-                  const sel = next ? markers.find(mm => mm.id === next) || null : null
+	                const sel = next !== null
+		                ? markers.find((mm) => mm.id === next) || null
+		                : null
                   if (onMarkerSelect) {
-                    requestAnimationFrame(() => onMarkerSelect(sel))
+                    requestAnimationFrame(() => {
+	                    onMarkerSelect(sel)
+                    })
                   }
                   return next
                 })

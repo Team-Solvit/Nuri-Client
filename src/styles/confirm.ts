@@ -10,7 +10,7 @@ export const Container = styled.section`
   gap: 1rem;
 
   ${mq.mobile} {
-    width: 80vw;
+    width: unset;
   }
 `
 
@@ -26,6 +26,10 @@ export const Title = styled.h3`
 export const Text = styled.p`
   font-size: ${fontSizes.Body};
   color: ${colors.text};
+  word-break: keep-all;
+	& > span {
+    color: ${colors.primary};
+  }
 `
 export const ButtonContainer = styled.div`
   display: grid;

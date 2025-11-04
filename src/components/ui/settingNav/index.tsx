@@ -5,6 +5,8 @@ import Image from 'next/image'
 import * as S from './style'
 import {useState, useEffect} from 'react'
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import { useUserStore } from '@/store/user';
+import { useAlertStore } from '@/store/alert';
 
 const MENU_SECTIONS = [
 	{
@@ -15,15 +17,10 @@ const MENU_SECTIONS = [
 		],
 	},
 	{
-		title: '언어',
-		items: [
-			{label: '언어 설정', path: '/setting/language', icon: '/icons/language.svg'},
-		],
-	},
-	{
 		title: '인증',
 		items: [
 			{label: '호스트 인증', path: '/setting/host', icon: '/icons/host.svg'},
+			{label: '하숙생 인증', path: '/setting/boarder', icon: '/icons/host.svg'},
 		],
 	},
 	{
@@ -43,6 +40,8 @@ interface SettingNavProps {
 
 export default function SettingNav({onLogoutClick, onLeaveClick, onClose}: SettingNavProps) {
 	const pathname = usePathname()
+	const { role } = useUserStore(s => s);
+	const { success, error: showError } = useAlertStore();
 	const [isMobile, setIsMobile] = useState(false)
 	
 	useEffect(() => {
@@ -61,6 +60,26 @@ export default function SettingNav({onLogoutClick, onLeaveClick, onClose}: Setti
 		} else if (label === '회원탈퇴') {
 			onLeaveClick?.()
 		} else {
+			if (label === '하숙생 인증') {
+				const hostPhoneVerified = localStorage.getItem('hostPhoneVerified');
+				if (hostPhoneVerified === 'true' && role === 'USER') {
+					showError('호스트 설정을 완료해주세요.');
+					navigate('/setting/host');
+					onClose?.();
+					return;
+				}
+			}
+			if ((label === '호스트 인증' || label === '하숙생 인증') && (role === 'HOST' || role === 'INTERNATIONAL_STUDENT')) {
+				if (role === 'HOST') {
+					success('호스트 인증이 완료된 상태입니다.');
+				} else if (role === 'INTERNATIONAL_STUDENT') {
+					success('하숙생 인증이 완료된 상태입니다.');
+				} else {
+					success('인증이 완료된 상태입니다.');
+				}
+				onClose?.();
+				return;
+			}
 			navigate(path)
 			onClose?.()
 		}

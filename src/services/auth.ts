@@ -13,7 +13,7 @@ export const AuthGQL = {
         }
       }
     `,
-		GET_SOCIAL_URL: gql`
+    GET_SOCIAL_URL: gql`
       query GetOAuth2Link($provider: String!) {
         getOAuth2Link(provider: $provider)
       }
@@ -97,6 +97,11 @@ export const AuthGQL = {
 		UPDATE_PASSWORD: gql`
       mutation UpdatePasswordWithEmail($input: PasswordUpdateInput!) {
         updatePasswordWithEmail(passwordUpdateInput: $input)
+      }
+    `,
+		WITHDRAW_USER: gql`
+      mutation WithdrawUser($emailVerifyTicket: String!) {
+        withdrawUser(emailVerifyTicket: $emailVerifyTicket)
       }
     `,
 	}
@@ -206,5 +211,13 @@ export const AuthService = {
 			fetchPolicy: 'no-cache',
 		});
 		return data?.updatePasswordWithEmail ?? '';
+	},
+	withdrawUser: async (client: ApolloClient<any>, emailVerifyTicket: string): Promise<boolean> => {
+		const { data } = await client.mutate<{ withdrawUser: boolean }>({
+			mutation: AuthGQL.MUTATIONS.WITHDRAW_USER,
+			variables: { emailVerifyTicket },
+			fetchPolicy: 'no-cache',
+		});
+		return data?.withdrawUser ?? false;
 	},
 };

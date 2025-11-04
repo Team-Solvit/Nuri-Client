@@ -6,6 +6,8 @@ import {createPortal} from "react-dom";
 import * as S from "./style";
 import Image from "next/image";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {imageCheck} from "@/utils/imageCheck";
+import {messageRequestCheck} from "@/utils/messageRequestCheck";
 
 
 export default function MessageAlert() {
@@ -47,6 +49,12 @@ export default function MessageAlert() {
 	}
 	if (!isVisible && isStatus === "none") return null;
 	
+	const path = window.location.pathname;
+	const isMessage = path.includes("/message");
+	const ContractOrRoomTour = messageRequestCheck(content)
+	const regex = /^https:\/\/cdn\.solvit-nuri\.com\/file\/[0-9a-fA-F-]{36}$/;
+	if (isMessage) return null;
+	
 	return (
 		createPortal(
 			<S.Alert
@@ -55,11 +63,21 @@ export default function MessageAlert() {
 			>
 				<S.Content>
 					<S.ImgBox>
-						<Image style={{objectFit: "cover"}} src={ima_url} alt="profile-img" fill/>
+						<Image style={{objectFit: "cover"}} src={imageCheck(ima_url || "")} alt="profile-img" fill/>
 					</S.ImgBox>
 					<S.TextBox>
 						<S.Name>{user_id}</S.Name>
-						<S.Message>{content}</S.Message>
+						<S.Message>
+							{
+								regex.test(content) ?
+									"이미지"
+									: ContractOrRoomTour ?
+									ContractOrRoomTour.type==="roomTour" ?
+										"룸투어 요청이 도착했어요!"
+										: "계약 요청이 도착했어요!"
+										: content
+							}
+						</S.Message>
 					</S.TextBox>
 				</S.Content>
 			</S.Alert>,

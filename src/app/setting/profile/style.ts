@@ -31,12 +31,13 @@ export const MainContent = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 4rem 6rem 0rem 5rem;
+  padding: 4rem 6rem 0rem 6.8rem;
   margin: 0 auto;
 
   ${mq.mobile} {
     padding: 1rem;
     margin: 0;
+    width: 100%;
   }
 `
 
@@ -62,13 +63,13 @@ export const ProfileRow = styled.div`
   width: 50vw;
 
   ${mq.mobile} {
-    width: 93vw;
-    height: 15vh;
-    padding: 20px 17px;
-    border-radius: 5px;
-    gap: 0;
+    width: 100%;
+    height: auto;
+    padding: 1rem;
+    border-radius: 8px;
+    gap: 1rem;
     flex-direction: row;
-    align-items: flex-start;
+    align-items: center;
   }
 `
 
@@ -78,9 +79,9 @@ export const Button = styled.div`
     gap: 5px;
 
     ${mq.mobile} {
-      gap: 0.3rem;
-      margin-left: 1rem;
-      margin-top: -0.3rem;
+      gap: 0.5rem;
+      margin-left: 0.5rem;
+      flex: 1;
     }
 `
 
@@ -96,11 +97,10 @@ export const ProfileImageWrap = styled.div`
   justify-content: center;
 
   ${mq.mobile} {
-  width: 20vw;
-  aspect-ratio: 1 / 1;
-  height: auto;
-  margin-top: 0.3rem;
-}
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+  }
 `
 
 export const ProfileInfo = styled.div`
@@ -108,7 +108,9 @@ export const ProfileInfo = styled.div`
   display: flex;
 
   ${mq.mobile} {
-    gap: 2rem;
+    gap: 0.5rem;
+    flex-direction: column;
+    flex: 1;
   }
 `
 
@@ -135,8 +137,10 @@ export const NameInput = styled.input`
   margin-top: 5px;
 
   ${mq.mobile} {
-    width: 25vw;
-    height: 5vh;
+    width: 100%;
+    height: 40px;
+    font-size: 14px;
+    padding: 0.5rem;
   }
 `
 
@@ -150,8 +154,10 @@ export const NickInput = styled.input`
   width: 220px;
 
   ${mq.mobile} {
-    width: 25vw;
-    height: 5vh;
+    width: 100%;
+    height: 40px;
+    font-size: 14px;
+    padding: 0.5rem;
   }
 `
 
@@ -169,9 +175,11 @@ export const ChangePhotoBtn = styled.label`
   ${mq.mobile} {
     display: flex;
     font-weight: 500;
-    width: 30vw;
+    width: 100%;
+    height: 40px;
     align-items: center;
     justify-content: center;
+    font-size: 14px;
   }
 `
 
@@ -185,13 +193,15 @@ export const BioSection = styled.div`
   gap: 1rem;
   width: 100%;
   margin-top: 2rem;
+  margin-bottom: 10.1rem;
 
   ${mq.mobile} {
-    width: 93vw;
-    height: 20vh;
-    border-radius: 3px;
-    padding: 10px;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    padding: 1rem;
     margin-top: 1rem;
+    margin-bottom: 2rem;
   }
 `
 

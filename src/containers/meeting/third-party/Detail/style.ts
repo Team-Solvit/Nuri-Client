@@ -7,7 +7,10 @@ export const Wrapper = styled.div`
   flex-direction: column;
   gap: 3.5rem;
   width: 100%;
+  height: 100vh;
   padding: 2.5rem 2.5rem;
+  overflow-y: auto;
+  box-sizing: border-box;
   ${mq.mobile} {
     padding: 1.25rem 1rem;
     gap: 1.75rem;
@@ -19,11 +22,19 @@ export const Wrapper = styled.div`
 
 export const Header = styled.header`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   gap: 1rem;
   width: 100%;
   ${mq.mobile} {
     gap: 0.6rem;
+    flex-direction: row;
+  }
+  
+  h1 {
+    margin: 0;
+    flex: 1;
   }
 `;
 
@@ -288,5 +299,139 @@ export const MainRow = styled.div`
     flex-direction: column;
     gap: 1.5rem;
     width: 100%;
+  }
+`;
+
+export const TimeRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+`;
+
+export const DateInput = styled.input`
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 16px;
+  background: #fafbfc;
+  color: #222;
+  outline: none;
+  transition: border 0.2s;
+  height: 40px;
+  box-sizing: border-box;
+  &:focus {
+    border: 1.5px solid #4b8fff;
+    background: #fff;
+  }
+`;
+
+export const ParticipantsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+`;
+
+export const ParticipantItem = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: #fafbfc;
+  border: 1px solid #e3e3e3;
+  transition: background 0.2s;
+  &:hover {
+    background: #f0f1f2;
+    cursor: pointer;
+  }
+`;
+
+export const ParticipantProfile = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+`;
+
+export const ProfileImage = styled.img`
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #e3e3e3;
+`;
+
+export const ProfilePlaceholder = styled.div`
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: ${colors.primary};
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: ${fontSizes.Body};
+  font-weight: 600;
+`;
+
+export const ParticipantInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`;
+
+export const ParticipantName = styled.div`
+  font-size: ${fontSizes.Body};
+  font-weight: 600;
+  color: ${colors.text};
+`;
+
+export const ParticipantEmail = styled.div`
+  font-size: ${fontSizes.Small};
+  color: ${colors.gray};
+`;
+
+export const DurationRow = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+`;
+
+export const DurationBtn = styled.button<{ active?: boolean }>`
+  flex: 1;
+  min-width: 4rem;
+  background: ${({ active }) => (active ? colors.primary : colors.line)};
+  color: ${({ active }) => (active ? '#fff' : colors.text)};
+  border: none;
+  border-radius: 0.5rem;
+  font-size: ${fontSizes.Small};
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  ${mq.mobile} {
+    min-width: 3.5rem;
+    font-size: ${fontSizes.Small};
+  }
+`;
+
+export const DurationUnit = styled.span`
+  font-size: ${fontSizes.Body};
+  color: ${colors.gray};
+  margin-left: 0.5rem;
+  white-space: nowrap;
+
+  ${mq.mobile} {
+    font-size: ${fontSizes.Small};
   }
 `;

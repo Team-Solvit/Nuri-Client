@@ -1,3 +1,5 @@
+import { useAlertStore } from "@/store/alert";
+
 export const imageService = {
 	upload: async (files: File[]) => {
 		try {
@@ -11,12 +13,11 @@ export const imageService = {
 			if (!res.ok) {
 				throw new Error("업로드 실패");
 			}
-			
+
 			const data = await res.json();
 			return data;
-		} catch (err) {
-			console.error(err);
-			throw err;
+		} catch {
+			useAlertStore.getState().error('이미지 업로드 중 오류가 발생했습니다.');
 		}
 	},
 };

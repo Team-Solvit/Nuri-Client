@@ -91,3 +91,10 @@ export const CreatedDate = styled.time`
   font-size: 12px;
   color: #888888;
 `;
+
+export const EndMessage = styled.div`
+  text-align: center;
+  padding: 2rem;
+  color: ${colors.gray};
+  font-size: ${fontSizes.Body};
+`;

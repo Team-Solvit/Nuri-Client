@@ -4,8 +4,8 @@ export const typeDefs = gql`
   # --- Post 관련 타입 ---
   enum ShareRange {
     ALL
-    FRIENDS
-    PRIVATE
+    FOLLOWER
+    GROUP
   }
 
   input CreatePostInput {
@@ -81,7 +81,7 @@ export const typeDefs = gql`
     url: String!
   }
 
-  type ContractPeriod {
+  type ContractPeriodRange {
     contractPeriodId: Int!
     contractPeriod: String!
   }
@@ -141,6 +141,46 @@ type ContractInfo {
     alertId: ID!
     alertContent: String!
     alertNavigate: String
+  }
+
+  # --- 하숙집 검색 관련 타입 ---
+  type Location {
+    lat: Float!
+    lon: Float!
+    radiusMeters: String!
+  }
+
+  type ContractPeriod {
+    min: Int!
+    max: Int!
+  }
+
+  type PriceRange {
+    min: Int!
+    max: Int!
+  }
+
+  type BoardingRoomSearchFilter {
+    school: Location
+    station: Location
+    contractPeriod: ContractPeriodRange
+    price: Price
+    region: String
+    start: Int
+    name: String
+  }
+
+  type BoardingRoomSearchResult {
+    roomId: ID!
+    name: String!
+    description: String
+    monthlyRent: Int!
+    headCount: Int!
+    likeCount: Int!
+    isLiked: Boolean!
+    commentCount: Int!
+    status: String!
+    day: String!
   }
 
   # --- Query ---

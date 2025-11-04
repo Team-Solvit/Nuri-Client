@@ -16,15 +16,20 @@ export default function ContractPeriodModal({ periods, onConfirm, onClose }: Pro
   const uniqueSorted = useMemo(() => Array.from(new Set(periods)).sort((a, b) => a - b), [periods]);
   const [step, setStep] = useState<'select' | 'confirm'>('select');
   const [selectedPeriod, setSelectedPeriod] = useState<number | null>(null);
-
+	const [isLoading, setIsLoading] = useState(false);
   const handlePeriodSelect = (period: number) => {
     setSelectedPeriod(period);
     setStep('confirm');
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (selectedPeriod) {
-      onConfirm(selectedPeriod);
+      setIsLoading(true);
+      try {
+        await onConfirm(selectedPeriod);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -54,8 +59,8 @@ export default function ContractPeriodModal({ periods, onConfirm, onClose }: Pro
           <Title>계약 요청 확인</Title>
           <Message>{selectedPeriod}개월 계약 요청을 보내시겠습니까?</Message>
           <ButtonGroup>
-            <Square text="이전" onClick={handleBack} status={false} width="max-content" />
-            <Square text="전송" onClick={handleConfirm} status={true} width="max-content" />
+            <Square text="이전" onClick={handleBack} status={false} width="max-content" isLoading={isLoading} />
+            <Square text="전송" onClick={handleConfirm} status={true} width="max-content" isLoading={isLoading} />
           </ButtonGroup>
         </>
       )}

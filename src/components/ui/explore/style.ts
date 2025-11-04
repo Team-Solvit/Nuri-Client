@@ -7,6 +7,7 @@ export const Search = styled.div`
     width: 73vw;
     height: 8vh;
     border-radius: 30px;
+    align-items: center;
     border: none;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     padding: 20px 30px;
@@ -24,6 +25,7 @@ export const Input = styled.input`
     font-size: 18px;
     margin-top: 2px;
     margin-left: 10px;
+    width: 100%;
 
     &::placeholder {
         color: ${colors.gray};
@@ -68,7 +70,8 @@ export const PostList = styled.div`
     align-items: center;
     justify-content: flex-start;
     overflow-y: auto;
-    max-height: 70vh;
+    height: 68vh;
+    min-height: 500px;
     &::-webkit-scrollbar {
         display: none;
     }

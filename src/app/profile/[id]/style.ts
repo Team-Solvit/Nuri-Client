@@ -12,7 +12,14 @@ export const ProfileWrapper = styled.div`
   padding: 4rem;
   overflow-y: auto;
   outline: none;
+  &:focus-visible {
+    outline: 2px solid ${colors.primary};
+    outline-offset: 4px;
+  }
+
   max-height: 100vh;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   &::-webkit-scrollbar {
        display: none;
   }
@@ -26,11 +33,11 @@ export const ProfileWrapper = styled.div`
   }
 `
 
-
 export const ProfileImage = styled.div`
   position: relative;
   width: 10vw;
-  height: 18vh;
+  aspect-ratio: 1 / 1;
+  height: auto;
   border-radius: 50%;
   overflow: hidden;
   background: ${colors.gray};
@@ -39,15 +46,9 @@ export const ProfileImage = styled.div`
   justify-content: center;
   
   img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.4);
-    z-index: 1;
   }
 
   ${mq.mobile} {
@@ -59,16 +60,34 @@ export const ProfileImage = styled.div`
   }
 `
 
+export const ProfileImage2 = styled.div`
+  position: relative;
+  width: 10vw;
+  height: 18vh;
+  border-radius: 50%;
+  overflow: hidden;
+  background: ${colors.gray};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ${mq.mobile} {
+    width: 31vw;
+    margin-left: 1.5rem;
+    margin-top: 6rem;
+    aspect-ratio: 1 / 1;
+    height: auto;
+  }
+`
 
 export const PlusIcon = styled.div`
   position: absolute;
   z-index: 2;
 `
 
-
 export const Nickname = styled.div`
   font-size: ${fontSizes.H3};
-  margin-bottom: 1rem;
+  margin-top: 0.3rem;
 
   ${mq.mobile} {
     font-size: 20px;
@@ -161,8 +180,6 @@ export const List2 = styled.div`
 }
 `
 
-
-
 export const PostItem = styled.div`
   display: flex;
   padding: 12px;
@@ -221,6 +238,7 @@ export const Side = styled.div<{ isSelected: number }>`
     height: 40px;
   }
 `
+
 export const Tab = styled.div`
   position: absolute;
   top: -1px;
@@ -248,6 +266,7 @@ export const Tab = styled.div`
     }
   }
 `
+
 export const Tab2 = styled.div`
   position: absolute;
   top: -1px;
@@ -329,6 +348,7 @@ export const StatLabelF = styled.div`
     color: #8C8C8C;
   }
 `
+
 export const StatLabelF2 = styled.div`
   font-size: ${fontSizes.H4};
   color: ${colors.gray};
@@ -366,6 +386,7 @@ export const StatValue1 = styled.div`
     color: ${colors.text};
   }
 `
+
 export const StatValue2 = styled.div`
   font-size: ${fontSizes.H3};
   font-weight: 500;

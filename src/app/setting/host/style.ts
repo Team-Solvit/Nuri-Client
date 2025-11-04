@@ -13,6 +13,123 @@ export const Guide = styled.div`
   }
 `;
 
+export const AuthSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 2rem;
+  border: 2px solid ${colors.primary};
+  border-radius: ${radius.md};
+  text-align: center;
+  background: rgba(0, 123, 255, 0.05);
+`;
+
+export const AuthTitle = styled.h3`
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: ${colors.text};
+  margin: 0;
+`;
+
+export const AuthDescription = styled.p`
+  font-size: 0.875rem;
+  color: ${colors.gray};
+  margin: 0;
+  line-height: 1.5;
+`;
+
+export const AuthButtonWrapper = styled.div`
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+`;
+
+export const VerifiedSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border: 2px solid #4CAF50;
+  border-radius: ${radius.md};
+  text-align: center;
+  background: rgba(76, 175, 80, 0.05);
+`;
+
+export const VerifiedTitle = styled.h3`
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #4CAF50;
+  margin: 0;
+`;
+
+export const VerifiedDescription = styled.p`
+  font-size: 0.875rem;
+  color: ${colors.text};
+  margin: 0;
+`;
+
+export const CompletedSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  border: 2px solid #4CAF50;
+  border-radius: ${radius.md};
+  background: rgba(76, 175, 80, 0.05);
+`;
+
+export const CompletedTitle = styled.h3`
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #4CAF50;
+  margin: 0;
+  text-align: center;
+`;
+
+export const CompletedDescription = styled.p`
+  font-size: 1rem;
+  color: ${colors.text};
+  margin: 0;
+  text-align: center;
+  line-height: 1.5;
+`;
+
+export const CompletedInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: ${radius.sm};
+`;
+
+export const InfoRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid ${colors.line};
+  
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+`;
+
+export const InfoLabel = styled.span`
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: ${colors.gray};
+`;
+
+export const InfoValue = styled.span`
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: ${colors.text};
+  text-align: right;
+`;
+
 export const Section = styled.section`
   display: flex;
   flex-direction: column;
@@ -34,12 +151,12 @@ export const NavArea = styled.div`
 `
 
 export const Container = styled.div`
-  width: 70%;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 35px;
-  padding: 4rem;
+  gap: 1.9rem;
+  padding: 4rem 4.95rem 0rem 4.95rem;
 
   ${mq.mobile} {
     width: 100%;
