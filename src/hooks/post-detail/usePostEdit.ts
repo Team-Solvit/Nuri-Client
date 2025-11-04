@@ -72,10 +72,7 @@ export function usePostEdit(postInfo: PostDetailUnion | null, refresh: (id: stri
       setNewImages([]);
       success("게시물이 수정되었습니다.");
 
-      const updated = await refresh(postInfo.postId);
-      if (updated && updated.__typename === "SnsPost") {
-        updated.hashtags = hashtagsForUi;
-      }
+      await refresh(postInfo.postId);
     } catch {
       error("게시물 수정에 실패했습니다.");
     }
