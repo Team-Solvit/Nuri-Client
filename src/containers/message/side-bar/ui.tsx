@@ -160,12 +160,13 @@ export default function MessageSideBar() {
 					...roomDataList,
 				];
 			const unique = next.reduceRight((acc, cur) => {
-				if (!acc.some(r => r.roomDto.id === cur.roomDto.id)) {
+				if (!acc.some(r => {
+					return r.roomDto.id === cur.roomDto.id
+				})) {
 					acc.push(cur);
 				}
 				return acc;
 			}, [] as typeof next);
-			
 			setRoomDataList(unique.reverse());
 			
 			setDmRoom({
@@ -175,7 +176,7 @@ export default function MessageSideBar() {
 				chatRoomName: "",
 			});
 		}
-	}, [isOpen, chatRoomId]);
+	}, [isOpen, chatRoomId, chatRoomName, chatProfile]);
 	
 	const changeParamsId = (id: string | null | undefined) => {
 		if (!id) return "";

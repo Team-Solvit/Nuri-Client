@@ -8,11 +8,12 @@ export const Overlay = styled.div`
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0,0,0,0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  backdrop-filter: blur(2px);
 `
 
 export const Image = styled.div`
@@ -21,10 +22,13 @@ export const Image = styled.div`
   position: relative;
   overflow: hidden;
   background: ${colors.line2};
+  border-right: 1px solid ${colors.line2};
 
   ${mq.mobile} {
     height: 38vh;
     width: 100%;
+    border-right: none;
+    border-bottom: 1px solid ${colors.line2};
   }
 `
 
@@ -71,22 +75,25 @@ export const Left = styled.div`
 export const Main = styled.div`
   display: flex;
   flex-direction: column;
-  padding:  1.5rem 1rem 1.5rem 0.6rem;
+  padding: 1.5rem 2rem;
   width: 100%;
+  gap: 0.5rem;
 
   ${mq.mobile} {
-    padding:  1rem 1rem 1.5rem 0.6rem;
+    padding: 1rem 1.5rem;
   }
 `
 
 export const Modal = styled.div`
   background: #fff;
   min-width: 70vw;
-  max-height: 80vh;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  max-height: 85vh;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.16);
   display: flex;
-  gap: 1.5rem;
+  gap: 0;
   position: relative;
+  overflow: hidden;
 
   ${mq.mobile} {
     width: 100%;
@@ -114,10 +121,11 @@ export const Top = styled.div`
 
 export const Header = styled.div`
   font-size: ${fontSizes.H3};
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
   display: flex;
   align-items: center;
+  color: ${colors.text};
 `
 
 export const Title = styled.h2`
@@ -129,11 +137,9 @@ export const Title = styled.h2`
 export const PublicIconWrap = styled.div`
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-left: -0.5rem;
+  gap: 8px;
 
   ${mq.mobile} {
-    margin-left: -0.1rem;
     margin-top: 0.5rem;
   }
 `
@@ -141,8 +147,10 @@ export const PublicIconWrap = styled.div`
 export const ProfileRow = styled.div`
   display: flex;
   gap: 1rem;
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
   align-items: center;
+  border-top: 1px solid ${colors.line2};
+  background: #fafafa;
 
   ${mq.mobile} {
     display: none;
@@ -166,25 +174,33 @@ export const ProfileName = styled.div`
 
 export const Textarea = styled.textarea`
   width: 100%;
-  min-height: 37vh;
+  min-height: 35vh;
   outline: none;
   border: none;
   font-size: ${fontSizes.Body};
-  resize: vertical;
-  outline: none;
-  margin-top: 1rem;
+  line-height: 1.6;
   resize: none;
+  margin-top: 1rem;
+  font-family: "SCoreDream", sans-serif;
 
   &::placeholder {
     color: ${colors.gray};
     font-family: "SCoreDream", sans-serif;
-    font-size: 15px;
+    font-size: ${fontSizes.Body};
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: ${colors.line2};
+    border-radius: 3px;
   }
 
   ${mq.mobile} {
     min-height: 15vh;
-    margin-top: -0.5rem;
-    margin-left: 0.5rem;
+    margin-top: 0.5rem;
   }
 `
 
@@ -266,7 +282,8 @@ export const CharCount = styled.div`
   font-size: ${fontSizes.Small};
   color: ${colors.gray};
   text-align: right;
-  margin-right: 1.1rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
 
   ${mq.mobile} {
     margin-right: 0rem;
@@ -323,20 +340,30 @@ export const ToggleButton = styled.button`
 
 export const Dropdown = styled.div`
   position: absolute;
-  top: 2rem;
+  top: 2.5rem;
+  left: 0;
   background: white;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  border: 1px solid ${colors.line};
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  overflow: hidden;
   z-index: 10;
 `
 
 export const DropdownItem = styled.div`
-  padding: 10px;
-  text-align: center;
+  padding: 12px 16px;
+  text-align: left;
+  white-space: nowrap;
   cursor: pointer;
+  font-size: ${fontSizes.Body};
+  transition: background-color 0.2s ease;
+  
   &:hover {
-    background-color: #f2f2f2;
+    background-color: ${colors.line};
+  }
+  
+  &:not(:last-child) {
+    border-bottom: 1px solid ${colors.line2};
   }
 `
 
@@ -345,9 +372,16 @@ export const PublicWrap = styled.div`
   align-items: center;
   justify-content: space-between;
   position: relative;
-  padding: 8px 12px;
+  padding: 10px 14px;
   width: fit-content;
   cursor: pointer;
+  border-radius: 8px;
+  border: 1px solid ${colors.line};
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: ${colors.line};
+  }
 `
 
 export const PublicLabel = styled.span`
@@ -368,9 +402,10 @@ export const PublicIcon = styled.div`
 export const ButtonRow = styled.div`
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
+  gap: 0.75rem;
   margin-top: auto;
-  margin-right: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid ${colors.line2};
 
   ${mq.mobile} {
     display: none;
@@ -424,17 +459,21 @@ export const AddMoreText = styled.span`
   }
 `
 
-// 제목 입력 필드
 export const TitleInput = styled.input`
   width: 100%;
   border: none;
-  font-size: ${fontSizes.Body};
+  border-bottom: 2px solid ${colors.line2};
+  font-size: ${fontSizes.H4};
+  font-weight: 600;
   outline: none;
-  margin-top: 0.5rem;
+  padding-bottom: 0.75rem;
+  margin-top: 1rem;
+  transition: border-color 0.2s ease;
 
   &::placeholder {
     color: ${colors.gray};
     font-family: "SCoreDream", sans-serif;
+    font-weight: 500;
   }
 
   &:focus {
@@ -442,8 +481,7 @@ export const TitleInput = styled.input`
   }
 
   ${mq.mobile} {
-    margin-left: 0.5rem;
+    margin-left: 0rem;
     margin-top: 0.5rem;
-    margin-bottom: 1.5rem;
   }
 `

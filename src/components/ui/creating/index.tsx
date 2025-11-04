@@ -44,9 +44,9 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
             case '전체':
                 return ShareRange.ALL;
             case '팔로워':
-                return ShareRange.FRIENDS;
+                return ShareRange.FOLLOWER;
             case '모임':
-                return ShareRange.PRIVATE;
+                return ShareRange.GROUP;
             default:
                 return ShareRange.ALL;
         }
@@ -151,6 +151,11 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                 reader.onloadend = () => {
                     if (typeof reader.result === 'string') {
                         setPreviewImages(prev => {
+                            if (prev.includes(reader.result as string)) {
+                                alertStore.error('같은 사진은 중복으로 올릴 수 없습니다.');
+                                return prev;
+                            }
+                            
                             const updated = [...prev, reader.result as string];
                             setCurrentIndex(updated.length - 1);
                             return updated;
@@ -160,6 +165,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                 reader.readAsDataURL(file);
             });
         }
+        e.target.value = '';
     };
 
 
@@ -352,7 +358,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                         onChange={e => setContent(e.target.value)}
                         maxLength={10000}
                     />
-                    <S.CharCount>{content.length}/9999</S.CharCount>
+                    <S.CharCount>{content.length}/3000</S.CharCount>
 
                     <S.ButtonRow>
                         <Square
