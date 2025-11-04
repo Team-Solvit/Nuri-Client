@@ -21,6 +21,7 @@ import { useAlertStore } from '@/store/alert';
 import ProfileSkeleton from '@/components/ui/skeleton/ProfileSkeleton'
 import { useLoginModalStore } from '@/store/loginModal';
 import {imageCheck} from "@/utils/imageCheck";
+import { useMoveChatRoom } from '@/hooks/useMoveChatRoom';
 
 
 export default function UserProfilePage() {
@@ -31,6 +32,7 @@ export default function UserProfilePage() {
     const { userId: currentUserId, id: currentId } = useUserStore(s => s);
     const { error: showError } = useAlertStore();
     const { open: openLoginModal } = useLoginModalStore();
+    const { moveChatRoom } = useMoveChatRoom();
 
     const [selected, setSelected] = useState(1);
     const [showFollowerModal, setShowFollowerModal] = useState(false);
@@ -436,7 +438,10 @@ export default function UserProfilePage() {
                                         <Square
                                             text="메시지"
                                             status={true}
-                                            onClick={() => handleBtnClick(`/message/${userId}`)}
+                                            onClick={() => moveChatRoom({ 
+                                                userId: userId, 
+                                                thumbnail: profile.profile 
+                                            })}
                                             width="120px"
                                         />
                                     </>
