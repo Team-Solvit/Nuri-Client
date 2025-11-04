@@ -60,9 +60,6 @@ export default function SettingHeader() {
 
             {isLeaveModalOpen && (
                 <Leave
-                    onLeave={() => {
-                        setLeaveModalOpen(false);
-                    }}
                     onClose={() => setLeaveModalOpen(false)}
                 />
             )}

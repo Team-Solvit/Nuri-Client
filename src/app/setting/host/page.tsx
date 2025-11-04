@@ -397,9 +397,6 @@ export default function Host() {
       />}
       {showLeaveModal && (
         <Leave
-          onLeave={() => {
-            setShowLeaveModal(false)
-          }}
           onClose={() => setShowLeaveModal(false)}
         />
       )}
