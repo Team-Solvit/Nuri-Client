@@ -17,6 +17,7 @@ import PostScrollSkeleton from "@/components/ui/skeleton/PostScrollSkeleton";
 
 import {usePermissionGuard} from "@/hooks/usePermissionGuard";
 import { useMoveChatRoom } from "@/hooks/useMoveChatRoom";
+import { useUserStore } from "@/store/user";
 
 
 export default function PostScroll() {
@@ -106,6 +107,7 @@ export default function PostScroll() {
 		});
 	};
 	
+	const {userId : curruentUserId} = useUserStore()
 	const {withPermission} = usePermissionGuard()
 	// 초기 로딩 중이면 스켈레톤 컴포넌트 렌더링
 	if (isInitialLoading) {
@@ -178,7 +180,7 @@ export default function PostScroll() {
 							</S.Profile>
 							<S.Nav onClick={(e) => e.stopPropagation()}>
 								<p>{price ? "하숙집" : ""}</p>
-								<Square
+								{user?.userId !==  curruentUserId &&<Square
 									text="채팅"
 									width="100px"
 									status
@@ -186,7 +188,7 @@ export default function PostScroll() {
 										if (!user) return;
 										withPermission(() => moveChatRoom(user));
 									}}
-								/>
+								/>}
 							</S.Nav>
 						</S.PostTitle>
 						
