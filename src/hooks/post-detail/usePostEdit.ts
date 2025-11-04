@@ -74,7 +74,7 @@ export function usePostEdit(postInfo: PostDetailUnion | null, refresh: (id: stri
 
       const updated = await refresh(postInfo.postId);
       if (updated && updated.__typename === "SnsPost") {
-        (updated as any).hashtags = hashtagsForUi;
+        updated.hashtags = hashtagsForUi;
       }
     } catch {
       error("게시물 수정에 실패했습니다.");
