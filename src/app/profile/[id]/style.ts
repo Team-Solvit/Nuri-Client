@@ -63,7 +63,8 @@ export const ProfileImage = styled.div`
 export const ProfileImage2 = styled.div`
   position: relative;
   width: 10vw;
-  height: 18vh;
+  aspect-ratio: 1 / 1;
+  height: auto;
   border-radius: 50%;
   overflow: hidden;
   background: ${colors.gray};
