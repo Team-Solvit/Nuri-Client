@@ -144,6 +144,10 @@ export default function UserProfilePage() {
     }, [isHost, selected]);
 
     const handleFollowToggle = async () => {
+        if (!currentId) {
+            openLoginModal();
+            return;
+        }
         if (isFollowLoading) return;
         setIsFollowLoading(true);
 
@@ -364,15 +368,19 @@ export default function UserProfilePage() {
         router.push(path)
     }
 
-    if (loading) {
-        return <ProfileSkeleton />;
+    const handleMessageClick = () => {
+        if (!currentId) {
+            openLoginModal();
+            return;
+        }
+        moveChatRoom({ 
+            userId: userId, 
+            thumbnail: profile.profile 
+        });
     }
 
-    // 로그인 안 된 상태에서 접근 시
-    if (!currentId && !loading) {
-        openLoginModal();
-        router.push('/');
-        return null;
+    if (loading) {
+        return <ProfileSkeleton />;
     }
 
     return (
@@ -438,10 +446,7 @@ export default function UserProfilePage() {
                                         <Square
                                             text="메시지"
                                             status={true}
-                                            onClick={() => moveChatRoom({ 
-                                                userId: userId, 
-                                                thumbnail: profile.profile 
-                                            })}
+                                            onClick={handleMessageClick}
                                             width="120px"
                                         />
                                     </>
