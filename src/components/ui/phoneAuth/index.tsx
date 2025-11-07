@@ -5,26 +5,14 @@ import * as S from './style';
 import Square from '../button/square'
 import { useApollo } from '@/lib/apolloClient'
 import { useRouter } from 'next/navigation'
-import { gql } from '@apollo/client'
 import { useAlertStore } from '@/store/alert';
+import { PhoneAuthGQL } from '@/services/phoneAuth';
 
 interface PhoneAuthProps {
   onVerifySuccess: (callNumber: string) => void
   onClose: () => void
   role?: 'HOST' | 'BOARDER'
 }
-
-const SEND_MESSAGE_MUTATION = gql`
-  mutation SendMessage($callNumberRequestDto: CallNumberRequestDto!) {
-    sendMessage(callNumberRequestDto: $callNumberRequestDto)
-  }
-`
-
-const AUTHENTICATE_MUTATION = gql`
-  mutation Authenticate($callNumberAuthenticateRequestDto: CallNumberAuthenticateRequestDto!) {
-    authenticate(callNumberAuthenticateRequestDto: $callNumberAuthenticateRequestDto)
-  }
-`
 
 export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: PhoneAuthProps) {
   const [authCode, setAuthCode] = useState('')
@@ -56,7 +44,7 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
 
     try {
       const { data } = await apolloClient.mutate({
-        mutation: SEND_MESSAGE_MUTATION,
+        mutation: PhoneAuthGQL.MUTATIONS.SEND_MESSAGE,
         variables: {
           callNumberRequestDto: {
             callNumber: normalizedPhone
@@ -92,7 +80,7 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
 
     try {
       const { data } = await apolloClient.mutate({
-        mutation: AUTHENTICATE_MUTATION,
+        mutation: PhoneAuthGQL.MUTATIONS.AUTHENTICATE,
         variables: {
           callNumberAuthenticateRequestDto: {
             authCode: authCode,

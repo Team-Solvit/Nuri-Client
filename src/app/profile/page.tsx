@@ -366,9 +366,9 @@ export default function MyProfilePage() {
         {selected === 1 && (
           <S.List1 style={{ minHeight: '400px' }}>
             {boardingRoomLoading ? (
-              <div style={{ padding: '20px', textAlign: 'center', marginRight: '46rem' }}>하숙집을 불러오는 중...</div>
+              <S.EmptyMessage marginRight="46rem">하숙집을 불러오는 중...</S.EmptyMessage>
             ) : allBoardingRooms.length === 0 ? (
-              <div style={{ padding: '20px', textAlign: 'center', marginRight: '46rem' }}>게시물이 없습니다.</div>
+              <S.EmptyMessage marginRight="46rem">게시물이 없습니다.</S.EmptyMessage>
             ) : (
               allBoardingRooms.map(room => (
                 <PostItem
@@ -385,20 +385,20 @@ export default function MyProfilePage() {
         {selected === 2 && (
           <S.List2 style={{ minHeight: '400px' }}>
             {postLoading ? (
-              <div style={{ padding: '20px', textAlign: 'center' }}>게시물을 불러오는 중...</div>
+              <S.EmptyMessage>게시물을 불러오는 중...</S.EmptyMessage>
             ) : postError ? (
-              <div style={{ padding: '20px', textAlign: 'center' }}>오류가 발생했습니다.</div>
+              <S.EmptyMessage>오류가 발생했습니다.</S.EmptyMessage>
             ) : allPosts.length === 0 ? (
-              <div style={{ padding: '20px', textAlign: 'center' }}>게시물이 없습니다.</div>
+              <S.EmptyMessage>게시물이 없습니다.</S.EmptyMessage>
             ) : (
               <>
 	              {allPosts.map((post) => (
 									<Post key={post.postId} post={post} />
                 ))}
                 {hasMore && (
-                  <div ref={observerRef} style={{ padding: '20px', textAlign: 'center' }}>
+                  <S.EmptyMessage>
                     {isLoadingMore ? '더 많은 게시물을 불러오는 중...' : ''}
-                  </div>
+                  </S.EmptyMessage>
                 )}
               </>
             )}

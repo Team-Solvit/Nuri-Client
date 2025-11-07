@@ -280,7 +280,7 @@ export default function UserProfilePage() {
 		
 		const convertToPostItem = (post: UserPost) => ({
 			postId: post.postId,
-			id: Number.parseInt(post.postId, 10) || 0, // 내부용 보조 id(필요 시)
+			id: Number.parseInt(post.postId, 10) || 0,
 			user: userId,
 			title: '게시물',
 			region: '지역',

@@ -421,3 +421,12 @@ export const Button = styled.div`
     gap: 9.14px;
   }
 `
+
+export const EmptyMessage = styled.div<{
+  align?: 'left' | 'center';
+  marginRight?: string;
+}>`
+  padding: 20px;
+  text-align: ${(props) => props.align || 'center'};
+  margin-right: ${(props) => props.marginRight || '0'};
+`
