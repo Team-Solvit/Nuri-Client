@@ -41,7 +41,7 @@
     "@types/react-dom": "^19",
     "@types/sockjs-client": "^1.5.4",
     "eslint": "^9",
-    "eslint-config-next": "15.3.4",
+    "eslint-config-next": "^16.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5"
   },
