@@ -27,6 +27,20 @@ export function usePostEdit(postInfo: PostDetailUnion | null, refresh: (id: stri
 
   const saveEditPost = async () => {
     if (!postInfo || postInfo.__typename !== "SnsPost" || !editingPostContent.trim()) return;
+    
+    const originalContent = postInfo.contents || "";
+    const originalImageIds = postInfo.files.map((f) => f.url);
+    const hasContentChanged = editingPostContent !== originalContent;
+    const hasImagesChanged = 
+      editingImages.length !== originalImageIds.length ||
+      editingImages.some((img, idx) => img !== originalImageIds[idx]) ||
+      newImages.length > 0;
+
+    if (!hasContentChanged && !hasImagesChanged) {
+      error("수정된 내용이 없습니다.");
+      return;
+    }
+
     try {
       let uploadedImageIds: string[] = [];
       if (newImages.length > 0) {
@@ -52,16 +66,13 @@ export function usePostEdit(postInfo: PostDetailUnion | null, refresh: (id: stri
 
       await PostDetailService.updatePost(client, postUpdateInput);
 
-      const updated = await refresh(postInfo.postId);
-      if (updated && updated.__typename === "SnsPost") {
-        (updated as any).hashtags = hashtagsForUi;
-      }
-
       setIsEditingPost(false);
       setEditingPostContent("");
       setEditingImages([]);
       setNewImages([]);
       success("게시물이 수정되었습니다.");
+
+      await refresh(postInfo.postId);
     } catch {
       error("게시물 수정에 실패했습니다.");
     }
