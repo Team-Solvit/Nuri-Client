@@ -147,7 +147,7 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
                 
                 <S.Input
                   type="tel"
-                  placeholder="010-0000-0000"
+                  placeholder="01012345678"
                   value={callNumber}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCallNumber(e.target.value)}
                   maxLength={13}
