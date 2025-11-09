@@ -42,11 +42,10 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     return () => clearTimeout(timer);
   }, [searchFilter]);
 
-  const { loading, fetchMore } = useQuery(SEARCH_BOARDING_ROOM, {
+  const { loading, error: queryError, fetchMore } = useQuery(SEARCH_BOARDING_ROOM, {
     variables: {
       boardingRoomSearchFilter: { ...debouncedFilter, start: 0 }
     },
-    skip: !debouncedFilter || Object.keys(debouncedFilter).filter(k => k !== 'start').length === 0,
     fetchPolicy: 'cache-and-network',
     onCompleted: (data) => {
       if (data?.searchBoardingRoom) {
@@ -60,6 +59,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     },
     onError: (error) => {
       console.error('GraphQL 쿼리 오류:', error);
+      showError('검색 중 오류가 발생했습니다.');
       setHasMore(false);
       setIsInitialized(true);
     }
@@ -167,18 +167,16 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
 
   const isInitialLoading = loading && !isInitialized;
 
-  if (!isInitialized) {
-    return (
-      <S.PostList>
-        <div>검색 중 오류가 발생했습니다. 다시 시도해주세요.</div>
-      </S.PostList>
-    );
-  }
-
   return (
     <S.PostList>
       {isInitialLoading ? (
-        <div>검색 중...</div>
+        <>
+          <ExplorePostItemSkeleton />
+          <ExplorePostItemSkeleton />
+          <ExplorePostItemSkeleton />
+        </>
+      ) : queryError ? (
+        <div>검색 중 오류가 발생했습니다. 다시 시도해주세요.</div>
       ) : allPosts.length === 0 && isInitialized ? (
         <div>검색 결과가 없습니다.</div>
       ) : (
