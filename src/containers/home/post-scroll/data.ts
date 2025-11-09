@@ -1,4 +1,4 @@
-export const fakeData = [
+export const  = [
 	{
 		id: 1,
 		thumbnail: ['/post/post-example.png', '/post/post-example3.png'],
