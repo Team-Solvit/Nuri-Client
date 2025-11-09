@@ -56,7 +56,6 @@ const nextConfig: NextConfig = {
 		emotion: true,
 	},
 	reactStrictMode: true,
-	eslint: { ignoreDuringBuilds: true },
 	typescript: { ignoreBuildErrors: true },
 	
 	async headers() {
