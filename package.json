@@ -23,7 +23,7 @@
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "graphql": "^16.11.0",
-    "next": "15.3.4",
+    "next": "^16.0.1",
     "nprogress": "^0.2.0",
     "qrcode": "^1.5.4",
     "react": "19.2.0",
@@ -41,9 +41,9 @@
     "@types/react-dom": "^19",
     "@types/sockjs-client": "^1.5.4",
     "eslint": "^9",
-    "eslint-config-next": "15.3.4",
+    "eslint-config-next": "^16.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "packageManager": "yarn@4.11.0"
 }
