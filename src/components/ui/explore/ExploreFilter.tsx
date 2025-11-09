@@ -44,18 +44,31 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
   };
 
   const handleSchoolSelect = (school: string, radius: string) => {
+    // 초기 텍스트("학교")인 경우 필터 제거
+    if (school === '학교') {
+      onFilterChange({ school: undefined });
+      return;
+    }
     const location = getLocation(school);
     location.radiusMeters = radius;
     onFilterChange({ school: location });
   };
 
   const handleStationSelect = (station: string, radius: string) => {
+    if (station === '역') {
+      onFilterChange({ station: undefined });
+      return;
+    }
     const location = getLocation(station);
     location.radiusMeters = radius;
     onFilterChange({ station: location });
   };
 
   const handleRegionSelect = (region: string, radius?: string) => {
+    if (region === '지역(구)') {
+      onFilterChange({ region: undefined });
+      return;
+    }
     onFilterChange({ region: radius ? `${region} (${radius}m)` : region });
   };
   
