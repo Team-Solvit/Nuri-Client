@@ -37,6 +37,7 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
       setAllPosts([]);
       setHasMore(true);
       setCurrentPage(0);
+      setIsInitialized(false); // 새로운 검색 시작 시 초기화
     }, 300);
 
     return () => clearTimeout(timer);
@@ -46,16 +47,14 @@ export default function ExplorePostList({ searchFilter }: ExplorePostListProps) 
     variables: {
       boardingRoomSearchFilter: { ...debouncedFilter, start: 0 }
     },
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'network-only',
     onCompleted: (data) => {
-      if (data?.searchBoardingRoom) {
-        const rooms = data.searchBoardingRoom;
-        const postList = rooms.map(convertToPostItem);
-        setAllPosts(postList);
-        setCurrentPage(1);
-        setHasMore(postList.length >= PAGE_SIZE);
-        setIsInitialized(true);
-      }
+      const rooms = data?.searchBoardingRoom || [];
+      const postList = rooms.map(convertToPostItem);
+      setAllPosts(postList);
+      setCurrentPage(1);
+      setHasMore(postList.length >= PAGE_SIZE);
+      setIsInitialized(true);
     },
     onError: (error) => {
       console.error('GraphQL 쿼리 오류:', error);
