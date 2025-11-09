@@ -24,15 +24,17 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
 
   const getLocation = (name: string): Location => {
     const coordinates: { [key: string]: { lat: number; lon: number } } = {
-      '부경대학교': { lat: 35.1379, lon: 129.0556 },
-      '경성대학교': { lat: 35.1379, lon: 129.0556 },
-      '동명대학교': { lat: 35.1379, lon: 129.0556 },
-      '못골역': { lat: 35.1379, lon: 129.0556 },
-      '국제금융센터·부산은행역': { lat: 35.1379, lon: 129.0556 },
-      '문현역': { lat: 35.1379, lon: 129.0556 },
-      '지게골역': { lat: 35.1379, lon: 129.0556 },
-      '대연역': { lat: 35.1379, lon: 129.0556 },
-      '경성대·부경대역': { lat: 35.1379, lon: 129.0556 },
+      // 학교
+      '부경대학교': { lat: 35.1338, lon: 129.1036 },
+      '경성대학교': { lat: 35.1378, lon: 129.1019 },
+      '동명대학교': { lat: 35.1378, lon: 129.0462 },
+      // 역 (부산 지하철 2호선)
+      '못골역': { lat: 35.1356, lon: 129.0908 },
+      '국제금융센터·부산은행역': { lat: 35.1400, lon: 129.0948 },
+      '문현역': { lat: 35.1382, lon: 129.0841 },
+      '지게골역': { lat: 35.1375, lon: 129.0970 },
+      '대연역': { lat: 35.1351, lon: 129.0974 },
+      '경성대·부경대역': { lat: 35.1378, lon: 129.1019 },
     };
 
     const coord = coordinates[name] || { lat: 35.1379, lon: 129.0556 };
@@ -44,13 +46,13 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
   };
 
   const handleSchoolSelect = (school: string, radius: string) => {
-    const location = getLocation(school, 'school');
+    const location = getLocation(school);
     location.radiusMeters = radius;
     onFilterChange({ school: location });
   };
 
   const handleStationSelect = (station: string, radius: string) => {
-    const location = getLocation(station, 'station');
+    const location = getLocation(station);
     location.radiusMeters = radius;
     onFilterChange({ station: location });
   };
@@ -60,22 +62,32 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
   };
   
 
-  const handlePriceChange = (values: [number, number]) => {
-    onFilterChange({
-      price: {
-        min: values[0],
-        max: values[1]
-      }
-    });
+  const handlePriceChange = (values: [number, number] | null) => {
+    if (values === null) {
+      // 취소 시 가격 필터 제거
+      onFilterChange({ price: undefined });
+    } else {
+      onFilterChange({
+        price: {
+          min: values[0],
+          max: values[1]
+        }
+      });
+    }
   };
 
-  const handlePeriodChange = (values: [number, number]) => {
-    onFilterChange({
-      contractPeriod: {
-        min: values[0],
-        max: values[1]
-      }
-    });
+  const handlePeriodChange = (values: [number, number] | null) => {
+    if (values === null) {
+      // 취소 시 기간 필터 제거
+      onFilterChange({ contractPeriod: undefined });
+    } else {
+      onFilterChange({
+        contractPeriod: {
+          min: values[0],
+          max: values[1]
+        }
+      });
+    }
   };
 
   useEffect(() => {
