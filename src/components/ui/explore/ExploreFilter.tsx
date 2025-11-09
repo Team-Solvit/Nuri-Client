@@ -24,11 +24,9 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
 
   const getLocation = (name: string): Location => {
     const coordinates: { [key: string]: { lat: number; lon: number } } = {
-      // 학교
       '부경대학교': { lat: 35.1338, lon: 129.1036 },
       '경성대학교': { lat: 35.1378, lon: 129.1019 },
       '동명대학교': { lat: 35.1378, lon: 129.0462 },
-      // 역 (부산 지하철 2호선)
       '못골역': { lat: 35.1356, lon: 129.0908 },
       '국제금융센터·부산은행역': { lat: 35.1400, lon: 129.0948 },
       '문현역': { lat: 35.1382, lon: 129.0841 },
@@ -78,7 +76,6 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
 
   const handlePeriodChange = (values: [number, number] | null) => {
     if (values === null) {
-      // 취소 시 기간 필터 제거
       onFilterChange({ contractPeriod: undefined });
     } else {
       onFilterChange({
