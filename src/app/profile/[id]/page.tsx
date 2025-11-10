@@ -87,7 +87,7 @@ export default function UserProfilePage() {
         }
     );
 
-    const {  } = useQuery<HostBoardingRoomsResponse>(
+    useQuery<HostBoardingRoomsResponse>(
         ProfileGQL.QUERIES.GET_HOST_BOARDING_ROOMS,
         {
             variables: {
@@ -364,13 +364,6 @@ export default function UserProfilePage() {
 
     if (loading) {
         return <ProfileSkeleton />;
-    }
-
-    // 로그인 안 된 상태에서 접근 시
-    if (!currentId && !loading) {
-        openLoginModal();
-        router.push('/');
-        return null;
     }
 
     return (

@@ -63,7 +63,7 @@ export default function PostItem({
           <S.PostTitle>{title}</S.PostTitle>
           {/* <S.PostRegion>{region}</S.PostRegion> */}
           <S.PostPrice>
-            ₩ {Number(price).toLocaleString()}+ / 월
+            ₩ {Number(price).toLocaleString()}  / 월
           </S.PostPrice>
         </S.PostMain>
       </S.Post>

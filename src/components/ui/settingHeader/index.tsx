@@ -51,18 +51,13 @@ export default function SettingHeader() {
 
             {isLogoutModalOpen && (
                 <Logout
-                    onLogout={() => {
-                        setLogoutModalOpen(false);
-                    }}
+                    onLogout={() => {}}
                     onClose={() => setLogoutModalOpen(false)}
                 />
             )}
 
             {isLeaveModalOpen && (
                 <Leave
-                    onLeave={() => {
-                        setLeaveModalOpen(false);
-                    }}
                     onClose={() => setLeaveModalOpen(false)}
                 />
             )}
