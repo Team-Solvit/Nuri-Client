@@ -425,26 +425,13 @@ export const Button = styled.div`
 
 export const EmptyMessage = styled.div<{
   align?: 'left' | 'center';
-  marginRight?: string;
+  variant?: 'default' | 'list';
 }>`
   padding: 20px;
   text-align: ${(props) => props.align || 'center'};
-  margin-right: ${(props) => props.marginRight || '0'};
-  
-  ${mq.mobile} {
-    margin-left: 0;
-  }
-`
-
-export const EmptyMessage2 = styled.div<{
-  align?: 'left' | 'center';
-  marginRight?: string;
-}>`
-  padding: 20px;
-  text-align: ${(props) => props.align || 'center'};
-  margin-right: ${(props) => props.marginRight || '0'};
   
   ${mq.mobile} {
     margin-right: 10rem;
+    ${(props) => props.variant === 'list' ? 'margin-right: 2rem;' : 'margin-left: 0;'}
   }
 `

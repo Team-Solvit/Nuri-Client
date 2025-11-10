@@ -366,9 +366,9 @@ export default function MyProfilePage() {
         {selected === 1 && (
           <S.List1 style={{ minHeight: '400px' }}>
             {boardingRoomLoading ? (
-              <S.EmptyMessage2 marginRight="44rem">하숙집을 불러오는 중...</S.EmptyMessage2>
+              <S.EmptyMessage variant="list">하숙집을 불러오는 중...</S.EmptyMessage>
             ) : allBoardingRooms.length === 0 ? (
-              <S.EmptyMessage2 marginRight="44rem">하숙집이 없습니다.</S.EmptyMessage2>
+              <S.EmptyMessage>하숙집이 없습니다.</S.EmptyMessage>
             ) : (
               allBoardingRooms.map(room => (
                 <PostItem

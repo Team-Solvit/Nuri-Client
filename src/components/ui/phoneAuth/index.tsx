@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { ApolloError } from '@apollo/client'
 import * as S from './style';
 import Square from '../button/square'
 import { useApollo } from '@/lib/apolloClient'
@@ -58,12 +59,14 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
       } else {
         error('인증코드 발송에 실패했습니다.')
       }
-    } catch (e: any) {
-      console.error('인증코드 발송 실패:', e)
+    } catch (caughtError: unknown) {
+      console.error('인증코드 발송 실패:', caughtError)
       const errMsg =
-        (e?.graphQLErrors && e.graphQLErrors[0]?.message) ||
-        e?.message ||
-        ''
+        caughtError instanceof ApolloError
+          ? caughtError.graphQLErrors[0]?.message ?? caughtError.message
+          : caughtError instanceof Error
+            ? caughtError.message
+            : ''
       error(errMsg || '인증코드 발송 중 오류가 발생했습니다.')
     } finally {
       setIsSending(false)
@@ -123,7 +126,7 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
     setIsCodeSent(false)
     setAuthCode('')
     setCallNumber('')
-    
+
     localStorage.removeItem('phoneAuthNumber')
     localStorage.removeItem('phoneAuthTime')
     localStorage.removeItem('phoneAuthRole')
@@ -144,7 +147,7 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
                 <S.Description>
                   {role === 'HOST' ? '호스트' : '하숙생'} 인증을 위해 휴대폰 번호를 입력해주세요.
                 </S.Description>
-                
+
                 <S.Input
                   type="tel"
                   placeholder="01012345678"
@@ -152,7 +155,7 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCallNumber(e.target.value)}
                   maxLength={13}
                 />
-                
+
                 <S.InfoText>
                   * 입력하신 번호로 인증코드가 문자로 발송됩니다.
                 </S.InfoText>
@@ -171,7 +174,7 @@ export default function PhoneAuth({ onVerifySuccess, onClose, role = 'HOST' }: P
                 <S.Description>
                   문자로 받은 인증코드를 입력해주세요.
                 </S.Description>
-                
+
                 <S.PhoneInfo>
                   인증번호: {callNumber}
                 </S.PhoneInfo>
