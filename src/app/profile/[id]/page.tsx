@@ -89,7 +89,7 @@ export default function UserProfilePage() {
         }
     );
 
-    const {  } = useQuery<HostBoardingRoomsResponse>(
+    const { data: boardingRoomsData, loading: boardingRoomsLoading } = useQuery<HostBoardingRoomsResponse>(
         ProfileGQL.QUERIES.GET_HOST_BOARDING_ROOMS,
         {
             variables: {
@@ -484,7 +484,9 @@ export default function UserProfilePage() {
             <S.PostList>
                 {selected === 1 && (
                     <S.List1 style={{ minHeight: '400px' }}>
-                        {allBoardingRooms.length === 0 ? (
+                        {boardingRoomsLoading ? (
+                            <div style={{ padding: '20px' }}>하숙집을 불러오는 중...</div>
+                        ) : allBoardingRooms.length === 0 ? (
                             <div style={{ padding: '20px' }}>하숙집이 없습니다.</div>
                         ) : (
                             allBoardingRooms.map(room => (

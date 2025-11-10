@@ -112,7 +112,7 @@ export default function MyProfilePage() {
       variables: {
         userId: userId || ''
       },
-      skip: selected !== 1 || !userId || data?.getUserProfile?.role !== 'HOST',
+      skip: selected !== 1 || !userId || !isHost,
       fetchPolicy: 'cache-first',
     }
   );
@@ -366,9 +366,9 @@ export default function MyProfilePage() {
         {selected === 1 && (
           <S.List1 style={{ minHeight: '400px' }}>
             {boardingRoomLoading ? (
-              <S.EmptyMessage marginRight="46rem">하숙집을 불러오는 중...</S.EmptyMessage>
+              <S.EmptyMessage2 marginRight="44rem">하숙집을 불러오는 중...</S.EmptyMessage2>
             ) : allBoardingRooms.length === 0 ? (
-              <S.EmptyMessage marginRight="46rem">게시물이 없습니다.</S.EmptyMessage>
+              <S.EmptyMessage2 marginRight="44rem">하숙집이 없습니다.</S.EmptyMessage2>
             ) : (
               allBoardingRooms.map(room => (
                 <PostItem

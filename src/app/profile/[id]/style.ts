@@ -44,6 +44,7 @@ export const ProfileImage = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   
   img {
     width: 100%;
@@ -57,6 +58,7 @@ export const ProfileImage = styled.div`
     margin-top: 6rem;
     aspect-ratio: 1 / 1;
     height: auto;
+    flex-shrink: 0;
   }
 `
 
@@ -99,7 +101,6 @@ export const Nickname = styled.div`
 export const Profile = styled.div`
   display: flex;
   width: 100%;
-  height: 28vh;
   padding: 0rem 8rem;
 
   ${mq.mobile} {
@@ -429,4 +430,21 @@ export const EmptyMessage = styled.div<{
   padding: 20px;
   text-align: ${(props) => props.align || 'center'};
   margin-right: ${(props) => props.marginRight || '0'};
+  
+  ${mq.mobile} {
+    margin-left: 0;
+  }
+`
+
+export const EmptyMessage2 = styled.div<{
+  align?: 'left' | 'center';
+  marginRight?: string;
+}>`
+  padding: 20px;
+  text-align: ${(props) => props.align || 'center'};
+  margin-right: ${(props) => props.marginRight || '0'};
+  
+  ${mq.mobile} {
+    margin-right: 10rem;
+  }
 `
