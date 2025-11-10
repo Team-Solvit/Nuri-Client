@@ -52,18 +52,18 @@ export default function PostItem({
     <S.PostItem onClick={() => onClick(id)}>
       <S.Post>
         <S.PostThumbnail>
-          <Image 
-            src={imageSrc} 
-            alt={title} 
-            fill 
-            style={{ objectFit: 'cover' }} 
+          <Image
+            src={imageSrc}
+            alt={title}
+            fill
+            style={{ objectFit: 'cover' }}
           />
         </S.PostThumbnail>
         <S.PostMain>
           <S.PostTitle>{title}</S.PostTitle>
           {/* <S.PostRegion>{region}</S.PostRegion> */}
           <S.PostPrice>
-            ₩ {Number(price).toLocaleString()}  / 월
+            ₩ {Number(price?.replace(/,/g, '') || 0).toLocaleString()} / 월
           </S.PostPrice>
         </S.PostMain>
       </S.Post>
