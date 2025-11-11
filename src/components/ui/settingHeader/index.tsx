@@ -33,6 +33,15 @@ export default function SettingHeader() {
         try {
             await AuthService.logout(client);
             clear();
+            try {
+                localStorage.removeItem('nuri-user');
+                localStorage.removeItem('hostPhoneVerified');
+                localStorage.removeItem('hostPhoneVerifiedAt');
+                localStorage.removeItem('hostPhoneNumber');
+                localStorage.removeItem('hostSettingCompleted');
+            } catch (e) {
+                console.error('localStorage 제거 실패:', e);
+            }
             setLogoutModalOpen(false);
             // 상태 업데이트를 위한 짧은 지연 후 리다이렉트
             setTimeout(() => {

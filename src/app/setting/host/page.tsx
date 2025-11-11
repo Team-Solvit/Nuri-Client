@@ -122,9 +122,18 @@ export default function Host() {
     const savedPhoneVerified = localStorage.getItem('hostPhoneVerified');
     const savedAt = Number(localStorage.getItem('hostPhoneVerifiedAt') || 0);
 
-    const isFresh = Date.now() - savedAt < 1000 * 60 * 30; // 30분 TTL
-    if (savedPhoneVerified === 'true' && isFresh) {
+    console.log('호스트 인증 체크:', {
+      savedPhoneVerified,
+      savedAt,
+      hasValidTimestamp: savedAt > 0,
+      role
+    });
+
+    // hostPhoneVerifiedAt이 있으면 인증된 것으로 처리 (TTL 체크 제거)
+    if (savedAt > 0 || savedPhoneVerified === 'true') {
+      console.log('호스트 인증 통과');
       setIsPhoneVerified(true);
+      setVerifiedPhoneNumber(phoneNumber || '인증 완료');
     }
   }, [role, phoneNumber])
 
@@ -149,6 +158,7 @@ export default function Host() {
 	    try {
 				localStorage.removeItem('nuri-user');
 				localStorage.removeItem('hostPhoneVerified');
+				localStorage.removeItem('hostPhoneVerifiedAt');
 				localStorage.removeItem('hostPhoneNumber');
 				localStorage.removeItem('hostSettingCompleted');
 			}

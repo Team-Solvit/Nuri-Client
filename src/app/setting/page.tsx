@@ -46,7 +46,13 @@ export default function SettingPage() {
             clearAccessToken();
             await apolloClient.clearStore();
             clear();
-            try { localStorage.removeItem('nuri-user'); } catch (e : unknown) {
+            try { 
+                localStorage.removeItem('nuri-user');
+                localStorage.removeItem('hostPhoneVerified');
+                localStorage.removeItem('hostPhoneVerifiedAt');
+                localStorage.removeItem('hostPhoneNumber');
+                localStorage.removeItem('hostSettingCompleted');
+            } catch (e : unknown) {
 	            console.error(e) }
             setShowLogoutModal(false);
             setTimeout(() => {
