@@ -51,14 +51,15 @@ export default function SettingPage() {
             // remove persisted zustand storage key
             try { localStorage.removeItem('nuri-user'); } catch (e : unknown) {
 	            console.error(e) }
+            setShowLogoutModal(false);
             success('로그아웃되었습니다.');
             router.push('/');
         } catch (err) {
             console.error('로그아웃 실패:', err);
             error('로그아웃 중 오류가 발생했습니다.');
-            setIsLoggingOut(false)
+            setIsLoggingOut(false);
+            setShowLogoutModal(false);
         }
-        setShowLogoutModal(false)
     };
 
     const handleChangePassword = async () => {
