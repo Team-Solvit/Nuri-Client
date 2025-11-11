@@ -129,7 +129,6 @@ export default function Host() {
       role
     });
 
-    // hostPhoneVerifiedAt이 있으면 인증된 것으로 처리 (TTL 체크 제거)
     if (savedAt > 0 || savedPhoneVerified === 'true') {
       console.log('호스트 인증 통과');
       setIsPhoneVerified(true);

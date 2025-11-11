@@ -38,13 +38,19 @@ export const Profile = styled.div`
     align-items: center;
     justify-content: center;
     gap: 8px;
+    flex-shrink: 0;
 `
 
 export const PostUser = styled.span`
     font-size: ${fontSizes.Body};
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100px;
 
     ${mq.mobile} {
         font-size: ${fontSizes.Caption};
+        max-width: 60px;
     }
 `
 
@@ -62,6 +68,8 @@ export const Post = styled.div`
     display: flex;
     gap: 10px;
     align-items: center;
+    flex: 1;
+    min-width: 0;
 `
 
 export const PostThumbnail = styled.div`
@@ -83,6 +91,9 @@ export const PostTitle = styled.p`
     font-weight: 500;
     color: ${colors.text};
     margin-bottom: 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
     ${mq.mobile} {
         font-size: ${fontSizes.Caption};

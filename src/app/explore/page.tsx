@@ -22,7 +22,12 @@ export default function ExplorePage() {
 
   const handleSearchKeywordChange = (keyword: string) => {
     setSearchKeyword(keyword);
-    setSearchFilter(prev => ({ ...prev, name: keyword, start: 0 }));
+    if (keyword.trim() === '') {
+      const { name, ...restFilter } = searchFilter;
+      setSearchFilter({ ...restFilter, start: 0 });
+    } else {
+      setSearchFilter(prev => ({ ...prev, name: keyword, start: 0 }));
+    }
   };
 
   return (
@@ -61,10 +66,11 @@ const Container = styled.div`
     padding: 2rem 6% 0% 6%;
     flex-direction: column;
     gap: 1.5rem;
+    overflow-y: auto;
 
     ${mq.mobile} {
       gap: 1rem;
-      padding: 1rem 6% 0% 6%;
+      padding: 1rem 6% 2rem 6%;
     }
 `
 

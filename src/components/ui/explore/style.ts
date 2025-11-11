@@ -75,4 +75,11 @@ export const PostList = styled.div`
     &::-webkit-scrollbar {
         display: none;
     }
+
+    ${mq.mobile} {
+        height: auto;
+        min-height: auto;
+        overflow-y: visible;
+        padding-bottom: 2rem;
+    }
 ` 
