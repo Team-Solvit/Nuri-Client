@@ -43,17 +43,22 @@ export default function SettingPage() {
         setIsLoggingOut(true)
         try {
             await AuthService.logout(apolloClient);
-            // clear local access token and Apollo cache
             clearAccessToken();
             await apolloClient.clearStore();
-            // clear persisted user store
             clear();
-            // remove persisted zustand storage key
-            try { localStorage.removeItem('nuri-user'); } catch (e : unknown) {
+            try { 
+                localStorage.removeItem('nuri-user');
+                localStorage.removeItem('hostPhoneVerified');
+                localStorage.removeItem('hostPhoneVerifiedAt');
+                localStorage.removeItem('hostPhoneNumber');
+                localStorage.removeItem('hostSettingCompleted');
+            } catch (e : unknown) {
 	            console.error(e) }
             setShowLogoutModal(false);
-            success('로그아웃되었습니다.');
-            router.push('/');
+            setTimeout(() => {
+                success('로그아웃되었습니다.');
+                router.push('/');
+            }, 100);
         } catch (err) {
             console.error('로그아웃 실패:', err);
             error('로그아웃 중 오류가 발생했습니다.');
@@ -103,7 +108,6 @@ export default function SettingPage() {
         return () => window.removeEventListener('resize', handleResize)
     }, [])
 
-    // 로그인 상태 확인 (클라이언트 사이드에서만)
     useEffect(() => {
         if (isClient && !id && !isLoggingOut) {
             error('로그인이 필요합니다.');

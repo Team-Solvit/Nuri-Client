@@ -71,10 +71,8 @@ export default function MyProfilePage() {
     role: 'USER',
   };
 
-  // 탭은 오직 HOST 역할에서만 보이도록 합니다.
   const isHost = profile.role === 'HOST';
 
-  // 초기 선택 탭을 서버에서 받은 role에 따라 설정합니다 (한 번만).
   const [initialSelectedSet, setInitialSelectedSet] = useState(false);
   useEffect(() => {
     if (initialSelectedSet) return;
@@ -114,8 +112,7 @@ export default function MyProfilePage() {
       variables: {
         userId: userId || ''
       },
-      // 하숙집 정보는 오직 HOST 역할에서만 조회합니다.
-      skip: selected !== 1 || !userId || data?.getUserProfile?.role !== 'HOST',
+      skip: selected !== 1 || !userId || !isHost,
       fetchPolicy: 'cache-first',
     }
   );
@@ -139,7 +136,6 @@ export default function MyProfilePage() {
 	const convertToPostItem = (post: UserPost) => ({
 			postId: post.postId,
 			thumbnail: post.thumbnail || '/post/post-example.png',
-			// 카드용 부가 필드(필요 시)
 			user: userId || '알 수 없음',
 			title: '게시물',
 			region: '지역',
@@ -279,7 +275,6 @@ export default function MyProfilePage() {
     setShowFollowModal(true);
   }
 
-  // 로딩 중일 때 스켈레톤 UI 표시
   if (loading) {
     return <ProfileSkeleton />;
   }
@@ -369,11 +364,11 @@ export default function MyProfilePage() {
 
       <S.PostList>
         {selected === 1 && (
-          <S.List1 style={{ minHeight: '400px', marginRight: '50rem' }}>
+          <S.List1 style={{ minHeight: '400px' }}>
             {boardingRoomLoading ? (
-              <div style={{ padding: '20px', textAlign: 'center' }}>하숙집을 불러오는 중...</div>
+              <S.EmptyMessage marginRight="44rem">하숙집을 불러오는 중...</S.EmptyMessage>
             ) : allBoardingRooms.length === 0 ? (
-              <div style={{ padding: '20px', textAlign: 'center' }}>게시물이 없습니다.</div>
+              <S.EmptyMessage marginRight="44rem">하숙집이 없습니다.</S.EmptyMessage>
             ) : (
               allBoardingRooms.map(room => (
                 <PostItem
@@ -390,20 +385,20 @@ export default function MyProfilePage() {
         {selected === 2 && (
           <S.List2 style={{ minHeight: '400px' }}>
             {postLoading ? (
-              <div style={{ padding: '20px', textAlign: 'center' }}>게시물을 불러오는 중...</div>
+              <S.EmptyMessage>게시물을 불러오는 중...</S.EmptyMessage>
             ) : postError ? (
-              <div style={{ padding: '20px', textAlign: 'center' }}>오류가 발생했습니다.</div>
+              <S.EmptyMessage>오류가 발생했습니다.</S.EmptyMessage>
             ) : allPosts.length === 0 ? (
-              <div style={{ padding: '20px', textAlign: 'center' }}>게시물이 없습니다.</div>
+              <S.EmptyMessage>게시물이 없습니다.</S.EmptyMessage>
             ) : (
               <>
 	              {allPosts.map((post) => (
 									<Post key={post.postId} post={post} />
                 ))}
                 {hasMore && (
-                  <div ref={observerRef} style={{ padding: '20px', textAlign: 'center' }}>
+                  <S.EmptyMessage>
                     {isLoadingMore ? '더 많은 게시물을 불러오는 중...' : ''}
-                  </div>
+                  </S.EmptyMessage>
                 )}
               </>
             )}
