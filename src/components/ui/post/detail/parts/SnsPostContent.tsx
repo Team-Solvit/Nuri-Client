@@ -16,6 +16,7 @@ interface SnsPostContentProps {
   newImages: File[];
   uploading: boolean;
   displayDesc: string;
+  title: string;
   onChangeContent: (v: string) => void;
   onRemoveImage: (index: number) => void;
   onRemoveNewImage: (index: number) => void;
@@ -32,6 +33,7 @@ export default function SnsPostContent({
   editingImages,
   newImages,
   uploading,
+  title,
   displayDesc,
   onChangeContent,
   onRemoveImage,
@@ -123,7 +125,10 @@ export default function SnsPostContent({
           </S.EditPostButtons>
         </S.EditPostContainer>
       ) : (
-        <S.RightDesc>{displayDesc}</S.RightDesc>
+        <>
+          <S.RightTitle>{title}</S.RightTitle>
+          <S.RightDesc>{displayDesc}</S.RightDesc>
+        </>
       )}
     </>
   );
