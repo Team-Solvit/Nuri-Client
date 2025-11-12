@@ -141,7 +141,25 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
   }, [menuOpen, showRoomTour, showContractPeriods, openCommentMenuId]);
 
   if (loading) return <PostDetailSkeleton isModal={isModal} />;
-  if (!postInfo) return <div>게시물을 불러올 수 없습니다.</div>;
+  if (!postInfo) {
+    return (
+      <S.Wrapper>
+        <S.ErrorContainer>
+          <S.ErrorIcon>⚠️</S.ErrorIcon>
+          <S.ErrorTitle>게시물을 불러올 수 없습니다</S.ErrorTitle>
+          <S.ErrorMessage>
+            게시물이 삭제되었거나 존재하지 않습니다.
+          </S.ErrorMessage>
+          <Square
+            text="돌아가기"
+            onClick={() => router.back()}
+            status={true}
+            width="200px"
+          />
+        </S.ErrorContainer>
+      </S.Wrapper>
+    );
+  }
 
   return (
     <S.Wrapper>

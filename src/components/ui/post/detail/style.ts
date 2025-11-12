@@ -1037,7 +1037,7 @@ export const EditImageUploadIcon = styled.div`
   font-size: 24px;
   font-weight: 300;
   
-  ${mq.mobile} {
+        ${mq.mobile} {
     font-size: 18px;
   }
 `;
@@ -1050,5 +1050,54 @@ export const EditPostButtons = styled.div`
   ${mq.mobile} {
     gap: 0.375rem;
     justify-content: center;
+  }
+`;
+
+export const ErrorContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 400px;
+  padding: 2rem;
+  gap: 1.5rem;
+
+  ${mq.mobile} {
+    min-height: 60vh;
+    padding: 1.5rem;
+  }
+`;
+
+export const ErrorIcon = styled.div`
+  font-size: 4rem;
+  margin-bottom: 0.5rem;
+
+  ${mq.mobile} {
+    font-size: 3rem;
+  }
+`;
+
+export const ErrorTitle = styled.h2`
+  font-size: ${fontSizes.H3};
+  font-weight: 600;
+  color: ${colors.text};
+  margin: 0;
+  text-align: center;
+
+  ${mq.mobile} {
+    font-size: ${fontSizes.H4};
+  }
+`;
+
+export const ErrorMessage = styled.p`
+  font-size: ${fontSizes.Body};
+  color: ${colors.gray};
+  margin: 0;
+  text-align: center;
+  line-height: 1.5;
+
+  ${mq.mobile} {
+    font-size: ${fontSizes.Small};
   }
 `;
