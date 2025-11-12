@@ -130,6 +130,8 @@ export default function Host() {
     } else if (savedAt > 0) {
       localStorage.removeItem('hostPhoneVerified');
       localStorage.removeItem('hostPhoneVerifiedAt');
+    }
+  }, [role, phoneNumber]);
 
   useEffect(() => {
     const savedHostSettingCompleted = localStorage.getItem('hostSettingCompleted');
