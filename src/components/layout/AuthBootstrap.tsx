@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useApollo } from '@/lib/apolloClient';
 import { AuthGQL } from '@/services/auth';
 import { useUserStore } from '@/store/user';
@@ -11,10 +11,14 @@ export default function AuthBootstrap() {
   const setAuth = useUserStore(s => s.setAuth);
   const clear = useUserStore(s => s.clear);
   const { open } = useLoginModalStore();
+  const isRefreshing = useRef(false);
+
   useEffect(() => {
     let cancelled = false;
 
-    (async () => {
+    const checkAuth = async () => {
+      if (isRefreshing.current) return;
+
       const existingToken = getAccessToken();
 
       if (!existingToken) {
@@ -24,6 +28,7 @@ export default function AuthBootstrap() {
       if (!isTokenExpired(existingToken)) {
         return;
       }
+      isRefreshing.current = true;
 
       try {
         const r = await client.mutate({
@@ -38,9 +43,16 @@ export default function AuthBootstrap() {
         localStorage.removeItem('AT');
         localStorage.removeItem('nuri-user');
         clear();
-        open();
+      } finally {
+        isRefreshing.current = false;
       }
-    })();
+    };
+
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      requestIdleCallback(() => checkAuth());
+    } else {
+      setTimeout(checkAuth, 0);
+    }
 
     return () => { cancelled = true; };
   }, [client, setAuth, clear, open]);
