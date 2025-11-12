@@ -12,8 +12,14 @@ function createApolloClient() {
 	const httpLink = new HttpLink({
 		uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
 		credentials: 'include',
+		fetchOptions: {
+			credentials: 'include',
+		},
 		fetch: async (uri, options) => {
-			const res = await fetch(uri, options);
+			const res = await fetch(uri, {
+				...options,
+				credentials: 'include',
+			});
 			return res;
 		},
 	});
@@ -29,7 +35,11 @@ function createApolloClient() {
 		});
 	});
 
-	const authLink = setContext((_, { headers }) => {
+	const authLink = setContext((operation, { headers }) => {
+		if (operation.operationName === 'Reissue') {
+			return { headers };
+		}
+
 		const token = typeof window !== 'undefined' ? localStorage.getItem('AT') : null;
 		return {
 			headers: {
@@ -51,6 +61,9 @@ function createApolloClient() {
 				const r = await apolloClient.mutate({
 					mutation: AuthGQL.MUTATIONS.REISSUE,
 					fetchPolicy: 'no-cache',
+					context: {
+						credentials: 'include',
+					},
 				});
 				const newToken = extractTokenFromApolloResult(r);
 				if (typeof newToken === 'string') saveAccessToken(newToken);
