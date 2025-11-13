@@ -1,7 +1,6 @@
 "use client"
 
 import * as S from "./style";
-import Image from "next/image";
 import { useMutation, useQuery } from "@apollo/client";
 import { AlertMutations, AlertQueries } from "@/services/alert";
 import { AlertType, RedirectType } from "@/types/alert";

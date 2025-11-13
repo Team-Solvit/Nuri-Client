@@ -15,7 +15,6 @@ import {useMessageDmManageStore} from "@/store/messageDmManage";
 import {useMessageHeaderStore} from "@/store/messageHeader";
 import {imageCheck} from "@/utils/imageCheck";
 import {useAlertStore} from "@/store/alert";
-import {useLoadingEffect} from "@/hooks/useLoading";
 import {messageRequestCheck} from "@/utils/messageRequestCheck";
 import { useMessagePageStore } from "@/store/messagePage";
 import {useMessageReflectStore} from "@/store/messageReflect";
@@ -31,7 +30,7 @@ export default function MessageSideBar() {
 	const setRoomDataList = useMessagePageStore((s) => s.setRoomDataList);
 	const pathname = usePathname();
 
-	const { data, loading, fetchMore, refetch } = useQuery(MessageQueries.GET_ROOMS_CHAT_LIST, {
+	const { data, fetchMore, refetch } = useQuery(MessageQueries.GET_ROOMS_CHAT_LIST, {
 		variables: { page, size },
 		fetchPolicy: "no-cache",
 		nextFetchPolicy: "no-cache",
@@ -41,10 +40,16 @@ export default function MessageSideBar() {
 	const { message } = useMessageReflectStore()
 	
 	// URL이 변경될 때마다 메시지 목록 refetch
-	useEffect(() => {
-		refetch();
-	}, [pathname, refetch]);
-	
+	const didMountRef = useRef(false);
+
+  useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+    refetch();
+  }, [pathname, refetch]);
+
 	useEffect(() => {
 		if (message) {
 			refetch();
@@ -57,7 +62,6 @@ export default function MessageSideBar() {
 		}
 	}, [data?.getRooms]);
 	
-	useLoadingEffect(loading)
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
 	
 	const router = useRouter();
@@ -133,7 +137,7 @@ export default function MessageSideBar() {
 	
 	const observer = useRef<IntersectionObserver | null>(null);
 	const lastPostElementRef = useCallback((node: HTMLDivElement | null) => {
-		if (loading || isFetchingMore || isLoadingMore.current) return;
+		if ( isFetchingMore || isLoadingMore.current) return;
 		if (observer.current) observer.current.disconnect();
 		observer.current = new IntersectionObserver(
 			(entries) => {
@@ -144,7 +148,7 @@ export default function MessageSideBar() {
 			{ root: null, rootMargin: "300px 0px", threshold: 0 }
 		);
 		if (node) observer.current.observe(node);
-	}, [loading, isFetchingMore, loadMore]);
+	}, [ isFetchingMore, loadMore]);
 	const {chatRoomId, chatRoomName, chatProfile, isOpen, setValues: setDmRoom} = useMessageDmManageStore();
 	
 	useEffect(() => {

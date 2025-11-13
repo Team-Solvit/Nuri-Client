@@ -12,10 +12,6 @@ export const NavigateCon = styled.div`
   position: relative;
 `
 
-export const HostCardOverlay = styled.div`
-  display: none;
-`
-
 export const HostCard = styled.div`
   display: flex;
   align-items: center;
