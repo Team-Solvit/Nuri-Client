@@ -22,7 +22,7 @@ import Alert from '@/components/ui/alert';
 import { useFileUpload } from '@/hooks/useFileUpload';
 
 export default function ProfilePage() {
-	const { userId, name, profile, clear, id } = useUserStore(s => s);
+	const { userId, name, profile, clear, id, phoneNumber } = useUserStore(s => s);
 	const apolloClient = useApollo();
     const router = useRouter();
     const { success, error } = useAlertStore();
@@ -31,11 +31,10 @@ export default function ProfilePage() {
     const [hydrated, setHydrated] = useState(false);
 
     useEffect(() => {
-        // Zustand 복원 완료 후 실행
         const unsub = useUserStore.persist.onFinishHydration(() => {
             setHydrated(true);
         });
-        setHydrated(true); // 혹시 이미 복원되어 있을 경우 대비
+        setHydrated(true);
         return unsub;
     }, []);
 
@@ -65,18 +64,26 @@ export default function ProfilePage() {
         }
     );
 
-    const [profileImg, setProfileImg] = useState(profile || '')
+    const [profileImg, setProfileImg] = useState('')
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [userid, setUserid] = useState(userId || '')
     const [nickname, setNickname] = useState(name || '')
     const [introduction, setIntroduction] = useState('')
 
     const [initialValues, setInitialValues] = useState({
-        profileImg: profile || '',
+        profileImg: '',
         userid: userId || '',
         nickname: name || '',
         introduction: ''
     })
+    
+    useEffect(() => {
+        if (profile) {
+            const cdnUrl = convertToCdnUrl(profile);
+            setProfileImg(cdnUrl);
+            setInitialValues(prev => ({ ...prev, profileImg: cdnUrl }));
+        }
+    }, [])
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [showLeaveModal, setShowLeaveModal] = useState(false);
     const [showFollowerModal, setShowFollowerModal] = useState(false);
@@ -200,7 +207,7 @@ export default function ProfilePage() {
                     language: currentUser.language || '',
                     name: nickname,
                     email: currentUser.email || '',
-                    phoneNumber: currentUser.phoneNumber || '',
+                    phoneNumber: phoneNumber || '',
                     profile: finalProfile,
                     role: currentUser.role || '',
                 });

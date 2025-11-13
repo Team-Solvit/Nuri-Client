@@ -32,7 +32,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
     const alertStore = useAlertStore();
 
     const prevImage = () => {
-        setCurrentIndex(prev => (prev === 0 ? previewImages.length - 1 : prev - 1));
+        setCurrentIndex(prev =ㅇ> (prev === 0 ? previewImages.length - 1 : prev - 1));
     };
 
     const nextImage = () => {
