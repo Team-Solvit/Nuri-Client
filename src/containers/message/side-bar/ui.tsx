@@ -73,15 +73,16 @@ export default function MessageSideBar() {
 	
 	const {error} = useAlertStore()
 	const loadMore = async () => {
-		if (isFetchingMore || isDone) return;
-		if (!data?.getRooms || data?.getRooms?.length === 0 || data?.getRooms?.length < size) {
-			setIsDone(true);
+		console.log("Loading more rooms, page:", page + 1);
+		if (isFetchingMore || isDone || isLoadingMore.current) {
+			console.log("loadMore blocked:", { isFetchingMore, isDone, isLoadingMore: isLoadingMore.current });
 			return;
 		}
+		
+		isLoadingMore.current = true; // 중복 요청 방지 플래그 설정
 		setIsFetchingMore(true);
 		try {
 			const newPage = page + 1;
-			
 			const res = await fetchMore({
 				variables: { 
 					page: newPage,
@@ -92,6 +93,12 @@ export default function MessageSideBar() {
 						setIsDone(true);
 						return prev;
 					}
+					
+					// 가져온 데이터가 size보다 작으면 더 이상 없음
+					if (fetchMoreResult.getRooms.length < size) {
+						setIsDone(true);
+					}
+					
 					// 전역 상태에 페이지 업데이트
 					setPage(newPage);
 					return {
@@ -100,30 +107,37 @@ export default function MessageSideBar() {
 					};
 				},
 			});
+			
 			if (!res.data || res.data?.getRooms?.length === 0) {
 				setIsDone(true);
 				error("더 이상 불러올 채팅방이 없습니다");
+			} else if (res.data.getRooms.length < size) {
+				setIsDone(true);
 			}
+		} catch (e) {
+			console.error("Failed to load more rooms:", e);
 		} finally {
 			setIsFetchingMore(false);
+			isLoadingMore.current = false; // 플래그 해제
 		}
 	};
 	const iconRef = useRef<HTMLImageElement>(null);
+	const isLoadingMore = useRef(false); // 중복 요청 방지
 	
 	const observer = useRef<IntersectionObserver | null>(null);
 	const lastPostElementRef = useCallback((node: HTMLDivElement | null) => {
-		if (loading || isFetchingMore) return;
+		if (loading || isFetchingMore || isLoadingMore.current) return;
 		if (observer.current) observer.current.disconnect();
 		observer.current = new IntersectionObserver(
 			(entries) => {
-				if (entries[0].isIntersecting) {
+				if (entries[0].isIntersecting && !isLoadingMore.current) {
 					loadMore();
 				}
 			},
 			{ root: null, rootMargin: "300px 0px", threshold: 0 }
 		);
 		if (node) observer.current.observe(node);
-	}, [loading, isFetchingMore, roomDataList?.length]);
+	}, [loading, isFetchingMore, loadMore]);
 	const {chatRoomId, chatRoomName, chatProfile, isOpen, setValues: setDmRoom} = useMessageDmManageStore();
 	
 	useEffect(() => {
@@ -131,7 +145,7 @@ export default function MessageSideBar() {
 			const merged = [...roomDataList, ...data.getRooms];
 			
 			const unique = merged.reduceRight((acc, cur) => {
-				if (!acc.some((r: RoomReadResponseDto) => r.roomDto.id === cur.roomDto.id)) {
+				if (cur.roomDto && !acc.some((r: RoomReadResponseDto) => r.roomDto?.id === cur.roomDto?.id)) {
 					acc.push(cur);
 				}
 				return acc;
@@ -143,7 +157,7 @@ export default function MessageSideBar() {
 	
 	useEffect(() => {
 		if (isOpen && chatRoomId) {
-			const roomExists = roomDataList.some(room => room.roomDto.id === chatRoomId);
+			const roomExists = roomDataList.some(room => room.roomDto?.id === chatRoomId);
 			const next = roomExists
 				? roomDataList
 				: [
@@ -160,8 +174,8 @@ export default function MessageSideBar() {
 					...roomDataList,
 				];
 			const unique = next.reduceRight((acc, cur) => {
-				if (!acc.some(r => {
-					return r.roomDto.id === cur.roomDto.id
+				if (cur.roomDto && !acc.some(r => {
+					return r.roomDto?.id === cur.roomDto?.id
 				})) {
 					acc.push(cur);
 				}
@@ -246,70 +260,77 @@ export default function MessageSideBar() {
 			</S.Search>
 			<S.CategoryList
 			>
-				{(searchResults ?? roomDataList) && (searchResults ?? roomDataList)!.map((room, index) => {
-					const isActive = decodeURIComponent(params.id as string) === room.roomDto.id || changeParamsId(params.id as string) === room.roomDto.id;
+				{(() => {
+					const displayList = (searchResults ?? roomDataList)?.filter(room => room?.roomDto && room.roomDto.id) ?? [];
 					
-					// 최신 메시지 처리 함수
-					const getLatestMessageDisplay = (message: string) => {
-						// 이미지 메시지 체크
-						if (IMAGE_BASE && message?.startsWith(IMAGE_BASE)) {
-							return "이미지";
-						}
-						if (typeof message === "string" && /\.(png|jpe?g|gif|webp|bmp|svg)(\?.*)?$/i.test(message)) {
-							return "이미지";
-						}
+					return displayList.map((room, index) => {
+						if (!room?.roomDto?.id) return null;
 						
-						// 계약 메시지 체크
-						const request = messageRequestCheck(message || "")
-						if (request?.type === "contract") {
-							return "계약";
-						}
-						if(request?.type === "roomTour"){
-							return "룸투어"
-						}
+						const { id, name, profile, memberCount } = room.roomDto;
+						const isActive = decodeURIComponent(params.id as string) === id || changeParamsId(params.id as string) === id;
 						
-						// 입장 메시지 처리 ([id1, id2] join)
-						const joinMatch = message?.match(/\[([^\]]+)\]\s*join/i);
-						if (joinMatch) {
-							const joinedUsers = joinMatch[1].split(',').map(user => user.trim());
-							if (joinedUsers.length === 1) {
-								return `${joinedUsers[0]}님이 들어왔습니다`;
-							} else {
-								return `${joinedUsers.join(', ')}님이 들어왔습니다`;
+						// 최신 메시지 처리 함수
+						const getLatestMessageDisplay = (message: string) => {
+							// 이미지 메시지 체크
+							if (IMAGE_BASE && message?.startsWith(IMAGE_BASE)) {
+								return "이미지";
 							}
-						}
+							if (typeof message === "string" && /\.(png|jpe?g|gif|webp|bmp|svg)(\?.*)?$/i.test(message)) {
+								return "이미지";
+							}
+							
+							// 계약 메시지 체크
+							const request = messageRequestCheck(message || "")
+							if (request?.type === "contract") {
+								return "계약";
+							}
+							if(request?.type === "roomTour"){
+								return "룸투어"
+							}
+							
+							// 입장 메시지 처리 ([id1, id2] join)
+							const joinMatch = message?.match(/\[([^\]]+)\]\s*join/i);
+							if (joinMatch) {
+								const joinedUsers = joinMatch[1].split(',').map(user => user.trim());
+								if (joinedUsers.length === 1) {
+									return `${joinedUsers[0]}님이 들어왔습니다`;
+								} else {
+									return `${joinedUsers.join(', ')}님이 들어왔습니다`;
+								}
+							}
+							
+							// 퇴장 메시지 처리 (id1 exit)
+							const exitMatch = message?.match(/^(\w+)\s+exit$/);
+							if (exitMatch) {
+								const exitedUser = exitMatch[1];
+								return `${exitedUser}님이 나갔습니다`;
+							}
+							
+							// 일반 메시지
+							return message;
+						};
 						
-						// 퇴장 메시지 처리 (id1 exit)
-						const exitMatch = message?.match(/^(\w+)\s+exit$/);
-						if (exitMatch) {
-							const exitedUser = exitMatch[1];
-							return `${exitedUser}님이 나갔습니다`;
-						}
-						
-						// 일반 메시지
-						return message;
-					};
-					
-					return (
-						<S.ChatBox
-							/* 검색 중일 때는 무한스크롤(마지막 요소 관찰)을 비활성화 */
-							ref={(!searchResults && roomDataList) && index === roomDataList.length - 1 ? lastPostElementRef : undefined}
-							key={room.roomDto.id}
-							onClick={() => handleRouter(room.roomDto.id, room.roomDto.name, room.roomDto.profile ?? "", room.roomDto.memberCount)}
-							isRead={isActive}
-						>
-							<S.Profile>
-								<Image src={imageCheck(room?.roomDto?.profile || "")} alt={"profile"} fill/>
-							</S.Profile>
-							<S.Info>
-								<h4>
-									{room.roomDto.name}
-								</h4>
-								<p>{getLatestMessageDisplay(room?.latestMessage ?? "")}</p>
-							</S.Info>
-						</S.ChatBox>
-					)
-				})}
+						return (
+							<S.ChatBox
+								/* 검색 중일 때는 무한스크롤(마지막 요소 관찰)을 비활성화 */
+								ref={(!searchResults && displayList) && index === displayList.length - 1 ? lastPostElementRef : undefined}
+								key={id}
+								onClick={() => handleRouter(id, name, profile ?? "", memberCount)}
+								isRead={isActive}
+							>
+								<S.Profile>
+									<Image src={imageCheck(profile || "")} alt={"profile"} fill/>
+								</S.Profile>
+								<S.Info>
+									<h4>
+										{name}
+									</h4>
+									<p>{getLatestMessageDisplay(room?.latestMessage ?? "")}</p>
+								</S.Info>
+							</S.ChatBox>
+						)
+					});
+				})()}
 				{/* 검색 결과가 없을 때 메시지 표시 */}
 				{searchResults && searchResults.length === 0 && <S.NoText>검색 결과가 없습니다</S.NoText>}
 				{isDone && !searchResults && roomDataList?.length === 0 && <S.NoText>채팅방이 없습니다</S.NoText>}

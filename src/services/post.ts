@@ -23,6 +23,7 @@ export const PostQueries = {
 		        }
 		        isGroup
 		        likeCount
+		        isLiked
 		      }
 		      ... on BoardingPost {
 			        room {
@@ -40,6 +41,7 @@ export const PostQueries = {
 						    description
 						    monthlyRent
 						    likeCount
+						    isLiked
 						    commentCount
 						    boardingRoomFile{
 						      fileId

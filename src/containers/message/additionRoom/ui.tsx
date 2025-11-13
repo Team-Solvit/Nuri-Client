@@ -19,6 +19,7 @@ import { useMessageReflectStore } from "@/store/messageReflect";
 import { useMessageAlertStore } from "@/store/messageAlert";
 import { useMessageHeaderStore } from "@/store/messageHeader";
 import { imageCheck } from "@/utils/imageCheck";
+import { usePermissionGuard } from "@/hooks/usePermissionGuard";
 
 interface User {
 	userId: string;
@@ -120,6 +121,7 @@ export default function AdditionRoom({ isAddition, setIsAddition, iconRef, type,
 			roomId: roomId
 		}
 		try {
+			setLoading(true);
 			await MessageService.inviteUserInChatRoom(
 				apolloClient,
 				inviteChatMemberInput,
@@ -133,6 +135,8 @@ export default function AdditionRoom({ isAddition, setIsAddition, iconRef, type,
 			handleClose();
 		} catch {
 			error("채팅방 초대에 실패하였습니다.")
+		} finally {
+			setLoading(false);
 		}
 	}
 
@@ -149,6 +153,8 @@ export default function AdditionRoom({ isAddition, setIsAddition, iconRef, type,
 	const { addSubscription } = useMessageConnectStore()
 	const { setMessage } = useMessageReflectStore();
 	const { fadeIn } = useMessageAlertStore();
+	const { withPermission } = usePermissionGuard();
+	
 	const handleCreateRoom = async () => {
 		if (!roomName.trim()) {
 			error("채팅방 이름을 입력해주세요.");
@@ -158,6 +164,9 @@ export default function AdditionRoom({ isAddition, setIsAddition, iconRef, type,
 			error("채팅방의 인원수가 부족합니다.")
 			return;
 		}
+		
+		setLoading(true);
+		
 		const inputData: RoomCreateRequestDto = {
 			roomDto: {
 				name: roomName,
@@ -167,7 +176,6 @@ export default function AdditionRoom({ isAddition, setIsAddition, iconRef, type,
 			isTeam: false
 		}
 		try {
-			setLoading(true)
 			const res = await MessageService.createChatRoom(apolloClient, inputData);
 			const roomId = res?.data?.createRoom?.id
 			if (roomId) {
@@ -399,7 +407,7 @@ export default function AdditionRoom({ isAddition, setIsAddition, iconRef, type,
 				</S.UserList>
 
 				<S.ActionButton
-					onClick={handleAddition}
+					onClick={() => withPermission(handleAddition)}
 					disabled={
 						selectedUsers.length === 0 ||
 						loading ||

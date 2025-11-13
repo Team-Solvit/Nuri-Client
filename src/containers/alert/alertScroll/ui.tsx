@@ -72,9 +72,6 @@ export const AlertBox = ({ alert }: { alert: AlertType }) => {
 	
 	return (
 		<S.Alert isRead={alert.checked} onClick={handleMove}>
-			<S.Profile>
-				<Image src={"/post/default.png"} alt="profile" fill />
-			</S.Profile>
 			<S.Info>
 				<S.Title>{alert.content}</S.Title>
 				{formattedDate && <S.CreatedDate>{formattedDate}</S.CreatedDate>}

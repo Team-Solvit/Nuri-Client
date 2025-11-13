@@ -26,5 +26,7 @@ const HomeContainer = styled.section`
   ${mq.mobile} {
     grid-template-columns: 1fr;
     margin: 0;
+    max-height: 100vh;
+    height: 100vh;
   }
 `

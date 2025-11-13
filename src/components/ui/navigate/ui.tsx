@@ -10,7 +10,10 @@ import { useUserStore } from "@/store/user";
 import { useLoginModalStore } from "@/store/loginModal";
 import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 import { AlertQueries } from "@/services/alert";
+import { MessageQueries } from "@/services/message";
 import { useQuery } from "@apollo/client";
+
+const HOST_CARD_HIDDEN_KEY = "host_card_hidden";
 
 export default function Navigate() {
 	const navigate = useNavigationWithProgress();
@@ -63,7 +66,24 @@ export default function Navigate() {
 	] as const
 
 	const [alertCount, setAlertCount] = useState<number>(0);
+	const [messageCount, setMessageCount] = useState<number>(0);
+	const [showHostCard, setShowHostCard] = useState<boolean>(false);
+	
+	// 로컬스토리지에서 다시 보지 않기 상태 확인
+	useEffect(() => {
+		if (typeof window !== "undefined") {
+			const hidden = localStorage.getItem(HOST_CARD_HIDDEN_KEY);
+			setShowHostCard(!hidden);
+		}
+	}, []);
+	
 	const { data: alertData, refetch: refetchAlert } = useQuery<{ getNotificationCount: number }>(AlertQueries.GET_ALERT_COUNT, {
+		fetchPolicy: "no-cache",
+		nextFetchPolicy: "no-cache",
+		skip: !id,
+	});
+	
+	const { data: messageData, refetch: refetchMessage } = useQuery<{ getNewMessageCount: number }>(MessageQueries.GET_NEW_MESSAGE_COUNT, {
 		fetchPolicy: "no-cache",
 		nextFetchPolicy: "no-cache",
 		skip: !id,
@@ -72,20 +92,39 @@ export default function Navigate() {
 	useEffect(() => {
 		setAlertCount(Number(alertData?.getNotificationCount ?? 0));
 	}, [alertData]);
+	
+	useEffect(() => {
+		setMessageCount(Number(messageData?.getNewMessageCount ?? 0));
+	}, [messageData]);
 
 	useEffect(() => {
 		if (!id) {
 			setAlertCount(0);
+			setMessageCount(0);
 			return;
 		}
 		const onFocus = () => {
 			if (typeof refetchAlert === "function") {
 				try { refetchAlert(); } catch { }
 			}
+			if (typeof refetchMessage === "function") {
+				try { refetchMessage(); } catch { }
+			}
 		};
 		window.addEventListener("focus", onFocus);
 		return () => window.removeEventListener("focus", onFocus);
-	}, [id, refetchAlert]);
+	}, [id, refetchAlert, refetchMessage]);
+
+	const handleCloseHostCard = () => {
+		setShowHostCard(false);
+	};
+
+	const handleNeverShowAgain = () => {
+		if (typeof window !== "undefined") {
+			localStorage.setItem(HOST_CARD_HIDDEN_KEY, "true");
+		}
+		setShowHostCard(false);
+	};
 
 	return (
 		<S.NavigateCon>
@@ -110,13 +149,17 @@ export default function Navigate() {
 								aria-label={item.aria_label}
 								aria-current={item.active}
 							>
-								<S.IconBox>
-									<Image src={item.icon} alt={item.label} width={32} height={32} />
-									{/* 알림 아이템일 때만, 경로가 /alert가 아니면 표시 */}
-									{item.label === "알림" && alertCount > 0 && pathname !== "/alert" && (
-										<S.Count>{alertCount > 99 ? "99+" : alertCount}</S.Count>
-									)}
-								</S.IconBox>
+							<S.IconBox>
+								<Image src={item.icon} alt={item.label} width={32} height={32} />
+								{/* 알림 아이템일 때만, 경로가 /alert가 아니면 표시 */}
+								{item.label === "알림" && alertCount > 0 && pathname !== "/alert" && (
+									<S.Count>{alertCount > 99 ? "99+" : alertCount}</S.Count>
+								)}
+								{/* 메시지 아이템일 때만, 경로가 /message가 아니면 표시 */}
+								{item.label === "메시지" && messageCount > 0 && pathname !== "/message" && (
+									<S.Count>{messageCount > 99 ? "99+" : messageCount}</S.Count>
+								)}
+							</S.IconBox>
 								<p>{item.label}</p>
 							</S.NavigateBtn>
 						)
@@ -146,16 +189,26 @@ export default function Navigate() {
 					})}
 				</S.BtnBox>
 			</S.NavigateContainer>
-			{isHome && role === "USER" && <S.HostCard>
-				<S.HostTextBox>
-					<strong>하숙집</strong>
-					<strong>호스트라면?</strong>
-					<span>간편하게 하숙 정보를 등록하고 관리해보세요</span>
-				</S.HostTextBox>
-				<S.HostCTAButton onClick={() => navigate("/setting/host")}>
-					하숙집 설정하기
-				</S.HostCTAButton>
-			</S.HostCard>}
+			{isHome && role === "USER" && showHostCard && (
+				<S.HostCard>
+					<S.HostCardHeader>
+						<S.CloseButton onClick={handleCloseHostCard}>✕</S.CloseButton>
+					</S.HostCardHeader>
+					<S.HostTextBox>
+						<strong>하숙집</strong>
+						<strong>호스트라면?</strong>
+						<span>간편하게 하숙 정보를 등록하고 관리해보세요</span>
+					</S.HostTextBox>
+					<S.HostCardActions>
+						<S.HostCTAButton onClick={() => navigate("/setting/host")}>
+							하숙집 설정하기
+						</S.HostCTAButton>
+						<S.NeverShowButton onClick={handleNeverShowAgain}>
+							다시 보지 않기
+						</S.NeverShowButton>
+					</S.HostCardActions>
+				</S.HostCard>
+			)}
 		</S.NavigateCon>
 	)
 }
