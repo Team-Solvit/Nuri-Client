@@ -56,10 +56,15 @@ export default function MessageSideBar() {
 	}, [message?.contents, refetch]);
 	
 	useEffect(() => {
-		if (data?.getRooms && data.getRooms.length < size) {
-			setIsDone(true);
+		if (data?.getRooms) {
+			// 가져온 데이터가 size보다 작으면 더 이상 불러올 데이터 없음
+			if (data.getRooms.length < size) {
+				setIsDone(true);
+			} else {
+				setIsDone(false);
+			}
 		}
-	}, [data?.getRooms]);
+	}, [data?.getRooms, page]);
 	
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
 	
