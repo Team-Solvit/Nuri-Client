@@ -116,6 +116,10 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
 
             if (result) {
                 alertStore.success('게시물이 성공적으로 생성되었습니다!');
+                // 홈 화면의 게시물 목록 캐시 갱신
+                await apolloClient.refetchQueries({
+                    include: ['GetPostList'], // GET_POST_LIST 쿼리 이름
+                });
                 onClose();
             } else {
                 alertStore.error('게시물 생성에 실패했습니다.');

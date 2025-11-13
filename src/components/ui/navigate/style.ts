@@ -9,6 +9,7 @@ export const NavigateCon = styled.div`
   align-items: center;
   width: 100%;
   height: 100%;
+  position: relative;
 `
 
 export const HostCard = styled.div`
@@ -22,6 +23,64 @@ export const HostCard = styled.div`
   border-radius: ${radius.md};
   border: 1px solid ${colors.line};
   background: linear-gradient(0deg, rgba(255,91,91,0.08) 0%, rgba(255,91,91,0.02) 100%);
+  
+  ${mq.mobile} {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 2rem);
+    max-width: 400px;
+    z-index: ${zIndex.overlay + 1};
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+background: linear-gradient(to bottom, rgba(255,91,91,0.00) 0%, rgba(255,91,91,0.15) 100%), ${colors.background};    animation: slideUp 0.3s ease-out;
+    
+    @keyframes slideUp {
+      from {
+        transform: translate(-50%, 100%);
+        opacity: 0;
+      }
+      to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+      }
+    }
+  }
+`;
+
+export const HostCardHeader = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+`;
+
+export const CloseButton = styled.button`
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: ${colors.gray};
+  cursor: pointer;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  display: none;
+  &:hover {
+    color: ${colors.text};
+  }
+  
+  ${mq.mobile} {
+    display: flex;
+  }
+`;
+
+export const HostCardActions = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
 `;
 
 export const HostTextBox = styled.div`
@@ -42,6 +101,7 @@ export const HostTextBox = styled.div`
 export const HostCTAButton = styled.button`
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 10px 12px;
   background-color: ${colors.primary};
@@ -52,9 +112,36 @@ export const HostCTAButton = styled.button`
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.2s ease;
+  width: 100%;
 
   &:hover {
     opacity: 0.9;
+  }
+`;
+
+export const NeverShowButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background-color: transparent;
+  color: ${colors.gray};
+  border: none;
+  border-radius: ${radius.sm};
+  font-size: ${fontSizes.Caption};
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  display: none;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: ${colors.text};
+  }
+  ${mq.mobile}{
+    display: block;
   }
 `;
 

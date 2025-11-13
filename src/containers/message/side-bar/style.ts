@@ -109,12 +109,13 @@ export const Profile = styled.div`
   }
 `
 
-export const Info = styled.div`
+export const Info = styled.div<{ hasUnread?: boolean }>`
   width: 180px;
   overflow: hidden;
-
+  
   h4, p {
     white-space: nowrap;
+    margin-bottom: 0.5rem;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -126,7 +127,8 @@ export const Info = styled.div`
 
   p {
     font-size: ${fontSizes.Caption};
-    color: ${colors.gray};
+    color: ${({ hasUnread }) => hasUnread ? colors.text : colors.gray};
+    font-weight: 400;
   }
 `;
 
@@ -140,4 +142,21 @@ export const CategoryList = styled.div`
 
 export const NoText = styled.p`
 padding: 0 1rem;
+`
+
+export const UnreadBadge = styled.span`
+  position: absolute;
+  top: 50%;
+  right: 1.5rem;
+  transform: translateY(-50%);
+  background-color: ${colors.primary};
+  color: ${colors.background};
+  font-size: ${fontSizes.Caption};
+  font-weight: 600;
+  border-radius: ${radius.full};
+  width: 0.5rem;
+  height: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `

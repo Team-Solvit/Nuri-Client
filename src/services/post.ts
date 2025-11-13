@@ -3,7 +3,7 @@ import { PostCreateInput, CreatePostResponse } from '@/types/post';
 
 export const PostQueries = {
 	GET_POST_LIST: gql`
-		 query MyQuery($start: Int!){
+		 query GetPostList($start: Int!){
 		  getPostList(start: $start) {
 		    postInfo {
 		      ... on SnsPost {
@@ -23,6 +23,7 @@ export const PostQueries = {
 		        }
 		        isGroup
 		        likeCount
+		        isLiked
 		      }
 		      ... on BoardingPost {
 			        room {
@@ -40,6 +41,7 @@ export const PostQueries = {
 						    description
 						    monthlyRent
 						    likeCount
+						    isLiked
 						    commentCount
 						    boardingRoomFile{
 						      fileId

@@ -1,7 +1,6 @@
 "use client"
 
 import * as S from "./style";
-import Image from "next/image";
 import { useMutation, useQuery } from "@apollo/client";
 import { AlertMutations, AlertQueries } from "@/services/alert";
 import { AlertType, RedirectType } from "@/types/alert";
@@ -72,9 +71,6 @@ export const AlertBox = ({ alert }: { alert: AlertType }) => {
 	
 	return (
 		<S.Alert isRead={alert.checked} onClick={handleMove}>
-			<S.Profile>
-				<Image src={"/post/default.png"} alt="profile" fill />
-			</S.Profile>
 			<S.Info>
 				<S.Title>{alert.content}</S.Title>
 				{formattedDate && <S.CreatedDate>{formattedDate}</S.CreatedDate>}

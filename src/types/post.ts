@@ -19,6 +19,7 @@ export type SnsPost = {
 	title: string;
 	commentCount: number;
 	likeCount: number;
+	isLiked?: boolean;
 	author: Author;
 	contents: string;
 	day: string;
@@ -63,6 +64,7 @@ export type BoardingRoom = {
 	name: string;
 	roomId: string;
 	likeCount: number;
+	isLiked?: boolean;
 	commentCount: number;
 };
 

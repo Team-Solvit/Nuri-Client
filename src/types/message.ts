@@ -73,9 +73,10 @@ export interface RoomCreateResponseDto {
 }
 
 export interface RoomReadResponseDto {
-	roomDto: RoomDto;
+	roomDto: RoomDto | null;
 	latestMessage?: string | null;
 	latestCreatedAt?: DateTime | null;
+	newMessageCount?: number | null;
 }
 
 export interface PageInfo {

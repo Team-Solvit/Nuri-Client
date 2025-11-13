@@ -35,7 +35,8 @@ export default function ChatConnect() {
 				setMessage(messageData);
 				fadeIn(
 					messageData.sender?.profile,
-					messageData.userId,
+					messageData.roomId,
+					messageData.sender.name,
 					messageData.contents,
 					messageData.sendAt
 				);

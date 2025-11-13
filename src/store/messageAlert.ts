@@ -8,10 +8,10 @@ interface MessageAlertState {
 	user_id: string;
 	content: string;
 	date: string;
-	chat_id: number;
+	chat_id: string;
 	none: () => void;
 	setIsLeavingAnimation: (isLeaving: boolean) => void;
-	fadeIn: (url: string | null, user_id: string, content: string, date: string) => void;
+	fadeIn: (url: string | null, chat_id:string, user_id: string, content: string, date: string) => void;
 }
 
 export const useMessageAlertStore = create<MessageAlertState>((set) => ({
@@ -21,7 +21,7 @@ export const useMessageAlertStore = create<MessageAlertState>((set) => ({
 	ima_url: null,
 	user_id: '',
 	content: '',
-	chat_id: 0,
+	chat_id: '',
 	date: '',
 	none: () => {
 		set({
@@ -31,6 +31,7 @@ export const useMessageAlertStore = create<MessageAlertState>((set) => ({
 			date: '',
 			content: '',
 			isVisible: false,
+			chat_id : '',
 		});
 	},
 	setIsLeavingAnimation: (isLeaving: boolean) => {
@@ -38,7 +39,7 @@ export const useMessageAlertStore = create<MessageAlertState>((set) => ({
 			isLeavingAnimation: isLeaving,
 		})
 	},
-	fadeIn: (url: string | null, user_id: string, content: string, date: string) => {
+	fadeIn: (url: string | null, chat_id:string, user_id: string, content: string, date: string) => {
 		// init 용 set
 		set({
 			isStatus: 'none',
@@ -48,6 +49,7 @@ export const useMessageAlertStore = create<MessageAlertState>((set) => ({
 			user_id: '',
 			content: '',
 			date: '',
+			chat_id : '',
 		});
 		// 실제 set
 		setTimeout(() => {
@@ -58,7 +60,8 @@ export const useMessageAlertStore = create<MessageAlertState>((set) => ({
 				content: content,
 				date: date,
 				isVisible: true,
-				isLeavingAnimation: true
+				isLeavingAnimation: true,
+				chat_id : chat_id
 			});
 		}, 0);
 	},

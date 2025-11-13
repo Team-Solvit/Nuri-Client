@@ -5,9 +5,10 @@ import {useEffect} from "react";
 import {createPortal} from "react-dom";
 import * as S from "./style";
 import Image from "next/image";
-import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import {imageCheck} from "@/utils/imageCheck";
 import {messageRequestCheck} from "@/utils/messageRequestCheck";
+import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
+import {useMessageHeaderStore} from "@/store/messageHeader";
 
 
 export default function MessageAlert() {
@@ -24,8 +25,17 @@ export default function MessageAlert() {
 	} = useMessageAlertStore();
 	
 	const navigate = useNavigationWithProgress();
-	const navigateClick = (url: string) => {
-		navigate(url)
+	const { setValues: setMessageHeader } = useMessageHeaderStore();
+	
+	const navigateClick = () => {
+		// 메시지 헤더 정보 설정
+		setMessageHeader({
+			chatProfile: ima_url || "",
+			chatRoomName: user_id,
+			memberCount: 2,
+		});
+		// 채팅방으로 이동
+		navigate(`/message/${chat_id}`);
 		closeAlert();
 	}
 	useEffect(() => {
@@ -58,7 +68,7 @@ export default function MessageAlert() {
 	return (
 		createPortal(
 			<S.Alert
-				onClick={() => navigateClick(`/message/${chat_id}`)}
+				onClick={navigateClick}
 				isLeaving={!isLeavingAnimation}
 			>
 				<S.Content>
