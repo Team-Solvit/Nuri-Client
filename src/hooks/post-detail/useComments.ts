@@ -48,7 +48,7 @@ export function useComments(postInfo: PostDetailUnion | null) {
       success("댓글이 작성되었습니다.");
       // 홈 화면의 캐시도 무효화하여 댓글 수 반영
       await client.refetchQueries({
-        include: ['MyQuery'], // GET_POST_LIST 쿼리 이름
+        include: ['GetPostList'], // GET_POST_LIST 쿼리 이름
       });
     } catch {
       error("댓글 작성에 실패했습니다.");
@@ -98,7 +98,7 @@ export function useComments(postInfo: PostDetailUnion | null) {
       success("댓글이 삭제되었습니다.");
       // 홈 화면의 캐시도 무효화하여 댓글 수 반영
       await client.refetchQueries({
-        include: ['MyQuery'], // GET_POST_LIST 쿼리 이름
+        include: ['GetPostList'], // GET_POST_LIST 쿼리 이름
       });
     } catch {
       error("댓글 삭제에 실패했습니다.");

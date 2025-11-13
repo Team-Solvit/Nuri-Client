@@ -39,8 +39,10 @@ export default function useSocketConnect() {
 		client.onConnect = () => {
 			addSubscription("user-message", client.subscribe(`/user/${userId}/messages`, (message) => {
 				const messageData: ChatMessageResponse = JSON.parse(message.body);
+				console.log("Received message:", messageData);
 				fadeIn(
 					messageData?.sender?.profile,
+					messageData?.roomId,
 					messageData.sender.name,
 					messageData.contents,
 					messageData.sendAt
@@ -112,7 +114,8 @@ export default function useSocketConnect() {
 							setMessage(msgData);
 							fadeIn(
 								msgData.sender?.profile,
-								msgData.userId,
+								msgData?.roomId,
+								msgData.sender.name,
 								msgData.contents,
 								msgData.sendAt
 							);

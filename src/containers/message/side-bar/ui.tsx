@@ -40,15 +40,14 @@ export default function MessageSideBar() {
 	const { message } = useMessageReflectStore()
 	
 	// URL이 변경될 때마다 메시지 목록 refetch
-	const didMountRef = useRef(false);
+	const prevPathRef = useRef<string | null>(null);
 
-  useEffect(() => {
-    if (!didMountRef.current) {
-      didMountRef.current = true;
-      return;
-    }
-    refetch();
-  }, [pathname, refetch]);
+	useEffect(() => {
+		if (prevPathRef.current !== null && prevPathRef.current !== pathname) {
+			refetch();
+		}
+		prevPathRef.current = pathname;
+	}, [pathname, refetch]);
 
 	useEffect(() => {
 		if (message) {

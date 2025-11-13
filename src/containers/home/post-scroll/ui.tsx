@@ -6,7 +6,7 @@ import Square from "@/components/ui/button/square";
 import Heart from "@/assets/post/heart.svg";
 import Comment from "@/assets/post/comment.svg";
 import Arrow from "@/assets/post/arrow-right.svg";
-import {useState, useRef, useCallback, useEffect} from "react";
+import {useState, useRef, useCallback} from "react";
 import {useQuery, useMutation} from "@apollo/client";
 import {PostQueries} from "@/services/post";
 import type {GetPostListResponse, GetPostListVariables} from "@/types/post";
@@ -29,11 +29,14 @@ export default function PostScroll() {
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
 	
 	const [page, setPage] = useState(0);
-	const { data: postData, loading, fetchMore, refetch } = useQuery<GetPostListResponse, GetPostListVariables>(
+	const { data: postData, loading, fetchMore } = useQuery<GetPostListResponse, GetPostListVariables>(
 		PostQueries.GET_POST_LIST,
 		{
 			variables: { start: 0 },
 			notifyOnNetworkStatusChange: true,
+			fetchPolicy: "cache-first",
+			nextFetchPolicy: "cache-first",
+			pollInterval: 20000,
 		}
 	);
 	

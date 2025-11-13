@@ -20,6 +20,7 @@ import { useMessageAlertStore } from "@/store/messageAlert";
 import { useMessageHeaderStore } from "@/store/messageHeader";
 import { imageCheck } from "@/utils/imageCheck";
 import { usePermissionGuard } from "@/hooks/usePermissionGuard";
+import { ms } from 'date-fns/locale';
 
 interface User {
 	userId: string;
@@ -187,7 +188,8 @@ export default function AdditionRoom({ isAddition, setIsAddition, iconRef, type,
 							setMessage(msgData);
 							fadeIn(
 								msgData.sender?.profile,
-								msgData.userId,
+								msgData?.roomId,
+								msgData.sender?.name,
 								msgData.contents,
 								msgData.sendAt
 							);

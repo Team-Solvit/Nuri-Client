@@ -70,7 +70,7 @@ export function usePostDetail(id: string) {
       await PostDetailService.toggleLike(client, postInfo, previousIsLiked);
       // 홈 화면의 캐시도 무효화하여 최신 데이터 반영
       await client.refetchQueries({
-        include: ['MyQuery'], // GET_POST_LIST 쿼리 이름
+        include: ['GetPostList'], // GET_POST_LIST 쿼리 이름
       });
     } catch {
       setIsLiked(previousIsLiked);
