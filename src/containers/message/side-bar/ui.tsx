@@ -4,7 +4,7 @@ import * as S from "./style"
 import Image from "next/image";
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import Search from "@/assets/icon/search.svg"
-import {useParams, useRouter} from "next/navigation";
+import {useParams, useRouter, usePathname} from "next/navigation";
 import NProgress from "nprogress";
 import Plus from "@/assets/icon/plus.svg"
 import AdditionRoom from "@/containers/message/additionRoom/ui";
@@ -29,14 +29,21 @@ export default function MessageSideBar() {
 	const setPage = useMessagePageStore((s) => s.setPage);
 	const roomDataList = useMessagePageStore((s) => s.roomDataList);
 	const setRoomDataList = useMessagePageStore((s) => s.setRoomDataList);
+	const pathname = usePathname();
 
 	const { data, loading, fetchMore, refetch } = useQuery(MessageQueries.GET_ROOMS_CHAT_LIST, {
 		variables: { page, size },
 		fetchPolicy: "no-cache",
 		nextFetchPolicy: "no-cache",
+		notifyOnNetworkStatusChange: true,
 	});
 	
 	const { message } = useMessageReflectStore()
+	
+	// URL이 변경될 때마다 메시지 목록 refetch
+	useEffect(() => {
+		refetch();
+	}, [pathname, refetch]);
 	
 	useEffect(() => {
 		if (message) {
@@ -321,12 +328,16 @@ export default function MessageSideBar() {
 								<S.Profile>
 									<Image src={imageCheck(profile || "")} alt={"profile"} fill/>
 								</S.Profile>
-								<S.Info>
+								<S.Info hasUnread={!!room?.newMessageCount}>
 									<h4>
 										{name}
 									</h4>
 									<p>{getLatestMessageDisplay(room?.latestMessage ?? "")}</p>
 								</S.Info>
+								{/* 읽지 않은 메시지가 있을 때만 빨간 동그라미 표시 */}
+								{Number(room?.newMessageCount) > 0 && !isActive && (
+									<S.UnreadBadge />
+								)}
 							</S.ChatBox>
 						)
 					});
