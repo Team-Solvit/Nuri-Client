@@ -21,6 +21,7 @@ import { useAlertStore } from '@/store/alert';
 import ProfileSkeleton from '@/components/ui/skeleton/ProfileSkeleton'
 import { useLoginModalStore } from '@/store/loginModal';
 import {imageCheck} from "@/utils/imageCheck";
+import { useMoveChatRoom } from '@/hooks/useMoveChatRoom';
 
 
 export default function UserProfilePage() {
@@ -31,6 +32,7 @@ export default function UserProfilePage() {
     const { userId: currentUserId, id: currentId } = useUserStore(s => s);
     const { error: showError } = useAlertStore();
     const { open: openLoginModal } = useLoginModalStore();
+    const { moveChatRoom } = useMoveChatRoom();
 
     const [selected, setSelected] = useState(1);
     const [showFollowerModal, setShowFollowerModal] = useState(false);
@@ -87,7 +89,7 @@ export default function UserProfilePage() {
         }
     );
 
-    const {  } = useQuery<HostBoardingRoomsResponse>(
+    const { data: boardingRoomsData, loading: boardingRoomsLoading } = useQuery<HostBoardingRoomsResponse>(
         ProfileGQL.QUERIES.GET_HOST_BOARDING_ROOMS,
         {
             variables: {
@@ -142,6 +144,10 @@ export default function UserProfilePage() {
     }, [isHost, selected]);
 
     const handleFollowToggle = async () => {
+        if (!currentId) {
+            openLoginModal();
+            return;
+        }
         if (isFollowLoading) return;
         setIsFollowLoading(true);
 
@@ -274,7 +280,7 @@ export default function UserProfilePage() {
 		
 		const convertToPostItem = (post: UserPost) => ({
 			postId: post.postId,
-			id: Number.parseInt(post.postId, 10) || 0, // 내부용 보조 id(필요 시)
+			id: Number.parseInt(post.postId, 10) || 0,
 			user: userId,
 			title: '게시물',
 			region: '지역',
@@ -362,15 +368,19 @@ export default function UserProfilePage() {
         router.push(path)
     }
 
-    if (loading) {
-        return <ProfileSkeleton />;
+    const handleMessageClick = () => {
+        if (!currentId) {
+            openLoginModal();
+            return;
+        }
+        moveChatRoom({ 
+            userId: userId, 
+            thumbnail: profile.profile 
+        });
     }
 
-    // 로그인 안 된 상태에서 접근 시
-    if (!currentId && !loading) {
-        openLoginModal();
-        router.push('/');
-        return null;
+    if (loading) {
+        return <ProfileSkeleton />;
     }
 
     return (
@@ -436,7 +446,7 @@ export default function UserProfilePage() {
                                         <Square
                                             text="메시지"
                                             status={true}
-                                            onClick={() => handleBtnClick(`/message/${userId}`)}
+                                            onClick={handleMessageClick}
                                             width="120px"
                                         />
                                     </>
@@ -474,7 +484,9 @@ export default function UserProfilePage() {
             <S.PostList>
                 {selected === 1 && (
                     <S.List1 style={{ minHeight: '400px' }}>
-                        {allBoardingRooms.length === 0 ? (
+                        {boardingRoomsLoading ? (
+                            <div style={{ padding: '20px' }}>하숙집을 불러오는 중...</div>
+                        ) : allBoardingRooms.length === 0 ? (
                             <div style={{ padding: '20px' }}>하숙집이 없습니다.</div>
                         ) : (
                             allBoardingRooms.map(room => (

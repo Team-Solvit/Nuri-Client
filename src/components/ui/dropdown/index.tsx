@@ -4,6 +4,7 @@ import * as S from './style';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import Square from '../button/square';
+import { useAlertStore } from '@/store/alert';
 
 interface DropdownProps {
     text: string;
@@ -16,6 +17,7 @@ interface DropdownProps {
 }
 
 export default function Dropdown({ text, list, isOpen, onOpen, onClose, onSelect, showRadius }: DropdownProps) {
+    const { error } = useAlertStore();
     const [selected, setSelected] = useState<string>(text);
     const [tempSelected, setTempSelected] = useState<string>(text);
     const [radius, setRadius] = useState<string>('');
@@ -42,8 +44,19 @@ export default function Dropdown({ text, list, isOpen, onOpen, onClose, onSelect
         if (isOpen) {
             onClose();
         } else {
-            setTempSelected(selected);
-            setRadius('');
+            if (selected !== text && showRadius) {
+                const match = selected.match(/^(.+?)\s*\((\d+)m\)$/);
+                if (match) {
+                    setTempSelected(match[1]);
+                    setRadius(match[2]);
+                } else {
+                    setTempSelected(selected);
+                    setRadius('');
+                }
+            } else {
+                setTempSelected(selected);
+                setRadius('');
+            }
             onOpen();
         }
     };
@@ -54,12 +67,18 @@ export default function Dropdown({ text, list, isOpen, onOpen, onClose, onSelect
 
     const handleComplete = () => {
         if (showRadius) {
-            if (!radius.trim()) {
-                alert('반경을 입력해주세요.');
+            if (radius.trim() && tempSelected === text) {
+                error(`${text}를 선택해주세요.`);
                 return;
             }
-            if (isNaN(Number(radius)) || Number(radius) <= 0) {
-                alert('올바른 반경 값을 입력해주세요.');
+            
+            if (tempSelected !== text && !radius.trim()) {
+                error('반경을 입력해주세요.');
+                return;
+            }
+            
+            if (radius.trim() && (isNaN(Number(radius)) || Number(radius) <= 0)) {
+                error('올바른 반경 값을 입력해주세요.');
                 return;
             }
         }
@@ -76,8 +95,17 @@ export default function Dropdown({ text, list, isOpen, onOpen, onClose, onSelect
 
 
     const handleCancel = () => {
-        setTempSelected(selected);
-        setRadius('');
+        if (selected !== text) {
+            setSelected(text);
+            setTempSelected(text);
+            setRadius('');
+            if (onSelect) {
+                onSelect(text, '');
+            }
+        } else {
+            setTempSelected(text);
+            setRadius('');
+        }
         onClose();
     };
 

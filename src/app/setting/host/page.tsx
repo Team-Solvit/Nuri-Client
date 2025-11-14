@@ -121,12 +121,17 @@ export default function Host() {
 
     const savedPhoneVerified = localStorage.getItem('hostPhoneVerified');
     const savedAt = Number(localStorage.getItem('hostPhoneVerifiedAt') || 0);
+    const VERIFICATION_TTL = 30 * 24 * 60 * 60 * 1000; // 30일
+    const isValid = savedAt > 0 && (Date.now() - savedAt < VERIFICATION_TTL) && savedPhoneVerified === 'true';
 
-    const isFresh = Date.now() - savedAt < 1000 * 60 * 30; // 30분 TTL
-    if (savedPhoneVerified === 'true' && isFresh) {
+    if (isValid) {
       setIsPhoneVerified(true);
+      setVerifiedPhoneNumber(phoneNumber || '인증 완료');
+    } else if (savedAt > 0) {
+      localStorage.removeItem('hostPhoneVerified');
+      localStorage.removeItem('hostPhoneVerifiedAt');
     }
-  }, [role, phoneNumber])
+  }, [role, phoneNumber]);
 
   useEffect(() => {
     const savedHostSettingCompleted = localStorage.getItem('hostSettingCompleted');
@@ -146,14 +151,15 @@ export default function Host() {
         console.error('Error clearing client state on logout:', e);
       }
       clear();
-	    try {
-				localStorage.removeItem('nuri-user');
-				localStorage.removeItem('hostPhoneVerified');
-				localStorage.removeItem('hostPhoneNumber');
-				localStorage.removeItem('hostSettingCompleted');
-			}
+      try {
+        localStorage.removeItem('nuri-user');
+        localStorage.removeItem('hostPhoneVerified');
+        localStorage.removeItem('hostPhoneVerifiedAt');
+        localStorage.removeItem('hostPhoneNumber');
+        localStorage.removeItem('hostSettingCompleted');
+      }
       catch (e) {
-	      console.error(e)
+        console.error(e)
       }
       success('로그아웃되었습니다.');
       router.push('/');
@@ -162,7 +168,7 @@ export default function Host() {
       showError('로그아웃 중 오류가 발생했습니다.');
     }
     finally {
-	    setIsLoggingOut(false);
+      setIsLoggingOut(false);
       setShowLogoutModal(false);
       try { await apolloClient.clearStore(); } catch { }
     }
@@ -216,12 +222,12 @@ export default function Host() {
         gender: formData.gender,
         mealProvided: formData.mealProvided,
         introduce: formData.introduce,
-	      callNumber:
-		      phoneNumber && /^\d{10,11}$/.test(phoneNumber)
-			      ? phoneNumber
-			      : verifiedPhoneNumber && /^\d{10,11}$/.test(verifiedPhoneNumber)
-			      ? verifiedPhoneNumber
-			      : '',
+        callNumber:
+          phoneNumber && /^\d{10,11}$/.test(phoneNumber)
+            ? phoneNumber
+            : verifiedPhoneNumber && /^\d{10,11}$/.test(verifiedPhoneNumber)
+              ? verifiedPhoneNumber
+              : '',
       };
 
       const result = await HostService.createBoardingHouse(apolloClient, requestDto);
@@ -397,9 +403,6 @@ export default function Host() {
       />}
       {showLeaveModal && (
         <Leave
-          onLeave={() => {
-            setShowLeaveModal(false)
-          }}
           onClose={() => setShowLeaveModal(false)}
         />
       )}

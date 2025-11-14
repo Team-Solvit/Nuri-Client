@@ -160,7 +160,7 @@ export default function MessageHeaderUI() {
 			<S.BackButton onClick={() => navigate('/message')}>
 				<Image src={"/icons/arrow.svg"} style={{ transform: "rotate(180deg)" }} alt="back" width={24} height={24} />
 			</S.BackButton>
-			<S.ProfileBox>
+			<S.ProfileBox onClick={()=>handleMemberClick(chatRoomName)}>
 				<S.Profile>
 					<Image src={imageCheck(chatProfile || "") || "/post/default.png"} alt="message" fill priority />
 				</S.Profile>

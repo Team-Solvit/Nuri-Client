@@ -11,7 +11,7 @@ interface SelectItemProps {
     isOpen: boolean;
     onOpen: () => void;
     onClose: () => void;
-    onChangeRange?: (values: [number, number]) => void;
+    onChangeRange?: (values: [number, number] | null) => void;
 }
 
 export default function SelectItem({ text, isOpen, onOpen, onClose, onChangeRange }: SelectItemProps) {
@@ -37,7 +37,19 @@ export default function SelectItem({ text, isOpen, onOpen, onClose, onChangeRang
 
     const toggleDropdown = (e: React.MouseEvent) => {
         e.stopPropagation();
-        isOpen ? onClose() : onOpen();
+        if (isOpen) {
+            onClose();
+        } else {
+            if (selected !== text) {
+                const match = selected.match(/^(.+?)\s*~\s*(.+?)(?:원|개월)$/);
+                if (match) {
+                    const min = parseNumber(match[1]);
+                    const max = parseNumber(match[2]);
+                    setValues([min, max]);
+                }
+            }
+            onOpen();
+        }
     };
 
     const STEP = text === '가격' ? 10000 : 1;
@@ -163,7 +175,16 @@ export default function SelectItem({ text, isOpen, onOpen, onClose, onChangeRang
                         <Square
                             text="취소"
                             status={false}
-                            onClick={onClose}
+                            onClick={() => {
+                                if (selected !== text) {
+                                    setSelected(text);
+                                    setValues([MIN, MAX]);
+                                    if (onChangeRange) {
+                                        onChangeRange(null);
+                                    }
+                                }
+                                onClose();
+                            }}
                             width='100px'
                         />
                         <Square

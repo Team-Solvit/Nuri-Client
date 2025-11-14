@@ -7,7 +7,7 @@ import Heart from "@/assets/post/heart.svg";
 import Comment from "@/assets/post/comment.svg";
 import Arrow from "@/assets/post/arrow-right.svg";
 import {useState, useRef, useCallback} from "react";
-import {useQuery} from "@apollo/client";
+import {useQuery, useMutation} from "@apollo/client";
 import {PostQueries} from "@/services/post";
 import type {GetPostListResponse, GetPostListVariables} from "@/types/post";
 import {useLoadingEffect} from "@/hooks/useLoading";
@@ -18,6 +18,7 @@ import PostScrollSkeleton from "@/components/ui/skeleton/PostScrollSkeleton";
 import {usePermissionGuard} from "@/hooks/usePermissionGuard";
 import { useMoveChatRoom } from "@/hooks/useMoveChatRoom";
 import { useUserStore } from "@/store/user";
+import { PostDetailGQL } from "@/services/postDetail";
 
 
 export default function PostScroll() {
@@ -32,7 +33,10 @@ export default function PostScroll() {
 		PostQueries.GET_POST_LIST,
 		{
 			variables: { start: 0 },
-			notifyOnNetworkStatusChange: true
+			notifyOnNetworkStatusChange: true,
+			fetchPolicy: "cache-first",
+			nextFetchPolicy: "cache-first",
+			pollInterval: 20000,
 		}
 	);
 	
@@ -87,6 +91,68 @@ export default function PostScroll() {
 	
 	const { moveChatRoom } = useMoveChatRoom();
 	
+	const [likePost] = useMutation(PostDetailGQL.MUTATIONS.LIKE_POST, {
+		update(cache, { data }) {
+			// mutation 성공 시 캐시 업데이트는 자동으로 처리됨
+		}
+	});
+	const [unlikePost] = useMutation(PostDetailGQL.MUTATIONS.UNLIKE_POST, {
+		update(cache, { data }) {
+			// mutation 성공 시 캐시 업데이트는 자동으로 처리됨
+		}
+	});
+	const [likeRoom] = useMutation(PostDetailGQL.MUTATIONS.LIKE_ROOM, {
+		update(cache, { data }) {
+			// mutation 성공 시 캐시 업데이트는 자동으로 처리됨
+		}
+	});
+	const [unlikeRoom] = useMutation(PostDetailGQL.MUTATIONS.UNLIKE_ROOM, {
+		update(cache, { data }) {
+			// mutation 성공 시 캐시 업데이트는 자동으로 처리됨
+		}
+	});
+	
+	// 낙관적 UI를 위한 로컬 상태
+	const [optimisticLikes, setOptimisticLikes] = useState<Record<string, { isLiked: boolean; likeCount: number }>>({});
+	
+	const handleLikeToggle = async (postId: string, currentIsLiked: boolean, isRoom: boolean, currentLikeCount: number) => {
+		// 낙관적 UI 업데이트
+		setOptimisticLikes(prev => ({
+			...prev,
+			[postId]: {
+				isLiked: !currentIsLiked,
+				likeCount: currentIsLiked ? currentLikeCount - 1 : currentLikeCount + 1
+			}
+		}));
+		
+		try {
+			if (isRoom) {
+				if (currentIsLiked) {
+					await unlikeRoom({ variables: { roomId: postId } });
+				} else {
+					await likeRoom({ variables: { roomId: postId } });
+				}
+			} else {
+				if (currentIsLiked) {
+					await unlikePost({ variables: { postId } });
+				} else {
+					await likePost({ variables: { postId } });
+				}
+			}
+		} catch (err) {
+			console.error('좋아요 처리 실패:', err);
+			error('좋아요 처리 중 오류가 발생했습니다.');
+			// 실패 시 롤백
+			setOptimisticLikes(prev => ({
+				...prev,
+				[postId]: {
+					isLiked: currentIsLiked,
+					likeCount: currentLikeCount
+				}
+			}));
+		}
+	};
+	
 	const handleMouseEnter = (id: number) => setHoverIndex(id);
 	const handleMouseLeave = () => setHoverIndex(null);
 	
@@ -128,6 +194,8 @@ export default function PostScroll() {
 				let user: { userId: string; thumbnail: string } | null = null;
 				let commentCount: number | null = null;
 				let likeCount: number | null = null;
+				let isLiked: boolean = false;
+				let isRoom: boolean = false;
 				
 				if (postItem.__typename === "SnsPost") {
 					id = postItem.postId;
@@ -135,21 +203,30 @@ export default function PostScroll() {
 					desc = postItem.contents;
 					commentCount = postItem.commentCount;
 					likeCount = postItem.likeCount;
+					isLiked = postItem.isLiked ?? false;
 					thumbnail = postItem.files.map(f => f.url);
 					price = null;
 					date = postItem.day;
 					user = { userId: postItem.author.userId, thumbnail: postItem.author.profile ?? "" };
+					isRoom = false;
 				} else if (postItem.__typename === "BoardingPost") {
 					id = postItem.room.roomId;
 					title = postItem.room.name;
 					commentCount = postItem.room.commentCount;
 					likeCount = postItem.room.likeCount;
+					isLiked = postItem.room.isLiked ?? false;
 					desc = postItem.room.description || null;
 					thumbnail = postItem.room.boardingRoomFile.map(f => f.url);
 					price = postItem.room.monthlyRent?.toLocaleString() || null;
 					date = postItem.room.day || null;
 					user = { userId: postItem.room.boardingHouse.host.user.userId, thumbnail: postItem.room.boardingHouse.host.user.profile ?? "" };
+					isRoom = true;
 				}
+				
+				// 낙관적 UI 적용
+				const optimisticState = id ? optimisticLikes[id] : null;
+				const displayIsLiked = optimisticState ? optimisticState.isLiked : isLiked;
+				const displayLikeCount = optimisticState ? optimisticState.likeCount : likeCount;
 				
 				const currentIndex = imageIndexMap[index] || 0;
 				const profileSrc = !user?.thumbnail
@@ -252,9 +329,43 @@ export default function PostScroll() {
 						<S.Info onClick={() => navigateClick(`/post/${id}`)}>
 							<S.PostInfo>
 								<S.Interactive>
-									<S.Inter>
-										<Image src={Heart} alt="like" width={28} height={28} />
-										<p>{likeCount}</p>
+									<S.Inter
+										onClick={(e) => {
+											e.stopPropagation();
+											if (id && likeCount !== null) {
+												withPermission(() => handleLikeToggle(id, displayIsLiked, isRoom, displayLikeCount ?? 0));
+											}
+										}}
+										style={{ 
+											cursor: 'pointer',
+											transition: 'transform 0.2s ease',
+										}}
+										onMouseDown={(e) => {
+											(e.currentTarget as HTMLElement).style.transform = 'scale(0.9)';
+										}}
+										onMouseUp={(e) => {
+											(e.currentTarget as HTMLElement).style.transform = 'scale(1)';
+										}}
+										onMouseLeave={(e) => {
+											(e.currentTarget as HTMLElement).style.transform = 'scale(1)';
+										}}
+									>
+										<Image 
+											src={Heart} 
+											alt="like" 
+											width={28} 
+											height={28}
+											style={{ 
+												filter: displayIsLiked 
+													? 'invert(27%) sepia(91%) saturate(6490%) hue-rotate(343deg) brightness(98%) contrast(94%)' 
+													: 'none',
+												transition: 'filter 0.3s ease, transform 0.3s ease',
+												transform: displayIsLiked ? 'scale(1.1)' : 'scale(1)',
+											}}
+										/>
+										<p style={{ transition: 'color 0.3s ease', color: displayIsLiked ? '#ff385c' : 'inherit' }}>
+											{displayLikeCount}
+										</p>
 									</S.Inter>
 									<S.Inter>
 										<Image src={Comment} alt="comment" width={24} height={24} />

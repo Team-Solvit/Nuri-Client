@@ -6,12 +6,21 @@ import { useState, useEffect } from 'react';
 import SettingNav from '@/components/ui/settingNav';
 import Logout from '@/components/ui/logout';
 import Leave from '../leave';
+import { useUserStore } from '@/store/user';
+import { useAlertStore } from '@/store/alert';
+import { useRouter } from 'next/navigation';
+import { AuthService } from '@/services/auth';
+import { useApolloClient } from '@apollo/client';
 
 export default function SettingHeader() {
     const [isNavOpen, setIsNavOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
     const [isLeaveModalOpen, setLeaveModalOpen] = useState(false);
+    const { clear } = useUserStore();
+    const { success, error: showError } = useAlertStore();
+    const router = useRouter();
+    const client = useApolloClient();
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 430);
@@ -19,6 +28,32 @@ export default function SettingHeader() {
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    const handleLogout = async () => {
+        try {
+            await AuthService.logout(client);
+            clear();
+            try {
+                localStorage.removeItem('nuri-user');
+                localStorage.removeItem('hostPhoneVerified');
+                localStorage.removeItem('hostPhoneVerifiedAt');
+                localStorage.removeItem('hostPhoneNumber');
+                localStorage.removeItem('hostSettingCompleted');
+            } catch (e) {
+                console.error('localStorage 제거 실패:', e);
+            }
+            setLogoutModalOpen(false);
+            // 상태 업데이트를 위한 짧은 지연 후 리다이렉트
+            setTimeout(() => {
+                success('로그아웃되었습니다.');
+                router.push('/');
+            }, 100);
+        } catch (err) {
+            console.error('로그아웃 실패:', err);
+            showError('로그아웃 중 오류가 발생했습니다.');
+            setLogoutModalOpen(false);
+        }
+    };
 
     return (
         <>
@@ -51,18 +86,13 @@ export default function SettingHeader() {
 
             {isLogoutModalOpen && (
                 <Logout
-                    onLogout={() => {
-                        setLogoutModalOpen(false);
-                    }}
+                    onLogout={handleLogout}
                     onClose={() => setLogoutModalOpen(false)}
                 />
             )}
 
             {isLeaveModalOpen && (
                 <Leave
-                    onLeave={() => {
-                        setLeaveModalOpen(false);
-                    }}
                     onClose={() => setLeaveModalOpen(false)}
                 />
             )}

@@ -2,7 +2,7 @@
 FROM node:20-slim AS deps
 WORKDIR /app
 RUN corepack enable
-COPY package.json yarn.lock ./
+COPY package.json yarn.lock .yarnrc.yml ./
 RUN yarn install --frozen-lockfile
 
 # builder
@@ -10,6 +10,7 @@ FROM node:20-slim AS builder
 WORKDIR /app
 ENV NODE_ENV=production
 RUN corepack enable
+COPY package.json yarn.lock .yarnrc.yml ./
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 # (빌드시에 env가 필요 없으면 이 줄은 생략)

@@ -52,6 +52,14 @@ export default function SettingNav({onLogoutClick, onLeaveClick, onClose}: Setti
 		window.addEventListener('resize', handleResize)
 		return () => window.removeEventListener('resize', handleResize)
 	}, [])
+	const filteredMenuSections = MENU_SECTIONS.map(section => {
+		if (section.title === '인증') {
+			if (role === 'HOST' || role === 'INTERNATIONAL_STUDENT') {
+				return { ...section, items: [] };
+			}
+		}
+		return section;
+	}).filter(section => section.items.length > 0);
 	
 	const navigate = useNavigationWithProgress();
 	const handleMenuClick = (path: string, label: string) => {
@@ -93,7 +101,7 @@ export default function SettingNav({onLogoutClick, onLeaveClick, onClose}: Setti
 						<S.Title>설정</S.Title>
 						<S.Button onClick={onClose}>X</S.Button>
 					</S.Top>
-					{MENU_SECTIONS.map(section => (
+					{filteredMenuSections.map(section => (
 						<div key={section.title}>
 							<S.SectionTitle>{section.title}</S.SectionTitle>
 							{section.items.map(({label, path, icon}) => {
@@ -120,7 +128,7 @@ export default function SettingNav({onLogoutClick, onLeaveClick, onClose}: Setti
 		<S.Container>
 			<S.Main>
 				<S.Title>설정</S.Title>
-				{MENU_SECTIONS.map(section => (
+				{filteredMenuSections.map(section => (
 					<div key={section.title}>
 						<S.SectionTitle>{section.title}</S.SectionTitle>
 						{section.items.map(({label, path, icon}) => {
