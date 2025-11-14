@@ -37,7 +37,7 @@ export default function useSocketConnect() {
 		};
 
 		client.onConnect = () => {
-			addSubscription("user-message", client.subscribe(`/user/${userId}/messages`, (message) => {
+			addSubscription("user-message", client.subscribe(`/user/${userId}/messages`, async (message) => {
 				const messageData: ChatMessageResponse = JSON.parse(message.body);
 				console.log("Received message:", messageData);
 				fadeIn(
@@ -52,7 +52,7 @@ export default function useSocketConnect() {
 				// 메시지 알림이 올 때마다 메시지 카운트 재요청
 				if (refetchMessageCount) {
 					try {
-						refetchMessageCount();
+						await refetchMessageCount();
 					} catch (e) {
 						console.error("Failed to refetch message count:", e);
 					}
