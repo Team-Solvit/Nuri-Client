@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useUserStore } from '@/store/user';
 import { useLoginModalStore } from '@/store/loginModal';
@@ -21,8 +21,18 @@ export default function AuthGuard() {
   const { userId } = useUserStore();
   const { open } = useLoginModalStore();
   const { error } = useAlertStore();
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    const unsub = useUserStore.persist.onFinishHydration(() => {
+      setHydrated(true);
+    });
+    return unsub;
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+
     const isProtectedPath = PROTECTED_PATHS.some(path => pathname?.startsWith(path));
 
     if (isProtectedPath && !userId) {
@@ -30,7 +40,7 @@ export default function AuthGuard() {
       open();
       router.replace('/');
     }
-  }, [pathname, userId, router, open, error]);
+  }, [hydrated, pathname, userId, router, open, error]);
 
   return null;
 }
