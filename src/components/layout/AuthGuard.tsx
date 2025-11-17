@@ -24,10 +24,18 @@ export default function AuthGuard() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const unsub = useUserStore.persist.onFinishHydration(() => {
+    setHydrated(useUserStore.persist.hasHydrated());
+    const unsubHydrate = useUserStore.persist.onHydrate(() => {
+      setHydrated(false);
+    });
+    const unsubFinish = useUserStore.persist.onFinishHydration(() => {
       setHydrated(true);
     });
-    return unsub;
+
+    return () => {
+      unsubHydrate();
+      unsubFinish();
+    };
   }, []);
 
   useEffect(() => {
