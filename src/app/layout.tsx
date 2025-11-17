@@ -45,16 +45,22 @@ export default async function RootLayout({ children, modal }: { children: React.
 				<MessageAlert />
 				<GlobalStyles />
 				<Providers>
-					<AuthBootstrap />
-					<AuthGuard />
-					<RoleGuard />
-				</EmotionRegistry>
-			</Providers>
-		<noscript>
-			<div style={{ padding: "1rem", textAlign: "center" }}>
-				이 서비스는 자바스크립트가 필요합니다. 브라우저 설정을 확인해주세요.
-			</div>
-		</noscript>
+					<EmotionRegistry>
+						<AuthBootstrap />
+						<AuthGuard />
+						<RoleGuard />
+						<ChatComponent />
+						<Loading />
+						<Header />
+						{children}
+						{modal}
+					</EmotionRegistry>
+				</Providers>
+				<noscript>
+					<div style={{ padding: "1rem", textAlign: "center" }}>
+						이 서비스는 자바스크립트가 필요합니다. 브라우저 설정을 확인해주세요.
+					</div>
+				</noscript>
 
 				{process.env.NEXT_PUBLIC_GA_ID && (
 					<GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
