@@ -245,6 +245,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
               editingImages={editingImages}
               newImages={newImages}
               uploading={uploading}
+              title={postInfo.__typename === 'SnsPost' ? postInfo.title : ''}
               displayDesc={displayDesc}
               onChangeContent={setEditingPostContent}
               onRemoveImage={removeImage}

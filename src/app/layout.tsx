@@ -1,13 +1,15 @@
-import type {Metadata} from "next";
-import {GlobalStyles} from '@/components/layout/globalStyle';
+import type { Metadata } from "next";
+import { GlobalStyles } from '@/components/layout/globalStyle';
 import Header from "@/components/ui/header";
 import TopLoadingBar from "@/components/layout/loadingbar";
 import React from "react";
-import {Providers} from "@/components/layout/provider";
+import { Providers } from "@/components/layout/provider";
 import ChatComponent from "@/components/layout/chatConnect";
 import Alert from "@/components/ui/alert";
 import MessageAlert from "@/components/ui/messageAlert";
 import AuthBootstrap from "@/components/layout/AuthBootstrap";
+import AuthGuard from "@/components/layout/AuthGuard";
+import RoleGuard from "@/components/layout/RoleGuard";
 import Loading from "@/components/ui/loading";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import EmotionRegistry from "@/components/layout/emotionRegistry";
@@ -22,36 +24,30 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children, modal }: { children: React.ReactNode, modal: React.ReactNode }) {
 	return (
 		<html lang="ko">
-		<head>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-			<meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-			<meta name="format-detection" content="telephone=no, address=no, email=no" />
-			<meta name="theme-color" content="#FF4C61" />
-			<meta name="robots" content="index, follow" />
-			<meta property="og:type" content="website" />
-			<meta property="og:title" content="NURI" />
-			<meta property="og:description" content="유학생을 위한 한국 문화 교류/적응 서비스" />
-			<meta property="og:image" content="https://solvit-nuri.com/og.png" />
-			<meta property="og:url" content="https://solvit-nuri.com/" />
-			<meta name="twitter:card" content="summary_large_image" />
-			<meta name="twitter:image" content="https://solvit-nuri.com/op.png" />
-			<meta name="google-site-verification" content="4mbr6batT4ll6nkqWnfo479cEFCpleGzuoT9jswmIwg" />
-		</head>
-		<body style={{ display: "flex" }}>
-		<TopLoadingBar />
-		<Alert />
-		<MessageAlert />
-		<GlobalStyles/>
-			<Providers>
-				<EmotionRegistry>
+			<head>
+				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+				<meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+				<meta name="format-detection" content="telephone=no, address=no, email=no" />
+				<meta name="theme-color" content="#FF4C61" />
+				<meta name="robots" content="index, follow" />
+				<meta property="og:type" content="website" />
+				<meta property="og:title" content="NURI" />
+				<meta property="og:description" content="유학생을 위한 한국 문화 교류/적응 서비스" />
+				<meta property="og:image" content="https://solvit-nuri.com/og.png" />
+				<meta property="og:url" content="https://solvit-nuri.com/" />
+				<meta name="twitter:card" content="summary_large_image" />
+				<meta name="twitter:image" content="https://solvit-nuri.com/op.png" />
+				<meta name="google-site-verification" content="4mbr6batT4ll6nkqWnfo479cEFCpleGzuoT9jswmIwg" />
+			</head>
+			<body style={{ display: "flex" }}>
+				<TopLoadingBar />
+				<Alert />
+				<MessageAlert />
+				<GlobalStyles />
+				<Providers>
 					<AuthBootstrap />
-					<ChatComponent />
-					<Loading />
-					<Header />
-					<main className="main-container">
-						{children}
-						{modal}
-					</main>
+					<AuthGuard />
+					<RoleGuard />
 				</EmotionRegistry>
 			</Providers>
 		<noscript>
@@ -60,10 +56,10 @@ export default async function RootLayout({ children, modal }: { children: React.
 			</div>
 		</noscript>
 
-		{process.env.NEXT_PUBLIC_GA_ID && (
-          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
-        )}
-		</body>
+				{process.env.NEXT_PUBLIC_GA_ID && (
+					<GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+				)}
+			</body>
 		</html>
 	);
 }

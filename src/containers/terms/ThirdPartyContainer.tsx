@@ -6,7 +6,7 @@ export default function ThirdPartyContainer() {
   return (
     <S.Page>
       <S.Title>개인정보 제3자 제공 동의</S.Title>
-      <S.Effective>시행일: 2025-09-11</S.Effective>
+      <S.Effective>시행일: 2025-11-16</S.Effective>
 
       <S.Section>
         <S.SectionTitle>제공받는 자</S.SectionTitle>
