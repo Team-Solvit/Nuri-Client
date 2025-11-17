@@ -31,7 +31,7 @@ export default function MessageSideBar() {
 	const pathname = usePathname();
 
 	const { data, fetchMore, refetch } = useQuery(MessageQueries.GET_ROOMS_CHAT_LIST, {
-		variables: { page, size },
+		variables: { page: 0, size },
 		fetchPolicy: "no-cache",
 		nextFetchPolicy: "no-cache",
 		notifyOnNetworkStatusChange: true,
@@ -57,10 +57,10 @@ export default function MessageSideBar() {
 	
 	useEffect(() => {
 		if (data?.getRooms) {
-			// 가져온 데이터가 size보다 작으면 더 이상 불러올 데이터 없음
+			// 데이터가 size보다 작으면 더 이상 불러올 데이터 없음
 			if (data.getRooms.length < size) {
 				setIsDone(true);
-			} else {
+			} else if (page > 0 && data.getRooms.length >= size) {
 				setIsDone(false);
 			}
 		}
@@ -86,7 +86,7 @@ export default function MessageSideBar() {
 	const [isAddition, setIsAddition] = useState(false);
 	const [isDone, setIsDone] = useState(false);
 	
-	const {error} = useAlertStore()
+	const {error, success} = useAlertStore()
 	const loadMore = async () => {
 		console.log("Loading more rooms, page:", page + 1);
 		if (isFetchingMore || isDone || isLoadingMore.current) {
@@ -125,9 +125,10 @@ export default function MessageSideBar() {
 			
 			if (!res.data || res.data?.getRooms?.length === 0) {
 				setIsDone(true);
-				error("더 이상 불러올 채팅방이 없습니다");
+				success("모든 채팅방을 불러왔습니다");
 			} else if (res.data.getRooms.length < size) {
 				setIsDone(true);
+				success("모든 채팅방을 불러왔습니다");
 			}
 		} catch (e) {
 			console.error("Failed to load more rooms:", e);

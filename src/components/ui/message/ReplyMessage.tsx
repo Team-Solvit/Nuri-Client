@@ -8,7 +8,7 @@ const ReplyBubbleWrapper = styled.div<{ type: 'sent' | 'received' }>`
   flex-direction: column;
   align-items: center;
   min-width: max-content;
-  max-width: 20rem;
+  max-width: 300px;
   margin-bottom: 0.25rem;
   justify-content: ${({type}) => type === 'sent' ? 'flex-end' : 'flex-start'};
   gap: 0.5rem;
@@ -44,8 +44,15 @@ const ReplyBubbleText = styled.div<{ type: 'sent' | 'received' }>`
   font-size: ${fontSizes.Body};
   color: ${colors.gray};
   font-weight: 300;
-	width: max-content;
-  word-break: break-all;
+  max-width: 250px;
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 `;
 const ReplyContentBox = styled.div<{ type: 'sent' | 'received' } >`
 	display: flex;
@@ -74,6 +81,9 @@ interface ReplyMessageProps {
 }
 
 const ReplyMessage: React.FC<ReplyMessageProps> = ({type, name, text, icon}) => {
+	// 300자 제한
+	const displayText = text.length > 300 ? `${text.slice(0, 300)}...` : text;
+	
 	return (
 		<ReplyBubbleWrapper type={type}>
 			<ReplyBox>
@@ -84,7 +94,7 @@ const ReplyMessage: React.FC<ReplyMessageProps> = ({type, name, text, icon}) => 
 			<ReplyContentBox type={type}>
 				{type === 'received' && <ReplyLine />}
 				<ReplyBubble type={type}>
-					<ReplyBubbleText type={type}>{text}</ReplyBubbleText>
+					<ReplyBubbleText type={type}>{displayText}</ReplyBubbleText>
 				</ReplyBubble>
 				{type === "sent" && <ReplyLine />}
 			</ReplyContentBox>

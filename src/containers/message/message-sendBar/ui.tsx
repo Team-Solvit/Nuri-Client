@@ -22,23 +22,45 @@ export default function MessageSendBar() {
 	
 	const {error} = useAlertStore();
 	const {upload, result, loading} = useFileUpload()
+	const {reply, clearReply} = useMessageReplyStore()
+	
 	useLoadingEffect(loading)
+	
+	// 컴포넌트 언마운트 시 답장 클리어
+	useEffect(() => {
+		return () => {
+			clearReply();
+		};
+	}, [clearReply]);
+	
 	// 이미지 전송 관련
 	const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const files = e.target.files;
 		if (!files || files.length === 0) return;
 		const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+		const maxFileSize = 10 * 1024 * 1024; // 10MB
 		
 		// 유효하지 않은 파일 필터링
 		const invalidFiles = Array.from(files).filter(file => !allowedTypes.includes(file.type));
 		if (invalidFiles.length > 0) {
 			error('이미지 파일은 jpg, jpeg, png 형식만 업로드할 수 있습니다.');
+			e.target.value = '';
 			return;
 		}
+		
+		// 파일 크기 검증
+		const oversizedFiles = Array.from(files).filter(file => file.size > maxFileSize);
+		if (oversizedFiles.length > 0) {
+			error('파일 크기는 10MB를 초과할 수 없습니다.');
+			e.target.value = '';
+			return;
+		}
+		
 		const imageFiles = Array.from(files).filter(file => allowedTypes.includes(file.type));
 		if (imageFiles.length === 0) return;
 		
 		await upload(imageFiles);
+		e.target.value = '';
 	};
 	
 	useEffect(() => {
@@ -93,9 +115,15 @@ export default function MessageSendBar() {
 	const {chatRoomName} = useMessageHeaderStore()
 	// 메시지 전송 버튼
 	
-	const {reply, clearReply} = useMessageReplyStore()
 	const handleSendMessage = () => {
 		if (!message.trim() || isSending) return;
+		
+		// 메시지 길이 검증 (1000자 제한)
+		if (message.length > 1000) {
+			error('메시지는 1000자를 초과할 수 없습니다.');
+			return;
+		}
+		
 		setIsSending(true)
 		const type = checkType(id as string);
 		if (Array.isArray(type)) {
@@ -118,6 +146,13 @@ export default function MessageSendBar() {
 		if (e.key === "Enter" && !e.shiftKey) {
 			e.preventDefault();
 			if (!message.trim() || isSending) return;
+			
+			// 메시지 길이 검증 (1000자 제한)
+			if (message.length > 1000) {
+				error('메시지는 1000자를 초과할 수 없습니다.');
+				return;
+			}
+			
 			setIsSending(true);
 			try{
 				const type = checkType(id as string);

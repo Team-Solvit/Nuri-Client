@@ -12,6 +12,7 @@ import AuthGuard from "@/components/layout/AuthGuard";
 import RoleGuard from "@/components/layout/RoleGuard";
 import Loading from "@/components/ui/loading";
 import { GoogleAnalytics } from '@next/third-parties/google';
+import EmotionRegistry from "@/components/layout/emotionRegistry";
 
 
 export const metadata: Metadata = {
@@ -47,19 +48,13 @@ export default async function RootLayout({ children, modal }: { children: React.
 					<AuthBootstrap />
 					<AuthGuard />
 					<RoleGuard />
-					<ChatComponent />
-					<Loading />
-					<Header />
-					<main className="main-container">
-						{children}
-						{modal}
-					</main>
-				</Providers>
-				<noscript>
-					<div style={{ padding: "1rem", textAlign: "center" }}>
-						이 서비스는 자바스크립트가 필요합니다. 브라우저 설정을 확인해주세요.
-					</div>
-				</noscript>
+				</EmotionRegistry>
+			</Providers>
+		<noscript>
+			<div style={{ padding: "1rem", textAlign: "center" }}>
+				이 서비스는 자바스크립트가 필요합니다. 브라우저 설정을 확인해주세요.
+			</div>
+		</noscript>
 
 				{process.env.NEXT_PUBLIC_GA_ID && (
 					<GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
