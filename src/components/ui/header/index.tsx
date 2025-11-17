@@ -30,11 +30,13 @@ export default function Header() {
 	const loginModal = useLoginModalStore();
 	
 	const [isMobile, setIsMobile] = useState(false);
+	const [isClient, setIsClient] = useState(false);
 	const [moreOpen, setMoreOpen] = useState(false);
 	const moreRef = useRef<HTMLDivElement | null>(null);
 	const moreBarRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
+		setIsClient(true);
 		const handleResize = () => setIsMobile(window.innerWidth <= 430);
 		handleResize();
 		window.addEventListener('resize', handleResize);
@@ -81,7 +83,7 @@ export default function Header() {
 	const getMenuItems = () => {
 		const filteredMenu = getFilteredMenuItems();
 		
-		if (!isMobile) {
+		if (!isClient || !isMobile) {
 			return { primaryItems: filteredMenu, extraItems: [] };
 		}
 
@@ -183,7 +185,7 @@ export default function Header() {
 				)}
 			</S.Menu>
 
-			{isMobile && extraItems.length > 0 && (
+			{isClient && isMobile && extraItems.length > 0 && (
 				<S.MoreBar open={moreOpen} ref={moreBarRef}>
 					{extraItems.map(({ label, path, icon }) => (
 						<S.MoreAction key={path} onClick={() => handleMenuClick(path)}>

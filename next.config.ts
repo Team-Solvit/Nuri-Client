@@ -30,6 +30,10 @@ const nextConfig: NextConfig = {
 				hostname: "k.kakaocdn.net",
 			},
 			{
+				protocol: "http",
+				hostname: "k.kakaocdn.net",
+			},
+			{
 				protocol: "https",
 				hostname: "p16-sign.tiktokcdn-us.com",
 			},

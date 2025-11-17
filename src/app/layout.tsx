@@ -10,6 +10,7 @@ import MessageAlert from "@/components/ui/messageAlert";
 import AuthBootstrap from "@/components/layout/AuthBootstrap";
 import Loading from "@/components/ui/loading";
 import { GoogleAnalytics } from '@next/third-parties/google';
+import EmotionRegistry from "@/components/layout/emotionRegistry";
 
 
 export const metadata: Metadata = {
@@ -41,16 +42,18 @@ export default async function RootLayout({ children, modal }: { children: React.
 		<Alert />
 		<MessageAlert />
 		<GlobalStyles/>
-		<Providers>
-			<AuthBootstrap />
-			<ChatComponent />
-			<Loading />
-			<Header />
-			<main className="main-container">
-				{children}
-				{modal}
-			</main>
-		</Providers>
+			<Providers>
+				<EmotionRegistry>
+					<AuthBootstrap />
+					<ChatComponent />
+					<Loading />
+					<Header />
+					<main className="main-container">
+						{children}
+						{modal}
+					</main>
+				</EmotionRegistry>
+			</Providers>
 		<noscript>
 			<div style={{ padding: "1rem", textAlign: "center" }}>
 				이 서비스는 자바스크립트가 필요합니다. 브라우저 설정을 확인해주세요.

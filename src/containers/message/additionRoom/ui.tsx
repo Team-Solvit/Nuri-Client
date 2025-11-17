@@ -372,6 +372,7 @@ export default function AdditionRoom({ isAddition, setIsAddition, iconRef, type,
 					{users?.map(user => {
 						const isSelected = selectedUsers.some(u => u.userId === user.userId);
 						const isMe = user.userId === id;
+						console.log(user, isMe, isSelected, imageCheck(user.profile))
 						if (isMe) return null
 						return (
 							<S.UserItem

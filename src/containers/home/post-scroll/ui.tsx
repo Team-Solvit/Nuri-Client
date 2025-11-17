@@ -45,7 +45,7 @@ export default function PostScroll() {
 	useLoadingEffect(isInitialLoading || isFetchingMore);
 	
 	const posts = postData?.getPostList;
-	const { error } = useAlertStore();
+	const { error, success } = useAlertStore();
   
 	const isCompleted= useRef<boolean>(false)
 	const loadMore = async () => {
@@ -68,7 +68,7 @@ export default function PostScroll() {
 			});
 			const totalCount = res.data?.getPostList?.length
 			if(totalCount < 1){
-				error("더 이상 게시물이 없습니다")
+				success("모든 게시물을 불러왔습니다")
 				isCompleted.current = true
 			}
 		} finally {
@@ -375,7 +375,7 @@ export default function PostScroll() {
 								{price && <p>₩ 월 / {price}</p>}
 							</S.PostInfo>
 							<S.PostName>{title}</S.PostName>
-							<S.PostDesc>{desc}</S.PostDesc>
+							<S.PostDesc>{desc && desc.length > 200 ? `${desc.slice(0, 200)}...` : desc}</S.PostDesc>
 						</S.Info>
 					</S.Post>
 				);

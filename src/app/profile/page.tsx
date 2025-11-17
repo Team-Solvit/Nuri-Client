@@ -17,6 +17,7 @@ import { useUserStore } from '@/store/user';
 import { useAlertStore } from '@/store/alert';
 import ProfileSkeleton from '@/components/ui/skeleton/ProfileSkeleton';
 import { useLoginModalStore } from '@/store/loginModal';
+import { imageCheck } from '@/utils/imageCheck';
 
 
 export default function MyProfilePage() {
@@ -285,7 +286,7 @@ export default function MyProfilePage() {
         <S.ProfileImage2 onClick={id ? fileInput : undefined} style={{ cursor: id ? 'pointer' : 'default' }}>
           {userId && imageUrl ? (
             <Image
-              src={imageUrl || '/profile/profile.svg'}
+              src={imageCheck(imageUrl) || '/profile/profile.svg'}
               alt="프로필"
               fill
               style={{ objectFit: 'cover', zIndex: 0 }}

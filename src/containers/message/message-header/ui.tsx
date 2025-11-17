@@ -122,6 +122,7 @@ export default function MessageHeaderUI() {
 	};
 
 	const handleMemberClick = (memberId: string) => {
+		console.log(memberId);
 		navigate(`/profile/${memberId}`);
 	};
 
@@ -160,8 +161,8 @@ export default function MessageHeaderUI() {
 			<S.BackButton onClick={() => navigate('/message')}>
 				<Image src={"/icons/arrow.svg"} style={{ transform: "rotate(180deg)" }} alt="back" width={24} height={24} />
 			</S.BackButton>
-			<S.ProfileBox onClick={()=>handleMemberClick(chatRoomName)}>
-				<S.Profile>
+			<S.ProfileBox>
+				<S.Profile onClick={()=>handleMemberClick(chatRoomName)}>
 					<Image src={imageCheck(chatProfile || "") || "/post/default.png"} alt="message" fill priority />
 				</S.Profile>
 				<div style={{ position: 'relative' }}>
@@ -182,7 +183,9 @@ export default function MessageHeaderUI() {
 								대화 참여자 <span>{memberIds.length}명</span>
 							</S.MemberListHeader>
 							<S.MemberList>
-								{memberIds.map((memberId: string, index: number) => (
+								{memberIds.map((memberId: string, index: number) => {
+									console.log('memberId:', memberId);
+									return(
 									<S.MemberItem
 										key={index}
 										onClick={() => handleMemberClick(memberId)}
@@ -192,51 +195,53 @@ export default function MessageHeaderUI() {
 											<S.MemberName>{memberId}</S.MemberName>
 										</S.MemberInfo>
 									</S.MemberItem>
-								))}
+								)
+								})}
 							</S.MemberList>
 						</S.MemberListContainer>
 					)}
 				</div>
 			</S.ProfileBox>
-			<S.EllipsisIconBox
-			>
-				<Image
-					ref={iconRef}
-					onClick={handleEllipsisClick}
-					src={EllipsisIcon}
-					fill
-					alt={"ellipsis-icon"}
-					priority
-				/>
-				{isMenuOpen && (
-					<FadeBox
-						onClose={() => setIsMenuOpen(false)}
-						onInvite={handleInvite}
-						onExit={handleExitClick}
+			{memberIds?.length > 2 && (
+				<S.EllipsisIconBox>
+					<Image
+						ref={iconRef}
+						onClick={handleEllipsisClick}
+						src={EllipsisIcon}
+						fill
+						alt={"ellipsis-icon"}
+						priority
 					/>
-				)}
-				<AdditionRoom
-					isAddition={isAddition}
-					setIsAddition={setIsAddition}
-					iconRef={iconRef as React.RefObject<HTMLImageElement
-					>}
-					type={"update"}
-					existingMembers={memberIds}
-					refetchMembers={refetch}
-				/>
-				{showExitConfirm && (
-					<StateModal close={cancelExit} isOpen={showExitConfirm}>
-						<S.ConfirmModalContent>
-							<h3>정말로 나가시겠습니까?</h3>
-							<p>대화방을 나가면 대화내용이 삭제됩니다.</p>
-							<S.ConfirmButtonGroup>
-								<Square text={"취소"} status={false} width={"100%"} onClick={cancelExit}/>
-								<Square text={"나가기"} status={true} width={'100%'} onClick={confirmExit} isLoading={isLoading}/>
-							</S.ConfirmButtonGroup>
-						</S.ConfirmModalContent>
-					</StateModal>
-				)}
-			</S.EllipsisIconBox>
+					{isMenuOpen && (
+						<FadeBox
+							onClose={() => setIsMenuOpen(false)}
+							onInvite={handleInvite}
+							onExit={handleExitClick}
+						/>
+					)}
+					<AdditionRoom
+						isAddition={isAddition}
+						setIsAddition={setIsAddition}
+						iconRef={iconRef as React.RefObject<HTMLImageElement
+						>}
+						type={"update"}
+						existingMembers={memberIds}
+						refetchMembers={refetch}
+					/>
+				</S.EllipsisIconBox>
+			)}
+			{showExitConfirm && (
+				<StateModal close={cancelExit} isOpen={showExitConfirm}>
+					<S.ConfirmModalContent>
+						<h3>정말로 나가시겠습니까?</h3>
+						<p>대화방을 나가면 대화내용이 삭제됩니다.</p>
+						<S.ConfirmButtonGroup>
+							<Square text={"취소"} status={false} width={"100%"} onClick={cancelExit}/>
+							<Square text={"나가기"} status={true} width={'100%'} onClick={confirmExit} isLoading={isLoading}/>
+						</S.ConfirmButtonGroup>
+					</S.ConfirmModalContent>
+				</StateModal>
+			)}
 		</S.MessageHeaderContainer>
 	);
 }
