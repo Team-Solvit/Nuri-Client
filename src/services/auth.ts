@@ -34,6 +34,7 @@ export const AuthGQL = {
           language
           name
           email
+          phoneNumber
           role
           profile
         }
@@ -53,6 +54,7 @@ export const AuthGQL = {
           language
           name
           email
+          phoneNumber
           role
           profile
         }
@@ -71,6 +73,7 @@ export const AuthGQL = {
             language
             name
             email
+            phoneNumber
             role
             profile
           }
