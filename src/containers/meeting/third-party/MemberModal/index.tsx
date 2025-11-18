@@ -7,6 +7,7 @@ import { useApollo } from "@/lib/apolloClient";
 import { GroupService } from "@/services/group";
 import type { GroupMember, GroupParticipationRequest } from "@/types/group";
 import { useAlertStore } from "@/store/alert";
+import { useUserStore } from "@/store/user";
 
 interface MemberModalProps {
   groupId?: string;
@@ -16,6 +17,7 @@ interface MemberModalProps {
 export default function MemberModal({ groupId, onDone }: MemberModalProps) {
   const client = useApollo();
   const { success, error } = useAlertStore();
+  const { userId: currentUserId } = useUserStore();
   const [members, setMembers] = useState<GroupMember[]>([]);
   const [requests, setRequests] = useState<GroupParticipationRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -174,7 +176,11 @@ export default function MemberModal({ groupId, onDone }: MemberModalProps) {
                     </S.Desc>
                   </S.InfoCol>
                 </div>
-                <S.ExpelBtn onClick={() => handleExpelClick(idx)}>추방</S.ExpelBtn>
+                {member.userId !== currentUserId ? (
+                  <S.ExpelBtn onClick={() => handleExpelClick(idx)}>추방</S.ExpelBtn>
+                ) : (
+                  <div style={{ width: '80px' }} />
+                )}
               </S.Card>
             ))}
           </div>
