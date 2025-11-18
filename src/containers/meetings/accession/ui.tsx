@@ -1,16 +1,19 @@
 import * as S from '@/styles/confirm'
 import Square from "@/components/ui/button/square";
 import { AccessionProps } from "@/containers/meetings/accession/type";
-import React from "react";
 import { useModalStore } from "@/store/modal";
 import { useMutation } from "@apollo/client";
 import { MeetingMutations } from "@/services/meeting";
 import { useLoadingEffect } from "@/hooks/useLoading";
 import { useAlertStore } from "@/store/alert";
 import { useIsEnteringMeetingStore } from "@/store/isEnteringMeeting";
+import { usePermissionGuard } from "@/hooks/usePermissionGuard";
+import { useUserStore } from "@/store/user";
 
 export default function Accession({ isAccession, setIsAccession, accessions }: AccessionProps) {
 	const { isEnteringMeeting, isSendRequest } = useIsEnteringMeetingStore()
+	const { role } = useUserStore()
+	const { withPermission } = usePermissionGuard()
 	const modalClose = () => {
 		setIsAccession(false)
 	}
@@ -27,6 +30,14 @@ export default function Accession({ isAccession, setIsAccession, accessions }: A
 	const [leaveMeeting] = useMutation(MeetingMutations.LEAVE_MEETING)
 	useLoadingEffect(loading);
 	const handelRouter = async () => {
+		// 제3자 계정 검증
+		if (role === 'THIRD_PARTY') {
+			error("제3자 계정은 모임 가입 신청을 할 수 없습니다.")
+			setIsAccession(false)
+			close()
+			return;
+		}
+		
 		try {
 			if (isEnteringMeeting) {
 				await leaveMeeting();
@@ -38,6 +49,13 @@ export default function Accession({ isAccession, setIsAccession, accessions }: A
 		}
 		setIsAccession(false)
 		close()
+	}
+	
+	const handleButtonClick = () => {
+		// 모달을 먼저 닫고 로그인 검증
+		setIsAccession(false)
+		close()
+		withPermission(handelRouter)
 	}
 	if (!isAccession) return null
 	return (
@@ -69,7 +87,7 @@ export default function Accession({ isAccession, setIsAccession, accessions }: A
 						</S.CancelBtn>
 						<Square
 							text={"가입"}
-							onClick={handelRouter}
+							onClick={handleButtonClick}
 							status={true}
 							width={"100%"}
 							isLoading={loading}
