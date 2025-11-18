@@ -1,7 +1,6 @@
 import * as S from '@/styles/confirm'
 import Square from "@/components/ui/button/square";
 import { AccessionProps } from "@/containers/meetings/accession/type";
-import React from "react";
 import { useModalStore } from "@/store/modal";
 import { useMutation } from "@apollo/client";
 import { MeetingMutations } from "@/services/meeting";

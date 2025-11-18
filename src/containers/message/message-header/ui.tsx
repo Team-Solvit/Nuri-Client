@@ -18,14 +18,16 @@ import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 import { useLoadingEffect } from "@/hooks/useLoading";
 import { useQuery } from "@apollo/client";
 import { useMessageReflectStore } from "@/store/messageReflect";
+import { useUserStore } from "@/store/user";
 
 interface FadeBoxProps {
 	onClose: () => void;
 	onInvite: () => void;
 	onExit: () => void;
+	canInvite: boolean;
 }
 
-export const FadeBox = ({ onClose, onInvite, onExit }: FadeBoxProps) => {
+export const FadeBox = ({ onClose, onInvite, onExit, canInvite }: FadeBoxProps) => {
 	const boxRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -44,15 +46,32 @@ export const FadeBox = ({ onClose, onInvite, onExit }: FadeBoxProps) => {
 	return (
 		<S.FadeBoxContainer ref={boxRef}>
 			<S.MenuButton onClick={onExit}>나가기</S.MenuButton>
-			<S.MenuButton onClick={onInvite}>초대하기</S.MenuButton>
+			{canInvite && <S.MenuButton onClick={onInvite}>초대하기</S.MenuButton>}
 		</S.FadeBoxContainer>
 	);
 }
+
+// 멤버 데이터 파싱 함수
+interface MemberData {
+	userId: string;
+	invitePermission: boolean;
+}
+
+const parseMemberData = (memberString: string): MemberData => {
+	const userIdMatch = memberString.match(/userId=([^,}]+)/);
+	const permissionMatch = memberString.match(/invitePermission=(true|false)/);
+	
+	return {
+		userId: userIdMatch ? userIdMatch[1] : '',
+		invitePermission: permissionMatch ? permissionMatch[1] === 'true' : false
+	};
+};
 
 export default function MessageHeaderUI() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [showExitConfirm, setShowExitConfirm] = useState(false);
 	const [showMemberList, setShowMemberList] = useState(false);
+	const [kickingUserId, setKickingUserId] = useState<string | null>(null);
 	const navigate = useNavigationWithProgress()
 	const [isLoading, setIsLoading] = useState(false)
 
@@ -64,11 +83,28 @@ export default function MessageHeaderUI() {
 		variables: { roomId },
 		skip: !roomId,
 	});
+	
+	// roomDataList에서 현재 roomId의 isTeam 정보 가져오기
+	const { roomDataList } = useMessagePageStore();
+	const currentRoom = useMemo(() => {
+		return roomDataList.find(room => room.roomDto?.id === roomId);
+	}, [roomDataList, roomId]);
+	
 	const { message } = useMessageReflectStore()
 
 	const memberIds = useMemo(() => {
-		return roomMemberData?.getUserIds || [];
+		const rawData = roomMemberData?.getUserIds || [];
+		return rawData.map((member: string) => parseMemberData(member));
 	}, [roomMemberData?.getUserIds]);
+	
+	const { userId: currentUserId } = useUserStore();
+	const isTeamChat = currentRoom?.roomDto?.isTeam ?? false;
+	
+	// 현재 사용자가 초대 권한이 있는지 확인
+	const currentUserMember = memberIds.find((m: MemberData) => m.userId === currentUserId);
+	const canInvite = isTeamChat 
+		? currentUserMember?.invitePermission ?? false  // 팀 채팅: 방장만 가능
+		: true;  // 일반 채팅: 모두 가능
 
 	useEffect(() => {
 		if (!message || !refetch) return;
@@ -104,8 +140,15 @@ export default function MessageHeaderUI() {
 	};
 	// 채팅방 멤버 초대
 	const handleInvite = () => {
-		setIsAddition(true);
-		setIsMenuOpen(false);
+		if (isTeamChat && !currentUserMember?.invitePermission) {
+			console.log("초대 권한 없음");
+			error("팀 채팅에서는 방장만 멤버를 초대할 수 있습니다");
+			setIsMenuOpen(false);
+			return;
+		}else{
+			setIsAddition(true);
+			setIsMenuOpen(false);
+		}
 	};
 
 	// 채팅방 나가기
@@ -124,6 +167,20 @@ export default function MessageHeaderUI() {
 	const handleMemberClick = (memberId: string) => {
 		console.log(memberId);
 		navigate(`/profile/${memberId}`);
+	};
+
+	const handleKickMember = async (userId: string) => {
+		if (!roomId) return;
+		try {
+			setKickingUserId(userId);
+			await MessageService.kickChatRoom(apolloClient, roomId, userId);
+			success(`${userId}님을 추방했습니다.`);
+			await refetch();
+		} catch {
+			error('멤버 추방에 실패했습니다.');
+		} finally {
+			setKickingUserId(null);
+		}
 	};
 
 	const confirmExit = async () => {
@@ -183,17 +240,31 @@ export default function MessageHeaderUI() {
 								대화 참여자 <span>{memberIds.length}명</span>
 							</S.MemberListHeader>
 							<S.MemberList>
-								{memberIds.map((memberId: string, index: number) => {
-									console.log('memberId:', memberId);
+								{memberIds.map((member: MemberData, index: number) => {
+									const isHost = member.invitePermission;
 									return(
 									<S.MemberItem
 										key={index}
-										onClick={() => handleMemberClick(memberId)}
+										onClick={() => handleMemberClick(member.userId)}
 									>
-										<S.MemberAvatar>{memberId.slice(0, 1).toUpperCase()}</S.MemberAvatar>
+										<S.MemberAvatar>{member.userId.slice(0, 1).toUpperCase()}</S.MemberAvatar>
 										<S.MemberInfo>
-											<S.MemberName>{memberId}</S.MemberName>
+											<S.MemberName>
+												{member.userId}
+												{isHost && <S.HostBadge>방장</S.HostBadge>}
+											</S.MemberName>
 										</S.MemberInfo>
+										{!isHost && (
+											<S.KickButton
+												onClick={(e) => {
+													e.stopPropagation();
+													handleKickMember(member.userId);
+												}}
+												disabled={kickingUserId === member.userId}
+											>
+												{kickingUserId === member.userId ? '추방 중...' : '추방'}
+											</S.KickButton>
+										)}
 									</S.MemberItem>
 								)
 								})}
@@ -217,6 +288,7 @@ export default function MessageHeaderUI() {
 							onClose={() => setIsMenuOpen(false)}
 							onInvite={handleInvite}
 							onExit={handleExitClick}
+							canInvite={canInvite}
 						/>
 					)}
 					<AdditionRoom
@@ -225,7 +297,7 @@ export default function MessageHeaderUI() {
 						iconRef={iconRef as React.RefObject<HTMLImageElement
 						>}
 						type={"update"}
-						existingMembers={memberIds}
+						existingMembers={memberIds.map((m: MemberData) => m.userId)}
 						refetchMembers={refetch}
 					/>
 				</S.EllipsisIconBox>

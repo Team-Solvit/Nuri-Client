@@ -43,6 +43,7 @@ export default function AdditionRoom({ isAddition, setIsAddition, iconRef, type,
 	// 프로필 이미지 업로드(추가 모드에서만 사용)
 	const [profilePreview, setProfilePreview] = useState<string | null>(null);
 	const [profileDataUrl, setProfileDataUrl] = useState<string | null>(null);
+	const [isTeamChat, setIsTeamChat] = useState(false);
 	const { upload, loading: uploadLoading } = useFileUpload();
 
 	const [debouncedTerm, setDebouncedTerm] = useState("");
@@ -97,6 +98,7 @@ export default function AdditionRoom({ isAddition, setIsAddition, iconRef, type,
 		setIsAddition(false);
 		setSearchTerm('');
 		setSelectedUsers([]);
+		setIsTeamChat(false);
 		if (profilePreview) URL.revokeObjectURL(profilePreview);
 		setProfilePreview(null);
 		setProfileDataUrl(null);
@@ -174,7 +176,7 @@ export default function AdditionRoom({ isAddition, setIsAddition, iconRef, type,
 				profile: profileDataUrl ?? null
 			},
 			users: [...selectedUsers.map(user => user.userId), id || ""],
-			isTeam: false
+			isTeam: isTeamChat
 		}
 		try {
 			const res = await MessageService.createChatRoom(apolloClient, inputData);
@@ -307,6 +309,30 @@ export default function AdditionRoom({ isAddition, setIsAddition, iconRef, type,
 						onChange={(e) => setRoomName(e.target.value)}
 					/>
 				</S.SearchBar>}
+				{type === "add" && (
+					<S.ChatTypeSelector>
+						<S.ChatTypeOption
+							isSelected={!isTeamChat}
+							onClick={() => setIsTeamChat(false)}
+						>
+							<S.RadioButton isSelected={!isTeamChat} />
+							<div>
+								<S.OptionTitle>일반 채팅</S.OptionTitle>
+								<S.OptionDesc>모든 멤버가 초대 가능</S.OptionDesc>
+							</div>
+						</S.ChatTypeOption>
+						<S.ChatTypeOption
+							isSelected={isTeamChat}
+							onClick={() => setIsTeamChat(true)}
+						>
+							<S.RadioButton isSelected={isTeamChat} />
+							<div>
+								<S.OptionTitle>팀 채팅</S.OptionTitle>
+								<S.OptionDesc>방장만 초대 가능</S.OptionDesc>
+							</div>
+						</S.ChatTypeOption>
+					</S.ChatTypeSelector>
+				)}
 				<S.SearchBar>
 					<S.SearchInput
 						type="text"
