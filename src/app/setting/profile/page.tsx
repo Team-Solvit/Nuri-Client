@@ -276,7 +276,7 @@ export default function ProfilePage() {
                             <S.NameInput
                                 placeholder="아이디"
                                 value={userid}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUserid(e.target.value)}
+                                readOnly
                             />
                             <S.NickInput
                                 placeholder="닉네임"
