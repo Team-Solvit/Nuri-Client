@@ -117,6 +117,11 @@ export const Profile = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
+
+  &:hover {
+    cursor: pointer;
+  }
+
   & > img {
     border-radius: ${radius.full};
   }
@@ -713,7 +718,7 @@ export const CommentEditContainer = styled.div`
   width: 100%;
 `;
 
-export const CommentEditTextarea = styled.textarea`
+export const CommentEditTextarea = styled.input`
   width: 100%;
   min-height: 60px;
   padding: 8px 12px;

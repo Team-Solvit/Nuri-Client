@@ -40,10 +40,10 @@ export default function AuthGuard() {
 
   useEffect(() => {
     if (!hydrated) return;
-
+    const isOtherUserProfile = pathname?.startsWith('/profile/');
     const isProtectedPath = PROTECTED_PATHS.some(path => pathname?.startsWith(path));
 
-    if (isProtectedPath && !userId) {
+    if (isProtectedPath && !isOtherUserProfile && !userId) {
       error('로그인이 필요한 페이지입니다.');
       open();
       router.replace('/');
