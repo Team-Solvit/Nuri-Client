@@ -26,6 +26,7 @@ import PostDetailSkeleton from "./PostDetailSkeleton";
 import { imageCheck } from "@/utils/imageCheck";
 import { PostDetailService } from "@/services/postDetail";
 import { useApollo } from "@/lib/apolloClient";
+import { usePermissionGuard } from "@/hooks/usePermissionGuard";
 
 interface PostDetailProps { id: string; isModal?: boolean; }
 
@@ -33,6 +34,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
   const router = useRouter();
   const navigate = useNavigationWithProgress();
   const client = useApollo();
+  const { withPermission } = usePermissionGuard();
   const {
     postInfo,
     setPostInfo,
@@ -280,10 +282,16 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
                 placeholder="댓글을 입력하세요..."
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyPress={(e) => withPermission(() => handleKeyPress(e))}
+                onFocus={(e) => {
+                  if (!currentUserId) {
+                    e.target.blur();
+                    withPermission(() => { });
+                  }
+                }}
                 rows={1}
               />
-              <S.SendButton onClick={submitComment} disabled={!commentText.trim()}>
+              <S.SendButton onClick={() => withPermission(submitComment)} disabled={!commentText.trim()}>
                 <Image src={SendIconSvg} alt="send" width={20} height={20} />
               </S.SendButton>
             </S.CommentInputContainer>
