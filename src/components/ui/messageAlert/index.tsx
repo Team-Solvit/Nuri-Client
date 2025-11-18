@@ -9,6 +9,7 @@ import {imageCheck} from "@/utils/imageCheck";
 import {messageRequestCheck} from "@/utils/messageRequestCheck";
 import {useNavigationWithProgress} from "@/hooks/useNavigationWithProgress";
 import {useMessageHeaderStore} from "@/store/messageHeader";
+import {useUserStore} from "@/store/user";
 
 
 export default function MessageAlert() {
@@ -26,6 +27,7 @@ export default function MessageAlert() {
 	
 	const navigate = useNavigationWithProgress();
 	const { setValues: setMessageHeader } = useMessageHeaderStore();
+	const { userId: currentUserId } = useUserStore();
 	
 	const navigateClick = () => {
 		// 메시지 헤더 정보 설정
@@ -63,6 +65,9 @@ export default function MessageAlert() {
 	const isMessage = path.includes("/message");
 	const ContractOrRoomTour = messageRequestCheck(content)
 	const regex = /^https:\/\/cdn\.solvit-nuri\.com\/file\/[0-9a-fA-F-]{36}$/;
+	
+	// 내 메시지는 알림 표시 안 함
+	if (user_id === currentUserId) return null;
 	if (isMessage) return null;
 	
 	return (
