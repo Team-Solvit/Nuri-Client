@@ -11,6 +11,7 @@ import { imageCheck } from '@/utils/imageCheck';
 import { UserService } from '@/services/user';
 import { UserSearchResult } from '@/types/user';
 import { useAlertStore } from '@/store/alert';
+import UserSearchSkeleton from '@/components/ui/skeleton/UserSearchSkeleton';
 
 interface UserSearchProps {
   searchKeyword: string;
@@ -53,7 +54,7 @@ export default function UserSearch({ searchKeyword }: UserSearchProps) {
   return (
     <Container>
       {loading ? (
-        <LoadingMessage>검색 중...</LoadingMessage>
+        <UserSearchSkeleton count={5} />
       ) : users.length > 0 ? (
         <UserList>
           {users.map((user) => (
