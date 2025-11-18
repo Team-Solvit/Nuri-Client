@@ -245,7 +245,7 @@ export default function MeetingThirdPartyContainer() {
         ) : currentMeetingList.length === 0 && previousMeetingList.length === 0 ? (
           <S.EmptyState>
             <S.EmptyStateText>
-              <h3>참여중인 모임이 없습니다</h3>
+              <h3>모임일정이 없습니다.</h3>
               <p>새로운 모임 일정을 만들어 시작해보세요!</p>
             </S.EmptyStateText>
             <Square
