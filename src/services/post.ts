@@ -32,28 +32,29 @@ export const PostQueries = {
 							    host {
                      user {
                         profile
-										    userId
-										    name
+						userId
+						name
                      }
-							    }
-						    }
-						    name
-						    description
-						    monthlyRent
-						    likeCount
-						    isLiked
-						    commentCount
-						    boardingRoomFile{
-						      fileId
-							    roomId
-							    url
-						    }
-						    day
+					}
+					}
+					name
+					description
+					monthlyRent
+					likeCount
+					isLiked
+					commentCount
+					status
+					boardingRoomFile{
+						fileId
+						roomId
+						url
+					}
+					day
 			        }
 			      }
-		    }
-		    postType
-		  }
+				}
+				postType
+			}
 		}
   `
 }

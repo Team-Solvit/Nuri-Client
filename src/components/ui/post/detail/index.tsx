@@ -113,6 +113,10 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
   const [showContractPeriods, setShowContractPeriods] = useState(false);
   const { error } = useAlertStore();
   const { creating: creatingContract, sendContract } = useContract(postInfo, currentUserId);
+  
+  // 방 상태 확인
+  const roomStatus = postInfo?.__typename === 'BoardingPost' ? postInfo.room.status as 'EMPTY_ROOM' | 'FULL' | 'REMAIN' | null : null;
+  const isRoomFull = roomStatus === 'FULL';
 
   const openContractPeriodPicker = () => {
     if (!postInfo || postInfo.__typename !== 'BoardingPost') return;
@@ -181,6 +185,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
           onPrev={() => handleSlide('prev')}
           onNext={() => handleSlide('next')}
           onImageLoadForFit={handleImageLoadForFit}
+          roomStatus={roomStatus}
         />
         <S.Footer>
           <S.Profile onClick={() => handleProfileClick(userId ?? '')}>
@@ -193,7 +198,25 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
           {isHousePost && (
             <S.Buttons>
               <S.RoomTourWrapper ref={roomTourRef}>
-                <Square text="룸투어" onClick={() => setShowRoomTour(prev => { const next = !prev; if (next) { setMenuOpen(false); setOpenCommentMenuId(null); } return next; })} status={true} width="max-content" />
+                <Square 
+                  text="룸투어" 
+                  onClick={() => {
+                    if (isRoomFull) {
+                      error('만실된 방은 룸투어를 신청할 수 없습니다.');
+                      return;
+                    }
+                    setShowRoomTour(prev => { 
+                      const next = !prev; 
+                      if (next) { 
+                        setMenuOpen(false); 
+                        setOpenCommentMenuId(null); 
+                      } 
+                      return next; 
+                    });
+                  }} 
+                  status={!isRoomFull} 
+                  width="max-content" 
+                />
                 {showRoomTour && (
                   <RoomTourModal
                     boardingRoomId={postInfo.__typename === 'BoardingPost' ? postInfo.room.roomId : undefined}
@@ -212,7 +235,18 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
                 )}
               </S.RoomTourWrapper>
               <S.RoomTourWrapper>
-                <Square text={creatingContract ? "보내는 중..." : "계약"} onClick={openContractPeriodPicker} status={true} width="max-content" />
+                <Square 
+                  text={creatingContract ? "보내는 중..." : "계약"} 
+                  onClick={() => {
+                    if (isRoomFull) {
+                      error('만실된 방은 계약할 수 없습니다.');
+                      return;
+                    }
+                    openContractPeriodPicker();
+                  }} 
+                  status={!isRoomFull && !creatingContract} 
+                  width="max-content" 
+                />
                 {showContractPeriods && (
                   <ContractPeriodModal
                     periods={(postInfo.__typename === 'BoardingPost' ? postInfo.room.contractPeriod || [] : []).map(p => p.contractPeriod)}

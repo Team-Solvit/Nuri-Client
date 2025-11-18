@@ -196,6 +196,7 @@ export default function PostScroll() {
 				let likeCount: number | null = null;
 				let isLiked: boolean = false;
 				let isRoom: boolean = false;
+				let roomStatus: 'EMPTY_ROOM' | 'FULL' | 'REMAIN' | null = null;
 				
 				if (postItem.__typename === "SnsPost") {
 					id = postItem.postId;
@@ -221,6 +222,7 @@ export default function PostScroll() {
 					date = postItem.room.day || null;
 					user = { userId: postItem.room.boardingHouse.host.user.userId, thumbnail: postItem.room.boardingHouse.host.user.profile ?? "" };
 					isRoom = true;
+					roomStatus = postItem.room.status || null;
 				}
 				
 				// 낙관적 UI 적용
@@ -280,6 +282,11 @@ export default function PostScroll() {
 							}}
 							onMouseLeave={handleMouseLeave}
 						>
+						{roomStatus && (
+						<S.StatusBadge status={roomStatus}>
+						{roomStatus === 'EMPTY_ROOM' ? '빈방' : roomStatus === 'FULL' ? '만실' : '잔여'}
+						</S.StatusBadge>
+						)}
 							{currentIndex > 0 && (
 								<S.Arrow
 									isHover={hoverIndex === index}

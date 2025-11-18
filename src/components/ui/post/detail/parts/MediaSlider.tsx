@@ -12,12 +12,18 @@ interface MediaSliderProps {
   onPrev: () => void;
   onNext: () => void;
   onImageLoadForFit: (i: number, ratio: number) => void;
+  roomStatus?: 'EMPTY_ROOM' | 'FULL' | 'REMAIN' | null;
 }
 
-export default function MediaSlider({ images, current, fitMode, onPrev, onNext, onImageLoadForFit }: MediaSliderProps) {
+export default function MediaSlider({ images, current, fitMode, onPrev, onNext, onImageLoadForFit, roomStatus }: MediaSliderProps) {
   const max = images.length - 1;
   return (
     <S.SliderWrapper>
+      {roomStatus && (
+        <S.StatusBadge status={roomStatus}>
+          {roomStatus === 'EMPTY_ROOM' ? '빈방' : roomStatus === 'FULL' ? '만실' : '잔여'}
+        </S.StatusBadge>
+      )}
       {current > 0 && (
         <S.ArrowBtn left onClick={(e) => { e.stopPropagation(); onPrev(); }}>
           <Image src={Arrow} alt="arrow" fill style={{ objectFit: "cover", transform: "rotate(180deg)" }} />
