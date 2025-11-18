@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import styled from '@emotion/styled';
 import Image from 'next/image';
 import { useApollo } from '@/lib/apolloClient';
@@ -11,9 +11,13 @@ import { imageCheck } from '@/utils/imageCheck';
 import { UserService } from '@/services/user';
 import { UserSearchResult } from '@/types/user';
 import { useAlertStore } from '@/store/alert';
+import UserSearchSkeleton from '@/components/ui/skeleton/UserSearchSkeleton';
 
-export default function UserSearch() {
-  const [searchKeyword, setSearchKeyword] = useState('');
+interface UserSearchProps {
+  searchKeyword: string;
+}
+
+export default function UserSearch({ searchKeyword }: UserSearchProps) {
   const [users, setUsers] = useState<UserSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const client = useApollo();
@@ -39,11 +43,9 @@ export default function UserSearch() {
     }
   }, [client, showError]);
 
-  const handleKeywordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const keyword = e.target.value;
-    setSearchKeyword(keyword);
-    handleSearch(keyword);
-  };
+  useEffect(() => {
+    handleSearch(searchKeyword);
+  }, [searchKeyword, handleSearch]);
 
   const handleUserClick = (userId: string) => {
     navigate(`/profile/${userId}`);
@@ -51,18 +53,8 @@ export default function UserSearch() {
 
   return (
     <Container>
-      <SearchBox>
-        <Image src='/icons/search.svg' alt="search" width={24} height={24} />
-        <SearchInput
-          type='text'
-          placeholder='유저 아이디로 유저를 탐방해보세요.'
-          value={searchKeyword}
-          onChange={handleKeywordChange}
-        />
-      </SearchBox>
-
       {loading ? (
-        <LoadingMessage>검색 중...</LoadingMessage>
+        <UserSearchSkeleton count={5} />
       ) : users.length > 0 ? (
         <UserList>
           {users.map((user) => (
