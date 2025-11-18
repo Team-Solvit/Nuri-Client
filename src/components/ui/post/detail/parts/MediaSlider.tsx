@@ -37,7 +37,7 @@ export default function MediaSlider({ images, current, fitMode, onPrev, onNext, 
                 const ratio = img.naturalWidth / img.naturalHeight;
                 onImageLoadForFit(i, ratio);
               }}
-              style={{ objectFit: fitMode, backgroundColor: "#000", transition: "object-fit 0.25s" }}
+              style={{ objectFit: "contain", backgroundColor: "#000", transition: "object-fit 0.25s" }}
             />
           </S.Slide>
         ))}

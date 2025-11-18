@@ -20,14 +20,16 @@ export const Wrapper = styled.div`
 `;
 
 export const Left = styled.div`
-  flex: none;
-  width: 640px;
-  max-width: calc(100vw - 2rem);
+  flex: 2;
+  max-width: 640px;
+  min-width: 500px;
   display: flex;
   flex-direction: column;
   ${mq.mobile} {
+    flex: none;
     width: 100%;
     max-width: 100%;
+    min-width: 0;
   }
 `;
 

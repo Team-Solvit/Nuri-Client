@@ -6,6 +6,7 @@ import * as S from "../style";
 import HeartIcon from "@/assets/post/heart.svg";
 import CommentIcon from "@/assets/post/comment.svg";
 import EllipsisIcon from "@/assets/post/ellipsis.svg";
+import { usePermissionGuard } from "@/hooks/usePermissionGuard";
 
 interface InteractionBarProps {
   isModal?: boolean;
@@ -36,10 +37,12 @@ export default function InteractionBar({
   onEditPost,
   onDeletePost,
 }: InteractionBarProps) {
+  const { withPermission } = usePermissionGuard();
+
   return (
     <S.InteractionBar isModal={isModal}>
       <S.InteractionButtons>
-        <S.ActionButton onClick={onToggleLike}>
+        <S.ActionButton onClick={() => withPermission(onToggleLike)}>
           <Image
             src={HeartIcon}
             alt="like"
