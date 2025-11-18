@@ -3,17 +3,14 @@
 import Dropdown from '@/components/ui/dropdown';
 import SelectItem from '@/components/ui/selectItem';
 import * as S from './style';
-import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { BoardingRoomSearchFilter, Location } from '@/types/explore';
 
 interface ExploreFilterProps {
   onFilterChange: (filter: Partial<BoardingRoomSearchFilter>) => void;
-  onSearchKeywordChange: (keyword: string) => void;
-  searchKeyword: string;
 }
 
-export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, searchKeyword }: ExploreFilterProps) {
+export default function ExploreFilter({ onFilterChange }: ExploreFilterProps) {
   const [openedDropdown, setOpenedDropdown] = useState<null | string>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
@@ -71,7 +68,7 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
     }
     onFilterChange({ region: radius ? `${region} (${radius}m)` : region });
   };
-  
+
 
   const handlePriceChange = (values: [number, number] | null) => {
     if (values === null) {
@@ -115,16 +112,6 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
 
   return (
     <>
-      <S.Search>
-        <Image src='/icons/search.svg' alt="search" width={24} height={24} />
-        <S.Input
-          type='text'
-          placeholder='검색어를 입력하세요.'
-          value={searchKeyword}
-          onChange={(e) => onSearchKeywordChange(e.target.value)}
-        />
-      </S.Search>
-
       {(!isMobile || showFilters) && (
         <S.Dropdown>
           <Dropdown
@@ -133,9 +120,9 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
             isOpen={openedDropdown === 'region'}
             onOpen={() => setOpenedDropdown('region')}
             onClose={() => setOpenedDropdown(null)}
-            onSelect={handleRegionSelect} 
+            onSelect={handleRegionSelect}
             showRadius={false}
-            />
+          />
           <Dropdown
             text="역"
             list={stationList}
@@ -151,9 +138,9 @@ export default function ExploreFilter({ onFilterChange, onSearchKeywordChange, s
             isOpen={openedDropdown === 'school'}
             onOpen={() => setOpenedDropdown('school')}
             onClose={() => setOpenedDropdown(null)}
-            onSelect={handleSchoolSelect} 
+            onSelect={handleSchoolSelect}
             showRadius={true}
-            />
+          />
           <SelectItem
             text="가격"
             isOpen={openedDropdown === 'money'}

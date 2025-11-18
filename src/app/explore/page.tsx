@@ -1,6 +1,7 @@
 'use client'
 
 import styled from "@emotion/styled";
+import Image from 'next/image';
 import ExploreFilter from '@/components/ui/explore/ExploreFilter';
 import ExplorePostList from '@/components/ui/explore/ExplorePostList';
 import UserSearch from '@/components/ui/explore/UserSearch';
@@ -22,11 +23,13 @@ export default function ExplorePage() {
 
   const handleSearchKeywordChange = (keyword: string) => {
     setSearchKeyword(keyword);
-    if (keyword.trim() === '') {
-      const { name, ...restFilter } = searchFilter;
-      setSearchFilter({ ...restFilter, start: 0 });
-    } else {
-      setSearchFilter(prev => ({ ...prev, name: keyword, start: 0 }));
+    if (activeTab === 'room') {
+      if (keyword.trim() === '') {
+        const { name, ...restFilter } = searchFilter;
+        setSearchFilter({ ...restFilter, start: 0 });
+      } else {
+        setSearchFilter(prev => ({ ...prev, name: keyword, start: 0 }));
+      }
     }
   };
 
@@ -41,17 +44,27 @@ export default function ExplorePage() {
         </Tab>
       </TabContainer>
 
+      <SearchBox>
+        <Image src='/icons/search.svg' alt="search" width={24} height={24} />
+        <SearchInput
+          type='text'
+          placeholder={activeTab === 'room' ? '검색어를 입력하세요.' : '유저 아이디로 유저를 탐방해보세요.'}
+          value={searchKeyword}
+          onChange={(e) => handleSearchKeywordChange(e.target.value)}
+        />
+      </SearchBox>
+
       {activeTab === 'room' ? (
         <>
           <ExploreFilter
             onFilterChange={handleFilterChange}
-            onSearchKeywordChange={handleSearchKeywordChange}
-            searchKeyword={searchKeyword}
           />
           <ExplorePostList searchFilter={searchFilter} />
         </>
       ) : (
-        <UserSearch />
+        <UserSearch
+          searchKeyword={searchKeyword}
+        />
       )}
     </Container>
   );
@@ -100,5 +113,36 @@ const Tab = styled.button<{ active: boolean }>`
   ${mq.mobile} {
     padding: 0.6rem 1rem;
     font-size: ${fontSizes.Small};
+  }
+`;
+
+const SearchBox = styled.div`
+  display: flex;
+  width: 73vw;
+  height: 8vh;
+  border-radius: 30px;
+  align-items: center;
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  padding: 20px 30px;
+
+  ${mq.mobile} {
+    width: 88vw;
+  }
+`;
+
+const SearchInput = styled.input`
+  display: flex;
+  padding: 10px;
+  border: none;
+  outline: none;
+  font-size: 18px;
+  margin-top: 2px;
+  margin-left: 10px;
+  width: 100%;
+
+  &::placeholder {
+    color: ${colors.gray};
+    font-family: 'SCoreDream', sans-serif;
   }
 `;
