@@ -140,6 +140,13 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
     return () => document.removeEventListener("click", onDocClick);
   }, [menuOpen, showRoomTour, showContractPeriods, openCommentMenuId]);
 
+  const handleProfileClick = (userId: string) => {
+    router.back();
+    setTimeout(() => {
+      navigate(`/profile/${userId}`);
+    }, 400);
+  };
+
   if (loading) return <PostDetailSkeleton isModal={isModal} />;
   if (!postInfo) {
     return (
@@ -174,7 +181,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
           onImageLoadForFit={handleImageLoadForFit}
         />
         <S.Footer>
-          <S.Profile>
+          <S.Profile onClick={() => handleProfileClick(userId ?? '')}>
             <Image src={imageCheck(userProfile ?? undefined)} alt="user thumbnail" width={40} height={40} style={{ borderRadius: radius.full }} />
             <div>
               <p>{userId}</p>
