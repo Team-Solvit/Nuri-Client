@@ -22,7 +22,7 @@ interface PostDetailPageProps {
   postId: string;
 }
 
-export default function PostDetailPage({ postId }: PostDetailPageProps) {
+export default function PostDetailContainer({ postId }: PostDetailPageProps) {
   return (
     <Wrapper>
       <PostDetail id={postId} />
