@@ -129,7 +129,7 @@ export default function UserProfilePage() {
         followerCount: 0,
         followingCount: 0,
         profile: '',
-        userId: '없는 사용자입니다',
+        userId: '',
         introduce: '소개글이 없습니다.',
         role: 'USER',
     };
@@ -410,7 +410,7 @@ export default function UserProfilePage() {
                                 color: '#666',
                             }}
                         >
-                            {profile.userId === '없는 사용자입니다' ? '?' : (profile.userId && profile.userId[0]) || '?'}
+                            {profile.userId === '' ? '?' : (profile.userId && profile.userId[0]) || '?'}
                         </div>
                     )}
                 </S.ProfileImage>

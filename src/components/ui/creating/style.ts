@@ -14,11 +14,16 @@ export const Overlay = styled.div`
   justify-content: center;
   z-index: 1000;
   backdrop-filter: blur(2px);
+
+  ${mq.mobile} {
+    background: transparent;
+    backdrop-filter: none;
+  }
 `
 
 export const Image = styled.div`
   width: 40vw;
-  height: 67vh;
+  height: 100%;
   position: relative;
   overflow: hidden;
   background: ${colors.line2};
@@ -81,6 +86,10 @@ export const Main = styled.div`
 
   ${mq.mobile} {
     padding: 1rem 1.5rem;
+    padding-bottom: 50vh;
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 `
 
@@ -97,11 +106,12 @@ export const Modal = styled.div`
 
   ${mq.mobile} {
     width: 100%;
-    height: 100%;
+    height: 100vh;
     border-radius: 0;
     display: flex;
     gap: 0;
     flex-direction: column;
+    overflow: hidden;
   }
 `
 
@@ -199,8 +209,9 @@ export const Textarea = styled.textarea`
   }
 
   ${mq.mobile} {
-    min-height: 15vh;
+    min-height: 20vh;
     margin-top: 0.5rem;
+    margin-bottom: 1rem;
   }
 `
 

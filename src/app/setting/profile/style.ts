@@ -19,8 +19,8 @@ export const Sidebar = styled.div`
   flex: 0 0 20vw;
   min-width: 220px;
   max-width: 300px;
-  border-right: 1px solid #eaeaea;
-  background: #fff;
+  background: ${colors.background};
+  border-right: 1px solid ${colors.line};
 
   ${mq.mobile} {
     display: none;

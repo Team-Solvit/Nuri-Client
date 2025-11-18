@@ -31,6 +31,21 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
     const apolloClient = useApollo();
     const alertStore = useAlertStore();
 
+    const getProfileImageUrl = (profileValue: string | null) => {
+        if (!profileValue) return '';
+        if (profileValue.startsWith('http')) return profileValue;
+        if (profileValue.startsWith('blob:')) return profileValue;
+
+        const rawCdn = process.env.NEXT_PUBLIC_IMAGE_CDN_URL || 
+                       process.env.NEXT_PUBLIC_IMAGE_URL?.replace('/upload', '') || '';
+        const cdnBase = rawCdn.replace(/\/+$/, '');
+        const cleanUuid = profileValue.replace(/^\/+/, '');
+
+        return cdnBase ? `${cdnBase}/${cleanUuid}` : cleanUuid;
+    };
+
+    const profileImageUrl = getProfileImageUrl(profile);
+
     const prevImage = () => {
         setCurrentIndex(prev => (prev === 0 ? previewImages.length - 1 : prev - 1));
     };
@@ -187,7 +202,7 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
     };
 
     const handleOverlayClick = () => {
-        if (isSubmitting) return;
+        if (isSubmitting || isMobile) return;
         onClose();
         closeDropdown();
     };
@@ -279,9 +294,9 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
 
                     <S.ProfileRow>
                         <S.ProfileImg>
-                            {profile ? (
+                            {profileImageUrl ? (
                                 <Image
-                                    src={profile}
+                                    src={profileImageUrl}
                                     alt="프로필"
                                     width={48}
                                     height={48}
