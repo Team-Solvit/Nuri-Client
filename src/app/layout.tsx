@@ -12,7 +12,6 @@ import AuthGuard from "@/components/layout/AuthGuard";
 import RoleGuard from "@/components/layout/RoleGuard";
 import Loading from "@/components/ui/loading";
 import { GoogleAnalytics } from '@next/third-parties/google';
-import EmotionRegistry from "@/components/layout/emotionRegistry";
 
 
 export const metadata: Metadata = {
@@ -45,16 +44,16 @@ export default async function RootLayout({ children, modal }: { children: React.
 				<MessageAlert />
 				<GlobalStyles />
 				<Providers>
-					<EmotionRegistry>
-						<AuthBootstrap />
-						<AuthGuard />
-						<RoleGuard />
-						<ChatComponent />
-						<Loading />
-						<Header />
+					<AuthBootstrap />
+					<AuthGuard />
+					<RoleGuard />
+					<ChatComponent />
+					<Loading />
+					<Header />
+					<main className="main-container">
 						{children}
 						{modal}
-					</EmotionRegistry>
+					</main>
 				</Providers>
 				<noscript>
 					<div style={{ padding: "1rem", textAlign: "center" }}>

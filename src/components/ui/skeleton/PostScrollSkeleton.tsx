@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from '@emotion/styled';
 import { SkeletonBase } from './animations';
 import { colors, radius } from "@/styles/theme";
