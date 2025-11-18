@@ -7,6 +7,7 @@ import EllipsisIcon from "@/assets/post/ellipsis.svg";
 import CommentsSkeleton from "./CommentsSkeleton";
 import type { PostComment } from "@/types/postDetail";
 import { useRouter } from "next/navigation";
+import { imageCheck } from "@/utils/imageCheck";
 
 interface CommentsPanelProps {
   show: boolean;
@@ -70,11 +71,7 @@ export default function CommentsPanel({
           </S.CommentsEmpty>
         ) : (
           comments.map((comment: PostComment) => {
-            const profileSrc = comment.commenter.profile
-              ? /^https?:\/\//.test(comment.commenter.profile)
-                ? comment.commenter.profile
-                : `https://cdn.solvit-nuri.com/file/${comment.commenter.profile}`
-              : null;
+            const profileSrc = imageCheck(comment.commenter.profile || '')
 
             return (
               <S.CommentItem key={comment.commentId}>
