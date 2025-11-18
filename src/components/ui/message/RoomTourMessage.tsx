@@ -151,9 +151,9 @@ const RoomTourMessage: React.FC<RoomTourMessageProps> = ({
 				/>
 				<RoomTourContent>
 					<RoomTourTitle>
-						{roomTourData?.status === "APPROVED" && "룸투어를 예약했어요"}
-						{roomTourData?.status === "REJECTED" && "룸투어예약을 취소했어요"}
-						{roomTourData?.status === "PENDING" && "룸투어 요청이 왔어요"}
+						{roomTourData?.status === "APPROVED" && "룸투어가 예약되었어요"}
+						{roomTourData?.status === "REJECTED" && "룸투어예약이 취소되었어요"}
+						{roomTourData?.status === "PENDING" && "룸투어 요청이 생성되었어요"}
 					</RoomTourTitle>
 					<RoomTourHouse>{roomTour.roomName}</RoomTourHouse>
 					<RoomTourDate>

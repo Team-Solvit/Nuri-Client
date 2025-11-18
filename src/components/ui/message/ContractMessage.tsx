@@ -148,8 +148,8 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
 					
 					<ContractTitle>
 						{status === "ACTIVE" && "계약이 완료되었어요"}
-						{status === "PENDING" && "계약요청이 왔어요"}
-						{status === "REJECTED" && "계약을 취소했어요"}
+						{status === "PENDING" && "계약요청이 생성되었어요"}
+						{status === "REJECTED" && "계약이 취소됐어요"}
 						{status === "EXPIRED" && "계약이 만료되었어요"}
 						{status === "DELETED" && "계약이 만료되었어요"}
 					</ContractTitle>
