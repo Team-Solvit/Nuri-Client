@@ -83,6 +83,24 @@ export const PostImg = styled.div`
     height: 30vh;
   }
 `
+
+export const StatusBadge = styled.div<{ status: 'EMPTY_ROOM' | 'FULL' | 'REMAIN' }>`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: ${radius.sm};
+  font-size: ${fontSizes.Body};
+  font-weight: 600;
+  z-index: ${zIndex.overlay};
+  background-color: ${({ status }) => 
+    status === 'FULL' ? colors.error : 
+    status === 'REMAIN' ? colors.warning : 
+    colors.success};
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+`;
+
 export const Info = styled.article`
   display: flex;
   flex-direction: column;

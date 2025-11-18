@@ -50,6 +50,29 @@ export const SliderWrapper = styled.div`
   }
 `;
 
+export const StatusBadge = styled.div<{ status: 'EMPTY_ROOM' | 'FULL' | 'REMAIN' }>`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: ${radius.sm};
+  font-size: ${fontSizes.H2};
+  font-weight: 600;
+  z-index: ${zIndex.overlay};
+  background-color: ${({ status }) => 
+    status === 'FULL' ? colors.error : 
+    status === 'REMAIN' ? colors.warning : 
+    colors.success};
+  color: white;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  ${mq.mobile} {
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.4rem 0.8rem;
+    font-size: ${fontSizes.H3};
+  }
+`;
+
 export const SliderTrack = styled.div<{ index: number; count: number }>`
   display: flex;
   width: ${({ count }) => `calc(100% * ${count})`};

@@ -16,6 +16,12 @@ export type BoardingRoomOption = { optionId: string; name: string };
 export type BoardingContractPeriod = { contractPeriodId: string; contractPeriod: number };
 export type BoardingRoomFile = { fileId: string; url: string };
 
+export enum RoomStatus {
+  EMPTY_ROOM = 'EMPTY_ROOM',
+  FULL = 'FULL',
+  REMAIN = 'REMAIN'
+}
+
 export type BoardingPostDetail = {
   __typename: 'BoardingPost';
   room: {
@@ -24,7 +30,7 @@ export type BoardingPostDetail = {
     description: string;
     monthlyRent: number;
     day: string;
-    status: string;
+    status: RoomStatus | string;
     headCount: number;
     likeCount: number;
     isLiked: boolean;
