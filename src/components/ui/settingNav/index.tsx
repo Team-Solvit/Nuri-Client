@@ -132,6 +132,9 @@ export default function SettingNav({onLogoutClick, onLeaveClick, onClose}: Setti
 					<div key={section.title}>
 						<S.SectionTitle>{section.title}</S.SectionTitle>
 						{section.items.map(({label, path, icon}) => {
+							if(role === "THIRD_PARTY" && (label === "호스트 인증" || label === "하숙생 인증")){
+								return null;
+							}
 							const active = pathname === path
 							return (
 								<S.MenuItem
