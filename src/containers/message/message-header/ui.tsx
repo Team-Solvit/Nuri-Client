@@ -173,6 +173,8 @@ export default function MessageHeaderUI() {
 
 	const handleMemberClick = (memberId: string) => {
 		console.log(memberId);
+		// memberCount가 3 이상이면 프로필 이동 차단
+		if (memberIds?.length >= 3) return;
 		navigate(`/profile/${memberId}`);
 	};
 

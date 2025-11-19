@@ -117,9 +117,21 @@ export default function MessageSideBar() {
 					
 					// 전역 상태에 페이지 업데이트
 					setPage(newPage);
+					
+					// 중복 제거하면서 병합
+					const existingIds = new Set((prev?.getRooms || []).map((r: RoomReadResponseDto) => r.roomDto?.id));
+					const newRooms = (fetchMoreResult?.getRooms || []).filter(
+						(r: RoomReadResponseDto) => r.roomDto?.id && !existingIds.has(r.roomDto.id)
+					);
+					
+					const merged = [...(prev?.getRooms || []), ...newRooms];
+					
+					// 전역 상태 업데이트
+					setRoomDataList(merged);
+					
 					return {
 						...prev,
-						getRooms: [...(prev?.getRooms || []), ...(fetchMoreResult?.getRooms || [])],
+						getRooms: merged,
 					};
 				},
 			});
@@ -157,48 +169,35 @@ export default function MessageSideBar() {
 	}, [ isFetchingMore, loadMore]);
 	const {chatRoomId, chatRoomName, chatProfile, isOpen, setValues: setDmRoom} = useMessageDmManageStore();
 	
+	// 초기 로드 및 refetch 시에만 데이터 설정 (중복 제거)
 	useEffect(() => {
 		if (data?.getRooms && data.getRooms.length > 0) {
-			const merged = [...roomDataList, ...data.getRooms];
-			
-			const unique = merged.reduceRight((acc, cur) => {
-				if (cur.roomDto && !acc.some((r: RoomReadResponseDto) => r.roomDto?.id === cur.roomDto?.id)) {
-					acc.push(cur);
-				}
-				return acc;
-			}, [] as typeof merged);
-			
-			setRoomDataList(unique.reverse());
+			// page가 0이면 초기 로드이므로 덮어쓰기
+			if (page === 0) {
+				setRoomDataList(data.getRooms);
+			} else {
+				// fetchMore의 경우 updateQuery에서 이미 처리되므로 여기서는 스킵
+				return;
+			}
 		}
-	}, [data?.getRooms]);
+	}, [data?.getRooms, page, setRoomDataList]);
 	
 	useEffect(() => {
 		if (isOpen && chatRoomId) {
 			const roomExists = roomDataList.some(room => room.roomDto?.id === chatRoomId);
-			const next = roomExists
-				? roomDataList
-				: [
-					{
-						latestMessage: "",
-						latestCreatedAt: "",
-						roomDto: {
-							name: chatRoomName,
-							id: chatRoomId,
-							profile: chatProfile,
-							memberCount : 0
-						},
+			if (!roomExists) {
+				const newRoom = {
+					latestMessage: "",
+					latestCreatedAt: "",
+					roomDto: {
+						name: chatRoomName,
+						id: chatRoomId,
+						profile: chatProfile,
+						memberCount: 0
 					},
-					...roomDataList,
-				];
-			const unique = next.reduceRight((acc, cur) => {
-				if (cur.roomDto && !acc.some(r => {
-					return r.roomDto?.id === cur.roomDto?.id
-				})) {
-					acc.push(cur);
-				}
-				return acc;
-			}, [] as typeof next);
-			setRoomDataList(unique.reverse());
+				};
+				setRoomDataList([newRoom, ...roomDataList]);
+			}
 			
 			setDmRoom({
 				isOpen: false,
@@ -207,7 +206,7 @@ export default function MessageSideBar() {
 				chatRoomName: "",
 			});
 		}
-	}, [isOpen, chatRoomId, chatRoomName, chatProfile]);
+	}, [isOpen, chatRoomId]);
 	
 	const changeParamsId = (id: string | null | undefined) => {
 		if (!id) return "";

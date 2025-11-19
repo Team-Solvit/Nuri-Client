@@ -20,7 +20,6 @@ import { useMessageAlertStore } from "@/store/messageAlert";
 import { useMessageHeaderStore } from "@/store/messageHeader";
 import { imageCheck } from "@/utils/imageCheck";
 import { usePermissionGuard } from "@/hooks/usePermissionGuard";
-import { ms } from 'date-fns/locale';
 
 interface User {
 	userId: string;
@@ -99,6 +98,7 @@ export default function AdditionRoom({ isAddition, setIsAddition, iconRef, type,
 		setSearchTerm('');
 		setSelectedUsers([]);
 		setIsTeamChat(false);
+		setRoomName('');
 		if (profilePreview) URL.revokeObjectURL(profilePreview);
 		setProfilePreview(null);
 		setProfileDataUrl(null);

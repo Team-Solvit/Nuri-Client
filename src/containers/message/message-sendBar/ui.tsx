@@ -141,9 +141,9 @@ export default function MessageSendBar() {
 	
 	// 엔터 시 메시지 전송
 	const [isSending, setIsSending] = useState(false);
-	const handleKeyDownSendMessage = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+	const handleKeyDownSendMessage = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (isComposing) return;
-		if (e.key === "Enter" && !e.shiftKey) {
+		if (e.key === "Enter") {
 			e.preventDefault();
 			if (!message.trim() || isSending) return;
 			
@@ -154,18 +154,18 @@ export default function MessageSendBar() {
 			}
 			
 			setIsSending(true);
-			try{
+			try {
 				const type = checkType(id as string);
 				if (Array.isArray(type)) {
-					await sendDmChatMessage(type, message, chatRoomName, reply);
+					sendDmChatMessage(type, message, chatRoomName, reply);
 				} else if (type === "UUID 형식") {
-					await sendGroupChatMessage(id as string, message, reply);
+					sendGroupChatMessage(id as string, message, reply);
 				} else {
-					error("메시지 전송에 실패")
+					error("메시지 전송에 실패");
 				}
 				setMessage("");
 				clearReply();
-			}finally {
+			} finally {
 				setIsSending(false);
 			}
 		}
@@ -188,10 +188,8 @@ export default function MessageSendBar() {
 					onCompositionEnd={() => setIsComposing(false)}
 					value={message}
 					onChange={(e) => setMessage(e.target.value)}
-					onKeyDown={async (e) => {
-						await handleKeyDownSendMessage(e)
-					}}
-					placeholder="메시지를 입력하세요 (Shift+Enter로 줄바꿈)"
+					onKeyDown={handleKeyDownSendMessage}
+					placeholder="메시지를 입력하세요"
 				/>
 			</S.ContentBox>
 			<S.SendButton onClick={handleSendMessage} disabled={isSending}>
