@@ -66,6 +66,7 @@ export default function MessageContent() {
 		setMessages(newMessage);
 	}, [data?.readMessages]);
 
+	console.log(newMessageReflect);
 	useEffect(() => {
 		if (!newMessageReflect) return;
 		if (newMessageReflect.roomId !== roomId) return;
@@ -85,6 +86,7 @@ export default function MessageContent() {
 				return [...(prev ?? []), newMessage];
 			});
 		};
+		console.log("Appending new message to content:", newSetMessage);
 		newMessage(newSetMessage)
 	}, [newMessageReflect]);
 

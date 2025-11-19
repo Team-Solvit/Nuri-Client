@@ -77,7 +77,8 @@ export default function MessageSideBar() {
 		setHeader({
 			chatProfile: profile,
 			chatRoomName: name,
-			memberCount:memberCount
+			memberCount:memberCount,
+			roomId: id
 		})
 		NProgress.start()
 		router.push(`/message/${id}`, {scroll: false});
@@ -86,7 +87,7 @@ export default function MessageSideBar() {
 	const [isAddition, setIsAddition] = useState(false);
 	const [isDone, setIsDone] = useState(false);
 	
-	const {error, success} = useAlertStore()
+	const {success} = useAlertStore()
 	const loadMore = async () => {
 		console.log("Loading more rooms, page:", page + 1);
 		if (isFetchingMore || isDone || isLoadingMore.current) {

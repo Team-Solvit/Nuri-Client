@@ -110,12 +110,13 @@ export default function AdditionRoom({ isAddition, setIsAddition, iconRef, type,
 	const params = useParams();
 	const roomId = typeof params.id === "string" ? params.id : params.id?.[0] ?? "";
 
-	const { setValues: setHeader, chatProfile, chatRoomName, memberCount } = useMessageHeaderStore()
+	const { setValues: setHeader, chatProfile, chatRoomName, memberCount, roomId: currentRoomId } = useMessageHeaderStore()
 	const inviteSuccess = (num: number) => {
 		setHeader({
 			chatProfile,
 			chatRoomName,
-			memberCount: memberCount + num
+			memberCount: memberCount + num,
+			roomId: currentRoomId
 		})
 	}
 	const handleInviteChatMember = async (roomId: string) => {
@@ -398,7 +399,6 @@ export default function AdditionRoom({ isAddition, setIsAddition, iconRef, type,
 					{users?.map(user => {
 						const isSelected = selectedUsers.some(u => u.userId === user.userId);
 						const isMe = user.userId === id;
-						console.log(user, isMe, isSelected, imageCheck(user.profile))
 						if (isMe) return null
 						return (
 							<S.UserItem

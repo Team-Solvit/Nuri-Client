@@ -5,7 +5,8 @@ interface MessageHeaderState {
 	chatProfile: string
 	chatRoomName: string,
 	memberCount : number,
-	setValues: (payload: { chatProfile: string; chatRoomName: string, memberCount:number }) => void
+	roomId: string,
+	setValues: (payload: { chatProfile: string; chatRoomName: string, memberCount:number, roomId: string }) => void
 	incrementMemberCount: () => void
 	decrementMemberCount: () => void
 }
@@ -16,11 +17,13 @@ export const useMessageHeaderStore = create<MessageHeaderState>()(
 			chatProfile: '',
 			chatRoomName: '',
 			memberCount : 0,
-			setValues: ({ chatProfile, chatRoomName, memberCount }) =>
+			roomId: '',
+			setValues: ({ chatProfile, chatRoomName, memberCount, roomId }) =>
 				set({
 					chatProfile,
 					chatRoomName,
-					memberCount
+					memberCount,
+					roomId
 				}),
 			incrementMemberCount: () =>
 				set((state) => ({

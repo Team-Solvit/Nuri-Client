@@ -98,13 +98,20 @@ export default function MessageHeaderUI() {
 	}, [roomMemberData?.getUserIds]);
 	
 	const { userId: currentUserId } = useUserStore();
-	const isTeamChat = currentRoom?.roomDto?.isTeam ?? false;
+	
+	// 방장 수 계산
+	const hostCount = useMemo(() => {
+		return memberIds.filter((m: MemberData) => m.invitePermission).length;
+	}, [memberIds]);
+	
+	// 방장이 2명 이상이면 일반 채팅방으로 처리
+	const isTeamChat = hostCount === 1 && (currentRoom?.roomDto?.isTeam ?? false);
 	
 	// 현재 사용자가 초대 권한이 있는지 확인
 	const currentUserMember = memberIds.find((m: MemberData) => m.userId === currentUserId);
 	const canInvite = isTeamChat 
 		? currentUserMember?.invitePermission ?? false  // 팀 채팅: 방장만 가능
-		: true;  // 일반 채팅: 모두 가능
+		: true;  // 일반 채팅 or 방장 2명 이상: 모두 가능
 
 	useEffect(() => {
 		if (!message || !refetch) return;
@@ -211,7 +218,7 @@ export default function MessageHeaderUI() {
 	const iconRef = useRef<HTMLImageElement>(null);
 
 	useLoadingEffect(isLoading)
-	const { chatProfile, chatRoomName } = useMessageHeaderStore()
+	const { chatProfile, chatRoomName, roomId:headerRoomId } = useMessageHeaderStore()
 	return (
 		<S.MessageHeaderContainer className="message-header">
 			{/*모바일이면 나오는 뒤로가기 버튼*/}
@@ -241,7 +248,8 @@ export default function MessageHeaderUI() {
 							</S.MemberListHeader>
 							<S.MemberList>
 								{memberIds.map((member: MemberData, index: number) => {
-									const isHost = member.invitePermission;
+									const isHost = member.invitePermission && isTeamChat; // 팀 채팅일 때만 방장 표시
+									const canKick = isTeamChat && currentUserMember?.invitePermission && !member.invitePermission; // 팀 채팅에서 방장만 일반 멤버 추방 가능
 									return(
 									<S.MemberItem
 										key={index}
@@ -254,7 +262,7 @@ export default function MessageHeaderUI() {
 												{isHost && <S.HostBadge>방장</S.HostBadge>}
 											</S.MemberName>
 										</S.MemberInfo>
-										{!isHost && (
+										{canKick && (
 											<S.KickButton
 												onClick={(e) => {
 													e.stopPropagation();

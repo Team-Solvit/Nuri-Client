@@ -8,7 +8,7 @@ import { ChatMessageResponse } from "@/containers/message/message-content/type";
 import { useMessageAlertStore } from "@/store/messageAlert";
 import { useAlertStore } from "@/store/alert";
 import { useMessageConnectStore } from "@/store/messageConnect";
-import { useParams } from "next/navigation";
+import { useMessageHeaderStore } from "@/store/messageHeader";
 import { useQuery } from "@apollo/client";
 import { MessageQueries } from "@/services/message";
 
@@ -18,7 +18,7 @@ export default function useSocketConnect() {
 	const { fadeIn } = useMessageAlertStore();
 	const { error } = useAlertStore();
 	const { addSubscription, removeSubscription, clearSubscriptions } = useMessageConnectStore();
-	const { id: roomId } = useParams();
+	const { roomId } = useMessageHeaderStore();
 
 	// 메시지 카운트 쿼리 추가
 	const { refetch: refetchMessageCount } = useQuery<{ getNewMessageCount: number }>(
@@ -59,10 +59,10 @@ export default function useSocketConnect() {
 				}
 			}))
 
-			addSubscription("user-notify", client.subscribe(`/user/${userId}/notify`, (message) => {
-				try {
-					const subMessage = message.body.split(" ");
-					if (subMessage.length === 2 && subMessage[0] === "JOINPLAYERS") {
+		addSubscription("user-notify", client.subscribe(`/user/${userId}/notify`, (message) => {
+			try {
+				const subMessage = message.body.split(" ");
+				if (subMessage.length === 2 && subMessage[0] === "JOINPLAYERS") {
 						const joinMessage: ChatMessageResponse = {
 							name: "",
 							picture: "",
@@ -72,7 +72,7 @@ export default function useSocketConnect() {
 								name: ""
 							},
 							id: Date.now().toString(),
-							roomId: roomId as string,
+							roomId: roomId,
 							contents: `${subMessage[1]} join`,
 							sender: {
 								name: "nuri",
@@ -83,8 +83,8 @@ export default function useSocketConnect() {
 						setMessage(joinMessage);
 						return;
 					}
-					if (subMessage.length === 2 && subMessage[0] === "EXITPLAYERS") {
-						const exitMessage: ChatMessageResponse = {
+				if (subMessage.length === 2 && subMessage[0] === "EXITPLAYERS") {
+					const exitMessage: ChatMessageResponse = {
 							name: "",
 							picture: "",
 							replyChat: {
@@ -105,13 +105,16 @@ export default function useSocketConnect() {
 						return;
 					}
 
-					if (subMessage.length === 2 && subMessage[0] === "UNSUB") {
-						removeSubscription(subMessage[1]);
-					}
-					if (subMessage.length === 2 && subMessage[0] === "SUB") {
-						addSubscription(subMessage[1], client.subscribe(`/chat/messages/${subMessage[1]}`, (msg) => {
-							const msgData = JSON.parse(msg.body);
-							setMessage(msgData);
+				if (subMessage.length === 2 && subMessage[0] === "UNSUB") {
+					console.log("🔕 [UNSUB] Unsubscribing from:", subMessage[1]);
+					removeSubscription(subMessage[1]);
+				}
+				if (subMessage.length === 2 && subMessage[0] === "SUB") {
+					console.log("🔔 [SUB] Subscribing to:", subMessage[1]);
+			addSubscription(subMessage[1], client.subscribe(`/chat/messages/${subMessage[1]}`, (msg) => {
+					const msgData = JSON.parse(msg.body);
+					console.log("💬 [chat-message] Room:", subMessage[1], "Message:", msgData);
+					setMessage(msgData);
 							fadeIn(
 								msgData.sender?.profile,
 								msgData?.roomId,
@@ -149,5 +152,5 @@ export default function useSocketConnect() {
 			clearSubscriptions();
 			client.deactivate();
 		};
-	}, [userId, accessToken, refetchMessageCount]);
+	}, [userId, accessToken, refetchMessageCount, roomId]);
 }
