@@ -25,15 +25,16 @@ export default function UserSearch({ searchKeyword }: UserSearchProps) {
   const { error: showError } = useAlertStore();
 
   const handleSearch = useCallback(async (keyword: string) => {
-    if (!keyword.trim()) {
-      setUsers([]);
-      return;
-    }
-
     try {
       setLoading(true);
-      const results = await UserService.searchUsers(client, keyword.trim());
-      setUsers(results);
+      const results = await UserService.searchUsers(client, keyword);
+      
+      // 빈 문자열로 검색했을 때만 12개로 제한
+      if (keyword === '' && results.length > 12) {
+        setUsers(results.slice(0, 12));
+      } else {
+        setUsers(results);
+      }
     } catch (error) {
       console.error('유저 검색 실패:', error);
       showError('유저 검색 중 오류가 발생했습니다. 다시 시도해주세요.');
