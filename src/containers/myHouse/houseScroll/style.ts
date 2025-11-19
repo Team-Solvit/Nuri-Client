@@ -157,6 +157,7 @@ export const RoomInfo = styled.div`
   align-items: start;
   padding: 1rem 0;
   gap: 0.4rem;
+  position: relative;
 
   ${mq.mobile} {
     padding: 1.5rem;
