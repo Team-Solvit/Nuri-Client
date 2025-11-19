@@ -272,30 +272,28 @@ export default function ProfilePage() {
                     </S.ProfileImageWrap>
 
                     <S.ProfileInfo>
-                        <S.Button>
+                        <S.InputGroup>
                             <S.NameInput
                                 placeholder="아이디"
                                 value={userid}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUserid(e.target.value)}
+                                readOnly
                             />
                             <S.NickInput
                                 placeholder="닉네임"
                                 value={nickname}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNickname(e.target.value)}
                             />
-                        </S.Button>
-                        <S.Change>
-                            <S.ChangePhotoBtn as="label" htmlFor="profileUpload">
-                                사진 변경
-                            </S.ChangePhotoBtn>
-                            <input
-                                type="file"
-                                id="profileUpload"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                style={{ display: 'none' }}
-                            />
-                        </S.Change>
+                        </S.InputGroup>
+                        <S.ChangePhotoBtn as="label" htmlFor="profileUpload">
+                            사진 변경
+                        </S.ChangePhotoBtn>
+                        <input
+                            type="file"
+                            id="profileUpload"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            style={{ display: 'none' }}
+                        />
                     </S.ProfileInfo>
                 </S.ProfileRow>
 

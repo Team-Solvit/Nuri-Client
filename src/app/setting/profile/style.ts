@@ -4,7 +4,7 @@ import { mq } from '@/styles/media'
 
 export const Container = styled.div`
   display: flex;
-  width: 70%;
+  width: 100%;
   min-height: 100vh;
   background: #fff;
 
@@ -32,12 +32,14 @@ export const MainContent = styled.div`
   display: flex;
   flex-direction: column;
   padding: 4rem 6rem 0rem 6.8rem;
-  margin: 0 auto;
+  max-width: 900px;
+  width: 100%;
+  box-sizing: border-box;
 
   ${mq.mobile} {
     padding: 1rem;
-    margin: 0;
     width: 100%;
+    max-width: 100%;
   }
 `
 
@@ -60,7 +62,7 @@ export const ProfileRow = styled.div`
   background: #fbe9eb;
   border-radius: 15px;
   padding: 2.5rem 2rem;
-  width: 50vw;
+  width: 100%;
 
   ${mq.mobile} {
     width: 100%;
@@ -73,14 +75,13 @@ export const ProfileRow = styled.div`
   }
 `
 
-export const Button = styled.div`
+export const InputGroup = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 0.5rem;
 
     ${mq.mobile} {
       gap: 0.5rem;
-      margin-left: 0.5rem;
       flex: 1;
     }
 `
@@ -104,8 +105,9 @@ export const ProfileImageWrap = styled.div`
 `
 
 export const ProfileInfo = styled.div`
-  gap: 10rem;
   display: flex;
+  align-items: center;
+  gap: 2rem;
 
   ${mq.mobile} {
     gap: 0.5rem;
@@ -166,11 +168,13 @@ export const ChangePhotoBtn = styled.label`
   color: #fff;
   border: none;
   border-radius: 10px;
-  padding: 0.5rem 1.5rem;
+  padding: 0.7rem 1.5rem;
   font-size: 1rem;
   cursor: pointer;
-  max-height: 4.5vh;
-  margin-top: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
 
   ${mq.mobile} {
     display: flex;
@@ -207,7 +211,6 @@ export const BioSection = styled.div`
 
 export const Change = styled.div`
     display: flex;
-    margin-top: 1rem;
 `
 
 export const BioInput = styled.textarea`
