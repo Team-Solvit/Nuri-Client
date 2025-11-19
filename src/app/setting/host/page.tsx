@@ -19,6 +19,7 @@ import Alert from "@/components/ui/alert";
 import { clearAccessToken } from '@/utils/token';
 import { AuthService } from "@/services/auth";
 import { useRouter } from "next/navigation";
+import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
 
 interface HostBoardingRoom {
   boardingHouse: {
@@ -183,6 +184,7 @@ export default function Host() {
     localStorage.setItem('hostPhoneVerifiedAt', String(Date.now()));
   }
 
+  const navigate = useNavigationWithProgress();
   const handleInputChange = (field: keyof typeof formData, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   }
@@ -236,7 +238,7 @@ export default function Host() {
         success('하숙집 정보가 저장되었습니다.');
         setIsHostSettingCompleted(true);
         localStorage.setItem('hostSettingCompleted', 'true');
-
+        navigate("/myHouse")
         setRole('HOST');
       } else {
         showError('하숙집 정보 저장에 실패했습니다.');
