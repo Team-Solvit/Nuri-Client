@@ -1,6 +1,6 @@
 'use client'
 
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useState, useEffect } from 'react'
 import {
   GoogleMap,
   Marker,
@@ -14,7 +14,6 @@ const MARKER_SIZE = 48
 const OFFSET_X = MARKER_SIZE / 2
 const OFFSET_Y = -MARKER_SIZE / 4
 
-// 기본 위치: 동경 128.7384361, 북위 34.8799083
 const DEFAULT_CENTER = { lat: 35.18, lng: 129.08 }
 
 interface MarkerItem {
@@ -26,19 +25,36 @@ interface MapProps {
   markers: MarkerItem[]
   label: (m: MarkerItem) => string
   renderPopup: (m: MarkerItem) => React.ReactNode
-	onMarkerSelect?: (m: MarkerItem | null) => void,
-	fallbackCenter?: { lat: number; lng: number },
+  onMarkerSelect?: (m: MarkerItem | null) => void,
+  fallbackCenter?: { lat: number; lng: number },
 }
 
 export default function Map({ markers, label, renderPopup, onMarkerSelect }: MapProps) {
   const { isLoaded } = useGoogleMaps()
   const [hoveredId, setHoveredId] = useState<number | null>(null)
   const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [map, setMap] = useState<google.maps.Map | null>(null)
+
+  useEffect(() => {
+    console.log('markers changed:', markers)
+    if (map && isLoaded) {
+      const timer = setTimeout(() => {
+        console.log(isLoaded)
+        const currentZoom = map.getZoom()
+        if (currentZoom !== undefined && currentZoom !== null) {
+          map.setZoom(currentZoom + 3)
+          requestAnimationFrame(() => {
+            map.setZoom(currentZoom)
+          })
+        }
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [map, isLoaded])
 
   if (!isLoaded) return <div>로딩 중…</div>
   const selected = markers.find((m) => m.id === selectedId) || null
 
-  // 마커가 있으면 확대, 없으면 축소
   const zoomLevel = markers.length > 0 ? 15 : 10
 
   return (
@@ -50,6 +66,7 @@ export default function Map({ markers, label, renderPopup, onMarkerSelect }: Map
         DEFAULT_CENTER
       }
       zoom={zoomLevel}
+      onLoad={(mapInstance) => setMap(mapInstance)}
     >
       {markers.map((m) => {
         const isHovered = m.id === hoveredId
@@ -69,12 +86,12 @@ export default function Map({ markers, label, renderPopup, onMarkerSelect }: Map
               onClick={() =>
                 setSelectedId((prev) => {
                   const next = prev === m.id ? null : m.id
-	                const sel = next !== null
-		                ? markers.find((mm) => mm.id === next) || null
-		                : null
+                  const sel = next !== null
+                    ? markers.find((mm) => mm.id === next) || null
+                    : null
                   if (onMarkerSelect) {
                     requestAnimationFrame(() => {
-	                    onMarkerSelect(sel)
+                      onMarkerSelect(sel)
                     })
                   }
                   return next
