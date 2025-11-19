@@ -29,19 +29,12 @@ import { messageRequestCheck } from "@/utils/messageRequestCheck";
 import { Contract, RoomTour } from "@/types/message";
 import { useMessageContentReadFetchStore } from "@/store/messageContentReadFetch";
 import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
-import { useAlertStore } from "@/store/alert";
-import { useMessagePageStore } from "@/store/messagePage";
-import { MessageService } from "@/services/message";
-import { useApollo } from "@/lib/apolloClient";
 
 export default function MessageContent() {
 	const { message: newMessageReflect } = useMessageReflectStore();
 	const { id } = useParams();
 	const [roomId, setRoomId] = useState<string | null>(null);
 	const navigate = useNavigationWithProgress();
-	const { error } = useAlertStore();
-	const { page, setRoomDataList } = useMessagePageStore();
-	const apolloClient = useApollo();
 
 	useEffect(() => {
 		if (!id) return;
@@ -191,13 +184,6 @@ export default function MessageContent() {
 						const exitMatch = msg.contents.match(/^(\w+)\s+exit$/);
 						if (exitMatch) {
 							const exitedUser = exitMatch[1];
-							
-							// 현재 유저가 추방당한 경우
-							if (exitedUser === userId) {
-								error("방장에 의해 추방당하였습니다");
-								navigate('/message');
-							}
-							
 							return (
 								<S.SystemMessage>
 									{exitedUser}님이 퇴장하였습니다.

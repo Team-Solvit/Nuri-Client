@@ -60,6 +60,7 @@ export default function useSocketConnect() {
 			}))
 
 		addSubscription("user-notify", client.subscribe(`/user/${userId}/notify`, (message) => {
+			console.log(message.body);
 			try {
 				const subMessage = message.body.split(" ");
 				if (subMessage.length === 2 && subMessage[0] === "JOINPLAYERS") {
@@ -84,6 +85,16 @@ export default function useSocketConnect() {
 						return;
 					}
 				if (subMessage.length === 2 && subMessage[0] === "EXITPLAYERS") {
+					const exitedUser = subMessage[1];
+					// 현재 유저가 추방당한 경우
+					if (exitedUser === userId) {
+						error("방장에 의해 추방당하였습니다");
+						if (typeof window !== 'undefined') {
+							window.location.href = '/message';
+						}
+						return;
+					}
+					
 					const exitMessage: ChatMessageResponse = {
 							name: "",
 							picture: "",
@@ -94,7 +105,7 @@ export default function useSocketConnect() {
 							},
 							id: Date.now().toString(),
 							roomId: roomId as string,
-							contents: `${subMessage[1]} exit`,
+							contents: `${exitedUser} exit`,
 							sender: {
 								name: "nuri",
 								profile: ""
