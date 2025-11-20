@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useUserStore } from '@/store/user';
 import { useAlertStore } from '@/store/alert';
-import { useLoginModalStore } from '@/store/loginModal';
 
 const ROLE_PATHS = {
   THIRD_PARTY: ['/boarding/third-party', '/meeting/third-party'],
@@ -17,11 +16,19 @@ const ROLE_MESSAGES = {
 };
 
 export default function RoleGuard() {
-  const { role, userId } = useUserStore(s => s);
   const router = useRouter();
   const pathname = usePathname();
+  let userId: string | undefined;
+  let role: string | undefined;
+  try {
+    const userStore = useUserStore.getState();
+    userId = userStore.userId ?? undefined;
+    role = userStore.role ?? undefined;
+  } catch (e) {
+    userId = undefined;
+    role = undefined;
+  }
   const { error } = useAlertStore();
-  const { open } = useLoginModalStore();
 
   useEffect(() => {
     for (const [requiredRole, paths] of Object.entries(ROLE_PATHS)) {
