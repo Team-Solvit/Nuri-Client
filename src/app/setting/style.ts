@@ -4,7 +4,7 @@ import { mq } from '@/styles/media'
 
 export const Layout = styled.div`
   display: flex;
-  width: 70%;
+  width: 100%;
   min-height: 100vh;
   background: ${colors.background};
 
@@ -34,12 +34,15 @@ export const ContentArea = styled.div`
   flex-direction: column;
   align-items: flex-start;
   padding: 4rem 6rem;
-  margin: 0 auto;
   gap: 30px;
+  max-width: 900px;
+  width: 100%;
+  box-sizing: border-box;
 
   ${mq.mobile} {
     padding: 1rem;
     gap: 18px;
+    max-width: 100%;
   }
 `
 
@@ -101,12 +104,12 @@ export const ContactItem = styled.div`
   border-radius: ${radius.sm};
   padding: 0 1rem;
   height: 55px;
-  width: 44vw;
+  width: 100%;
   background: #fff;
 
   ${mq.mobile} {
-    height: 6vh;
-    width: 90vw;
+    height: 55px;
+    width: 100%;
     border-radius: 4.43px;
   }
 `
