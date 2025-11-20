@@ -43,9 +43,9 @@ export const FadeBox = ({ onClose, onInvite, onExit, canInvite }: FadeBoxProps) 
 		};
 	}, [onClose]);
 
-	return (
+		return (
 		<S.FadeBoxContainer ref={boxRef}>
-			<S.MenuButton onClick={onExit}>나가기</S.MenuButton>
+			{!canInvite && <S.MenuButton onClick={onExit}>나가기</S.MenuButton>}
 			{canInvite && <S.MenuButton onClick={onInvite}>초대하기</S.MenuButton>}
 		</S.FadeBoxContainer>
 	);
