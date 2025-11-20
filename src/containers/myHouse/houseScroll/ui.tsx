@@ -28,9 +28,12 @@ const HouseScroll = () => {
 		boarderName: "",
 		roomName: ""
 	}])
+	const [modalType, setModalType] = useState<"contract" | "room">("contract");
+	const [roomIdToDelete, setRoomIdToDelete] = useState<string>("");
 	const { open } = useModalStore();
 	const openModal = (boarderNames: string[], roomName: string, contractId: string) => {
 		open();
+		setModalType("contract");
 		setContractId(contractId)
 		const newBoarders = boarderNames.map((item) => ({
 			boarderName: item,
@@ -38,6 +41,16 @@ const HouseScroll = () => {
 		}));
 
 		setLeaveInfo(newBoarders)
+	}
+	
+	const openRoomDeleteModal = (roomName: string, roomId: string) => {
+		open();
+		setModalType("room");
+		setRoomIdToDelete(roomId);
+		setLeaveInfo([{
+			boarderName: "",
+			roomName: roomName,
+		}]);
 	}
 	const { data: boardingHouseInfo, loading: boardingHouseInfoLoading } = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_INFO);
 	const { data: boardingHouseRooms, refetch, loading: boardingHouseRoomsLoading } = useQuery(BoardingHouseQueries.GET_BOARDING_HOUSE_ROOMS);
@@ -81,7 +94,7 @@ const HouseScroll = () => {
 	}
 	return (
 		<S.Container>
-			{leaveInfo && <LeaveModal roomRefetch={refetch} boarders={leaveInfo} contractId={contractId} />}
+			{leaveInfo && <LeaveModal roomRefetch={refetch} boarders={leaveInfo} contractId={contractId} type={modalType} roomId={roomIdToDelete} />}
 			<S.Header>
 				<S.Title>{boardingHouse?.name}</S.Title>
 				<S.Setting onClick={() => navigate("/setting/host")}>하숙집 설정</S.Setting>
@@ -117,7 +130,7 @@ const HouseScroll = () => {
 			<S.More onClick={() => setIsOpen(!isOpen)}>{isOpen ? "숨기기" : "더보기"}</S.More>
 			<S.RoomInfoContainer>
 				<S.RoomInfoTitle>방 정보</S.RoomInfoTitle>
-				<Square text='방추가' status={true} width='100px' onClick={handleRoomAdd} />
+				<Square text='방 추가' status={true} width='100px' onClick={handleRoomAdd} />
 			</S.RoomInfoContainer>
 			<S.RoomList>
 				{boardingHouseRoomsList && boardingHouseRoomsList.length > 0 ? (
@@ -173,13 +186,26 @@ const HouseScroll = () => {
 																/>
 															</S.ActionWrap>
 														</S.ProfileWrap>
-													);
-												})}
-											</S.BoarderList>
-										)}
-										{room.room?.status === "EMPTY_ROOM" && (
+												);
+											})}
+										</S.BoarderList>
+									)}
+									{room.room?.status === "EMPTY_ROOM" && (
+										<>
 											<S.UserId color="#8c8c8c">비어있음</S.UserId>
-										)}
+											<S.ActionWrap style={{ marginTop: '0.5rem' }}>
+												<Square
+													text="방 삭제"
+													status={false}
+													onClick={(e: React.MouseEvent) => {
+														e.stopPropagation();
+														openRoomDeleteModal(room.room?.name ?? "", room.room?.roomId ?? "");
+													}}
+													width="max-content"
+												/>
+											</S.ActionWrap>
+										</>
+									)}
 									</S.RoomInfo>
 								</S.RoomHeader>
 							</S.RoomCard>

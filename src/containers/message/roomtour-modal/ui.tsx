@@ -36,7 +36,7 @@ export default function RoomTourModal() {
 	const handleReject = () => {
 		openConfirm("delete");
 	}
-
+	console.log(contractData?.status)
 	return isOpen && messageType === "roomtour" && (
 		<Modal>
 			<S.ModalContainer>
@@ -92,7 +92,7 @@ export default function RoomTourModal() {
 				
 				{/* 버튼 */}
 				<S.ButtonRow>
-					{master && status === "PENDING" ? <>
+					{master && contractData?.status === "PENDING" ? <>
 						<Square text="거절" onClick={handleReject} status={false} width="48%"/>
 						<Square text="수락" onClick={handleAccept} status={true} width="48%"/>
 					</> :

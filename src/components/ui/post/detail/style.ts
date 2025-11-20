@@ -56,7 +56,7 @@ export const StatusBadge = styled.div<{ status: 'EMPTY_ROOM' | 'FULL' | 'REMAIN'
   right: 1rem;
   padding: 0.5rem 1rem;
   border-radius: ${radius.sm};
-  font-size: ${fontSizes.H2};
+  font-size: ${fontSizes.Body};
   font-weight: 600;
   z-index: ${zIndex.overlay};
   background-color: ${({ status }) => 
@@ -68,8 +68,8 @@ box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   ${mq.mobile} {
     top: 0.75rem;
     right: 0.75rem;
-    padding: 0.4rem 0.8rem;
-    font-size: ${fontSizes.H3};
+    padding: 0.35rem 0.7rem;
+    font-size: ${fontSizes.Caption};
   }
 `;
 

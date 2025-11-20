@@ -3,10 +3,7 @@ import { colors, fontSizes, radius } from "@/styles/theme";
 import React from "react";
 import { mq } from "@/styles/media";
 import { MESSAGE_MAX_WIDTH_MOBILE } from "@/constants/constant";
-import { RoomTour, RoomTourResponseDto } from "@/types/message";
-import { useQuery } from "@apollo/client";
-import { RoomTourQueries } from "@/services/roomTour";
-import { useMessageContentReadFetchStore } from "@/store/messageContentReadFetch";
+import { RoomTour } from "@/types/message";
 import {imageCheck} from "@/utils/imageCheck";
 
 const RoomTourBubble = styled.div`
@@ -119,18 +116,8 @@ const RoomTourMessage: React.FC<RoomTourMessageProps> = ({
 	                                                         onDetail,
 	                                                         button,
                                                          }) => {
-	const shouldSkip = !(roomTour.roomTourId && roomTour.type === "roomTour");
-	
-	const { isActivate: refetchKey } = useMessageContentReadFetchStore();
-	const { data } = useQuery(RoomTourQueries.GET_ROOM_TOUR, {
-		variables: { roomTourId: roomTour.roomTourId, refetchKey },
-		skip: shouldSkip,
-		fetchPolicy: "no-cache", // 캐시를 완전히 무시하고 매번 네트워크 요청
-	});
-	
-	const roomTourData: RoomTourResponseDto | undefined = data?.getRoomTour;
 	const date = roomTour.time;
-	const status = roomTourData?.status;
+	const status = roomTour.status;
 	
 	return (
 		<div style={{ position: "relative", display: "inline-block" }}>
@@ -149,12 +136,12 @@ const RoomTourMessage: React.FC<RoomTourMessageProps> = ({
 					src={imageCheck(roomTour?.thumbnail)}
 					alt="roomtour-img"
 				/>
-				<RoomTourContent>
-					<RoomTourTitle>
-						{roomTourData?.status === "APPROVED" && "룸투어가 예약되었어요"}
-						{roomTourData?.status === "REJECTED" && "룸투어예약이 취소되었어요"}
-						{roomTourData?.status === "PENDING" && "룸투어 요청이 생성되었어요"}
-					</RoomTourTitle>
+			<RoomTourContent>
+				<RoomTourTitle>
+					{status === "APPROVED" && "룸투어가 예약되었어요"}
+					{status === "REJECTED" && "룸투어예약이 취소되었어요"}
+					{status === "PENDING" && "룸투어 요청이 생성되었어요"}
+				</RoomTourTitle>
 					<RoomTourHouse>{roomTour.roomName}</RoomTourHouse>
 					<RoomTourDate>
 						날짜 : {date.year}년 {date.month}월 {date.day}일

@@ -9,10 +9,12 @@ import {BoardingHouseService} from "@/services/boardingHouse";
 import {useApollo} from "@/lib/apolloClient";
 import {useState} from "react";
 
-export default function LeaveModal({ boarders, contractId, roomRefetch }: {
+export default function LeaveModal({ boarders, contractId, roomRefetch, type = "contract", roomId }: {
 	boarders: { boarderName: string, roomName: string }[],
-	contractId: string,
-	roomRefetch: () => void
+	contractId?: string,
+	roomRefetch: () => void,
+	type?: "contract" | "room",
+	roomId?: string
 }) {
 	const {close} = useModalStore();
 	const {error, success} = useAlertStore();
@@ -21,7 +23,12 @@ export default function LeaveModal({ boarders, contractId, roomRefetch }: {
 		close();
 	}
 	const client = useApollo()
+	
 	const endContract = async () => {
+		if (!contractId) {
+			error("계약 ID가 없습니다.");
+			return;
+		}
 		setIsLoading(true);
 		try {
 			const res = await BoardingHouseService.endBoardingRoomContract(
@@ -41,18 +48,60 @@ export default function LeaveModal({ boarders, contractId, roomRefetch }: {
 			setIsLoading(false);
 		}
 	}
+	
+	const deleteRoom = async () => {
+		if (!roomId) {
+			error("방 ID가 없습니다.");
+			return;
+		}
+		setIsLoading(true);
+		try {
+			const res = await BoardingHouseService.deleteBoardingRoom(
+				client,
+				roomId
+			)
+			if (res) {
+				roomRefetch()
+				modalClose()
+				success("방 삭제에 성공하였습니다.");
+			} else {
+				error("방 삭제에 실패하였습니다.");
+			}
+		} catch {
+			error("방 삭제에 실패하였습니다.")
+		} finally {
+			setIsLoading(false);
+		}
+	}
+	
+	const handleConfirm = () => {
+		if (type === "contract") {
+			endContract();
+		} else {
+			deleteRoom();
+		}
+	}
 	return (Array.isArray(boarders) && boarders.length > 0) && (
 		<Modal>
 			<S.Container>
-				<S.Title>계약 <span>종료</span></S.Title>
+				<S.Title>{type === "contract" ? "계약" : "방"} <span>{type === "contract" ? "종료" : "삭제"}</span></S.Title>
 				<S.Text>
-					{boarders.map((b) => `${b.boarderName}님`).join(", ")}의 {boarders?.[0]?.roomName ?? ""} 계약을 종료할까요?
+					{type === "contract" 
+						? `${boarders.map((b) => `${b.boarderName}님`).join(", ")}의 ${boarders?.[0]?.roomName ?? ""} 계약을 종료할까요?`
+						: `${boarders?.[0]?.roomName ?? ""} 방을 삭제할까요?`
+					}
 				</S.Text>
 				<S.ButtonContainer>
 					<S.CancelBtn onClick={isLoading ? undefined : modalClose} $width={"100%"}>
 						<S.Name>취소</S.Name>
 					</S.CancelBtn>
-					<Square text={"계약 종료"} onClick={endContract} status={!isLoading} width={"100%"} isLoading={isLoading}/>
+					<Square 
+						text={type === "contract" ? "계약 종료" : "방 삭제"} 
+						onClick={handleConfirm} 
+						status={!isLoading} 
+						width={"100%"} 
+						isLoading={isLoading}
+					/>
 				</S.ButtonContainer>
 			</S.Container>
 		</Modal>

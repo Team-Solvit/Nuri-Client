@@ -80,7 +80,7 @@ export default function ContractModal() {
 				
 				{/* 버튼 */}
 				<S.ButtonRow>
-					{master ?
+					{master && contractData?.status === "PENDING" ?
 						<>
 							<Square text="거절" onClick={handleReject} status={false} width="48%"/>
 							<Square text="수락" onClick={handleAccept} status={true} width="48%"/>
