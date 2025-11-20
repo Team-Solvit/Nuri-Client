@@ -283,4 +283,42 @@ export const MemberName = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+export const HostBadge = styled.span`
+  display: inline-block;
+  padding: 2px 8px;
+  background-color: ${colors.primary};
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 4px;
+  margin-left: 4px;
+`;
+
+export const KickButton = styled.button`
+  padding: 4px 12px;
+  background-color: transparent;
+  color: ${colors.primary};
+  border: 1px solid ${colors.primary};
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: auto;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background-color: ${colors.primary};
+    color: white;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `;

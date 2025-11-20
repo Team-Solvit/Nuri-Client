@@ -29,11 +29,72 @@ import { messageRequestCheck } from "@/utils/messageRequestCheck";
 import { Contract, RoomTour } from "@/types/message";
 import { useMessageContentReadFetchStore } from "@/store/messageContentReadFetch";
 import { useNavigationWithProgress } from "@/hooks/useNavigationWithProgress";
+import { RoomTourQueries } from "@/services/roomTour";
+
+const RoomTourMessageWrapper: React.FC<{
+	request: RoomTour;
+	isLastOfTime: boolean;
+	msgCreatedAtTime?: string;
+	isSent: boolean;
+	openContract: (type: messageType, isMaster: boolean, data?: Contract | RoomTour, status?: any) => void;
+}> = ({ request, isLastOfTime, msgCreatedAtTime, isSent, openContract }) => {
+	const { userId } = useUserStore();
+	const { isActivate: refetchKey } = useMessageContentReadFetchStore();
+	
+	const { data } = useQuery(RoomTourQueries.GET_ROOM_TOUR, {
+		variables: { roomTourId: request.roomTourId, refetchKey },
+		skip: !request.roomTourId,
+		fetchPolicy: "no-cache",
+	});
+	
+	const roomTourStatus = data?.getRoomTour?.status || request.status;
+	
+	return (
+		<RoomTourMessage
+			roomTour={{ ...request, status: roomTourStatus }}
+			messageTime={isLastOfTime ? msgCreatedAtTime : undefined}
+			isSent={isSent}
+			button={
+				<Square
+					text="자세히보기"
+					onClick={() => openContract("roomtour", !isSent && roomTourStatus === "PENDING", request, roomTourStatus)}
+					status={true}
+					width="100%"
+				/>
+			}
+		/>
+	);
+};
+
+const ContractMessageWrapper: React.FC<{
+	request: Contract;
+	isLastOfTime: boolean;
+	msgCreatedAtTime?: string;
+	isSent: boolean;
+	openContract: (type: messageType, isMaster: boolean, data?: Contract | RoomTour, status?: any) => void;
+}> = ({ request, isLastOfTime, msgCreatedAtTime, isSent, openContract }) => {
+	return (
+		<ContractMessage
+			contract={request}
+			time={isLastOfTime ? msgCreatedAtTime : undefined}
+			isSent={isSent}
+			button={
+				<Square
+					text="자세히보기"
+					onClick={() => openContract("contract", !isSent && request.status === "PENDING", request, request.status)}
+					status={true}
+					width="100%"
+				/>
+			}
+		/>
+	);
+};
 
 export default function MessageContent() {
 	const { message: newMessageReflect } = useMessageReflectStore();
 	const { id } = useParams();
 	const [roomId, setRoomId] = useState<string | null>(null);
+	const navigate = useNavigationWithProgress();
 
 	useEffect(() => {
 		if (!id) return;
@@ -66,6 +127,7 @@ export default function MessageContent() {
 		setMessages(newMessage);
 	}, [data?.readMessages]);
 
+	console.log(newMessageReflect);
 	useEffect(() => {
 		if (!newMessageReflect) return;
 		if (newMessageReflect.roomId !== roomId) return;
@@ -85,6 +147,7 @@ export default function MessageContent() {
 				return [...(prev ?? []), newMessage];
 			});
 		};
+		console.log("Appending new message to content:", newSetMessage);
 		newMessage(newSetMessage)
 	}, [newMessageReflect]);
 
@@ -105,11 +168,13 @@ export default function MessageContent() {
 	} = useMessageModalStore();
 
 
-	const openContract = (messageType: messageType, isMaster: boolean, data?: Contract | RoomTour) => {
+	const openContract = (messageType: messageType, isMaster: boolean, data?: Contract | RoomTour, status?: any) => {
 		open();
 		messageModalOpen();
 		if (!data) return;
-		setContractData(data);
+		// status를 포함한 데이터 설정
+		const dataWithStatus = status ? { ...data, status } as any : data;
+		setContractData(dataWithStatus);
 		setMessageType(messageType);
 		if (isMaster) setMaster();
 		else unSetMaster();
@@ -127,7 +192,6 @@ export default function MessageContent() {
 		scrollToBottom(containerRef.current);
 	}, [messages]);
 
-	const navigate = useNavigationWithProgress()
 	const handleMemberClick = (userId: string) => {
 		navigate(`/profile/${userId}`)
 	}
@@ -173,55 +237,41 @@ export default function MessageContent() {
 									.split(',')
 									.map(user => user.trim());
 
-								const joinedText = `${joinedUsers.join('님, ')}님이 초대 되었습니다.`;
+							const joinedText = `${joinedUsers.join('님, ')}님이 초대 되었습니다.`;
 
-								return <S.SystemMessage>{joinedText}</S.SystemMessage>;
-							}
-
-							// 퇴장 메시지 처리 (username exit)
-							const exitMatch = msg.contents.match(/^(\w+)\s+exit$/);
-							if (exitMatch) {
-								const exitedUser = exitMatch[1];
-								return (
-									<S.SystemMessage>
-										{exitedUser}님이 퇴장하였습니다.
-									</S.SystemMessage>
-								);
-							}
+							return <S.SystemMessage>{joinedText}</S.SystemMessage>;
 						}
 
-						const request = messageRequestCheck(msg.contents)
+						// 퇴장 메시지 처리 (username exit)
+						const exitMatch = msg.contents.match(/^(\w+)\s+exit$/);
+						if (exitMatch) {
+							const exitedUser = exitMatch[1];
+							return (
+								<S.SystemMessage>
+									{exitedUser}님이 퇴장하였습니다.
+								</S.SystemMessage>
+							);
+						}
+					}						const request = messageRequestCheck(msg.contents)
 						if (request && request.type === "contract") {
 							return (
-								<ContractMessage
-									contract={request}
-									time={isLastOfTime ? msg.createdAt.time : undefined}
+								<ContractMessageWrapper
+									request={request}
+									isLastOfTime={isLastOfTime}
+									msgCreatedAtTime={msg.createdAt.time}
 									isSent={msg.sender.name === userId}
-									button={
-										<Square
-											text="자세히보기"
-											onClick={() => openContract("contract", msg.sender.name !== userId && request.status === "PENDING", request)}
-											status={true}
-											width="100%"
-										/>
-									}
+									openContract={openContract}
 								/>
 							);
 						}
 						if (request && request.type === "roomTour") {
 							return (
-								<RoomTourMessage
-									roomTour={request}
-									messageTime={isLastOfTime ? msg.createdAt.time : undefined}
+								<RoomTourMessageWrapper
+									request={request}
+									isLastOfTime={isLastOfTime}
+									msgCreatedAtTime={msg.createdAt.time}
 									isSent={msg.sender.name === userId}
-									button={
-										<Square
-											text="자세히보기"
-											onClick={() => openContract("roomtour", msg.sender.name !== userId, request)}
-											status={true}
-											width="100%"
-										/>
-									}
+									openContract={openContract}
 								/>
 							);
 						}

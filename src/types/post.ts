@@ -28,6 +28,12 @@ export type SnsPost = {
 };
 
 // BoardingPost 관련 타입
+export enum RoomStatus {
+	EMPTY_ROOM = 'EMPTY_ROOM',
+	FULL = 'FULL',
+	REMAIN = 'REMAIN'
+}
+
 export type BoardingUser = {
 	profile: string | null;
 	userId: string;
@@ -66,6 +72,8 @@ export type BoardingRoom = {
 	likeCount: number;
 	isLiked?: boolean;
 	commentCount: number;
+	status?: RoomStatus;
+	boardingRoomOption?: any[];
 };
 
 export type BoardingPost = {

@@ -63,7 +63,8 @@ export interface RoomDto {
 	name: string;
 	id: string;
 	profile?: string | null;
-	memberCount:number
+	memberCount: number;
+	isTeam?: boolean;
 }
 
 export interface RoomCreateResponseDto {

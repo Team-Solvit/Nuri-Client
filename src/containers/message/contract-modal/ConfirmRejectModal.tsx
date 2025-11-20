@@ -155,6 +155,7 @@ export const ConfirmRejectModal: React.FC<ConfirmRejectModalProps> = ({
 		else {
 			error("처리할 수 없는 요청입니다.");
 		}
+		onClose();
 	}
 	if (!isOpen) return null;
 	return (

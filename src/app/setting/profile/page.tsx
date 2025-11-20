@@ -272,18 +272,15 @@ export default function ProfilePage() {
                     </S.ProfileImageWrap>
 
                     <S.ProfileInfo>
-                        <S.InputGroup>
-                            <S.NameInput
-                                placeholder="아이디"
-                                value={userid}
-                                readOnly
-                            />
+                        <S.InputWrapper>
+                            <S.UserIdText>{userid}</S.UserIdText>
                             <S.NickInput
                                 placeholder="닉네임"
                                 value={nickname}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNickname(e.target.value)}
+                                maxLength={20}
                             />
-                        </S.InputGroup>
+                        </S.InputWrapper>
                         <S.ChangePhotoBtn as="label" htmlFor="profileUpload">
                             사진 변경
                         </S.ChangePhotoBtn>

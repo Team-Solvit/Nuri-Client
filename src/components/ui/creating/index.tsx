@@ -60,8 +60,6 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                 return ShareRange.ALL;
             case '팔로워':
                 return ShareRange.FOLLOWER;
-            case '모임':
-                return ShareRange.GROUP;
             default:
                 return ShareRange.ALL;
         }
@@ -356,7 +354,6 @@ export default function CreatingModal({ onClose }: CreatingModalProps) {
                                         >
                                             <S.DropdownItem onClick={() => handleSelectTarget('전체')}>전체공개</S.DropdownItem>
                                             <S.DropdownItem onClick={() => handleSelectTarget('팔로워')}>팔로워만</S.DropdownItem>
-                                            <S.DropdownItem onClick={() => handleSelectTarget('모임')}>모임원만</S.DropdownItem>
                                         </S.Dropdown>
                                     )}
                                 </S.PublicWrap>

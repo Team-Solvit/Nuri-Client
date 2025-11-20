@@ -20,6 +20,7 @@ export const MessageQueries = {
           name
           profile
           memberCount
+          isTeam
         }
         newMessageCount
         latestMessage
