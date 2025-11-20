@@ -126,6 +126,29 @@ export const Intro = styled.span`
   }
 `
 
+export const InputWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  ${mq.mobile} {
+    gap: 0.5rem;
+    flex: 1;
+  }
+`
+
+export const UserIdText = styled.div`
+  padding: 0.7rem 1rem;
+  font-size: 1.1rem;
+  color: ${colors.text};
+  font-weight: 500;
+
+  ${mq.mobile} {
+    font-size: 14px;
+    padding: 0.5rem;
+  }
+`
+
 export const NameInput = styled.input`
   border: 1px solid #b9b9b9;
   border-radius: 8px;
