@@ -236,3 +236,61 @@ export const RemoveImageButton = styled.label`
     text-decoration: underline;
   }
 `;
+
+export const ChatTypeSelector = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+`;
+
+export const ChatTypeOption = styled.div<{ isSelected: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid ${({ isSelected }) => isSelected ? colors.primary : '#e0e0e0'};
+  background: ${({ isSelected }) => isSelected ? `${colors.primary}10` : 'white'};
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: ${colors.primary};
+  }
+`;
+
+export const RadioButton = styled.div<{ isSelected: boolean }>`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid ${({ isSelected }) => isSelected ? colors.primary : '#ccc'};
+  background: ${({ isSelected }) => isSelected ? colors.primary : 'white'};
+  position: relative;
+  flex-shrink: 0;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+    opacity: ${({ isSelected }) => isSelected ? 1 : 0};
+  }
+`;
+
+export const OptionTitle = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  color: ${colors.text};
+  margin-bottom: 2px;
+`;
+
+export const OptionDesc = styled.div`
+  font-size: 12px;
+  color: ${colors.gray};
+`;

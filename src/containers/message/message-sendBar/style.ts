@@ -38,19 +38,16 @@ export const SendButton = styled.button`
   justify-content: center;
   align-items: center;
 `
-export const InputText = styled.textarea`
+export const InputText = styled.input`
   width: 100%;
   height: 24px;
   border: none;
   outline: none;
   display: flex;
-  scrollbar-width: none;
   align-items: center;
-  flex-direction: column;
   line-height: 1;
   font-size: ${fontSizes.Body};
   padding: 0.2rem;
-  resize: none;
 `
 export const AddFile = styled.div`
   width: 0.8rem;

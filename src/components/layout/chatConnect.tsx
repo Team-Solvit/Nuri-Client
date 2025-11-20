@@ -21,35 +21,63 @@ export default function ChatConnect() {
 		skip: !isLoggedIn,
 		variables: {
 			isGroup: isLoggedIn,
-		}
+		},
+		fetchPolicy: "network-only",
 	});
 
-	const connectRooms = () => {
-		if (!client.connected) return;
-		data?.getRoomsGroupChat?.forEach((room: string) => {
-			if (!room) return;
-			if (subscriptions[room]) return;
-
-			addSubscription(room, client.subscribe(`/chat/messages/${room}`, (message) => {
-				const messageData = JSON.parse(message.body);
-				setMessage(messageData);
-				fadeIn(
-					messageData.sender?.profile,
-					messageData.roomId,
-					messageData.sender.name,
-					messageData.contents,
-					messageData.sendAt
-				);
-			}));
-		});
-	}
-
+	// useSocketConnect에서 이미 연결을 처리하므로 여기서는 호출만
 	useSocketConnect();
 
-	useEffect(() => {
-		if (data?.getRoomsGroupChat) {
-			connectRooms();
+	const connectRooms = () => {
+		// 연결되지 않았으면 대기
+		if (!client.connected) {
+			console.log('⏳ Waiting for connection...');
+			return;
 		}
+
+		data?.getRoomsGroupChat?.forEach((room: string) => {
+			if (!room) return;
+			
+			// 이미 구독 중이면 스킵
+			if (subscriptions[room]) {
+				console.log('✅ Already subscribed to:', room);
+				return;
+			}
+
+			console.log('🔔 Subscribing to room:', room);
+			addSubscription(
+				room, 
+				client.subscribe(`/chat/messages/${room}`, async (message) => {
+					const messageData = JSON.parse(message.body);
+					console.log('💬 Room message:', room, messageData);
+					setMessage(messageData);
+					fadeIn(
+						messageData.sender?.profile,
+						messageData.roomId,
+						messageData.sender.name,
+						messageData.contents,
+						messageData.sendAt
+					);
+				})
+			);
+		});
+	};
+
+	useEffect(() => {
+		if (!data?.getRoomsGroupChat) return;
+		
+		// 연결될 때까지 대기 후 구독
+		const subscribeWhenConnected = () => {
+			if (client.connected) {
+				connectRooms();
+			} else {
+				console.log('⏳ Not connected yet, waiting...');
+				const timer = setTimeout(subscribeWhenConnected, 500);
+				return () => clearTimeout(timer);
+			}
+		};
+
+		subscribeWhenConnected();
 	}, [data?.getRoomsGroupChat, client.connected]);
 
 	return null;

@@ -94,6 +94,7 @@ export default function MessageContent() {
 	const { message: newMessageReflect } = useMessageReflectStore();
 	const { id } = useParams();
 	const [roomId, setRoomId] = useState<string | null>(null);
+	const navigate = useNavigationWithProgress();
 
 	useEffect(() => {
 		if (!id) return;
@@ -126,6 +127,7 @@ export default function MessageContent() {
 		setMessages(newMessage);
 	}, [data?.readMessages]);
 
+	console.log(newMessageReflect);
 	useEffect(() => {
 		if (!newMessageReflect) return;
 		if (newMessageReflect.roomId !== roomId) return;
@@ -145,6 +147,7 @@ export default function MessageContent() {
 				return [...(prev ?? []), newMessage];
 			});
 		};
+		console.log("Appending new message to content:", newSetMessage);
 		newMessage(newSetMessage)
 	}, [newMessageReflect]);
 
@@ -189,7 +192,6 @@ export default function MessageContent() {
 		scrollToBottom(containerRef.current);
 	}, [messages]);
 
-	const navigate = useNavigationWithProgress()
 	const handleMemberClick = (userId: string) => {
 		navigate(`/profile/${userId}`)
 	}
@@ -235,24 +237,22 @@ export default function MessageContent() {
 									.split(',')
 									.map(user => user.trim());
 
-								const joinedText = `${joinedUsers.join('님, ')}님이 초대 되었습니다.`;
+							const joinedText = `${joinedUsers.join('님, ')}님이 초대 되었습니다.`;
 
-								return <S.SystemMessage>{joinedText}</S.SystemMessage>;
-							}
-
-							// 퇴장 메시지 처리 (username exit)
-							const exitMatch = msg.contents.match(/^(\w+)\s+exit$/);
-							if (exitMatch) {
-								const exitedUser = exitMatch[1];
-								return (
-									<S.SystemMessage>
-										{exitedUser}님이 퇴장하였습니다.
-									</S.SystemMessage>
-								);
-							}
+							return <S.SystemMessage>{joinedText}</S.SystemMessage>;
 						}
 
-						const request = messageRequestCheck(msg.contents)
+						// 퇴장 메시지 처리 (username exit)
+						const exitMatch = msg.contents.match(/^(\w+)\s+exit$/);
+						if (exitMatch) {
+							const exitedUser = exitMatch[1];
+							return (
+								<S.SystemMessage>
+									{exitedUser}님이 퇴장하였습니다.
+								</S.SystemMessage>
+							);
+						}
+					}						const request = messageRequestCheck(msg.contents)
 						if (request && request.type === "contract") {
 							return (
 								<ContractMessageWrapper
