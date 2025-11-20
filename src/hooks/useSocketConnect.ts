@@ -34,10 +34,12 @@ export default function useSocketConnect() {
 
 	// ref로 최신값 유지
 	const refetchRef = useRef(refetchMessageCount);
+	const roomIdRef = useRef(roomId);
 	
 	useEffect(() => {
 		refetchRef.current = refetchMessageCount;
-	}, [refetchMessageCount]);
+		roomIdRef.current = roomId;
+	}, [refetchMessageCount, roomId]);
 
 	const updateMessageCount = useCallback(async () => {
 		if (refetchRef.current) {
@@ -112,6 +114,7 @@ export default function useSocketConnect() {
 				"user-notify", 
 				client.subscribe(`/user/${userId}/notify`, (message) => {
 					console.log("🔔 Notify:", message.body);
+					console.log("roomIdRef:", roomIdRef.current, roomId);
 					try {
 						const subMessage = message.body.split(" ");
 						
@@ -121,7 +124,7 @@ export default function useSocketConnect() {
 								picture: "",
 								replyChat: { chatId: "", contents: "", name: "" },
 								id: Date.now().toString(),
-								roomId: roomId, // 현재 roomId 사용
+								roomId: roomIdRef.current, // ref 사용
 								contents: `${subMessage[1]} join`,
 								sender: { name: "nuri", profile: "" },
 								sendAt: new Date().toISOString()
@@ -146,7 +149,7 @@ export default function useSocketConnect() {
 								picture: "",
 								replyChat: { chatId: "", contents: "", name: "" },
 								id: Date.now().toString(),
-								roomId: roomId as string,
+								roomId: roomIdRef.current as string, // ref 사용
 								contents: `${exitedUser} exit`,
 								sender: { name: "nuri", profile: "" },
 								sendAt: new Date().toISOString()
@@ -154,12 +157,11 @@ export default function useSocketConnect() {
 							setMessage(exitMessage);
 							return;
 						}
-
+						console.log("알림왔어요 퇴장", subMessage);
 						// EXITPLAYER 처리 (3개 파라미터: EXITPLAYER userName roomId)
-						if (subMessage.length === 3 && subMessage[0] === "EXITPLAYER") {
+						if (subMessage[0] === "EXITPLAYER") {
 							const exitedUser = subMessage[1];
-							const exitRoomId = subMessage[2];
-							
+
 							if (exitedUser === userId) {
 								error("방장에 의해 추방당하였습니다");
 								if (typeof window !== 'undefined') {
@@ -173,11 +175,12 @@ export default function useSocketConnect() {
 								picture: "",
 								replyChat: { chatId: "", contents: "", name: "" },
 								id: Date.now().toString(),
-								roomId: exitRoomId,
+								roomId: roomIdRef.current,
 								contents: `${exitedUser} exit`,
 								sender: { name: "nuri", profile: "" },
 								sendAt: new Date().toISOString()
 							};
+							console.log("EXITPLAYER : 데이터에요", exitMessage);
 							setMessage(exitMessage);
 							return;
 						}
