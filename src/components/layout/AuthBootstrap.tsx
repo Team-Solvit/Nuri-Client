@@ -3,59 +3,67 @@ import { useEffect, useRef } from 'react';
 import { useApollo } from '@/lib/apolloClient';
 import { AuthGQL } from '@/services/auth';
 import { useUserStore } from '@/store/user';
-import { extractTokenFromApolloResult, saveAccessToken, getAccessToken, isTokenExpired } from '@/utils/token';
-import { useLoginModalStore } from '@/store/loginModal';
+import { extractTokenFromApolloResult, saveAccessToken, getAccessToken, isTokenExpired, clearAccessToken } from '@/utils/token';
 
 export default function AuthBootstrap() {
   const client = useApollo();
   const setAuth = useUserStore(s => s.setAuth);
   const clear = useUserStore(s => s.clear);
-  const { open } = useLoginModalStore();
-  const isRefreshing = useRef(false);
+  const hasChecked = useRef(false);
 
   useEffect(() => {
-    let cancelled = false;
+    // 한 번만 실행
+    if (hasChecked.current) return;
+    hasChecked.current = true;
 
     const checkAuth = async () => {
-      if (isRefreshing.current) return;
+      const token = getAccessToken();
 
-      const existingToken = getAccessToken();
-
-      if (!existingToken) {
+      // 토큰이 없으면 그냥 종료
+      if (!token) {
         return;
       }
 
-      if (!isTokenExpired(existingToken)) {
+      // 토큰이 유효하면 그냥 종료
+      if (!isTokenExpired(token)) {
         return;
       }
-      isRefreshing.current = true;
 
+      // 토큰이 만료됨 - Reissue 시도
+      console.log('⚠️ Initial token expired, attempting reissue...');
+      
       try {
         const r = await client.mutate({
           mutation: AuthGQL.MUTATIONS.REISSUE,
           fetchPolicy: 'no-cache',
         });
-        const headerToken = extractTokenFromApolloResult(r);
+        
+        const newToken = extractTokenFromApolloResult(r);
         const user = r.data?.reissue;
-        if (headerToken) saveAccessToken(headerToken);
-        if (user && !cancelled) setAuth(user);
-      } catch {
-        localStorage.removeItem('AT');
-        localStorage.removeItem('nuri-user');
+        
+        if (newToken) {
+          saveAccessToken(newToken);
+          if (user) setAuth(user);
+          console.log('✅ Token refreshed successfully on bootstrap');
+        } else {
+          throw new Error('No token received from reissue');
+        }
+      } catch (error) {
+        console.error('❌ Bootstrap reissue failed, logging out:', error);
+        
+        // Reissue 실패 시 로그아웃
+        clearAccessToken();
         clear();
-      } finally {
-        isRefreshing.current = false;
+        
+        // 로그인 모달 열기
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('auth-failed'));
+        }
       }
     };
 
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      requestIdleCallback(() => checkAuth());
-    } else {
-      setTimeout(checkAuth, 0);
-    }
-
-    return () => { cancelled = true; };
-  }, [client, setAuth, clear, open]);
+    checkAuth();
+  }, [client, setAuth, clear]);
 
   return null;
 }

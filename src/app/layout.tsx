@@ -12,6 +12,8 @@ import AuthGuard from "@/components/layout/AuthGuard";
 import RoleGuard from "@/components/layout/RoleGuard";
 import Loading from "@/components/ui/loading";
 import { GoogleAnalytics } from '@next/third-parties/google';
+import AuthEventListener from "@/components/layout/AuthEventListener";
+
 
 
 export const metadata: Metadata = {
@@ -45,6 +47,7 @@ export default async function RootLayout({ children, modal }: { children: React.
 				<GlobalStyles />
 				<Providers>
 					<AuthBootstrap />
+					<AuthEventListener />
 					<AuthGuard />
 					<RoleGuard />
 					<ChatComponent />
