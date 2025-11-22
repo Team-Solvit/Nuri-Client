@@ -22,6 +22,8 @@ export default function MeetingCalender({groupId}: { groupId: string }) {
 		variables: {
 			groupId: groupId
 		},
+		fetchPolicy: "no-cache",  
+    	nextFetchPolicy: "no-cache",
 		skip: !groupId,
 	})
 	const upcomingGroupSchedules = meetingSchedule?.getUpcomingGroupSchedules
