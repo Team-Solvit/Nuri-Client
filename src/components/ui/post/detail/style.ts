@@ -931,6 +931,40 @@ export const EditPostInlineTextarea = styled.textarea`
   }
 `;
 
+export const EditPostTitleWrapper = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
+export const EditPostTitleInput = styled.input`
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid ${colors.line2};
+  border-radius: ${radius.sm};
+  font-size: ${fontSizes.H4};
+  font-weight: 600;
+  color: ${colors.text};
+  background: white;
+  box-sizing: border-box;
+  font-family: inherit;
+  line-height: 1.4;
+
+  &:focus {
+    outline: none;
+    border-color: ${colors.primary};
+  }
+
+  &::placeholder {
+    color: ${colors.gray};
+    font-weight: 400;
+  }
+  
+  ${mq.mobile} {
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+`;
+
 export const EditPostTextareaWrapper = styled.div`
   position: relative;
   width: 100%;

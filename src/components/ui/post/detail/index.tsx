@@ -64,9 +64,11 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
   const {
     uploading,
     isEditingPost,
+    editingPostTitle,
     editingPostContent,
     editingImages,
     newImages,
+    setEditingPostTitle,
     setEditingPostContent,
     handleEditPost,
     saveEditPost,
@@ -284,12 +286,14 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
               date={date || ''}
               hashtags={postInfo.__typename === 'SnsPost' ? postInfo.hashtags : undefined}
               isEditingPost={isEditingPost}
+              editingPostTitle={editingPostTitle}
               editingPostContent={editingPostContent}
               editingImages={editingImages}
               newImages={newImages}
               uploading={uploading}
               title={postInfo.__typename === 'SnsPost' ? postInfo.title : ''}
               displayDesc={displayDesc}
+              onChangeTitle={setEditingPostTitle}
               onChangeContent={setEditingPostContent}
               onRemoveImage={removeImage}
               onRemoveNewImage={removeNewImage}
@@ -339,6 +343,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
           </S.InteractionBar>
         ) : (
           <InteractionBar
+          isHousePost={isHousePost}
             isModal={isModal}
             isLiked={isLiked}
             likeCount={likeCount}

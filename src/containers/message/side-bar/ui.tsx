@@ -263,7 +263,7 @@ export default function MessageSideBar() {
 			<S.Search>
 				<input
 					type={"text"}
-					placeholder={"채팅방 이름 또는 메시지로 검색하세요"}
+					placeholder={"채팅방 이름을 입력해주세요"}
 					value={searchTerm}
 					onChange={(e) => setSearchTerm(e.target.value)}
 				/>
