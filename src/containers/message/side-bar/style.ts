@@ -63,7 +63,7 @@ export const Search = styled.div`
   gap: 1rem;
   border-radius: ${radius.md};
   border: 1px solid #DDDDDD;
-  padding: 0.5rem 2rem;
+  padding: 0.5rem 1rem;
   display: flex;
   margin-bottom: 1rem;
 
