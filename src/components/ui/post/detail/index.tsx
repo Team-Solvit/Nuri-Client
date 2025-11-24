@@ -343,6 +343,7 @@ export default function PostDetail({ id, isModal }: PostDetailProps) {
           </S.InteractionBar>
         ) : (
           <InteractionBar
+          isHousePost={isHousePost}
             isModal={isModal}
             isLiked={isLiked}
             likeCount={likeCount}

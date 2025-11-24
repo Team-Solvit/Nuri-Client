@@ -110,7 +110,7 @@ export default function CommentsPanel({
                     <S.CommentText>{comment.content}</S.CommentText>
                   )}
                 </S.CommentContent>
-                {currentUserId === comment.commenter.userId && (
+                {currentUserId === comment.commenter.userId && editingCommentId !== comment.commentId && (
                   <S.MenuButton onClick={(e) => e.stopPropagation()}>
                     <S.CommentMenu
                       onClick={(e) => {
