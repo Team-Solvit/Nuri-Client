@@ -2,8 +2,13 @@ import { useMemo } from 'react';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { AuthGQL } from '@/services/auth';
+<<<<<<< Updated upstream
 import { extractTokenFromApolloResult, saveAccessToken, getAccessToken, isTokenExpired, clearAccessToken } from '@/utils/token';
 import { ApolloClient, InMemoryCache, HttpLink, NormalizedCacheObject, ApolloLink, from, fromPromise } from '@apollo/client';
+=======
+import { withRefreshLock, extractTokenFromApolloResult, saveAccessToken, isTokenExpired, refreshAccessToken, getAccessToken } from '@/utils/token';
+import { ApolloClient, InMemoryCache, HttpLink, NormalizedCacheObject, ApolloLink, from, fromPromise, Observable } from '@apollo/client';
+>>>>>>> Stashed changes
 
 let apolloClient: ApolloClient<NormalizedCacheObject>;
 let refreshPromise: Promise<string | null> | null = null;
@@ -77,6 +82,7 @@ function createApolloClient() {
       return { headers };
     }
 
+<<<<<<< Updated upstream
     const token = getAccessToken();
     
     // 토큰이 없으면 그냥 진행
@@ -97,6 +103,26 @@ function createApolloClient() {
         },
       };
     }
+=======
+	const authLink = setContext(async (operation, { headers }) => {
+		if (operation.operationName === 'Reissue') {
+			return { headers };
+		}
+
+		let token = getAccessToken();
+
+		if (token && isTokenExpired(token)) {
+			token = await withRefreshLock(refreshAccessToken);
+		}
+
+		return {
+			headers: {
+				...headers,
+				...(token ? { Authorization: `Bearer ${token}` } : {}),
+			},
+		};
+	});
+>>>>>>> Stashed changes
 
     // 토큰이 유효하면 그대로 사용
     return {
