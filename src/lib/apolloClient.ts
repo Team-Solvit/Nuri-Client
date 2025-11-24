@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { AuthGQL } from '@/services/auth';
-import { extractTokenFromApolloResult, saveAccessToken, getAccessToken, isTokenExpired, clearAccessToken } from '@/utils/token';
-import { ApolloClient, InMemoryCache, HttpLink, NormalizedCacheObject, ApolloLink, from, fromPromise } from '@apollo/client';
+import { withRefreshLock, extractTokenFromApolloResult, saveAccessToken, isTokenExpired, refreshAccessToken, getAccessToken, clearAccessToken } from '@/utils/token';
+import { ApolloClient, InMemoryCache, HttpLink, NormalizedCacheObject, ApolloLink, from, fromPromise, Observable } from '@apollo/client';
 
 let apolloClient: ApolloClient<NormalizedCacheObject>;
 let refreshPromise: Promise<string | null> | null = null;
@@ -18,7 +18,7 @@ async function refreshToken(): Promise<string | null> {
   refreshPromise = (async () => {
     try {
       console.log('🔄 Attempting to refresh token...');
-      
+
       const r = await apolloClient.mutate({
         mutation: AuthGQL.MUTATIONS.REISSUE,
         fetchPolicy: 'no-cache',
@@ -26,24 +26,24 @@ async function refreshToken(): Promise<string | null> {
       });
 
       const newToken = extractTokenFromApolloResult(r);
-      
+
       if (newToken) {
         saveAccessToken(newToken);
         console.log('✅ Token refreshed successfully');
         return newToken;
       }
-      
+
       throw new Error('No token received from reissue');
     } catch (error) {
       console.error('❌ Token refresh failed:', error);
-      
+
       // Reissue 실패 시 로그아웃 처리
       clearAccessToken();
-      
+
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('auth-failed'));
       }
-      
+
       return null;
     } finally {
       refreshPromise = null;
@@ -77,43 +77,27 @@ function createApolloClient() {
       return { headers };
     }
 
-    const token = getAccessToken();
-    
-    // 토큰이 없으면 그냥 진행
-    if (!token) {
-      return { headers };
+    let token = getAccessToken();
+
+    if (token && isTokenExpired(token)) {
+      token = await withRefreshLock(refreshAccessToken);
     }
 
-    // 토큰이 만료되었거나 곧 만료될 예정이면 Reissue 시도
-    if (isTokenExpired(token)) {
-      console.log('⚠️ Token expired or expiring soon, attempting refresh...');
-      const newToken = await refreshToken();
-      
-      // Reissue 실패 시 (newToken === null) 토큰 없이 진행
-      return {
-        headers: {
-          ...headers,
-          ...(newToken ? { Authorization: `Bearer ${newToken}` } : {}),
-        },
-      };
-    }
-
-    // 토큰이 유효하면 그대로 사용
     return {
       headers: {
         ...headers,
-        Authorization: `Bearer ${token}`,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     };
   });
 
   // 에러 처리 (백업용 - 서버에서 401이 오는 경우)
   const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
-    
+
     const isUnauth =
       (graphQLErrors ?? []).some(e => e.extensions?.code === 'UNAUTHENTICATED') ||
       (networkError as any)?.statusCode === 401;
-console.log('🔔 Error link triggered', isUnauth, networkError, graphQLErrors);
+    console.log('🔔 Error link triggered', isUnauth, networkError, graphQLErrors);
     if (!isUnauth) return;
 
     console.log('⚠️ Received 401 error, attempting refresh...');
@@ -124,7 +108,7 @@ console.log('🔔 Error link triggered', isUnauth, networkError, graphQLErrors);
           // Reissue 실패 - 로그아웃 처리됨
           return null;
         }
-        
+
         const oldHeaders = operation.getContext().headers ?? {};
         operation.setContext({
           headers: {
@@ -132,7 +116,7 @@ console.log('🔔 Error link triggered', isUnauth, networkError, graphQLErrors);
             Authorization: `Bearer ${newToken}`,
           },
         });
-        
+
         return newToken;
       })
     ).flatMap(newToken => {
@@ -140,7 +124,7 @@ console.log('🔔 Error link triggered', isUnauth, networkError, graphQLErrors);
         // Reissue 실패 시 요청 중단
         return forward(operation);
       }
-      
+
       // Reissue 성공 시 재시도
       return forward(operation);
     });
