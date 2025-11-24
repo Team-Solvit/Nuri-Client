@@ -91,6 +91,12 @@ export function usePostDetail(id: string) {
     try {
       await PostDetailService.deletePost(client, postToDelete);
       success("게시물이 삭제되었습니다.");
+      
+      // 홈 화면의 게시물 목록 캐시도 업데이트하여 삭제된 게시물 제거
+      await client.refetchQueries({
+        include: ['GetPostList'],
+      });
+      
       router.back();
     } catch {
       error("게시물 삭제에 실패했습니다.");

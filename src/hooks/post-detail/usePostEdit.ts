@@ -13,12 +13,14 @@ export function usePostEdit(postInfo: PostDetailUnion | null, refresh: (id: stri
   const client = useApollo();
 
   const [isEditingPost, setIsEditingPost] = useState(false);
+  const [editingPostTitle, setEditingPostTitle] = useState("");
   const [editingPostContent, setEditingPostContent] = useState("");
   const [editingImages, setEditingImages] = useState<string[]>([]);
   const [newImages, setNewImages] = useState<File[]>([]);
 
   const handleEditPost = () => {
     if (!postInfo || postInfo.__typename !== "SnsPost") return;
+    setEditingPostTitle(postInfo.title || "");
     setEditingPostContent(postInfo.contents);
     setEditingImages(postInfo.files.map((f) => f.url));
     setNewImages([]);
@@ -28,15 +30,17 @@ export function usePostEdit(postInfo: PostDetailUnion | null, refresh: (id: stri
   const saveEditPost = async () => {
     if (!postInfo || postInfo.__typename !== "SnsPost" || !editingPostContent.trim()) return;
     
+    const originalTitle = postInfo.title || "";
     const originalContent = postInfo.contents || "";
     const originalImageIds = postInfo.files.map((f) => f.url);
+    const hasTitleChanged = editingPostTitle !== originalTitle;
     const hasContentChanged = editingPostContent !== originalContent;
     const hasImagesChanged = 
       editingImages.length !== originalImageIds.length ||
       editingImages.some((img, idx) => img !== originalImageIds[idx]) ||
       newImages.length > 0;
 
-    if (!hasContentChanged && !hasImagesChanged) {
+    if (!hasTitleChanged && !hasContentChanged && !hasImagesChanged) {
       error("수정된 내용이 없습니다.");
       return;
     }
@@ -55,7 +59,7 @@ export function usePostEdit(postInfo: PostDetailUnion | null, refresh: (id: stri
       const postUpdateInput = {
         postId: postInfo.postId,
         postInfo: {
-          title: postInfo.title || "",
+          title: editingPostTitle || "",
           contents: editingPostContent,
           shareRange: "ALL" as const,
           isGroup: false,
@@ -67,12 +71,18 @@ export function usePostEdit(postInfo: PostDetailUnion | null, refresh: (id: stri
       await PostDetailService.updatePost(client, postUpdateInput);
 
       setIsEditingPost(false);
+      setEditingPostTitle("");
       setEditingPostContent("");
       setEditingImages([]);
       setNewImages([]);
       success("게시물이 수정되었습니다.");
 
       await refresh(postInfo.postId);
+      
+      // 홈 화면의 게시물 목록 캐시도 업데이트하여 수정된 내용 반영
+      await client.refetchQueries({
+        include: ['GetPostList'],
+      });
     } catch {
       error("게시물 수정에 실패했습니다.");
     }
@@ -80,6 +90,7 @@ export function usePostEdit(postInfo: PostDetailUnion | null, refresh: (id: stri
 
   const cancelEditPost = () => {
     setIsEditingPost(false);
+    setEditingPostTitle("");
     setEditingPostContent("");
     setEditingImages([]);
     setNewImages([]);
@@ -115,9 +126,11 @@ export function usePostEdit(postInfo: PostDetailUnion | null, refresh: (id: stri
   return {
     uploading,
     isEditingPost,
+    editingPostTitle,
     editingPostContent,
     editingImages,
     newImages,
+    setEditingPostTitle,
     setEditingPostContent,
     handleEditPost,
     saveEditPost,

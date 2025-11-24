@@ -33,10 +33,9 @@ export default function PostScroll() {
 		PostQueries.GET_POST_LIST,
 		{
 			variables: { start: 0 },
+			fetchPolicy: "no-cache",
+			nextFetchPolicy: "no-cache",
 			notifyOnNetworkStatusChange: true,
-			fetchPolicy: "cache-first",
-			nextFetchPolicy: "cache-first",
-			pollInterval: 20000,
 		}
 	);
 	

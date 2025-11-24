@@ -11,12 +11,14 @@ interface SnsPostContentProps {
   date: string;
   hashtags?: Hashtag[];
   isEditingPost: boolean;
+  editingPostTitle: string;
   editingPostContent: string;
   editingImages: string[];
   newImages: File[];
   uploading: boolean;
   displayDesc: string;
   title: string;
+  onChangeTitle: (v: string) => void;
   onChangeContent: (v: string) => void;
   onRemoveImage: (index: number) => void;
   onRemoveNewImage: (index: number) => void;
@@ -29,12 +31,14 @@ export default function SnsPostContent({
   date,
   hashtags,
   isEditingPost,
+  editingPostTitle,
   editingPostContent,
   editingImages,
   newImages,
   uploading,
   title,
   displayDesc,
+  onChangeTitle,
   onChangeContent,
   onRemoveImage,
   onRemoveNewImage,
@@ -55,6 +59,17 @@ export default function SnsPostContent({
       <S.RightSub>{date}</S.RightSub>
       {isEditingPost ? (
         <S.EditPostContainer>
+          <S.EditPostTitleWrapper>
+            <S.EditPostTitleInput
+              value={editingPostTitle}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChangeTitle(e.target.value)}
+              placeholder="제목을 입력하세요..."
+              maxLength={100}
+            />
+            <S.CharCounter>
+              {editingPostTitle.length} / 100
+            </S.CharCounter>
+          </S.EditPostTitleWrapper>
           <S.EditPostTextareaWrapper>
             <S.EditPostInlineTextarea
               value={editingPostContent}
