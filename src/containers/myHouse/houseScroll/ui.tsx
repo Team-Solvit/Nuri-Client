@@ -97,7 +97,6 @@ const HouseScroll = () => {
 			{leaveInfo && <LeaveModal roomRefetch={refetch} boarders={leaveInfo} contractId={contractId} type={modalType} roomId={roomIdToDelete} />}
 			<S.Header>
 				<S.Title>{boardingHouse?.name}</S.Title>
-				<S.Setting onClick={() => navigate("/setting/host")}>하숙집 설정</S.Setting>
 			</S.Header>
 			<S.InfoSection isOpen={isOpen}>
 				<S.InfoRow>
