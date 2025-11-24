@@ -9,6 +9,7 @@ import EllipsisIcon from "@/assets/post/ellipsis.svg";
 import { usePermissionGuard } from "@/hooks/usePermissionGuard";
 
 interface InteractionBarProps {
+  isHousePost: boolean;
   isModal?: boolean;
   isLiked: boolean;
   likeCount: number;
@@ -24,6 +25,7 @@ interface InteractionBarProps {
 }
 
 export default function InteractionBar({
+  isHousePost,
   isModal,
   isLiked,
   likeCount,
@@ -60,6 +62,7 @@ export default function InteractionBar({
           <Image src={CommentIcon} alt="comment" width={22} height={22} />
           <S.ActionCount>{commentCount}</S.ActionCount>
         </S.ActionButton>
+        {isPostOwner && !isHousePost && 
         <S.MenuButton ref={menuRef} onClick={onToggleMenu}>
           <Image src={EllipsisIcon} alt="menu" width={24} height={24} />
           {menuOpen && (
@@ -67,9 +70,7 @@ export default function InteractionBar({
               {isPostOwner && (
                 <>
                   {onEditPost && <S.MenuItem onClick={onEditPost}>수정</S.MenuItem>}
-                  <S.MenuItem onClick={onDeletePost} red>
-                    삭제
-                  </S.MenuItem>
+                  <S.MenuItem onClick={onDeletePost} red>삭제</S.MenuItem>
                 </>
               )}
               {!isPostOwner && (
@@ -81,7 +82,7 @@ export default function InteractionBar({
               )}
             </S.MenuDropdown>
           )}
-        </S.MenuButton>
+        </S.MenuButton>}
       </S.InteractionButtons>
     </S.InteractionBar>
   );
