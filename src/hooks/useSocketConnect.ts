@@ -35,7 +35,7 @@ export default function useSocketConnect() {
 	// ref로 최신값 유지
 	const refetchRef = useRef(refetchMessageCount);
 	const roomIdRef = useRef(roomId);
-	
+
 	useEffect(() => {
 		refetchRef.current = refetchMessageCount;
 		roomIdRef.current = roomId;
@@ -51,6 +51,26 @@ export default function useSocketConnect() {
 		}
 	}, []);
 
+	// 사용자 정보가 사라지면 연결 및 구독 정리
+	useEffect(() => {
+		if (userId && accessToken) return;
+
+		previousRoomId.current = null;
+		roomIdRef.current = '';
+		hasInitialized.current = false;
+		isConnecting.current = false;
+
+		try {
+			clearSubscriptions();
+		} catch (err) {
+			console.error("Failed to clear subscriptions on logout:", err);
+		}
+
+		if (client.active) {
+			client.deactivate();
+		}
+	}, [userId, accessToken, clearSubscriptions]);
+
 	// WebSocket 초기 연결 (userId, accessToken이 바뀔 때만)
 	useEffect(() => {
 		if (!userId || !accessToken) {
@@ -58,17 +78,17 @@ export default function useSocketConnect() {
 			return;
 		}
 		if (typeof window === 'undefined') return;
-		
+
 		if (hasInitialized.current) {
 			console.log('✅ Already initialized, skipping');
 			return;
 		}
-		
+
 		if (isConnecting.current) {
 			console.log('🔵 Already connecting, skipping');
 			return;
 		}
-		
+
 		if (client.active && client.connected) {
 			console.log('✅ Already connected, skipping');
 			hasInitialized.current = true;
@@ -78,7 +98,7 @@ export default function useSocketConnect() {
 		console.log('🔄 Starting connection process...');
 		isConnecting.current = true;
 		hasInitialized.current = true;
-		
+
 		client.connectHeaders = {
 			Authorization: `Bearer ${accessToken}`,
 		};
@@ -86,17 +106,17 @@ export default function useSocketConnect() {
 		client.onConnect = () => {
 			console.log('✅ STOMP Connected successfully');
 			isConnecting.current = false;
-			
+
 			// 기존 구독이 있으면 클리어
 			clearSubscriptions();
 
 			// 개인 메시지 구독
 			addSubscription(
-				"user-message", 
+				"user-message",
 				client.subscribe(`/user/${userId}/messages`, async (message) => {
 					const messageData: ChatMessageResponse = JSON.parse(message.body);
 					console.log("📩 Received message:", messageData);
-					
+
 					fadeIn(
 						messageData?.sender?.profile,
 						messageData?.roomId,
@@ -111,13 +131,13 @@ export default function useSocketConnect() {
 
 			// 알림 구독
 			addSubscription(
-				"user-notify", 
+				"user-notify",
 				client.subscribe(`/user/${userId}/notify`, (message) => {
 					console.log("🔔 Notify:", message.body);
 					console.log("roomIdRef:", roomIdRef.current, roomId);
 					try {
 						const subMessage = message.body.split(" ");
-						
+
 						if (subMessage.length === 2 && subMessage[0] === "JOINPLAYERS") {
 							const joinMessage: ChatMessageResponse = {
 								name: "",
@@ -132,7 +152,7 @@ export default function useSocketConnect() {
 							setMessage(joinMessage);
 							return;
 						}
-						
+
 						// EXITPLAYERS 처리 (2개 파라미터)
 						if (subMessage.length === 2 && subMessage[0] === "EXITPLAYERS") {
 							const exitedUser = subMessage[1];
@@ -143,7 +163,7 @@ export default function useSocketConnect() {
 								}
 								return;
 							}
-							
+
 							const exitMessage: ChatMessageResponse = {
 								name: "",
 								picture: "",
@@ -169,7 +189,7 @@ export default function useSocketConnect() {
 								}
 								return;
 							}
-							
+
 							const exitMessage: ChatMessageResponse = {
 								name: "",
 								picture: "",
@@ -189,11 +209,11 @@ export default function useSocketConnect() {
 							console.log("🔕 Unsubscribing from:", subMessage[1]);
 							removeSubscription(subMessage[1]);
 						}
-						
+
 						if (subMessage.length === 2 && subMessage[0] === "SUB") {
 							console.log("🔔 Subscribing to:", subMessage[1]);
 							addSubscription(
-								subMessage[1], 
+								subMessage[1],
 								client.subscribe(`/chat/messages/${subMessage[1]}`, async (msg) => {
 									const msgData = JSON.parse(msg.body);
 									console.log("💬 Room:", subMessage[1], "Message:", msgData);
@@ -217,7 +237,7 @@ export default function useSocketConnect() {
 
 			// 예외 처리 구독
 			addSubscription(
-				"user-exceptions", 
+				"user-exceptions",
 				client.subscribe(`/user/${userId}/exceptions`, () => {
 					error("중복 로그인이 감지되어 기존 세션은 로그아웃 처리 됩니다.");
 					clear();
@@ -277,7 +297,7 @@ export default function useSocketConnect() {
 		}
 
 		console.log(`🔄 RoomId changed: ${previousRoomId.current} → ${roomId}`);
-		
+
 		// 이전 roomId 구독 해제
 		if (previousRoomId.current) {
 			console.log(`🔕 Unsubscribing from previous room: ${previousRoomId.current}`);
@@ -310,7 +330,7 @@ export default function useSocketConnect() {
 	// 페이지 완전 언마운트 시 정리
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
-		
+
 		const handleBeforeUnload = () => {
 			console.log('🧹 Page unload - disconnecting');
 			if (client.active) {
@@ -318,9 +338,9 @@ export default function useSocketConnect() {
 			}
 			hasInitialized.current = false;
 		};
-		
+
 		window.addEventListener('beforeunload', handleBeforeUnload);
-		
+
 		return () => {
 			window.removeEventListener('beforeunload', handleBeforeUnload);
 		};

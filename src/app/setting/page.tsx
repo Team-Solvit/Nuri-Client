@@ -17,12 +17,15 @@ import Logout from '@/components/ui/logout';
 import Leave from '@/components/ui/leave';
 import { useAlertStore } from '@/store/alert';
 import Alert from '@/components/ui/alert';
+import { client } from '@/lib/socketClient';
+import { useMessageConnectStore } from '@/store/messageConnect';
 
 export default function SettingPage() {
     const { email, phoneNumber, id, clear } = useUserStore(s => s);
     const apolloClient = useApollo();
     const router = useRouter();
     const { success, error } = useAlertStore();
+    const { clearSubscriptions } = useMessageConnectStore();
     const [isMobile, setIsMobile] = useState(false)
     const [isClient, setIsClient] = useState(false)
     const [showLogoutModal, setShowLogoutModal] = useState(false)
@@ -45,6 +48,14 @@ export default function SettingPage() {
             await AuthService.logout(apolloClient);
             clearAccessToken();
             await apolloClient.clearStore();
+            try {
+                clearSubscriptions();
+                if (client.active) {
+                    await client.deactivate();
+                }
+            } catch (e) {
+                console.error('Error disconnecting socket on logout:', e);
+            }
             clear();
             try { 
                 localStorage.removeItem('nuri-user');
