@@ -5,10 +5,15 @@ import { mq } from '@/styles/media';
 export const MemberModalWrapper = styled.div`
   padding: 2rem 3rem;
   box-sizing: border-box;
+  max-height: 80vh;
+  overflow-y: auto;
+  min-width: 500px;
   ${mq.mobile} {
     padding: 1.25rem 1rem 2rem;
     width: 90vw;
     margin: 0 auto;
+    min-width: unset;
+    max-height: 90vh;
   }
 `;
 
