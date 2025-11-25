@@ -218,7 +218,7 @@ export default function Login() {
 						</InputRow>
 						{codeSent && (
 							<AttemptNotice>
-								인증 실패 시도: {verifyAttempts}/5
+								인증 시도 횟수: {verifyAttempts}/5
 							</AttemptNotice>
 						)}
 					</FormGroup>
