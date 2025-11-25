@@ -25,6 +25,8 @@ export default function Login() {
 	const [loading, setLoading] = useState(false);
 	const [socialLoading, setSocialLoading] = useState<string | null>(null);
 	const [codeSent, setCodeSent] = useState(false);
+	const [resetAttempts, setResetAttempts] = useState(0);
+	const [verifyAttempts, setVerifyAttempts] = useState(0);
 
 	const client = useApollo();
 	const alertStore = useAlertStore();
@@ -113,16 +115,29 @@ export default function Login() {
 	const handleSendCodeAndSet = useCallback(async (email: string) => {
 		await handleSendCode(email);
 		setCodeSent(true);
+		setVerifyAttempts(0);
+		setCode('');
 	}, [handleSendCode]);
 
-	// 인증 성공 시 codeSent false로 초기화
 	const handleVerifyCodeAndSet = useCallback(async (email: string, code: string) => {
 		const ok = await handleVerifyCode(email, code);
 		if (ok) {
 			setStep('find-reset');
 			setCodeSent(false);
+			setResetAttempts(0);
+			setVerifyAttempts(0);
+		} else {
+			setVerifyAttempts(prev => {
+				const next = prev + 1;
+				if (next >= 5) {
+					alertStore.error('인증 실패가 5회 초과되었습니다. 인증번호를 다시 요청해주세요.');
+					setCodeSent(false);
+					setCode('');
+				}
+				return next;
+			});
 		}
-	}, [handleVerifyCode]);
+	}, [handleVerifyCode, alertStore]);
 
 	return (
 		<Wrapper>
@@ -201,6 +216,11 @@ export default function Login() {
 								<Square text='인증' onClick={() => handleVerifyCodeAndSet(email, code)} isLoading={findLoading} status={!findLoading} width='fit-content' />
 							)}
 						</InputRow>
+						{codeSent && (
+							<AttemptNotice>
+								인증 시도 횟수: {verifyAttempts}/5
+							</AttemptNotice>
+						)}
 					</FormGroup>
 				</>
 			)}
@@ -225,12 +245,22 @@ export default function Login() {
 						/>
 					</FormGroup>
 					<Square text={findLoading ? '변경 중...' : '비밀번호 재설정'} onClick={async () => {
+						if (resetAttempts >= 5) {
+							alertStore.error('비밀번호 재설정 시도 횟수를 초과했습니다. 이메일 인증을 다시 진행해주세요.');
+							setStep('find-email');
+							setCodeSent(false);
+							setCode('');
+							setPw('');
+							setPw2('');
+							return;
+						}
 						const err = validatePassword({ password: pw, confirmPassword: pw2 });
 						if (err) {
 							alertStore.error(err);
 							return;
 						}
 						const ok = await handleChangePassword(email, pw);
+						setResetAttempts(prev => prev + 1);
 						if (ok) setStep('login');
 					}} isLoading={findLoading} status={!findLoading} width='100%' />
 				</>
@@ -293,6 +323,12 @@ const Input = styled.input`
 const InputRow = styled.div`
   display: flex;
   gap: 0.5rem;
+`;
+
+const AttemptNotice = styled.div`
+  margin-top: 0.4rem;
+  font-size: ${fontSizes.Small};
+  color: ${colors.gray};
 `;
 
 const Hint = styled.div`
