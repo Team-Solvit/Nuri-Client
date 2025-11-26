@@ -1,12 +1,21 @@
 'use client'
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Calendar from "@/components/ui/third-party/Calendar";
 import Todos from "@/components/ui/third-party/todos/Todos";
 import * as S from "./style";
 
 export default function BoardingHomePage() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    return date;
+  });
+  useEffect(() => {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    setSelectedDate(date);
+  }, []);
 
   return (
     <S.Wrapper>
