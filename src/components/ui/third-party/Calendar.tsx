@@ -15,7 +15,9 @@ interface CalendarProps {
 export default function Calendar({ selectedDate, onDateChange }: CalendarProps) {
   const year = selectedDate.getFullYear();
   const month = selectedDate.getMonth();
+
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   const startDay = new Date(year, month, 1).getDay();
   const totalDays = new Date(year, month + 1, 0).getDate();
